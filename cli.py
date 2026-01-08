@@ -64,21 +64,34 @@ class GodelRuntime(AgentRuntime):
         
         assistant_msg = response["message"]["content"]
         
-        # Check for tool calls
-        tool_pattern = r'TOOL_CALL:\s*({[^}]+})'
-        match = re.search(tool_pattern, assistant_msg)
+        # Check for tool calls - more robust pattern
+        # Match TOOL_CALL: {...} with nested braces support
+        tool_patterns = [
+            r'TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})',  # Nested braces
+            r'\*\*TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})\*\*',  # Bold wrapped
+            r'`TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})`',  # Code wrapped
+        ]
         
-        if match:
-            try:
-                call = json.loads(match.group(1))
-                tool_name = call.get("tool")
-                args = call.get("args", {})
-                
-                if tool_name in self.tools:
-                    result = self.tools[tool_name](**args)
-                    assistant_msg += f"\n\n**Tool Result:**\n{result}"
-            except (json.JSONDecodeError, Exception) as e:
-                assistant_msg += f"\n\nTool error: {e}"
+        for pattern in tool_patterns:
+            match = re.search(pattern, assistant_msg)
+            if match:
+                try:
+                    # Clean up the JSON string
+                    json_str = match.group(1)
+                    json_str = json_str.replace("'", '"')  # Single to double quotes
+                    
+                    call = json.loads(json_str)
+                    tool_name = call.get("tool")
+                    args = call.get("args", {})
+                    
+                    if tool_name in self.tools:
+                        result = self.tools[tool_name](**args)
+                        assistant_msg += f"\n\n**Tool Result:**\n{result}"
+                        break
+                except json.JSONDecodeError as e:
+                    assistant_msg += f"\n\n⚠️ Tool parse error: {e}"
+                except Exception as e:
+                    assistant_msg += f"\n\n⚠️ Tool execution error: {e}"
         
         # Update history
         self.history.append({"role": "user", "content": message})
