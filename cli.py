@@ -87,8 +87,8 @@ class GodelRuntime(AgentRuntime):
         return assistant_msg
 
 
-def spawn_godel():
-    """Spawn an interactive Gödel session."""
+def spawn_godel(query: str | None = None):
+    """Spawn an interactive Gödel session or run single query."""
     print("🔮 Spawning Gödel - the meta-agent...")
     print("=" * 50)
     
@@ -96,6 +96,15 @@ def spawn_godel():
     
     print(f"Model: {runtime.definition.model.model_name}")
     print(f"Tools: {len(runtime.tools)}")
+    
+    # Single query mode
+    if query:
+        print(f"\nQuery: {query}")
+        print("-" * 50)
+        response = runtime.chat(query)
+        print(f"\n{response}")
+        return
+    
     print("Type 'quit' to exit, 'help' for commands")
     print("=" * 50)
     
@@ -123,6 +132,9 @@ def spawn_godel():
             response = runtime.chat(user_input)
             print(f"\n{response}")
             
+        except EOFError:
+            print("\nEnding session.")
+            break
         except KeyboardInterrupt:
             print("\nInterrupted. Type 'quit' to exit.")
         except Exception as e:
@@ -136,6 +148,7 @@ def main():
     # spawn command
     spawn_parser = subparsers.add_parser("spawn", help="Spawn an agent")
     spawn_parser.add_argument("agent", nargs="?", default="godel", help="Agent to spawn")
+    spawn_parser.add_argument("-q", "--query", help="Single query (non-interactive)")
     
     # eval command
     eval_parser = subparsers.add_parser("eval", help="Evaluate a definition")
@@ -153,7 +166,7 @@ def main():
     
     if args.command == "spawn":
         if args.agent == "godel":
-            spawn_godel()
+            spawn_godel(query=args.query)
         else:
             print(f"Unknown agent: {args.agent}")
     
