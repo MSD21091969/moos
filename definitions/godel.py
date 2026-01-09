@@ -153,7 +153,7 @@ Use this power wisely. Document every self-modification.
 # The Gödel definition
 GODEL = ColliderAgentDefinition(
     name="gödel",
-    version=2,  # Upgraded version
+    version=3,  # Upgraded to qwen3:14b
     description="Meta-agent for recursive definition evaluation and improvement",
     
     system_prompt=GODEL_SYSTEM_PROMPT,
@@ -170,8 +170,9 @@ GODEL = ColliderAgentDefinition(
     ),
     
     model=ModelConfig(
-        model_name="llama3.1:8b",
+        model_name="qwen3:14b",  # Upgraded: best general reasoning
         base_url="http://localhost:11434",
+        # Available models: qwen3:14b, deepseek-r1:14b, phi4:14b, gemma3:12b, codellama:13b
     ),
     
     tool_names=[
