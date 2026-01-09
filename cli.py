@@ -37,67 +37,102 @@ GODEL_TOOLS = {
 
 
 class GodelRuntime(AgentRuntime):
-    """Extended runtime for Gödel with tool execution."""
+    """Extended runtime for Gödel with advanced features."""
     
-    def __init__(self):
+    def __init__(self, use_custom_model: bool = True, streaming: bool = False):
         super().__init__(get_godel())
         self.tools = GODEL_TOOLS
+        self.use_custom_model = use_custom_model
+        self.streaming = streaming
+        
+        # Import options
+        from runtimes.options import get_preset
+        from runtimes.model_selector import select_model, detect_task_type
+        
+        self.get_preset = get_preset
+        self.select_model = select_model
+        self.detect_task_type = detect_task_type
     
-    def chat(self, message: str) -> str:
-        """Chat with tool execution capability."""
+    def chat(self, message: str, stream_callback=None) -> str:
+        """Chat with model switching, streaming, and tool execution."""
         import ollama
         import json
         import re
+        from runtimes.streaming import print_callback
+        
+        # Detect task type and select model
+        task_type = self.detect_task_type(message)
+        
+        # Use custom godel model or select based on task
+        if self.use_custom_model:
+            model = "godel"  # Custom Ollama model with embedded prompt
+        else:
+            model = self.select_model(message, task_type)
+        
+        # Get options preset based on task
+        preset_name = task_type.value if task_type else "reasoning"
+        options = self.get_preset(preset_name).to_ollama_dict()
         
         # Build messages
-        messages = [
-            {"role": "system", "content": self.definition.system_prompt}
-        ]
+        messages = []
+        if not self.use_custom_model:
+            # Only add system prompt if not using custom model (it's embedded)
+            messages.append({"role": "system", "content": self.definition.system_prompt})
         messages.extend(self.history[-self.definition.reasoning.max_history:])
         messages.append({"role": "user", "content": message})
         
-        # Call Ollama
-        response = ollama.chat(
-            model=self.definition.model.model_name,
-            messages=messages,
-        )
+        # Stream or regular response
+        if self.streaming:
+            from runtimes.streaming import stream_chat
+            callback = stream_callback or print_callback
+            assistant_msg = stream_chat(model, messages, options, callback)
+        else:
+            response = ollama.chat(
+                model=model,
+                messages=messages,
+                options=options,
+            )
+            assistant_msg = response["message"]["content"]
         
-        assistant_msg = response["message"]["content"]
-        
-        # Check for tool calls - more robust pattern
-        # Match TOOL_CALL: {...} with nested braces support
-        tool_patterns = [
-            r'TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})',  # Nested braces
-            r'\*\*TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})\*\*',  # Bold wrapped
-            r'`TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})`',  # Code wrapped
-        ]
-        
-        for pattern in tool_patterns:
-            match = re.search(pattern, assistant_msg)
-            if match:
-                try:
-                    # Clean up the JSON string
-                    json_str = match.group(1)
-                    json_str = json_str.replace("'", '"')  # Single to double quotes
-                    
-                    call = json.loads(json_str)
-                    tool_name = call.get("tool")
-                    args = call.get("args", {})
-                    
-                    if tool_name in self.tools:
-                        result = self.tools[tool_name](**args)
-                        assistant_msg += f"\n\n**Tool Result:**\n{result}"
-                        break
-                except json.JSONDecodeError as e:
-                    assistant_msg += f"\n\n⚠️ Tool parse error: {e}"
-                except Exception as e:
-                    assistant_msg += f"\n\n⚠️ Tool execution error: {e}"
+        # Check for tool calls
+        assistant_msg = self._execute_tool_calls(assistant_msg)
         
         # Update history
         self.history.append({"role": "user", "content": message})
         self.history.append({"role": "assistant", "content": assistant_msg})
         
         return assistant_msg
+    
+    def _execute_tool_calls(self, response: str) -> str:
+        """Execute any tool calls in the response."""
+        import json
+        import re
+        
+        tool_patterns = [
+            r'TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})',
+            r'\*\*TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})\*\*',
+            r'`TOOL_CALL:\s*(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})`',
+        ]
+        
+        for pattern in tool_patterns:
+            match = re.search(pattern, response)
+            if match:
+                try:
+                    json_str = match.group(1).replace("'", '"')
+                    call = json.loads(json_str)
+                    tool_name = call.get("tool")
+                    args = call.get("args", {})
+                    
+                    if tool_name in self.tools:
+                        result = self.tools[tool_name](**args)
+                        response += f"\n\n**Tool Result:**\n{result}"
+                        break
+                except json.JSONDecodeError as e:
+                    response += f"\n\n⚠️ Tool parse error: {e}"
+                except Exception as e:
+                    response += f"\n\n⚠️ Tool execution error: {e}"
+        
+        return response
 
 
 def spawn_godel(query: str | None = None):
