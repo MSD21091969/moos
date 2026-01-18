@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "last_sync": "2026-01-13T14:55:09.771536Z",
+  "sync_targets": {
+    "workflows": [
+      "graph-audit.md",
+      "subgraph-resolution.md"
+    ],
+    "knowledge": [],
+    "rules": [],
+    "skills": [
+      "graph_audit.md",
+      "container_inspector.md"
+    ]
+  },
+  "workspaces": [
+    {
+      "path": "D:/IADORE",
+      "enabled": true
+    },
+    {
+      "path": "D:/dev-assistant",
+      "enabled": true
+    },
+    {
+      "path": "D:/my-tiny-data-collider",
+      "enabled": false
+    }
+  ]
+}

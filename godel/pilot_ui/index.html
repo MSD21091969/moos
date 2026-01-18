@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Collider Pilot</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: rgba(15, 23, 42, 0.8);
+        border-bottom: 1px solid #334155;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #94a3b8;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .chat-panel {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 12px;
+        border: 1px solid #334155;
+        overflow: hidden;
+      }
+
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .message {
+        max-width: 80%;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .message.user {
+        align-self: flex-end;
+        background: #3b82f6;
+        color: white;
+        border-bottom-right-radius: 4px;
+      }
+
+      .message.assistant {
+        align-self: flex-start;
+        background: #334155;
+        border-bottom-left-radius: 4px;
+      }
+
+      .message pre {
+        white-space: pre-wrap;
+        font-family: inherit;
+      }
+
+      .input-area {
+        padding: 1rem;
+        border-top: 1px solid #334155;
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .input-area input {
+        flex: 1;
+        background: #0f172a;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+      }
+
+      .input-area input:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+
+      .input-area button {
+        padding: 0.75rem 1.5rem;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .input-area button:hover {
+        background: #2563eb;
+      }
+
+      .input-area button:disabled {
+        background: #475569;
+        cursor: not-allowed;
+      }
+
+      .side-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .info-card {
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 12px;
+        border: 1px solid #334155;
+        padding: 1rem;
+      }
+
+      .info-card h3 {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .info-card .value {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #3b82f6;
+      }
+
+      .info-card .label {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+
+      .observations-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .observation-item {
+        padding: 0.5rem;
+        border-bottom: 1px solid #334155;
+        font-size: 0.8rem;
+      }
+
+      .observation-item:last-child {
+        border-bottom: none;
+      }
+
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #475569;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🚀 Collider Pilot</h1>
+      <div class="status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Connected</span>
+      </div>
+      <div class="status" style="margin-left: auto">
+        <span>Model: qwen3:14b</span>
+      </div>
+    </header>
+
+    <main>
+      <div class="chat-panel">
+        <div class="messages" id="messages">
+          <div class="message assistant">
+            <pre>
+👋 Hello! I'm the Collider Pilot. I can see the grid state from your frontend and help you understand your data.
+
+Try asking me:
+• "What's on the grid?"
+• "Analyze the containers"
+• "Send observe command to ChatAgent"</pre
+            >
+          </div>
+        </div>
+        <div class="input-area">
+          <input
+            type="text"
+            id="input"
+            placeholder="Ask the Pilot..."
+            autofocus
+          />
+          <button id="sendBtn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="info-card">
+          <h3>Observations</h3>
+          <div class="value" id="obsCount">0</div>
+          <div class="label">Grid snapshots received</div>
+        </div>
+
+        <div class="info-card">
+          <h3>Commands</h3>
+          <div class="value" id="cmdCount">0</div>
+          <div class="label">Pending for ChatAgent</div>
+        </div>
+
+        <div class="info-card">
+          <h3>Recent Observations</h3>
+          <div class="observations-list" id="obsList">
+            <div class="observation-item">No observations yet</div>
+          </div>
+        </div>
+
+        <div class="info-card" style="background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.2)); border-color: #8b5cf6;">
+          <h3 style="color: #a78bfa;">🧠 Gödel Assessment</h3>
+          <textarea id="userNotes" placeholder="Add your notes for Gödel..." style="width:100%; height:60px; background:#0f172a; border:1px solid #475569; border-radius:8px; padding:0.5rem; color:#e2e8f0; font-size:0.8rem; resize:none; margin-bottom:0.5rem;"></textarea>
+          <button onclick="requestGodelAssess()" id="assessBtn" style="width:100%; padding:0.75rem; background:linear-gradient(90deg,#8b5cf6,#3b82f6); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
+            Request Gödel Assessment
+          </button>
+          <div id="assessResult" style="margin-top:0.75rem; font-size:0.75rem; color:#94a3b8; max-height:200px; overflow-y:auto;"></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const API = "http://localhost:8001";
+      const messagesDiv = document.getElementById("messages");
+      const input = document.getElementById("input");
+      const sendBtn = document.getElementById("sendBtn");
+
+      // Enter to send
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      async function sendMessage() {
+        const message = input.value.trim();
+        if (!message) return;
+
+        // Add user message
+        addMessage("user", message);
+        input.value = "";
+        sendBtn.disabled = true;
+
+        // Add loading indicator
+        const loadingId = addMessage(
+          "assistant",
+          '<div class="loading"></div> Thinking...'
+        );
+
+        try {
+          const response = await fetch(`${API}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message, include_context: true }),
+          });
+
+          const data = await response.json();
+
+          // Remove loading, add response
+          document.getElementById(loadingId).remove();
+          addMessage("assistant", data.response);
+        } catch (error) {
+          document.getElementById(loadingId).remove();
+          addMessage("assistant", `❌ Error: ${error.message}`);
+        }
+
+        sendBtn.disabled = false;
+        input.focus();
+      }
+
+      function addMessage(role, content) {
+        const id = "msg-" + Date.now();
+        const div = document.createElement("div");
+        div.id = id;
+        div.className = `message ${role}`;
+        div.innerHTML = `<pre>${content}</pre>`;
+        messagesDiv.appendChild(div);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return id;
+      }
+
+      // Poll for status
+      async function updateStatus() {
+        try {
+          const response = await fetch(`${API}/`);
+          const data = await response.json();
+
+          document.getElementById("obsCount").textContent = data.observations;
+          document.getElementById("cmdCount").textContent =
+            data.pending_commands;
+          document.getElementById("statusDot").style.background = "#22c55e";
+          document.getElementById("statusText").textContent = "Connected";
+
+          // Get recent observations
+          if (data.observations > 0) {
+            const obsResponse = await fetch(`${API}/observations?limit=5`);
+            const obsData = await obsResponse.json();
+
+            const obsList = document.getElementById("obsList");
+            obsList.innerHTML = obsData.recent
+              .map(
+                (o) => `
+                        <div class="observation-item">
+                            📊 ${o.nodes?.length || 0} nodes, ${
+                  o.containers?.length || 0
+                } containers
+                            <br><small>${o.user_action || "auto"}</small>
+                        </div>
+                    `
+              )
+              .join("");
+          }
+        } catch (error) {
+          document.getElementById("statusDot").style.background = "#ef4444";
+          document.getElementById("statusText").textContent = "Disconnected";
+        }
+      }
+
+      // Initial update and poll every 3 seconds
+      updateStatus();
+      setInterval(updateStatus, 3000);
+
+      // Request Gödel Assessment
+      async function requestGodelAssess() {
+        const userNotes = document.getElementById('userNotes').value;
+        const assessBtn = document.getElementById('assessBtn');
+        const resultDiv = document.getElementById('assessResult');
+        
+        assessBtn.disabled = true;
+        assessBtn.textContent = 'Requesting...';
+        resultDiv.innerHTML = '<div class="loading"></div> Gödel is analyzing...';
+        
+        try {
+          const response = await fetch(`${API}/godel/assess`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              user_notes: userNotes,
+              include_observations: true,
+              include_chat: true
+            }),
+          });
+          
+          const data = await response.json();
+          
+          if (data.status === 'complete') {
+            resultDiv.innerHTML = `<pre style="white-space:pre-wrap;color:#a5f3fc;">${data.assessment}</pre>`;
+            // Also add to chat
+            addMessage('assistant', `🧠 GÖDEL ASSESSMENT:\n\n${data.assessment}`);
+          } else {
+            resultDiv.innerHTML = `❌ Error: ${data.error || 'Unknown error'}`;
+          }
+        } catch (error) {
+          resultDiv.innerHTML = `❌ Error: ${error.message}`;
+        }
+        
+        assessBtn.disabled = false;
+        assessBtn.textContent = 'Request Gödel Assessment';
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "folders": [
+	{
+		"name": "my-tiny-data-collider",
+		"path": "../my-tiny-data-collider"
+	},
+	{
+		"path": "."
+	},
+	{
+		"path": "../dev-assistant"
+	},
+	{
+		"path": "../IADORE"
+	}
+],
+  "settings": {
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/__pycache__": true,
+      "**/.venv": true,
+      "legacy/**": false
+    },
+    "terminal.integrated.gpuAcceleration": "on",
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.defaultProfile.windows": "PowerShell 7",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[python]": {
+      "editor.defaultFormatter": "charliermarsh.ruff",
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+      }
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/.venv/**": true,
+      "legacy/**": true
+    },
+    "[powershell]": {
+      "editor.defaultFormatter": "ms-vscode.powershell"
+    }
+  }
+}
