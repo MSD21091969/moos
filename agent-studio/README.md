@@ -1,6 +1,7 @@
 # Agent Studio
 
-Integrated DeepAgent Application with Full-Stack Template.
+Integrated DeepAgent Application acting as the **Reference Implementation** for the Factory.
+Demonstrates the **Studio Pattern** (Framework-First Design).
 
 ## Quick Start
 

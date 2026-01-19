@@ -14,53 +14,27 @@
 - `NodeEmbedding` for similarity search
 - Adjacency matrix, reachability
 
+### Phase 5: Application Expansion (Completed) ✅
+
+- **Backend Template**: FastAPI + SSE (`parts/templates/backend`).
+- **Tool Migration**: Generic skills moved to Factory.
+- **Agent Studio**: Confirmed as Reference Implementation.
+
+### Phase 6: Application Assembly (Completed) ✅
+
+- **Collider Backend**: Instantiated from Factory Template.
+- **Collider Frontend**: Re-initialized with React+Vite+Tailwind.
+- **Verification**: Full stack healthy (Frontend, Backend, Runtime).
+
 ---
 
-## Phase 4.5: Collider Backend (Next)
+## Phase 7: Visual UX & Agent Integration (Active)
 
-**Goal**: Working backend to build/test graphs before visual UX.
+**Goal**: Transform the scaffolding into a functional "Data Collider" with visual editing and agentic capabilities.
 
 ### Deliverables
 
-| Component        | Purpose                          |
-| ---------------- | -------------------------------- |
-| `backend/api/`   | FastAPI routes for graph CRUD    |
-| `backend/db/`    | Fast database (SQLite or DuckDB) |
-| `backend/cli.py` | Terminal CLI for graph ops       |
-| Python scripts   | Build graphs programmatically    |
-
-### Testing Plan
-
-1. Build graphs via Python scripts
-2. Test via CLI commands
-3. Integrate with Collider Pilot (tools/workflows)
-4. Validate with real agent execution
-
-### Database Options
-
-| Option | Pros                      | Cons                      |
-| ------ | ------------------------- | ------------------------- |
-| SQLite | Simple, file-based        | Limited concurrent writes |
-| DuckDB | Analytics-optimized, fast | Less mature               |
-| LiteFS | SQLite + replication      | Requires setup            |
-
-**Recommendation**: SQLite for simplicity, move to LiteFS for production.
-
----
-
-## Phase 5: Agent Integration
-
-After backend is working:
-
-- `agent_binding.py` — StepNode ↔ Agent
-- `tool_generator.py` — Definition → Tools
-
----
-
-## Phase 6: Visual UX
-
-After agents work:
-
-- React + Three.js frontend
-- WebSocket real-time sync
-- 3D graph editor
+1.  **Pipeline Formalization**: Document and enforce the Factory -> DevAss -> App workflow.
+2.  **Visual UX**: Implement `react-flow` based Graph Editor in Frontend.
+3.  **Agent Integration**: Wire up `AgentRunner` to the Backend for real-time operations.
+4.  **Skills**: Import `researcher` and `coder` skills from Factory to Runtime.

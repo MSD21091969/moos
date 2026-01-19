@@ -33,7 +33,17 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["agent_factory", "agent_factory.models_v2", "agent_factory.parts"]
+packages = [
+    "agent_factory", 
+    "agent_factory.models_v2", 
+    "agent_factory.parts",
+    "agent_factory.parts.runtimes",
+    "agent_factory.parts.skills",
+    "agent_factory.parts.templates",
+    "agent_factory.parts.templates.backend",
+    "agent_factory.parts.templates.persistence",
+    "agent_factory.parts.templates.vision"
+]
 
 
 [tool.setuptools.package-dir]

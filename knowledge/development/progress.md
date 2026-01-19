@@ -1,25 +1,32 @@
 # Development Progress
 
-## Phase 5: Factory as Supplier (Active)
+## Phase 7: Visual UX & Agent Integration (Active)
 
-We have successfully transitioned to the Supplier Model.
-
-### Completed
-
-- [x] **models_v2**: Definition-Centric Core (Portable Package).
-- [x] **Supply Chain**: `agent-factory` -> `dev-assistant` verification (Pilot).
-- [x] **Parts Catalog**: Established `parts/{runtimes,skills,templates}`.
-- [x] **AgentRunner**: Standardized execution capability.
-- [x] **Frontend Template**: Harvested `chat_store.ts` logic.
+We are now building the functional layers of the application: Visual Canvas and Agent Logic.
 
 ### In Progress
 
-- [ ] **Cleanup**: Migrating remaining generic `dev-assistant` tools to Factory.
-- [ ] **Expansion**: Implementing `my-tiny-data-collider` Backend using `AgentRunner`.
-- [ ] **Expansion**: Implementing `my-tiny-data-collider` Frontend using `chat_store`.
+- [ ] **Pipeline Config**: Formalize `Factory` -> `DevAss` -> `App` workflow.
+- [ ] **Canvas Integration**: Implement React Flow Graph Editor (`frontend`).
+- [ ] **Agent Integration**: Connect `AgentRunner` to Backend (`runtime`).
+
+### Completed (Phase 6: Application Assembly)
+
+- [x] **Assembly**: Built `my-tiny-data-collider` using verified Factory parts.
+- [x] **Verification**: Frontend, Backend, and Runtime healthy and communicating.
+- [x] **Infrastructure**: Resolved environment, package dependencies, and startup scripts.
+
+### Completed (Phase 5: Application Expansion)
+
+- [x] **models_v2**: Definition-Centric Core (Portable Package).
+- [x] **Supply Chain**: `agent-factory` -> `dev-assistant` verification (Pilot).
+- [x] **Parts Catalog**: Establish `parts/{runtimes,skills,templates}`.
+- [x] **Templates**: Backend API (FastAPI+SSE) and Frontend Store.
+- [x] **Cleanup**: Migrated generic tools (`filesystem`, `system`, `shell`) and cleaned `dev-assistant`.
+- [x] **Reference**: Confirmed Agent Studio as the framework-native reference.
 
 ### Roadmap
 
-1.  **Factory**: Complete the generic toolset.
-2.  **Dev**: Become fully generic Headless Client.
-3.  **Collider**: Build the full application using Factory parts.
+1.  **Factory**: Maintain "Single Source of Truth" for parts.
+2.  **Dev-Assistant**: Verify parts in isolation.
+3.  **Collider**: Integrate verified parts into the final product.

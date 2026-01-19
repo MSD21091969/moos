@@ -1,19 +1,22 @@
 {
   "folders": [
-	{
-		"name": "my-tiny-data-collider",
-		"path": "../my-tiny-data-collider"
-	},
-	{
-		"path": "."
-	},
-	{
-		"path": "../dev-assistant"
-	},
-	{
-		"path": "../IADORE"
-	}
-],
+    {
+      "name": "agent-factory",
+      "path": "."
+    },
+    {
+      "name": "dev-assistant",
+      "path": "../dev-assistant"
+    },
+    {
+      "name": "IADORE",
+      "path": "../IADORE"
+    },
+    {
+      "name": "my-tiny-data-collider",
+      "path": "../my-tiny-data-collider"
+    }
+  ],
   "settings": {
     "search.exclude": {
       "**/node_modules": true,
@@ -42,6 +45,7 @@
     },
     "[powershell]": {
       "editor.defaultFormatter": "ms-vscode.powershell"
-    }
+    },
+    "powershell.cwd": "agent-factory"
   }
 }
