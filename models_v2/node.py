@@ -8,8 +8,8 @@ from uuid import UUID, uuid4
 from typing import Optional
 from pydantic import Field
 
-from models_v2.categorical_base import CategoryObject
-from models_v2.scope_enforcer import ScopeEnforcer
+from .categorical_base import CategoryObject
+from .scope_enforcer import ScopeEnforcer
 
 
 class Node(CategoryObject, ScopeEnforcer):

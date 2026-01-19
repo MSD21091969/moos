@@ -2,7 +2,7 @@
 __version__ = "0.3.0"
 
 # models_v2 is the core package
-from models_v2 import (
+from .models_v2 import (
     Graph,
     Node,
     Edge,

@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Any
 from typing_extensions import Self
 
-from models_v2.port import Port
+from .port import Port
 
 
 class Wire(BaseModel):

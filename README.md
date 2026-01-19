@@ -1,42 +1,27 @@
 # Agent Factory
 
-Engineering workspace for Collider agent definitions, models, and runtime environments.
+**The Source of Truth for the Collider Ecosystem.**
 
-## Purpose
+This repository acts as the **Parts Supplier**. It defines the core architecture (`models_v2`) and provides standard components (`parts`) for downstream applications.
 
-This workspace is dedicated to developing:
+## Architecture
 
-- **Definitions**: Pydantic models for agent specifications
-- **Runtimes**: Execution environments for agents
-- **Templates**: Starter kits for new agent projects
+- **`models_v2`**: The Definition-Centric Graph & Tensor Kernel.
+- **`parts/runtimes`**: Standardized execution loops (`AgentRunner`).
+- **`parts/skills`**: Reusable generic tools (Google, Git, Docker).
+- **`parts/templates`**: Blueprints for Frontend/Backend agents.
 
-## Structure
+## Usages
 
+Installed as a python package:
+
+```toml
+dependencies = [
+    "agent-factory @ file:///D:/agent-factory"
+]
 ```
-D:\agent-factory\
-├── definitions/     # ColliderPilotDefinition models
-├── runtimes/        # Runtime execution patterns
-├── templates/       # Project scaffolds
-└── docs/            # Design documentation
-```
 
-## Related Projects
+## Status
 
-| Project                     | Purpose                         |
-| --------------------------- | ------------------------------- |
-| `D:\dev-assistant\`         | First agent (dev tools + gmail) |
-| `D:\my-tiny-data-collider\` | Main Collider application       |
-
-## Stack
-
-- **Python 3.14** + uv
-- **Pydantic v2** for definitions
-- **Ollama** for local LLM
-- **PydanticAI** for agent framework
-
-## Quick Start
-
-```powershell
-cd D:\agent-factory
-uv run python -c "print('Ready')"
-```
+- **Phase**: 5 (Application Expansion)
+- **Health**: Verified (Supply Chain Active)

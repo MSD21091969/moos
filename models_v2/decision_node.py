@@ -7,12 +7,12 @@ from typing import Any, Union, TYPE_CHECKING
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 
-from models_v2.node import Node
-from models_v2.edge_condition import EdgeCondition, CompositeCondition, AnyCondition
+from .node import Node
+from .edge_condition import EdgeCondition, CompositeCondition, AnyCondition
 
 if TYPE_CHECKING:
-    from models_v2.step_node import StepNode
-    from models_v2.subgraph_node import SubgraphNode
+    from .step_node import StepNode
+    from .subgraph_node import SubgraphNode
 
 
 # Type for any target node

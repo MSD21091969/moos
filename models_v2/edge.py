@@ -9,7 +9,7 @@ from typing import Optional
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
 
-from models_v2.categorical_base import Morphism
+from .categorical_base import Morphism
 
 
 class WireSpec(BaseModel):

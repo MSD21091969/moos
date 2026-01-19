@@ -33,7 +33,8 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["agent_factory"]
+packages = ["agent_factory", "agent_factory.models_v2", "agent_factory.parts"]
+
 
 [tool.setuptools.package-dir]
 agent_factory = "."

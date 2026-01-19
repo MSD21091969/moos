@@ -9,15 +9,15 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from models_v2.graph import Graph
-from models_v2.node import Node
-from models_v2.edge import Edge
-from models_v2.port import Port
-from models_v2.step_node import StepNode, EmptyNode
-from models_v2.decision_node import DecisionNode, DecisionBranch
-from models_v2.subgraph_node import SubgraphNode
-from models_v2.edge_condition import EdgeCondition, AnyCondition
-from models_v2.collider_graph import ColliderGraph
+from .graph import Graph
+from .node import Node
+from .edge import Edge
+from .port import Port
+from .step_node import StepNode, EmptyNode
+from .decision_node import DecisionNode, DecisionBranch
+from .subgraph_node import SubgraphNode
+from .edge_condition import EdgeCondition, AnyCondition
+from .collider_graph import ColliderGraph
 
 # Try to import pydantic-graph beta (optional dependency)
 try:

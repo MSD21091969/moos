@@ -6,7 +6,7 @@ from __future__ import annotations
 from pydantic import BaseModel, Field, field_validator
 import warnings
 
-from models_v2.config import MAX_RECURSION_DEPTH, RECURSION_DEPTH_WARNING
+from .config import MAX_RECURSION_DEPTH, RECURSION_DEPTH_WARNING
 
 
 class ScopeEnforcer(BaseModel):

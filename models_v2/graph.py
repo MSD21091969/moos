@@ -8,9 +8,9 @@ from uuid import UUID, uuid4
 from typing import Optional, TYPE_CHECKING
 from pydantic import BaseModel, Field, computed_field
 
-from models_v2.node import Node
-from models_v2.edge import Edge
-from models_v2.port import Port
+from .node import Node
+from .edge import Edge
+from .port import Port
 
 if TYPE_CHECKING:
     from models_v2.definition import CompositeDefinition

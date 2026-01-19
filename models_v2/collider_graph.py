@@ -7,13 +7,13 @@ from typing import Any, Optional, TYPE_CHECKING
 from uuid import UUID
 from pydantic import BaseModel, Field
 
-from models_v2.graph import Graph
-from models_v2.step_node import StepNode, EmptyNode
-from models_v2.decision_node import DecisionNode
-from models_v2.subgraph_node import SubgraphNode
+from .graph import Graph
+from .step_node import StepNode, EmptyNode
+from .decision_node import DecisionNode
+from .subgraph_node import SubgraphNode
 
 if TYPE_CHECKING:
-    from models_v2.definition import CompositeDefinition
+    from .definition import CompositeDefinition
 
 
 # Union of all node types

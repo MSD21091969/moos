@@ -10,9 +10,8 @@
  * - QuickActions row
  */
 import { useState, useCallback, useEffect, useMemo } from "react";
-// import { useDropzone } from "react-dropzone"; // REMOVED: Unused
+import { useDropzone } from "react-dropzone";
 import { API_BASE } from "@/config";
-import { useAuth } from "@/hooks/useAuth";
 import {
   FileText,
   Image,
@@ -46,8 +45,6 @@ interface WorkspaceCanvasProps {
   isLoading: boolean;
   onSendMessage: (message: string) => void;
   onUploadFile: (file: File) => void;
-  onJoinCanvas?: (canvasId: string) => void;
-  onLeaveCanvas?: (canvasId: string) => void;
   initialCanvasId?: string | null;
 }
 
@@ -67,28 +64,6 @@ const FileIcon = ({ type }: { type: FileType }) => {
   }
 };
 
-// Helper to get color for a canvas based on its container
-function getCanvasColor(
-  canvas: Canvas,
-  containers: import("@/stores/useWorkspaceStore").Container[],
-  defaultColor: string,
-  userId: string | null
-): string {
-  if (canvas.container_id) {
-    const container = containers.find((c) => c.id === canvas.container_id);
-    if (container) {
-       // Logic: If I own the container, use my User Color preference.
-       // Otherwise, use the container's fixed visual color.
-       if (userId && container.owner_id === userId) {
-         return defaultColor;
-       }
-       return container.visual_color;
-    }
-  }
-  // Personal canvas fallback
-  return defaultColor;
-}
-
 // Canvas Tab component
 function CanvasTab({
   canvas,
@@ -96,22 +71,20 @@ function CanvasTab({
   onSelect,
   onRename,
   onDelete,
-  color,
-  isOccupied,
 }: {
   canvas: Canvas;
   isActive: boolean;
   onSelect: () => void;
   onRename: (name: string) => void;
   onDelete: () => void;
-  color: string;
-  isOccupied: boolean;
 }) {
+  const { userColor } = usePreferencesStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(canvas.name);
 
   const isDraft = canvasIsDraft(canvas);
-  
+  const isPersonal = !canvas.container_id;
+
   const handleSave = () => {
     if (editName.trim()) {
       onRename(editName.trim());
@@ -119,24 +92,21 @@ function CanvasTab({
     setIsEditing(false);
   };
 
-  const displayTitle = canvas.name; 
-
   return (
     <div
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg cursor-pointer transition-colors ${
         isActive
-          ? "bg-zinc-800"
-          : "bg-zinc-900/50 hover:bg-zinc-800/50"
+          ? "bg-zinc-800 text-white"
+          : "bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/50"
       }`}
       style={
         isActive
           ? {
-              borderBottom: `2px solid ${color}`,
-              color: color,
+              borderBottom: `2px solid ${
+                !isPersonal ? "#71717a" : userColor // Force gray (zinc-500) for shared/imported
+              }`,
             }
-          : {
-             color: "#71717a", // zinc-500 (Gray)
-          }
+          : {}
       }
       onClick={() => !isEditing && onSelect()}
     >
@@ -145,12 +115,6 @@ function CanvasTab({
           className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"
           title="Contains unsaved drafts"
         />
-      )}
-      {isOccupied && (
-          <div 
-            className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0 animate-pulse" 
-            title="Another user is viewing this canvas"
-          />
       )}
       {isEditing ? (
         <div className="flex items-center gap-1">
@@ -176,10 +140,10 @@ function CanvasTab({
       ) : (
         <>
           <span
-            className="text-sm select-none"
-            title={canvas.name}
+            className={`text-sm select-none ${!isPersonal ? "italic text-zinc-300" : ""}`}
+            title={!isPersonal ? "Imported / Shared Canvas" : ""}
           >
-            {displayTitle}
+            {canvas.name}
           </span>
           {isActive && (
             <div className="flex items-center gap-0.5 ml-1">
@@ -189,8 +153,7 @@ function CanvasTab({
                   setIsEditing(true);
                   setEditName(canvas.name);
                 }}
-                className="hover:opacity-75 p-0.5"
-                style={{ color }}
+                className="text-zinc-500 hover:text-zinc-300 p-0.5"
               >
                 <Edit2 className="w-3 h-3" />
               </button>
@@ -199,8 +162,7 @@ function CanvasTab({
                   e.stopPropagation();
                   onDelete();
                 }}
-                className="hover:text-red-400 p-0.5"
-                style={{ color }}
+                className="text-zinc-500 hover:text-red-400 p-0.5"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -218,13 +180,10 @@ export function WorkspaceCanvas({
   isLoading,
   onSendMessage,
   onUploadFile,
-  onJoinCanvas,
-  onLeaveCanvas,
   initialCanvasId,
 }: WorkspaceCanvasProps) {
   const { theme } = usePreferencesStore();
   const isDark = theme === "dark";
-  const { userId } = useAuth();
 
   const {
     canvasses,
@@ -249,21 +208,7 @@ export function WorkspaceCanvas({
     fetchCanvasById,
     getActiveCanvas,
     activeContainerId,
-    containers,
-    activeEditors,
   } = useCanvasStore();
-
-  // Handle Presence
-  useEffect(() => {
-      if (activeCanvasId && onJoinCanvas) {
-          onJoinCanvas(activeCanvasId);
-      }
-      return () => {
-          if (activeCanvasId && onLeaveCanvas) {
-              onLeaveCanvas(activeCanvasId);
-          }
-      }
-  }, [activeCanvasId, onJoinCanvas, onLeaveCanvas]);
 
   // Local Toast State
   const [toast, setToast] = useState<{
@@ -394,10 +339,9 @@ export function WorkspaceCanvas({
     ],
   );
 
-
   const activeCanvas = getActiveCanvas();
   const files = activeCanvas?.files || [];
-  const { sidebarOpen, toggleSidebar, userColor } = usePreferencesStore();
+  const { sidebarOpen, toggleSidebar } = usePreferencesStore();
 
   return (
     <div
@@ -428,30 +372,16 @@ export function WorkspaceCanvas({
           <PanelLeft size={16} />
         </button>
         <div className="flex-1 flex items-center overflow-x-auto no-scrollbar">
-          {visibleCanvasses.map((canvas) => {
-            const tabColor = getCanvasColor(
-              canvas,
-              containers,
-              userColor, // fallback / my preference
-              userId
-            );
-
-            return (
-              <CanvasTab
-                key={canvas.id}
-                canvas={canvas}
-                isActive={canvas.id === activeCanvasId}
-                onSelect={() => setActiveCanvas(canvas.id)}
-                onRename={(name) => renameCanvas(token!, canvas.id, name)}
-                onDelete={() => dismissCanvas(canvas.id)}
-                color={tabColor}
-                isOccupied={
-                    // Check if anyone ELSE is editing
-                    (activeEditors[canvas.id] || []).some(uid => uid !== userId)
-                }
-              />
-            );
-          })}
+          {visibleCanvasses.map((canvas) => (
+            <CanvasTab
+              key={canvas.id}
+              canvas={canvas}
+              isActive={canvas.id === activeCanvasId}
+              onSelect={() => setActiveCanvas(canvas.id)}
+              onRename={(name) => renameCanvas(token!, canvas.id, name)}
+              onDelete={() => dismissCanvas(canvas.id)}
+            />
+          ))}
           <button
             onClick={() => createCanvas(token!)}
             className="p-1.5 rounded hover:bg-zinc-800 text-zinc-500 hover:text-white transition-colors ml-1"
@@ -461,8 +391,7 @@ export function WorkspaceCanvas({
           </button>
         </div>
       </div>
-      
-      {/* Rest of component... */}
+
       <div
         className="flex-1 overflow-auto p-6 relative"
         onClick={() => {
@@ -470,7 +399,6 @@ export function WorkspaceCanvas({
           if (sidebarOpen) toggleSidebar();
         }}
       >
-
         {files.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <Zap className="w-12 h-12 text-violet-500/50 mb-4" />

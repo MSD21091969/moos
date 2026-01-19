@@ -12,9 +12,9 @@ from typing import Literal, Optional, Any
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
 
-from models_v2.categorical_base import Functor, CategoryObject
-from models_v2.port import Port
-from models_v2.config import VALIDATE_CATEGORY_LAWS
+from .categorical_base import Functor, CategoryObject
+from .port import Port
+from .config import VALIDATE_CATEGORY_LAWS
 
 
 # ============================================================================

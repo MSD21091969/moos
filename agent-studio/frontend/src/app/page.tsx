@@ -41,8 +41,6 @@ export default function Home() {
     sendApproval,
     resetSession,
     uploadFile,
-    joinCanvas,
-    leaveCanvas,
   } = useChat();
 
   const [input, setInput] = useState("");
@@ -113,8 +111,6 @@ export default function Home() {
             onSendMessage={sendMessage}
             onUploadFile={uploadFile}
             initialCanvasId={initialCanvasId}
-            onJoinCanvas={joinCanvas}
-            onLeaveCanvas={leaveCanvas}
           />
         ) : (
           /* Split View - Canvas + Chat */
@@ -127,8 +123,6 @@ export default function Home() {
               onSendMessage={sendMessage}
               onUploadFile={uploadFile}
               initialCanvasId={initialCanvasId}
-              onJoinCanvas={joinCanvas}
-              onLeaveCanvas={leaveCanvas}
             />
 
             {/* Chat Messages */}

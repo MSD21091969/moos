@@ -8,12 +8,12 @@ Core objects:
 
 No Container model - graph logic handles topology.
 """
-from models_v2.config import (
+from .config import (
     MAX_RECURSION_DEPTH,
     VALIDATE_CATEGORY_LAWS,
     VALIDATE_BOUNDARY_TRI_METHOD,
 )
-from models_v2.categorical_base import (
+from .categorical_base import (
     CategoryObject,
     Morphism,
     Functor,
@@ -21,17 +21,18 @@ from models_v2.categorical_base import (
     verify_associativity,
     verify_identity_laws,
 )
-from models_v2.scope_enforcer import ScopeEnforcer
-from models_v2.port import Port
-from models_v2.node import Node
-from models_v2.edge import Edge, WireSpec
-from models_v2.wire import Wire
-from models_v2.graph import Graph
-from models_v2.definition import Definition, AtomicDefinition, CompositeDefinition
-from models_v2.composite_boundary import BoundaryDerivation, derive_composite_boundary
+from .scope_enforcer import ScopeEnforcer
+from .port import Port
+from .node import Node
+from .edge import Edge, WireSpec
+from .wire import Wire
+from .graph import Graph
+from .definition import Definition, AtomicDefinition, CompositeDefinition
+from .composite_boundary import BoundaryDerivation, derive_composite_boundary
+from .identity import UserObject
 
 # Builder modules
-from models_v2.edge_condition import (
+from .edge_condition import (
     EdgeCondition,
     CompositeCondition,
     when_equal,
@@ -42,15 +43,15 @@ from models_v2.edge_condition import (
     when_none,
     when_contains,
 )
-from models_v2.step_node import StepNode, EmptyNode
-from models_v2.decision_node import DecisionNode, DecisionBranch
-from models_v2.subgraph_node import SubgraphNode
-from models_v2.collider_graph import ColliderGraph
-from models_v2.builder import ColliderGraphBuilder, ColliderState, create_builder
+from .step_node import StepNode, EmptyNode
+from .decision_node import DecisionNode, DecisionBranch
+from .subgraph_node import SubgraphNode
+from .collider_graph import ColliderGraph
+from .builder import ColliderGraphBuilder, ColliderState, create_builder
 
 # Tensor layer
-from models_v2.graph_tensor import GraphTensor
-from models_v2.node_embedding import NodeEmbedding, EmbeddingGenerator, EmbeddingIndex
+from .graph_tensor import GraphTensor
+from .node_embedding import NodeEmbedding, EmbeddingGenerator, EmbeddingIndex
 
 
 __all__ = [
@@ -106,4 +107,6 @@ __all__ = [
     "NodeEmbedding",
     "EmbeddingGenerator",
     "EmbeddingIndex",
+    # Identity
+    "UserObject",
 ]

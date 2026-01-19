@@ -9,8 +9,8 @@ import numpy as np
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from models_v2.node import Node
-    from models_v2.graph import Graph
+    from .node import Node
+    from .graph import Graph
 
 
 # Default embedding dimension (power of 2 for efficiency)

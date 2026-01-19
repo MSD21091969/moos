@@ -7,12 +7,12 @@ from typing import Any, TYPE_CHECKING
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field, computed_field
 
-from models_v2.node import Node
-from models_v2.port import Port
+from .node import Node
+from .port import Port
 
 if TYPE_CHECKING:
-    from models_v2.graph import Graph
-    from models_v2.definition import CompositeDefinition
+    from .graph import Graph
+    from .definition import CompositeDefinition
 
 
 class SubgraphNode(BaseModel):

@@ -7,10 +7,10 @@ from typing import Any, Callable, Optional, TYPE_CHECKING
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 
-from models_v2.node import Node
+from .node import Node
 
 if TYPE_CHECKING:
-    from models_v2.definition import AtomicDefinition
+    from .definition import AtomicDefinition
 
 
 class StepNode(BaseModel):

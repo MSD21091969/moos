@@ -7,12 +7,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel
 
-from models_v2.port import Port
-from models_v2.config import VALIDATE_BOUNDARY_TRI_METHOD
+from .port import Port
+from .config import VALIDATE_BOUNDARY_TRI_METHOD
 
 if TYPE_CHECKING:
-    from models_v2.definition import Definition
-    from models_v2.wire import Wire
+    from .definition import Definition
+    from .wire import Wire
 
 
 class BoundaryDerivation(BaseModel):

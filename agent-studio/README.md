@@ -24,7 +24,6 @@ Open http://localhost:3000
 - **Coordinator Agent** with skills and subagent delegation
 - **3 Subagents**: Researcher, Coder, Analyst
 - **2 Skills**: Math Helper, Code Reviewer
-- **Collaborative Canvas**: Real-time presence, concurrent editing, and draft states
 - **WebSocket Streaming** with thinking panel
 - **SQLite Persistence** for conversations
 - **REST API** for conversation CRUD
