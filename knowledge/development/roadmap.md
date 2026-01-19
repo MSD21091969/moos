@@ -30,11 +30,11 @@
 
 ## Phase 7: Visual UX & Agent Integration (Active)
 
-**Goal**: Transform the scaffolding into a functional "Data Collider" with visual editing and agentic capabilities.
+**Goal**: Transform the scaffolding into a functional "Data Collider" where "Pilots" drive "Clusters" of tools.
 
 ### Deliverables
 
-1.  **Pipeline Formalization**: Document and enforce the Factory -> DevAss -> App workflow.
-2.  **Visual UX**: Implement `react-flow` based Graph Editor in Frontend.
-3.  **Agent Integration**: Wire up `AgentRunner` to the Backend for real-time operations.
-4.  **Skills**: Import `researcher` and `coder` skills from Factory to Runtime.
+1.  **Collider Pilot Family**: User-faced agents context-aware of Graph Clusters.
+2.  **Dynamic Definitions**: `DefinitionObject` utilizing `pydantic.create_model` to wrap Subgraphs as Tools.
+3.  **Visual UX**: `react-flow` Canvas for selecting Clusters and viewing "Container" artifacts.
+4.  **Runtime**: Workers for Graph Maintenance (Backend) and Leaf Execution (Runtime).

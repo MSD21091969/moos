@@ -3,22 +3,35 @@
 Integrated DeepAgent Application acting as the **Reference Implementation** for the Factory.
 Demonstrates the **Studio Pattern** (Framework-First Design).
 
-## Quick Start
+## Quick Start (Factory Environment)
+
+Run the studio from the factory root using the provided PowerShell script. This handles ports (Backend: 9001, Frontend: 3001) and environment variables automatically.
 
 ```powershell
-# Terminal 1: Install & run backend
+# In d:\agent-factory
+.\run_studio.ps1
+```
+
+Access the application:
+
+- **Frontend**: http://localhost:3001
+- **Backend API**: http://localhost:9001/docs
+
+### Standalone Development
+
+To run standalone (default ports 8000/3000):
+
+```powershell
+# Terminal 1: Backend
 cd backend
 uv sync
 uv run uvicorn app.main:app --reload --port 8000
 
-# Terminal 2: Install & run frontend
+# Terminal 2: Frontend
 cd frontend
 npm install
-npm install lucide-react react-markdown
 npm run dev
 ```
-
-Open http://localhost:3000
 
 ## Features
 

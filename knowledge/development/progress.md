@@ -6,8 +6,9 @@ We are now building the functional layers of the application: Visual Canvas and 
 
 ### In Progress
 
-- [ ] **Pipeline Config**: Formalize `Factory` -> `DevAss` -> `App` workflow.
+- [x] **Core Prototypes**: `DefinitionObject` (Dynamic Models) and `ColliderPilot` (Agent).
 - [ ] **Canvas Integration**: Implement React Flow Graph Editor (`frontend`).
+- [ ] **Container Bridge**: Implement `Container` as Session Context for Pilots.
 - [ ] **Agent Integration**: Connect `AgentRunner` to Backend (`runtime`).
 
 ### Completed (Phase 6: Application Assembly)

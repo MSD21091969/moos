@@ -20,8 +20,9 @@ It **SUPPLIES** parts to:
 
 ```
 D:\agent-factory/
-├── models_v2/           # THE CORE: Graph, Node, Definition, UserObject
+├── models_v2/           # THE CORE: Graph, Node, Definition, UserObject, Container
 ├── parts/               # THE CATALOG: Distributable Components
+│   ├── agents/          # Specialized Agents (ColliderPilot)
 │   ├── runtimes/        # Execution logic (AgentRunner)
 │   ├── skills/          # Generic Tools (Research, Coding, Vision)
 │   └── templates/       # Architecture Blueprints (Backend, Persistence)
@@ -40,3 +41,5 @@ D:\agent-factory/
 - **Language**: Python 3.12+ (uv managed).
 - **Frameworks**: Pydantic-AI, Pydantic-Deep.
 - **Core Lib**: `models_v2` (Local Package).
+  - **Dynamic**: `DefinitionObject` (Graph -> Tool Schema).
+  - **Context**: `Container` (Session State).

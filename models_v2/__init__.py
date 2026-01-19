@@ -30,6 +30,8 @@ from .graph import Graph
 from .definition import Definition, AtomicDefinition, CompositeDefinition
 from .composite_boundary import BoundaryDerivation, derive_composite_boundary
 from .identity import UserObject
+from .dynamic import DefinitionObject, schema_to_python_type
+from .container import Container, ArtifactReference, AccessControlEntry
 
 # Builder modules
 from .edge_condition import (
@@ -109,4 +111,11 @@ __all__ = [
     "EmbeddingIndex",
     # Identity
     "UserObject",
+    # Dynamic Models
+    "DefinitionObject",
+    "schema_to_python_type",
+    # Container/Session
+    "Container",
+    "ArtifactReference",
+    "AccessControlEntry",
 ]

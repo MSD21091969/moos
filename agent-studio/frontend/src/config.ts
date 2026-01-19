@@ -4,6 +4,9 @@
 
 // Detect the current host to handle network IP access automatically
 const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
     // If we're on localhost, force IPv4 (127.0.0.1) to avoid IPv6 resolution issues
@@ -17,6 +20,9 @@ const getBaseUrl = () => {
 };
 
 const getWsUrl = () => {
+  if (process.env.NEXT_PUBLIC_WS_URL) {
+    return process.env.NEXT_PUBLIC_WS_URL;
+  }
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
     if (hostname === "localhost") {
