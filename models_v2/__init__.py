@@ -23,15 +23,24 @@ from .categorical_base import (
 )
 from .scope_enforcer import ScopeEnforcer
 from .port import Port
+# Alias from research papers
+ScopedPort = Port
+
 from .node import Node
 from .edge import Edge, WireSpec
+# Alias from research papers
+Link = Edge
+
 from .wire import Wire
+ScopedWire = Wire
 from .graph import Graph
 from .definition import Definition, AtomicDefinition, CompositeDefinition
 from .composite_boundary import BoundaryDerivation, derive_composite_boundary
 from .identity import UserObject
 from .dynamic import DefinitionObject, schema_to_python_type
+from .dynamic import DefinitionObject, schema_to_python_type
 from .container import Container, ArtifactReference, AccessControlEntry
+from .semantic import SemanticMixin, VectorMath
 
 # Builder modules
 from .edge_condition import (
@@ -72,10 +81,13 @@ __all__ = [
     "ScopeEnforcer",
     # Core Objects
     "Port",
+    "ScopedPort",
     "Node",
     "Edge",
+    "Link",
     "WireSpec",
     "Wire",
+    "ScopedWire",
     "Graph",
     # Definition - THE CORE
     "Definition",
@@ -118,4 +130,6 @@ __all__ = [
     "Container",
     "ArtifactReference",
     "AccessControlEntry",
+    "SemanticMixin",
+    "VectorMath",
 ]

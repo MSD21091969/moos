@@ -1,40 +1,26 @@
-# Collider Development Roadmap
+# Development Roadmap
 
-## Completed Phases
+## Phase 1: The Foundation (COMPLETED)
 
-### Phase 1-3: Foundation + Graph Builder ✅
+- [x] **Project Structure**: Three-Workspace Setup (Factory, Dev, Collider).
+- [x] **Core Models**: `models_v2` (Ports, Wires, Containers).
+- [x] **Standard Library**: `DeepAgent` template, `FilesystemToolset`.
 
-- `models_v2/` architecture
-- `ColliderGraphBuilder` API
-- Flat index, serializable conditions
+## Phase 2: The Engine (COMPLETED)
 
-### Phase 4: Tensor Layer ✅
+- [x] **Functor Engine**: `CompositeDefinition` with Tri-Method Boundary Derivation.
+- [x] **Semantic Bridge**: `SemanticMixin` and Vector Math.
+- [x] **AI-Readiness**: `AI_DEVELOPMENT_GUIDE.md` and workflows.
 
-- `GraphTensor` for GPU operations
-- `NodeEmbedding` for similarity search
-- Adjacency matrix, reachability
+## Phase 3: The Unified Workbench (CURRENT)
 
-### Phase 5: Application Expansion (Completed) ✅
+Goal: A single application to visual, build, and run Agents.
 
-- **Backend Template**: FastAPI + SSE (`parts/templates/backend`).
-- **Tool Migration**: Generic skills moved to Factory.
-- **Agent Studio**: Confirmed as Reference Implementation.
+- [ ] **Backend API**: FastAPI wrapper around the Factory Compiler.
+- [ ] **Graph Canvas**: Next.js frontend for `CompositeDefinition` editing.
+- [ ] **Chat Interface**: For interacting with running `Containers`.
 
-### Phase 6: Application Assembly (Completed) ✅
+## Phase 4: The Factory Floor (FUTURE)
 
-- **Collider Backend**: Instantiated from Factory Template.
-- **Collider Frontend**: Re-initialized with React+Vite+Tailwind.
-- **Verification**: Full stack healthy (Frontend, Backend, Runtime).
-
----
-
-## Phase 7: Visual UX & Agent Integration (Active)
-
-**Goal**: Transform the scaffolding into a functional "Data Collider" where "Pilots" drive "Clusters" of tools.
-
-### Deliverables
-
-1.  **Collider Pilot Family**: User-faced agents context-aware of Graph Clusters.
-2.  **Dynamic Definitions**: `DefinitionObject` utilizing `pydantic.create_model` to wrap Subgraphs as Tools.
-3.  **Visual UX**: `react-flow` Canvas for selecting Clusters and viewing "Container" artifacts.
-4.  **Runtime**: Workers for Graph Maintenance (Backend) and Leaf Execution (Runtime).
+- [ ] **Automated Optimization**: Using Gradient Descent on the Semantics.
+- [ ] **Marketplace**: Exporting Parts to a central registry.

@@ -1,28 +1,28 @@
 {
   "folders": [
     {
+      "name": "my-tiny-data-collider",
+      "path": "../my-tiny-data-collider",
+    },
+    {
       "name": "agent-factory",
-      "path": "."
+      "path": ".",
     },
     {
       "name": "dev-assistant",
-      "path": "../dev-assistant"
+      "path": "../dev-assistant",
     },
     {
       "name": "IADORE",
-      "path": "../IADORE"
+      "path": "../IADORE",
     },
-    {
-      "name": "my-tiny-data-collider",
-      "path": "../my-tiny-data-collider"
-    }
   ],
   "settings": {
     "search.exclude": {
       "**/node_modules": true,
       "**/__pycache__": true,
       "**/.venv": true,
-      "legacy/**": false
+      "legacy/**": false,
     },
     "terminal.integrated.gpuAcceleration": "on",
     "terminal.integrated.cursorStyle": "line",
@@ -32,8 +32,8 @@
     "[python]": {
       "editor.defaultFormatter": "charliermarsh.ruff",
       "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-      }
+        "source.organizeImports": "explicit",
+      },
     },
     "files.watcherExclude": {
       "**/.git/objects/**": true,
@@ -41,11 +41,11 @@
       "**/node_modules/**": true,
       "**/dist/**": true,
       "**/.venv/**": true,
-      "legacy/**": true
+      "legacy/**": true,
     },
     "[powershell]": {
-      "editor.defaultFormatter": "ms-vscode.powershell"
+      "editor.defaultFormatter": "ms-vscode.powershell",
     },
-    "powershell.cwd": "agent-factory"
-  }
+    "powershell.cwd": "agent-factory",
+  },
 }

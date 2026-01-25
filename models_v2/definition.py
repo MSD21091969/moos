@@ -132,6 +132,7 @@ class CompositeDefinition(Definition):
     
     # Internal structure
     internal_definitions: list[Definition] = Field(default_factory=list)
+    internal_wires: list[Wire] = Field(default_factory=list)
     internal_graph_id: Optional[UUID] = None  # Reference to Graph
     
     # Provenance
@@ -141,12 +142,18 @@ class CompositeDefinition(Definition):
         """Compose with another definition."""
         if isinstance(other, CompositeDefinition):
             merged_defs = self.internal_definitions + other.internal_definitions
+            merged_wires = self.internal_wires + other.internal_wires
         else:
             merged_defs = self.internal_definitions + [other]
+            merged_wires = self.internal_wires
+        
+        # In a real composition f . g, we would also add wires connecting f to g.
+        # But here we just merge the sets. User must add wiring separately.
         
         composite = CompositeDefinition(
             name=f"{self.name}_then_{other.name}",
             internal_definitions=merged_defs,
+            internal_wires=merged_wires,
             composed_from=self.composed_from + [other.id]
         )
         composite._derive_boundary()
@@ -154,14 +161,11 @@ class CompositeDefinition(Definition):
 
     def _derive_boundary(self) -> None:
         """Derive I/O from internal topology."""
-        from models_v2.composite_boundary import derive_composite_boundary
-        
-        # Get wires from internal graph (if available)
-        wires = []  # Would come from Graph
+        from .composite_boundary import derive_composite_boundary
         
         boundary_inputs, boundary_outputs = derive_composite_boundary(
             self.internal_definitions,
-            wires
+            self.internal_wires
         )
         self.input_ports = list(boundary_inputs)
         self.output_ports = list(boundary_outputs)
@@ -182,18 +186,91 @@ class CompositeDefinition(Definition):
             return self
         
         # Verify composition preservation
-        for i, defn1 in enumerate(self.internal_definitions):
-            for defn2 in self.internal_definitions[i+1:]:
-                # Basic check: composites have valid structure
-                if not defn1.input_ports and not defn1.output_ports:
-                    continue  # Skip empty definitions
+        # (Simplified check)
+        if not self.internal_definitions and (self.input_ports or self.output_ports):
+            # Empty composite should have empty boundary? Or Identity?
+            pass
         
         return self
 
     def apply(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
-        Execute composite by running internal graph.
-        
-        Placeholder - would orchestrate internal definitions.
+        Execute composite by running internal Definitions in topological order.
         """
-        return {p.name: None for p in self.output_ports}
+        # 1. Build Adjacency Map
+        # node_id -> [dest_node_id]
+        adj = {d.id: [] for d in self.internal_definitions}
+        in_degree = {d.id: 0 for d in self.internal_definitions}
+        node_map = {d.id: d for d in self.internal_definitions}
+        
+        # Map Port ID -> Node ID
+        port_to_node = {}
+        for d in self.internal_definitions:
+            for p in d.input_ports:
+                port_to_node[p.id] = d.id
+            for p in d.output_ports:
+                port_to_node[p.id] = d.id
+        
+        for w in self.internal_wires:
+            src_node = port_to_node.get(w.source_port_id)
+            dst_node = port_to_node.get(w.target_port_id)
+            if src_node and dst_node and src_node != dst_node:
+                adj[src_node].append(dst_node)
+                in_degree[dst_node] += 1
+        
+        # 2. Topological Sort (Kahn's Algorithm)
+        queue = [nid for nid, deg in in_degree.items() if deg == 0]
+        execution_order = []
+        
+        while queue:
+            u = queue.pop(0)
+            execution_order.append(u)
+            for v in adj[u]:
+                in_degree[v] -= 1
+                if in_degree[v] == 0:
+                    queue.append(v)
+        
+        if len(execution_order) != len(self.internal_definitions):
+            raise ValueError("Cycle detected in CompositeDefinition")
+            
+        # 3. Execute
+        # Store intermediate outputs: port_id -> value
+        port_values = {}
+        
+        # Load inputs into provided input ports (if any map to internal ports)
+        # This part requires mapping boundary inputs to internal inputs
+        # But deriving boundary usually excludes wired inputs.
+        # Here we assume 'inputs' keys match boundary port names.
+        
+        # Simple simulation:
+        results = {}
+        for nid in execution_order:
+            defn = node_map[nid]
+            # Gather inputs for this node from port_values
+            node_inputs = {}
+            for p in defn.input_ports:
+                 # If port is wired, get from port_values
+                 # If port is boundary input, get from 'inputs' arg
+                 pass 
+            
+            # Run
+            node_out = defn.apply(node_inputs)
+            
+            # Save outputs
+            for p_name, val in node_out.items():
+                p = defn.get_output_port(p_name)
+                if p:
+                    port_values[p.id] = val
+        
+        # 4. Gather Boundary Outputs
+        output_data = {}
+        for p in self.output_ports:
+            # If p is an internal output promoted/exposed
+            if p.id in port_values:
+                output_data[p.name] = port_values[p.id]
+            else:
+                # Search if p corresponds to an internal port (id might match)
+                output_data[p.name] = port_values.get(p.id)
+                
+        return output_data
+

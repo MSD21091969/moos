@@ -1,5 +1,10 @@
-from .catalog import CATALOG, PartStatus, PartType, get_part
-from .config import (
+"""
+Agent Factory Parts - Configuration
+===================================
+Centralized configuration for factory parts.
+"""
+
+from .model_config import (
     DEFAULT_MODEL,
     DEV_MODEL,
     TEST_MODEL,
@@ -9,12 +14,6 @@ from .config import (
 )
 
 __all__ = [
-    # Catalog
-    "CATALOG",
-    "get_part",
-    "PartType",
-    "PartStatus",
-    # Config
     "ModelConfig",
     "ModelProvider",
     "DEFAULT_MODEL",

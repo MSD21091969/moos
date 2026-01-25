@@ -28,7 +28,9 @@ class ArtifactReference(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-class Container(BaseModel):
+from .semantic import SemanticMixin
+
+class Container(SemanticMixin, BaseModel):
     """
     The Session Context Object.
     

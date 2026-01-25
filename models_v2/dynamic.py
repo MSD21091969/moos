@@ -8,7 +8,7 @@ from typing import Any, Callable, Type, Optional, List, Dict
 from pydantic import BaseModel, create_model, Field
 from pydantic_ai import RunContext
 
-from models_v2.definition import Definition
+from .definition import Definition
 
 
 def schema_to_python_type(schema: Dict[str, Any]) -> Type:

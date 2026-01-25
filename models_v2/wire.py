@@ -11,7 +11,9 @@ from typing_extensions import Self
 from .port import Port
 
 
-class Wire(BaseModel):
+from .categorical_base import Morphism
+
+class Wire(Morphism):
     """
     Port-to-port connection with scope and type validation.
     
@@ -29,8 +31,41 @@ class Wire(BaseModel):
     source_port: Optional[Port] = Field(default=None, exclude=True)
     target_port: Optional[Port] = Field(default=None, exclude=True)
 
-    @model_validator(mode='after')
-    def validate_wire_constraints(self) -> Self:
+    @property
+    def source(self) -> UUID:
+        """Source object in category (Source Port ID)"""
+        return self.source_port_id
+
+    @property
+    def target(self) -> UUID:
+        """Target object in category (Target Port ID)"""
+        return self.target_port_id
+
+    def compose(self, other: Morphism) -> Optional[Morphism]:
+        """
+        Compose wires: self ∘ other
+        other.target (port) == self.source (port)
+        """
+        if not isinstance(other, Wire):
+            return None
+        if self.source != other.target:
+            return None
+            
+        # Composite wire? Or just logical composition?
+        # A wire composed with a wire is a path.
+        # For now, return a new virtual Wire connecting start to end.
+        return Wire(
+            source_port_id=other.source_port_id,
+            target_port_id=self.target_port_id,
+            source_port=other.source_port,
+            target_port=self.target_port
+        )
+
+    @classmethod
+    def identity(cls, obj_id: UUID) -> Morphism:
+        """Identity wire (Port connected to itself?)"""
+        return cls(source_port_id=obj_id, target_port_id=obj_id)
+
         """Enforce wiring rules when port objects are provided."""
         if self.source_port is None or self.target_port is None:
             return self  # Skip validation if ports not provided

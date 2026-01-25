@@ -1,6 +1,6 @@
 [project]
 name = "agent-factory"
-version = "0.2.0"
+version = "0.2.5"
 description = "Upstream parts producer for multi-workspace AI development"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -17,6 +17,7 @@ dependencies = [
     "faiss-cpu>=1.13.2",
     "sentence-transformers>=3.0.0",
     "numpy>=2.4.0",
+    "scipy>=1.15.0",
     
     # Toolset dependencies
     "networkx>=3.4.0",
@@ -37,13 +38,17 @@ packages = [
     "agent_factory", 
     "agent_factory.models_v2", 
     "agent_factory.parts",
+    "agent_factory.parts.agents",
     "agent_factory.parts.runtimes",
     "agent_factory.parts.skills",
     "agent_factory.parts.templates",
     "agent_factory.parts.templates.backend",
     "agent_factory.parts.templates.persistence",
-    "agent_factory.parts.templates.vision"
+    "agent_factory.parts.templates.vision",
+    "agent_factory.parts.toolsets"
 ]
+
+
 
 
 [tool.setuptools.package-dir]
