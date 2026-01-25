@@ -1,0 +1,28 @@
+# Agent Context Manifest - Factory Root
+# This is the root level - no parent includes
+
+includes: []
+
+# Local rules and instructions
+local:
+  rules: "./rules/"
+  instructions: "./instructions/"
+  workflows: "./workflows/"
+  configs: "./configs/"
+
+# This context is inherited by all child workspaces
+exports:
+  # Rules
+  - rules/sandbox.md
+  - rules/identity.md
+  - rules/code_patterns.md
+  - rules/math_coding_style.md
+  - rules/math_maintenance.md
+  - rules/math_testing.md
+  # Instructions
+  - instructions/knowledge_hierarchy.md
+  - instructions/instruction_inheritance.md
+  # Configs (shared settings)
+  - configs/users.yaml
+  - configs/api_providers.yaml
+  - configs/workspace_defaults.yaml

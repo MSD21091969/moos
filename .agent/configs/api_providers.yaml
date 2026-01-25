@@ -1,0 +1,65 @@
+# API Provider Configuration
+# Shared across all workspaces
+# NOTE: API keys are NOT stored here - they go in secrets/api_keys.env
+
+providers:
+  # Google AI Studio (direct Gemini API)
+  gemini:
+    name: "Google AI Studio"
+    base_url: "https://generativelanguage.googleapis.com"
+    env_key: "GEMINI_API_KEY"
+    models:
+      - gemini-2.0-flash
+      - gemini-2.0-flash-lite
+      - gemini-2.5-flash
+      - gemini-2.5-pro
+    default_model: gemini-2.0-flash
+
+  # Google Vertex AI
+  google-vertex:
+    name: "Google Vertex AI"
+    base_url: null  # Uses gcloud default credentials
+    env_key: "GOOGLE_APPLICATION_CREDENTIALS"
+    models:
+      - gemini-2.5-flash
+      - gemini-2.5-pro
+    default_model: gemini-2.5-flash
+
+  # Local Ollama
+  ollama:
+    name: "Ollama (Local)"
+    base_url: "http://localhost:11434"
+    env_key: null  # No key needed for local
+    models:
+      - qwen2.5:14b
+      - llama3.2:latest
+      - codellama:13b
+    default_model: qwen2.5:14b
+
+  # OpenAI
+  openai:
+    name: "OpenAI"
+    base_url: "https://api.openai.com/v1"
+    env_key: "OPENAI_API_KEY"
+    models:
+      - gpt-4o
+      - gpt-4o-mini
+      - o1-preview
+    default_model: gpt-4o-mini
+
+  # Anthropic
+  anthropic:
+    name: "Anthropic"
+    base_url: "https://api.anthropic.com/v1"
+    env_key: "ANTHROPIC_API_KEY"
+    models:
+      - claude-sonnet-4-20250514
+      - claude-3-5-sonnet-20241022
+    default_model: claude-sonnet-4-20250514
+
+# Default provider for the Factory
+default_provider: gemini
+default_model: gemini-2.0-flash
+
+# Provider-model format for pydantic-ai
+# Usage: f"{provider}:{model}" -> "gemini:gemini-2.0-flash"

@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "lastSync": "2026-01-25T14:52:00Z",
+  "factoryRoot": "D:/factory",
+  "knowledgeRoot": "D:/factory/knowledge",
+  "projects": [
+    {
+      "name": "collider",
+      "path": "D:/factory/collider_apps/collider",
+      "junctions": [
+        {
+          "source": "knowledge/math",
+          "target": "D:/factory/knowledge/domains/mathematics"
+        },
+        {
+          "source": "knowledge/project",
+          "target": "D:/factory/knowledge/projects/collider"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "name": "maassen_hochrath",
+      "path": "D:/factory/maassen_hochrath",
+      "junctions": [
+        {
+          "source": "knowledge/personal",
+          "target": "D:/factory/knowledge/projects/maassen_hochrath"
+        }
+      ],
+      "enabled": true
+    }
+  ],
+  "syncTargets": {
+    "workflows": ["graph-audit.md", "subgraph-resolution.md"],
+    "skills": ["graph_audit.md", "container_inspector.md"]
+  }
+}

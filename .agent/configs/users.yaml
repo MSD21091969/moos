@@ -1,0 +1,51 @@
+# Factory Test Users
+# These are shared across all workspaces for development/testing
+# In production, use proper identity provider
+
+default_password: "test123"
+
+users:
+  superuser@test.com:
+    role: superuser
+    display_name: "Super User"
+    clients:
+      - container-app
+      - studio-app
+      - admin-app
+      - viewer-app
+    permissions:
+      containers: [create, read, update, delete]
+      studio: [create, read, update, delete]
+      admin: [read, update]
+      files: [create, read, update, delete]
+    preferences:
+      theme: dark
+      pilot_position: bottom-right
+
+  lola@test.com:
+    role: user
+    display_name: "Lola"
+    clients:
+      - container-app
+      - studio-app
+    permissions:
+      containers: [create, read, update]
+      studio: [create, read, update]
+      files: [read]
+    preferences:
+      theme: dark
+      pilot_position: bottom-right
+
+  menno@test.com:
+    role: user
+    display_name: "Menno"
+    clients:
+      - container-app
+      - studio-app
+    permissions:
+      containers: [create, read, update]
+      studio: [create, read, update]
+      files: [read]
+    preferences:
+      theme: light
+      pilot_position: bottom-left
