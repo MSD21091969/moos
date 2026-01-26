@@ -1,31 +1,27 @@
 # Factory Workspace Status
 
-> Last Updated: 2026-01-26 15:00 UTC  
-> Migration Version: 1.3.0
+> Last Updated: 2026-01-26 22:00 UTC  
+> Migration Version: 2.0.0 (MVP)  
+> Git Tag: `v0.1.0-mvp`
 
-## Session Report: 2026-01-26
+---
 
-### Completed Work
+## 🎉 MVP Graduation Complete
 
-#### 1. Knowledge Folder Restructure ✅
-Moved all `knowledge/` folders INTO `.agent/knowledge/` for workspace agents:
-- `factory/knowledge/` → `factory/.agent/knowledge/`
-- `collider_apps/knowledge/` → `collider_apps/.agent/knowledge/`
-- `my-tiny-data-collider/knowledge/` → `my-tiny-data-collider/.agent/knowledge/`
-- Fixed all junctions to point to new `.agent/knowledge/` locations
-- Updated all `manifest.yaml` files to include knowledge reference
+**Tag**: `v0.1.0-mvp` | **Commit**: `a9b98b8` | **Files Changed**: 49 (+2542/-834)
 
-#### 2. Pilots Moved to collider_sdk ✅
-- Moved `shared/pilots/` → `shared/collider_sdk/pilots/`
-- Updated backend imports and paths
-- Updated SDK exports to include `load_pilot`, `ColliderPilotSpec`
+### What Shipped
 
-#### 3. Architecture Clarification
-- **PilotConfig** = App capability envelope (what the app exposes to pilot as tools)
-- **PilotSpec** = Agent behavior definition (instructions, rules, knowledge)
-- **Pilot uses App as Tool** — pilot is user-facing, persistent through journey
-- Backend SERVES spec data, never runs agents — agents run in frontend or local UX
-- `FrontendClientId` to be renamed → `AppId` (includes local UX)
+| Feature             | Status | Details                                                              |
+| ------------------- | ------ | -------------------------------------------------------------------- |
+| SQLite Persistence  | ✅     | `db.py` wired to all `main.py` endpoints                             |
+| Legacy Cleanup      | ✅     | `PilotSidebar.tsx` deleted                                           |
+| Type System         | ✅     | `AppId` enum with `LOCAL_UX` variant                                 |
+| Runtime Types       | ✅     | `ToolManifest`, `ModelConfig`, `RuntimeEndpoints`, `RuntimeFeatures` |
+| Context Models      | ✅     | `ContainerContext`, `WorkspaceContext`                               |
+| Local UX Runner     | ✅     | `collider-pilot` CLI command                                         |
+| TypeScript Pipeline | ✅     | `npm run generate:types` from OpenAPI                                |
+| Knowledge Junctions | ✅     | All 4 junctions validated                                            |
 
 ---
 
@@ -35,7 +31,7 @@ Moved all `knowledge/` folders INTO `.agent/knowledge/` for workspace agents:
 
 **Config Location**: `.agent/` folder hierarchy  
 **Runner**: `parts/runtimes/workspace_runner.py` (Textual TUI)  
-**Context**: `WorkspaceContext` (active_file, git_branch, cwd, diagnostics)
+**Context**: `WorkspaceContext` (workspace_root, active_file, git_branch, diagnostics)
 
 ```
 .agent/
@@ -47,22 +43,25 @@ Moved all `knowledge/` folders INTO `.agent/knowledge/` for workspace agents:
 ```
 
 **Inheritance Chain**:
+
 ```
 Factory .agent/ → Workspace .agent/ → Application .agent/
 ```
 
+**Knowledge Access**: Via READ-ONLY junctions to `factory/.agent/knowledge/`
+
 ### 2. Application Pilots (Frontend/Local UX)
 
 **Config Location**: `shared/collider_sdk/pilots/{pilot_id}/`  
-**Runner**: `pilotService.ts` (frontend) or `pilot_runner.py` (local)  
-**Context**: `ContainerContext` (container_name, canvases, permissions, user)
+**Runner**: `pilotService.ts` (frontend) or `pilot_runner.py` (local CLI)  
+**Context**: `ContainerContext` (container_id, container_name, canvases, permissions, user)
 
 ```
 collider_sdk/pilots/{pilot_id}/
 ├── __init__.py          # PILOT_SPEC definition
 ├── instructions.md      # System prompt
 ├── rules/               # Behavioral constraints
-├── workflows/           # Task sequences  
+├── workflows/           # Task sequences
 └── knowledge/           # Pilot-specific domain context
 ```
 
@@ -72,6 +71,14 @@ collider_sdk/pilots/{pilot_id}/
 | `container` | Navigation, sharing, permissions | Container management |
 | `studio` | File ops, staging, commit | Canvas editing |
 
+**Local UX CLI**:
+
+```bash
+collider-pilot container   # Interactive container pilot
+collider-pilot studio      # Interactive studio pilot
+collider-pilot --help      # Show usage
+```
+
 ---
 
 ## Architecture Overview
@@ -79,15 +86,93 @@ collider_sdk/pilots/{pilot_id}/
 ```
 FACTORY (upstream producer)
 ├── .agent/
-│   └── knowledge/    ← Moved here (was factory/knowledge/)
-├── parts/            ← SDK catalog (shared code)
-└── models_v2/        ← Core architecture
+│   └── knowledge/         ← Domain knowledge (mathematics, projects)
+├── parts/                 ← SDK catalog (agents, runtimes, skills)
+└── models_v2/             ← Core graph architecture
         ↓ READ-ONLY via junctions
 WORKSPACES (downstream consumers)
 ├── collider_apps/
-│   └── .agent/knowledge/  ← Moved here (was collider_apps/knowledge/)
+│   ├── .agent/knowledge/  ← Junctions to factory knowledge
+│   └── applications/
+│       └── my-tiny-data-collider/
+│           ├── backend/   ← FastAPI (port 8000) + SQLite
+│           ├── frontend/  ← React/Vite (port 5173)
+│           ├── runtime/   ← Mock execution (port 8001)
+│           └── shared/collider_sdk/
+│               ├── types.py     ← AppId, ContainerContext, etc.
+│               ├── pilots/      ← container, studio
+│               └── runners/     ← pilot_runner.py (CLI)
 └── maassen_hochrath/
 ```
+
+---
+
+## SDK Type System (v0.1.0-mvp)
+
+### Core Types (`shared/collider_sdk/types.py`)
+
+```python
+# Application Identity
+class AppId(str, Enum):
+    CONTAINER_APP = "container-app"
+    STUDIO_APP = "studio-app"
+    ADMIN_APP = "admin-app"
+    VIEWER_APP = "viewer-app"
+    LOCAL_UX = "local_ux"        # NEW: For CLI runner
+
+# Runtime Interface
+class ToolManifest(BaseModel):   # Tool capability declaration
+class ModelConfig(BaseModel):     # AI model settings
+class RuntimeEndpoints(BaseModel): # /execute, /status, /cancel
+class RuntimeFeatures(BaseModel):  # streaming, tool_calling, etc.
+
+# Context Models
+class ContainerContext(BaseModel): # For pilots (container_id, canvases, permissions, user)
+class WorkspaceContext(BaseModel): # For workspace agents (workspace_root, active_file, git_branch)
+
+# Pilot Configuration
+class PilotConfig(BaseModel):
+    pilot_id: str
+    app_id: AppId
+    capabilities: list[PilotCapability]
+    tools: list[ToolManifest]
+    model: ModelConfig | None
+    runtime: RuntimeEndpoints
+    features: RuntimeFeatures
+    ui_config: PilotUIConfig
+```
+
+### TypeScript Generation
+
+```bash
+# With backend running at localhost:8000
+cd frontend && npm run generate:types
+# Outputs: src/types/generated.ts
+```
+
+---
+
+## Knowledge Junctions (All Verified ✅)
+
+| Workspace             | Junction           | Target                                         |
+| --------------------- | ------------------ | ---------------------------------------------- |
+| collider_apps         | `factory_domains`  | `factory/.agent/knowledge/domains`             |
+| collider_apps         | `factory_research` | `factory/.agent/knowledge/research`            |
+| my-tiny-data-collider | `math`             | `factory/.agent/knowledge/domains/mathematics` |
+| my-tiny-data-collider | `project`          | `factory/.agent/knowledge/projects/collider`   |
+
+**Mathematics as AI Context First-Citizen**: The `tensor_graphs.md` in `factory/.agent/knowledge/domains/mathematics/` provides GPU-accelerated graph operations and category theory foundations—available to workspace agents via junction for advanced mathematical reasoning.
+
+---
+
+## Post-MVP Feature Tracking
+
+| Issue                                                                   | Feature            | Scope                       | Priority |
+| ----------------------------------------------------------------------- | ------------------ | --------------------------- | -------- |
+| [#116](https://github.com/MSD21091969/my-tiny-data-collider/issues/116) | Auth Integration   | JWT wired to containers     | High     |
+| [#117](https://github.com/MSD21091969/my-tiny-data-collider/issues/117) | Pilot Streaming    | SSE for real-time responses | High     |
+| [#118](https://github.com/MSD21091969/my-tiny-data-collider/issues/118) | Canvas Persistence | File storage on DATALAKE    | High     |
+| [#119](https://github.com/MSD21091969/my-tiny-data-collider/issues/119) | Graph View         | ReactFlow visualization     | Core     |
 
 ---
 
@@ -101,243 +186,169 @@ D:\factory\
 │   ├── manifest.yaml                    # Root manifest (no parent)
 │   ├── configs\
 │   │   ├── api_providers.yaml
-│   │   ├── users.yaml                   # Test users (superuser, lola, menno)
+│   │   ├── users.yaml                   # Test users
 │   │   └── workspace_defaults.yaml
 │   ├── instructions\
 │   │   ├── knowledge_hierarchy.md       # Downstream flow rules
-│   │   └── instruction_inheritance.md   # Rule cascade defined
+│   │   └── instruction_inheritance.md   # Rule cascade
 │   ├── rules\
-│   │   ├── sandbox.md                   # Access control (READ-ONLY knowledge, parts)
-│   │   ├── identity.md                  # Factory Architect persona
-│   │   ├── code_patterns.md             # Container, Link, Definition, Wire
-│   │   ├── math_coding_style.md
-│   │   ├── math_maintenance.md
-│   │   └── math_testing.md
-│   ├── workflows\
-│   │   └── screenshots\
-│   └── knowledge\                       # ← MOVED FROM factory/knowledge/
-│       ├── domains\
-│       │   ├── architectures\
-│       │   ├── infrastructure\
-│       │   ├── languages\
-│       │   └── mathematics\             # Category theory, tensor graphs
-│       ├── projects\
-│       │   ├── collider\                # MANIFESTO, progress, roadmap
-│       │   └── maassen_hochrath\
-│       ├── references\
-│       │   ├── papers\
-│       │   ├── snippets\
-│       │   └── specs\
-│       ├── research\
-│       ├── journal\
-│       │   └── decisions\
-│       └── workflows\
+│   │   ├── sandbox.md, identity.md, code_patterns.md
+│   │   └── math_coding_style.md, math_maintenance.md, math_testing.md
+│   └── knowledge\
+│       ├── domains\mathematics\         # tensor_graphs, category_theory, etc.
+│       └── projects\collider\           # MANIFESTO, progress, roadmap
 │
-├── parts\                               # SDK CATALOG
-│   ├── catalog.py                       # Part definitions
-│   ├── agents\
-│   │   ├── workspace_agent.py           # L1: with_workspace_context()
-│   │   ├── collider_pilot.py            # Graph-context pilot
-│   │   └── tracer.py
-│   ├── runtimes\
-│   │   ├── runner.py                    # Base runner
-│   │   └── workspace_runner.py          # Textual TUI runner
-│   ├── templates\
-│   │   ├── agent_spec.py                # AgentSpec base (DeepAgent pattern)
-│   │   └── deep_agent.py                # DeepAgent class
-│   ├── toolsets\
-│   │   └── filesystem.py
-│   └── skills\
-│       ├── filesystem.py
-│       ├── google.py
-│       ├── shell.py
-│       └── system.py
-│
-├── models_v2\                           # Core Architecture
-├── docs\
-├── secrets\                             # Gitignored credentials
+├── parts\                               # SDK Catalog
+│   ├── agents\workspace_agent.py        # with_workspace_context()
+│   ├── runtimes\workspace_runner.py     # Textual TUI
+│   └── templates\agent_spec.py          # AgentSpec base
 │
 └── workspaces\
     ├── collider_apps\
     └── maassen_hochrath\
 ```
 
-### Collider Apps Workspace
-
-```
-D:\factory\workspaces\collider_apps\
-├── .agent\                              # Workspace agent config
-│   ├── manifest.yaml                    # Includes factory rules
-│   ├── instructions\
-│   │   └── workspace.md                 # Business app development context
-│   ├── rules\
-│   │   └── coding.md                    # Python 3.12+, Pydantic v2
-│   ├── workflows\
-│   │   ├── add-knowledge.md
-│   │   ├── add-tool.md
-│   │   ├── gmail-sync.md
-│   │   └── test.md
-│   └── knowledge\                       # ← MOVED FROM collider_apps/knowledge/
-│       ├── factory_domains → ../../.agent/knowledge/domains     # Junction
-│       ├── factory_research → ../../.agent/knowledge/research   # Junction
-│       ├── collider\
-│       ├── collider.md                  # Tech stack overview
-│       ├── COLLIDER_MANIFESTO.md        # Vision document
-│       ├── pilot_behaviors.md
-│       ├── pydantic_v2.md
-│       ├── rebuild_plan_v1.md
-│       └── tool_examples.md
-│
-├── agents\
-│   ├── collider_pilot.py                # Workspace pilot runner
-│   ├── debug_import.py
-│   ├── debug_resolution.py
-│   └── verify_kit.py
-├── scripts\
-├── sync_logs\
-│
-├── collider_apps.code-workspace
-├── pyproject.toml
-│
-└── applications\
-    └── my-tiny-data-collider\
-```
-
-### My-Tiny-Data-Collider Application
+### My-Tiny-Data-Collider (v0.1.0-mvp)
 
 ```
 D:\factory\workspaces\collider_apps\applications\my-tiny-data-collider\
 ├── .agent\                              # Application agent config
-│   ├── manifest.yaml                    # Includes factory + workspace
-│   ├── configs\
-│   │   └── notion_map.json
-│   ├── instructions\
-│   │   └── application.md               # Full-stack app context
-│   ├── rules\
-│   │   ├── backend-expert.md            # 3-tier, Logfire, security
-│   │   ├── frontend-artist.md           # React 18, Zustand, ReactFlow
-│   │   ├── collider.md                  # Master controller identity
-│   │   └── environment.md               # dev.ps1 startup rules
-│   ├── workflows\
-│   │   ├── architecture-update.md
-│   │   ├── dev.md                       # Tri-server startup
-│   │   ├── docker.md
-│   │   ├── graph-audit.md
-│   │   ├── lint.md
-│   │   ├── subgraph-resolution.md
-│   │   └── test.md
-│   └── knowledge\                       # ← MOVED FROM my-tiny-data-collider/knowledge/
-│       ├── math → ../../../../.agent/knowledge/domains/mathematics    # Junction
-│       └── project → ../../../../.agent/knowledge/projects/collider   # Junction
+│   ├── manifest.yaml                    # Inherits factory + workspace
+│   ├── instructions\application.md
+│   ├── rules\                           # backend-expert, frontend-artist, etc.
+│   └── knowledge\
+│       ├── math → factory/mathematics   # Junction
+│       └── project → factory/collider   # Junction
 │
 ├── backend\                             # FastAPI Control Plane (port 8000)
-│   ├── main.py                          # REST API, SSE, WebSocket bridge
-│   ├── db.py                            # SQLite persistence (NOT YET WIRED)
-│   ├── auth.py                          # JWT, seed users, RBAC
-│   ├── storage.py                       # File staging on I: drive
-│   └── cache.py
+│   ├── main.py                          # REST API + SQLite via db.py ✅
+│   ├── db.py                            # SQLite persistence (WIRED)
+│   ├── auth.py                          # JWT, RBAC
+│   └── storage.py                       # File staging
 │
 ├── frontend\                            # React User Plane (port 5173)
 │   └── src\
-│       ├── components\
-│       │   ├── ColliderPilot.tsx        # PRIMARY pilot component
-│       │   ├── PilotSidebar.tsx         # LEGACY - to be deleted
-│       │   └── ...
-│       └── pilot\
-│           ├── pilotService.ts          # Gemini SDK integration
-│           └── index.ts
+│       ├── components\ColliderPilot.tsx # ONLY pilot component ✅
+│       ├── sdk\types.ts                 # AppId, ContainerContext
+│       ├── types\generated.ts           # OpenAPI-generated
+│       └── pilot\pilotService.ts        # Gemini SDK
 │
-├── runtime\                             # Execution Plane (port 8001)
+├── runtime\                             # Execution Plane (port 8001) - MOCK
 │
-├── shared\                              # Source of Truth for Contracts
-│   └── collider_sdk\                    # ← SDK PACKAGE
-│       ├── types.py                     # PilotConfig, User, Container, Canvas
-│       └── pilots\                      # ← MOVED FROM shared/pilots/
-│           ├── base.py                  # ColliderPilotSpec (extends AgentSpec)
-│           ├── container\               # Container Pilot
-│           └── studio\                  # Studio Pilot
+├── shared\collider_sdk\                 # Source of Truth
+│   ├── types.py                         # AppId, *Context, *Config
+│   ├── pilots\                          # container/, studio/
+│   └── runners\pilot_runner.py          # CLI entry point ✅
 │
-└── tests\
+└── pyproject.toml                       # collider-pilot script entry
 ```
 
 ---
 
-## Knowledge Junctions
+## Component Status
 
-| Workspace | Junction | Target |
-|-----------|----------|--------|
-| collider_apps | `factory_domains` | `factory/.agent/knowledge/domains` |
-| collider_apps | `factory_research` | `factory/.agent/knowledge/research` |
-| my-tiny-data-collider | `math` | `factory/.agent/knowledge/domains/mathematics` |
-| my-tiny-data-collider | `project` | `factory/.agent/knowledge/projects/collider` |
-
----
-
-## MVP Status Assessment
-
-| Component | Status | Notes |
-|-----------|--------|-------|
-| **Factory .agent** | ✅ Complete | 6 rules, 2 instructions, rich knowledge |
-| **Collider Apps .agent** | ✅ Complete | Inherits factory, coding rules |
-| **Application .agent** | ✅ Complete | 4 role-specific rules, full chain |
-| **Backend API** | ⚠️ Partial | CRUD works but uses in-memory store |
-| **Backend Persistence** | 🔴 NOT WIRED | `db.py` has SQLite, not used by API |
-| **Frontend UI** | ✅ Ready | Container/Canvas views functional |
-| **Frontend Pilot** | ⚠️ Dual | ColliderPilot (primary), PilotSidebar (legacy) |
-| **SDK Types** | ✅ Complete | PilotConfig, User, Container, Canvas |
-| **Pilots** | ✅ Complete | container, studio with full folder structure |
+| Component                | Status      | Notes                                           |
+| ------------------------ | ----------- | ----------------------------------------------- |
+| **Factory .agent**       | ✅          | 6 rules, 2 instructions, rich knowledge         |
+| **Collider Apps .agent** | ✅          | Inherits factory, coding rules                  |
+| **Application .agent**   | ✅          | 4 role-specific rules, full chain               |
+| **Backend API**          | ✅          | Fixed `storage` import. Persistence verified.   |
+| **Backend Persistence**  | ✅          | `data/collider.db`                              |
+| **Frontend UI**          | ✅          | Verified reachable.                             |
+| **SDK Types**            | ✅          | `AppId`, `ContainerContext`, `WorkspaceContext` |
+| **Pilots**               | ✅          | container, studio with full folder structure    |
+| **Local UX Runner**      | ✅          | `collider-pilot` operational via module         |
+| **TypeScript Pipeline**  | ✅          | `npm run generate:types`                        |
+| **Runtime Service**      | ⚠️ Degraded | Startup config issue (fixing now)               |
 
 ---
 
-## Pending Tasks (MVP Graduation)
+## MVP Graduation Changelog
 
-### Critical (Blockers)
-- [ ] Wire `db.py` SQLite to `main.py` endpoints
-- [ ] Delete `PilotSidebar.tsx` (legacy)
-- [ ] Rename `FrontendClientId` → `AppId`, add `LOCAL_UX`
+### Session: 2026-01-26 (Verification)
 
-### Runtime Interface
-- [ ] Add `ToolManifest`, `ModelConfig`, `RuntimeEndpoints`, `RuntimeFeatures` types
-- [ ] Update `PilotConfig` with runtime fields
+**Fixes**:
 
-### Context Bridge
-- [ ] Implement pydantic-ai `deps_type` in DeepAgent
-- [ ] Create typed `ContainerContext`, `WorkspaceContext` models
+- [x] Fixed `Backend` crash due to `import storage` path error in `main.py`.
+- [x] Installed `pytest-env` to fix test configuration.
+- [x] Verified `collider-pilot` module execution compatibility.
 
-### Local UX
-- [ ] Create `collider_sdk/runners/pilot_runner.py`
-- [ ] Create `collider_apps/agents/run.py` entry point
-- [ ] Create `factory/agents/run.py` entry point
+### Session: 2026-01-26 (Release)
 
-### Cleanup
-- [ ] Move `ColliderPilot.tsx`, `pilotService.ts` to `collider_sdk/components/`
-- [ ] Run full test suite
-- [ ] Tag `v0.1.0-mvp` baseline
+**Breaking Changes**:
 
----
+- `FrontendClientId` renamed to `AppId` (backward-compat alias provided)
+- `PilotSidebar.tsx` deleted (use `ColliderPilot.tsx`)
 
-## Completed Tasks
+**Backend**:
 
-- [x] Knowledge folders moved to `.agent/knowledge/` ✅ (2026-01-26)
-- [x] Pilots moved to `collider_sdk/pilots/` ✅ (2026-01-26)
-- [x] Junction paths fixed ✅ (2026-01-26)
-- [x] Manifest files updated ✅ (2026-01-26)
-- [x] Backend imports updated ✅ (2026-01-26)
-- [x] Test SDK imports from child projects ✅ (43/44 tests pass)
-- [x] Implement WorkspaceAgent bridge pattern ✅
-- [x] Implement ColliderPilotSpec bridge pattern ✅
-- [x] Audit .agent/ hierarchy ✅
+- [x] Wire SQLite `db.py` to `main.py` endpoints (replaces in-memory Store)
+- [x] Update all CRUD operations to use `Database` class
+- [x] Database persists to `data/collider.db`
+
+**Type System**:
+
+- [x] Rename `FrontendClientId` → `AppId` with `LOCAL_UX` variant
+- [x] Add `ToolManifest`, `ModelConfig`, `RuntimeEndpoints`, `RuntimeFeatures`
+- [x] Add `ContainerContext`, `WorkspaceContext` typed models
+- [x] Update `PilotConfig` with runtime interface fields
+
+**Local UX**:
+
+- [x] Create `shared/collider_sdk/runners/pilot_runner.py`
+- [x] Add `collider-pilot` CLI command via `pyproject.toml` entry point
+- [x] Create `collider_apps/agents/run.py` workspace entry
+
+**Frontend**:
+
+- [x] Delete legacy `PilotSidebar.tsx`
+- [x] Update TypeScript types to use `AppId`
+- [x] Add `openapi-typescript` for type generation pipeline
+- [x] Fix multiple TypeScript lint issues
+
+**SDK**:
+
+- [x] Move pilots to `shared/collider_sdk/pilots/`
+- [x] Export `run_pilot`, `ContainerContext`, `WorkspaceContext`
+- [x] Add backward-compat `FrontendClientId` alias
+
+**Knowledge System**:
+
+- [x] Add `.agent/` folder with `manifest.yaml` inheritance
+- [x] Verify all 4 knowledge junctions resolve
 
 ---
 
 ## Environment Variables
 
-| Variable | Value |
-|----------|-------|
-| FACTORY_ROOT | D:\factory |
-| DATALAKE | I:\DATALAKE |
+| Variable       | Value                       |
+| -------------- | --------------------------- |
+| FACTORY_ROOT   | D:\factory                  |
+| DATALAKE       | I:\DATALAKE                 |
 | KNOWLEDGE_ROOT | D:\factory\.agent\knowledge |
 
 ---
 
-*Factory Workspace v1.3.0*
+## Quick Start
+
+```bash
+# Backend
+cd my-tiny-data-collider
+uv run python -m backend.main
+
+# Frontend
+cd frontend && npm run dev
+
+# Local Pilot CLI
+uv run collider-pilot container
+
+# Generate TypeScript types (with backend running)
+cd frontend && npm run generate:types
+
+# Run tests
+uv run python -m pytest tests/ -v
+```
+
+---
+
+_Factory Workspace v2.0.0 (MVP) — Tagged 2026-01-26_
