@@ -11,6 +11,9 @@
     {
       "name": "maassen_hochrath",
       "path": "workspaces/maassen_hochrath"
+    },
+    {
+      "path": "workspaces/collider_apps/applications/my-tiny-data-collider"
     }
   ],
   "settings": {

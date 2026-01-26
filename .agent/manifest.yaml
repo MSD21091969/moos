@@ -3,12 +3,13 @@
 
 includes: []
 
-# Local rules and instructions
+# Local rules, instructions, and knowledge
 local:
   rules: "./rules/"
   instructions: "./instructions/"
   workflows: "./workflows/"
   configs: "./configs/"
+  knowledge: "./knowledge/"
 
 # This context is inherited by all child workspaces
 exports:

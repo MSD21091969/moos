@@ -1,0 +1,1 @@
+1a40a32 feat: Two-level agent architecture with bridge patterns
