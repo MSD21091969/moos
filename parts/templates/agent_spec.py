@@ -121,8 +121,11 @@ class AgentSpec(BaseModel):
     # Subagents
     subagents: list[SubAgentConfig] = Field(default_factory=list)
 
-    # Skills
+    # Skills (Markdown - Job Training)
     skills: list[SkillConfig] = Field(default_factory=list)
+
+    # Tools (Python - The Hands)
+    tools: list[str] = Field(default_factory=list)  # List of tool module paths/IDs
 
     # Tool approval (true = require user confirmation)
     interrupt_on: dict[str, bool] = Field(default_factory=dict)

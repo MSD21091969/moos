@@ -66,3 +66,33 @@ class DeepAgent:
         """Execute the agent."""
         # Simple run wrapper
         return await self._agent.run(prompt)
+
+    @classmethod
+    def from_spec(cls, spec: "AgentSpec", user: Optional[UserObject] = None) -> "DeepAgent":
+        """
+        Create a DeepAgent runtime from a configuration spec.
+        
+        Args:
+            spec: The AgentSpec configuration (loaded)
+            user: The user context
+        """
+        # Load tools dynamically
+        toolsets = []
+        for tool_path in spec.tools:
+            try:
+                # Dynamic import implementation
+                # Assuming toolpath is like "parts.toolsets.filesystem"
+                import importlib
+                module = importlib.import_module(tool_path)
+                toolsets.append(module)
+            except ImportError as e:
+                print(f"Warning: Failed to load tool {tool_path}: {e}")
+
+        return cls(
+            name=spec.name,
+            model=spec.model,
+            user=user,
+            toolsets=toolsets,
+            skills=spec.knowledge + spec.rules, # Treat knowledge/rules as skills
+            system_prompt=spec.instructions
+        )

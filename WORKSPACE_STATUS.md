@@ -2,16 +2,18 @@
 
 > **Session Recap (2026-01-26)**:
 >
-> 1. **Identity & Sandbox**: Integrated IDE with Factory rules. Enforced strict exclusions for `parts/`, `models_v2/`, and `knowledge/` in `.vscode/settings.json`.
-> 2. **Architectural ABCs Locked**:
->    - **A (Factory)**: Validated `d:/factory/parts/` as the "Store" for generic templates (`AgentSpec`) and UI components (`ChatModal`).
->    - **B (AppID vs UserID)**: Defined the separation. `UserID` (Auth) vs `AppID` (Context). Backend is the registry; Frontend requests "Context" for a specific AppID.
->    - **C (Pilot)**: Confirmed Pilot is the "Main Character". It starts as a generic Shell (React Flow/Modal) and "hydrates" its identity/skills based on the `AgentSpec` received from UserContext.
-> 3. **Next Steps**: Formalize this in `docs/planning/ARCHITECTURE.md`.
+> 1. **V-Storm Architecture Implemented**:
+>    - **Identity Separation**: Backend now strictly separates User Identity from App Context.
+>    - **Registry**: `backend/auth.py` dynamically maps AppIDs to `parts/skills/*.md`.
+>    - **Pilot Hydration**: Frontend Pilot now fetches its configuration and skills from the backend upon initialization, injecting them into the System Prompt.
+> 2. **Documentation**:
+>    - `ARCHITECTURE.md` updated to v1.2.0 (Implemented).
+>    - `walkthrough.md` created for verification.
+> 3. **Next Steps**: Verify implementation using `walkthrough.md`.
 
 ---
 
-> **Version**: 2.1.0 | **Updated**: 2026-01-26
+> **Version**: 2.2.0 | **Updated**: 2026-01-26
 
 ---
 

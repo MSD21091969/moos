@@ -7,6 +7,8 @@ from .config import (
     ModelProvider,
     get_model_config,
 )
+from .interfaces import DeepAgentCLI
+from .templates import AgentSpec, DeepAgent
 
 __all__ = [
     # Catalog
@@ -21,4 +23,9 @@ __all__ = [
     "DEV_MODEL",
     "TEST_MODEL",
     "get_model_config",
+    # Interfaces
+    "DeepAgentCLI",
+    # Templates
+    "AgentSpec",
+    "DeepAgent",
 ]

@@ -9,6 +9,7 @@ dependencies = [
     "pydantic>=2.12.5",
     "pydantic-ai>=0.0.14",
     "ollama>=0.6.1",
+    "python-dotenv>=1.0.0",
     
     # Agent framework (using available versions)
     "pydantic-deep>=0.1.0",
@@ -41,6 +42,7 @@ packages = [
     "agent_factory.parts.agents",
     "agent_factory.parts.config",
     "agent_factory.parts.runtimes",
+    "agent_factory.parts.runtimes.local_ux",
     "agent_factory.parts.skills",
     "agent_factory.parts.templates",
     "agent_factory.parts.templates.backend",
@@ -56,10 +58,16 @@ packages = [
 [tool.setuptools.package-dir]
 agent_factory = "."
 
+[tool.uv]
+package = true
+
 [tool.uv.workspace]
 members = [
     "deepagent-test",
 ]
+
+[project.scripts]
+local-ux = "agent_factory.parts.runtimes.local_ux.cli:main"
 
 [dependency-groups]
 dev = [

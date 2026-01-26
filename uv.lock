@@ -21,7 +21,7 @@ wheels = [
 [[package]]
 name = "agent-factory"
 version = "0.2.5"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "aiosqlite" },
     { name = "click" },
@@ -34,6 +34,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-ai" },
     { name = "pydantic-deep" },
+    { name = "python-dotenv" },
     { name = "rich" },
     { name = "scipy" },
     { name = "sentence-transformers" },
@@ -63,6 +64,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pydantic-ai", specifier = ">=0.0.14" },
     { name = "pydantic-deep", specifier = ">=0.1.0" },
+    { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "scipy", specifier = ">=1.15.0" },
     { name = "sentence-transformers", specifier = ">=3.0.0" },
