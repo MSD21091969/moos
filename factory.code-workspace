@@ -56,7 +56,10 @@
     },
     "chat.agent.maxRequests": 100,
     "terminal.integrated.cwd": "${workspaceFolder}",
-    "powershell.cwd": "factory (root)"
+    "powershell.cwd": "factory (root)",
+    "chat.instructionsFilesLocations": {
+      "D:\\factory\\.agent": true
+    }
   },
   "extensions": {
     "recommendations": [
