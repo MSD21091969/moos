@@ -2,35 +2,35 @@
 
 > **Session Recap (2026-01-27)**:
 >
-> 1. **🚀 Chrome Extension "Pilot Seat" LIVE**:
->    - **First-Class Citizen**: Chrome Side Panel extension for DeepAgent
->    - **Gemini Integration**: Streaming responses working via `@google/generative-ai`
->    - **Tool Execution**: Shows tool calls (createContainer, etc.)
->    - **Build**: `npm run build:extension` → `dist-extension/`
-> 2. **Extension Architecture**:
->    - `worker.ts`: Service Worker with Gemini SDK + tool coordination
->    - `sidepanel.tsx`: React chat UI in Chrome Side Panel
->    - `content.ts`: Bridge between extension ↔ web page
->    - `colliderBridge`: Exposes auth/actions to extension
-> 3. **Key Fix**: Chrome messaging pattern - `broadcast()` for streaming instead of `sendResponse`
-> 4. **Next Steps**: Wire real tool execution to backend API
+> 1. **Global Dev Orchestrator**: Central `dev.ps1` at factory root
+>    - `.\dev.ps1 collider` / `.\dev.ps1 studio` / `.\dev.ps1 -Status`
+>    - Auto-syncs `.env.development` to project frontends
+>    - Port management: kills existing processes before start
+> 2. **Centralized Environment Config**: `d:\factory\.env.development`
+>    - `VITE_DEV_SKIP_AUTH=true/false` controls login bypass
+>    - Test users: superuser@test.com, lola@test.com, menno@test.com (pw: test123)
+> 3. **Auth System Fixed**: snake_case→camelCase mapping in AuthContext
+> 4. **Chrome Extension**: Pilot Seat working in side panel
 >
-> **Previous (2026-01-26)**: V-Storm Architecture, Identity Separation, Pilot Hydration
+> **Previous (2026-01-27 AM)**: Chrome Extension "Pilot Seat" first release
 
 ---
 
-> **Version**: 2.3.0 | **Updated**: 2026-01-27
+> **Version**: 2.4.0 | **Updated**: 2026-01-27
 
 ---
 
 ## Quick Start
 
-```bash
+```powershell
 # From D:\factory
-uv run local-ux agent              # Workspace agent
-uv run local-ux pilot container    # Container pilot
-uv run local-ux pilot studio       # Studio pilot
-uv run local-ux info               # Show config
+.\dev.ps1 collider           # Start Collider (backend + frontend)
+.\dev.ps1 studio             # Start Agent Studio
+.\dev.ps1 -Status            # Check running services
+.\dev.ps1 -Stop              # Stop all services
+
+# Edit auth settings
+code .env.development        # VITE_DEV_SKIP_AUTH=true/false
 ```
 
 ---
