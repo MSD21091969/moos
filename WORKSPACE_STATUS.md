@@ -1,19 +1,25 @@
 # Factory Workspace Status
 
-> **Session Recap (2026-01-26)**:
+> **Session Recap (2026-01-27)**:
 >
-> 1. **V-Storm Architecture Implemented**:
->    - **Identity Separation**: Backend now strictly separates User Identity from App Context.
->    - **Registry**: `backend/auth.py` dynamically maps AppIDs to `parts/skills/*.md`.
->    - **Pilot Hydration**: Frontend Pilot now fetches its configuration and skills from the backend upon initialization, injecting them into the System Prompt.
-> 2. **Documentation**:
->    - `ARCHITECTURE.md` updated to v1.2.0 (Implemented).
->    - `walkthrough.md` created for verification.
-> 3. **Next Steps**: Verify implementation using `walkthrough.md`.
+> 1. **🚀 Chrome Extension "Pilot Seat" LIVE**:
+>    - **First-Class Citizen**: Chrome Side Panel extension for DeepAgent
+>    - **Gemini Integration**: Streaming responses working via `@google/generative-ai`
+>    - **Tool Execution**: Shows tool calls (createContainer, etc.)
+>    - **Build**: `npm run build:extension` → `dist-extension/`
+> 2. **Extension Architecture**:
+>    - `worker.ts`: Service Worker with Gemini SDK + tool coordination
+>    - `sidepanel.tsx`: React chat UI in Chrome Side Panel
+>    - `content.ts`: Bridge between extension ↔ web page
+>    - `colliderBridge`: Exposes auth/actions to extension
+> 3. **Key Fix**: Chrome messaging pattern - `broadcast()` for streaming instead of `sendResponse`
+> 4. **Next Steps**: Wire real tool execution to backend API
+>
+> **Previous (2026-01-26)**: V-Storm Architecture, Identity Separation, Pilot Hydration
 
 ---
 
-> **Version**: 2.2.0 | **Updated**: 2026-01-26
+> **Version**: 2.3.0 | **Updated**: 2026-01-27
 
 ---
 
@@ -50,6 +56,7 @@ D:\factory\
 | ------------- | -------------------------- | ---- | ------ |
 | **Control**   | Backend (FastAPI + SQLite) | 8000 | ✅     |
 | **User**      | Frontend (React/Vite)      | 5173 | ✅     |
+| **User**      | Chrome Extension (Pilot)   | -    | ✅ NEW |
 | **Execution** | Runtime (Mock)             | 8001 | ⚠️     |
 
 ---
@@ -111,14 +118,15 @@ D:\factory\
 
 ## Status
 
-| Component         | Status                     |
-| ----------------- | -------------------------- |
-| Factory `.agent/` | ✅ 6 rules, 2 instructions |
-| Local UX CLI      | ✅ `local-ux` command      |
-| Backend API       | ✅ SQLite persistence      |
-| Frontend UI       | ✅ React/Vite              |
-| Pilots            | ✅ container, studio       |
-| Runtime           | ⚠️ Config issue            |
+| Component            | Status                     |
+| -------------------- | -------------------------- |
+| Factory `.agent/`    | ✅ 6 rules, 2 instructions |
+| Local UX CLI         | ✅ `local-ux` command      |
+| Backend API          | ✅ SQLite persistence      |
+| Frontend UI          | ✅ React/Vite              |
+| **Chrome Extension** | ✅ Pilot Seat LIVE         |
+| Pilots               | ✅ container, studio       |
+| Runtime              | ⚠️ Config issue            |
 
 ---
 
