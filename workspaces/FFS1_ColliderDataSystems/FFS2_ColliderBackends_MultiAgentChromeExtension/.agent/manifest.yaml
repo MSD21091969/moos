@@ -1,0 +1,28 @@
+# Agent Context Manifest - FFS2 ColliderBackends
+# Backend services and Chrome Extension source code
+
+includes:
+  # FFS1 Level (Collider IDE Context)
+  - path: "../../.agent"
+    type: "workspace"
+    load:
+      - instructions/agent_system.md
+      - instructions/filesyst_domain.md
+      - rules/extension_boundaries.md
+      - rules/context_loading.md
+      - skills/ide_code_assist.md
+      - tools/filesyst_tools.json
+      - configs/app_x.yaml
+
+# Local context - Specific to Backends & Extension
+local:
+  instructions: "./instructions/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
+  configs: "./configs/"
+  knowledge: "./knowledge/"
+  workflows: "./workflows/"
+
+# Exports (Leaf node, usually doesn't export, but good practice to define)
+exports: []

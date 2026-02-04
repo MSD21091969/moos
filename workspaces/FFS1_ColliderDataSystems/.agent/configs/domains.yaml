@@ -1,0 +1,24 @@
+# Domain Definitions
+
+domains:
+  filesyst:
+    name: "FILESYST"
+    description: "Local file folder workspaces"
+    backend: "native_messaging"
+    context_source: ".agent/ folders"
+    
+  cloud:
+    name: "CLOUD"
+    description: "Cloud workspace nodecontainers"
+    backend: "data_server"
+    context_source: "node container field"
+    
+  admin:
+    name: "ADMIN"
+    description: "User account management"
+    backend: "data_server"
+    context_source: "account container field"
+
+# Universal nodecontainer pattern applies to all domains
+# All domains are open and flexible
+# Features configured by admin per application

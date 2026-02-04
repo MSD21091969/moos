@@ -1,0 +1,15 @@
+# App 1 Configuration (CLOUD)
+# Application: My Tiny Data Collider
+
+app_id: "app_1"
+domain: "CLOUD"
+backend: "data_server"
+
+features:
+  - visual_analytics: true
+  - data_connectors: true
+  - collaboration: true
+
+permissions:
+  - "read:workspace"
+  - "write:workspace"

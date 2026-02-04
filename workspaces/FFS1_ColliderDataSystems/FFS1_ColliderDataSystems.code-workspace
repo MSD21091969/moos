@@ -1,0 +1,28 @@
+{
+    "folders": [
+        {
+            "name": "FFS0_Factory",
+            "path": "../.."
+        },
+        {
+            "name": "FFS1_ColliderDataSystems",
+            "path": "."
+        },
+        {
+            "name": "FFS2_ColliderBackends_MultiAgentChromeExtension",
+            "path": "FFS2_ColliderBackends_MultiAgentChromeExtension"
+        },
+        {
+            "name": "FFS3_ColliderApplicationsFrontendServer",
+            "path": "FFS3_ColliderApplicationsFrontendServer"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/.venv": true,
+            "**/node_modules": true,
+            "**/__pycache__": true
+        }
+    }
+}

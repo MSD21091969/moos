@@ -1,0 +1,28 @@
+# Agent Context Manifest - FFS3 ColliderFrontend
+# Frontend Application Server (React/Vite)
+
+includes:
+  # FFS1 Level (Collider IDE Context)
+  - path: "../../.agent"
+    type: "workspace"
+    load:
+      - instructions/agent_system.md
+      - instructions/filesyst_domain.md
+      - rules/extension_boundaries.md
+      - rules/context_loading.md
+      - skills/ide_code_assist.md
+      - tools/filesyst_tools.json
+      - configs/app_x.yaml
+
+# Local context - Specific to Frontend
+local:
+  instructions: "./instructions/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
+  configs: "./configs/"
+  knowledge: "./knowledge/"
+  workflows: "./workflows/"
+
+# Exports (Leaf node)
+exports: []

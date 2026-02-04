@@ -1,0 +1,33 @@
+# Agent Context Manifest - FFS1 ColliderDataSystems
+# IDE workspace for Collider Data Systems code
+
+includes:
+  # FFS0 Factory level (root)
+  - path: "../../.agent"
+    type: "factory"
+    load:
+      - rules/sandbox.md
+      - rules/identity.md
+      - rules/code_patterns.md
+      - instructions/knowledge_hierarchy.md
+      - instructions/instruction_inheritance.md
+
+# Local context - IDE code assist
+local:
+  instructions: "./instructions/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
+  configs: "./configs/"
+  knowledge: "./knowledge/"
+  workflows: "./workflows/"
+
+# Exports to child workspaces (FFS2, FFS3, etc.)
+exports:
+  - instructions/agent_system.md
+  - instructions/filesyst_domain.md
+  - rules/extension_boundaries.md
+  - rules/context_loading.md
+  - skills/ide_code_assist.md
+  - tools/filesyst_tools.json
+  - configs/app_x.yaml

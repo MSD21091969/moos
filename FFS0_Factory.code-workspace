@@ -1,0 +1,27 @@
+{
+    "folders": [
+        {
+            "name": "FFS0_Factory",
+            "path": "."
+        },
+        {
+            "name": "FFS1_ColliderDataSystems",
+            "path": "workspaces/FFS1_ColliderDataSystems"
+        },
+        {
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS2_ColliderBackends_MultiAgentChromeExtension"
+        },
+        {
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/.venv": true,
+            "**/node_modules": true,
+            "**/__pycache__": true,
+            "**/*.egg-info": true
+        }
+    }
+}

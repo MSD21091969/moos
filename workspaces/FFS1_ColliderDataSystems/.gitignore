@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.dev_assistant_history
+uv.lock
+credentials.json
+.gmail_token.json
+.sync_state.json

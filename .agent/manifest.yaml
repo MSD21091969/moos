@@ -1,28 +1,26 @@
-# Agent Context Manifest - Factory Root
+# Agent Context Manifest - FFS0 Factory Root
 # This is the root level - no parent includes
 
 includes: []
 
-# Local rules, instructions, and knowledge
+# Local context
 local:
-  rules: "./rules/"
   instructions: "./instructions/"
-  workflows: "./workflows/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
   configs: "./configs/"
   knowledge: "./knowledge/"
+  workflows: "./workflows/"
 
-# This context is inherited by all child workspaces
+# Exports to child workspaces (FFS1, etc.)
 exports:
   # Rules
   - rules/sandbox.md
   - rules/identity.md
   - rules/code_patterns.md
-  - rules/math_coding_style.md
-  - rules/math_maintenance.md
-  - rules/math_testing.md
   # Instructions
-  - instructions/knowledge_hierarchy.md
-  - instructions/instruction_inheritance.md
+  - instructions/agent_system.md
   # Configs (shared settings)
   - configs/users.yaml
   - configs/api_providers.yaml

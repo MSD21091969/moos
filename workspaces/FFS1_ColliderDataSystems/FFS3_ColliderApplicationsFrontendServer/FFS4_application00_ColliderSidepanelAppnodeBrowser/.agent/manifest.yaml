@@ -1,0 +1,19 @@
+# Agent Context Manifest - FFS4_application00_ColliderSidepanelAppnodeBrowser
+# Inherits from FFS3 (Frontend Context)
+
+includes:
+  - path: ""../../.agent""
+    type: ""workspace""
+    load:
+      - instructions/agent_system.md 
+
+local:
+  instructions: ""./instructions/""
+  rules: ""./rules/""
+  skills: ""./skills/""
+  tools: ""./tools/""
+  configs: ""./configs/""
+  knowledge: ""./knowledge/""
+  workflows: ""./workflows/""
+
+exports: []

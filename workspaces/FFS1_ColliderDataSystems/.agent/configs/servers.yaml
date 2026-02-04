@@ -1,0 +1,20 @@
+# Server Endpoints Configuration
+
+data_server:
+  base_url: "http://localhost:8000"
+  api_prefix: "/api/v1"
+  endpoints:
+    context: "/context"
+    nodes: "/nodes"
+    users: "/users"
+    sync: "/sync"
+  
+graphtool_server:
+  base_url: "ws://localhost:8001"
+  endpoints:
+    graph: "/graph"
+    workflow: "/workflow"
+
+native_host:
+  name: "com.collider.agent_host"
+  # Registered via registry (Windows) or manifest (macOS/Linux)

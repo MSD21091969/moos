@@ -1,0 +1,23 @@
+# Chrome Extension Configuration
+
+extension:
+  name: "Collider Agent"
+  version: "0.1.0"
+  
+permissions:
+  - nativeMessaging
+  - storage
+  - tabs
+  - activeTab
+
+native_host:
+  name: "com.collider.agent_host"
+  
+offscreen:
+  enabled: true
+  reasons:
+    - WORKERS
+  
+sidepanel:
+  enabled: true
+  default_path: "sidepanel.html"

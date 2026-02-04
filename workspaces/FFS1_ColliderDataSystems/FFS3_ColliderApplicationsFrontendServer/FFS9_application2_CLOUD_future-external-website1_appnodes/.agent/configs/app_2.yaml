@@ -1,0 +1,14 @@
+# App 2 Configuration (CLOUD)
+# Application: Future External Website 1
+
+app_id: "app_2"
+domain: "CLOUD"
+backend: "data_server"
+
+features:
+  - content_management: true
+  - public_access: true
+
+permissions:
+  - "read:content"
+  - "write:content"

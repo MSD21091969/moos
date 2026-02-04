@@ -1,0 +1,27 @@
+[project]
+name = "dev-assistant"
+version = "0.1.0"
+description = "Collider assembly and testing workspace"
+requires-python = ">=3.12"
+dependencies = [
+    "agent-factory @ file:///D:/factory",
+    
+    # Pydantic-Deep ecosystem (using available versions)
+    "pydantic-deep>=0.1.0",
+    "pydantic-ai>=0.0.14",
+    
+    # Collider integration
+    "networkx>=3.4.0",
+    "sqlalchemy>=2.0.45",
+    "aiosqlite>=0.22.1",
+    
+    # Testing
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
+]
