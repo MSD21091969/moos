@@ -1,31 +1,23 @@
 # Architecture Knowledge
 
-> System architecture documentation for Collider Chrome Extension.
+> System architecture documentation for Collider.
 
 ## Documents
 
-### Core Concepts
+| #   | File                                   | Scope                                           |
+| --- | -------------------------------------- | ----------------------------------------------- |
+| 1   | [01_foundation.md](01_foundation.md)   | NodeContainer, domains, hierarchy, applications |
+| 2   | [02_backend.md](02_backend.md)         | Servers, database, storage                      |
+| 3   | [03_frontend.md](03_frontend.md)       | Chrome Extension, Context Manager, UI           |
+| 4   | [04_data_flow.md](04_data_flow.md)     | Protocols, messages, sync                       |
+| 5   | [05_security.md](05_security.md)       | Auth, permissions, secrets                      |
+| 6   | [06_integration.md](06_integration.md) | LangGraph ↔ Pydantic AI, workflows              |
 
-| File                                         | Purpose                |
-| -------------------------------------------- | ---------------------- |
-| [nodecontainer.md](nodecontainer.md)         | Universal node pattern |
-| [context_hierarchy.md](context_hierarchy.md) | Inheritance system     |
-| [domains.md](domains.md)                     | FILESYST, CLOUD, ADMIN |
-| [applications.md](applications.md)           | App0, AppX, AppZ, App1 |
+## Reading Order
 
-### Chrome Extension System
-
-| File                                             | Purpose                        |
-| ------------------------------------------------ | ------------------------------ |
-| [chrome_extension.md](chrome_extension.md)       | Extension components overview  |
-| [ui_ux_pip_sidepanel.md](ui_ux_pip_sidepanel.md) | **DocPiP & Sidepanel UI**      |
-| [langgraph_topology.md](langgraph_topology.md)   | **Multi-tab Routing & Events** |
-| [native_messaging.md](native_messaging.md)       | Filesystem access              |
-
-### Data & Security
-
-| File                                         | Purpose                          |
-| -------------------------------------------- | -------------------------------- |
-| [auth_admin_flow.md](auth_admin_flow.md)     | **Login -> Admin Context**       |
-| [communication.md](communication.md)         | All protocols (Native, WS, SSE)  |
-| [graph_integration.md](graph_integration.md) | LangGraph.js ↔ Pydantic AI Graph |
+1. **Foundation** → Core data model
+2. **Backend** → Server infrastructure
+3. **Frontend** → Client architecture
+4. **Data Flow** → How they communicate
+5. **Security** → How it's protected
+6. **Integration** → How it all works together
