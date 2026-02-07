@@ -1,63 +1,49 @@
-"""ChromaDB vector store wrapper."""
-import chromadb
-from chromadb.config import Settings as ChromaSettings
-
-from src.config import get_settings
+"""Simple in-memory vector store for MVP (no external deps)."""
+import numpy as np
+from typing import Optional
 
 
-settings = get_settings()
-
-# Initialize ChromaDB client
-chroma_client = chromadb.Client(ChromaSettings(
-    persist_directory=settings.chroma_persist_dir,
-    anonymized_telemetry=False,
-))
-
-# Default collection for tools/knowledge
-default_collection = chroma_client.get_or_create_collection(
-    name="collider_knowledge",
-    metadata={"hnsw:space": "cosine"}
-)
+# In-memory storage
+_documents: dict[str, dict] = {}
 
 
 async def embed_text(text: str, document_id: str, metadata: dict = None):
-    """Embed and store text."""
-    default_collection.add(
-        documents=[text],
-        ids=[document_id],
-        metadatas=[metadata or {}]
-    )
+    """Store text with simple hash-based 'embedding' for MVP."""
+    # MVP: Use text directly, no real embedding
+    _documents[document_id] = {
+        "text": text,
+        "metadata": metadata or {},
+    }
     return {"id": document_id, "status": "indexed"}
 
 
 async def search_similar(query: str, n_results: int = 10) -> list[dict]:
-    """Search for similar documents."""
-    results = default_collection.query(
-        query_texts=[query],
-        n_results=n_results
-    )
+    """Simple keyword search for MVP."""
+    query_lower = query.lower()
+    results = []
     
-    return [
-        {
-            "id": id_,
-            "document": doc,
-            "metadata": meta,
-            "distance": dist
-        }
-        for id_, doc, meta, dist in zip(
-            results["ids"][0],
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0] if results.get("distances") else [0] * len(results["ids"][0])
-        )
-    ]
+    for doc_id, doc in _documents.items():
+        text_lower = doc["text"].lower()
+        # Simple relevance: count query words found
+        score = sum(1 for word in query_lower.split() if word in text_lower)
+        if score > 0:
+            results.append({
+                "id": doc_id,
+                "document": doc["text"],
+                "metadata": doc["metadata"],
+                "distance": 1.0 / (score + 1),  # Lower = better match
+            })
+    
+    # Sort by distance (lower = better)
+    results.sort(key=lambda x: x["distance"])
+    return results[:n_results]
 
 
 async def index_documents(documents: list[dict]):
     """Bulk index documents."""
-    default_collection.add(
-        documents=[d["text"] for d in documents],
-        ids=[d["id"] for d in documents],
-        metadatas=[d.get("metadata", {}) for d in documents]
-    )
+    for d in documents:
+        _documents[d["id"]] = {
+            "text": d["text"],
+            "metadata": d.get("metadata", {}),
+        }
     return {"count": len(documents), "status": "indexed"}

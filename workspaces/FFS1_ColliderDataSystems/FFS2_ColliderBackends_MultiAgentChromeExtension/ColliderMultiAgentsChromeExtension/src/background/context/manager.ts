@@ -56,6 +56,7 @@ interface AppInfo {
   id: string
   app_id: string
   display_name: string
+  domain?: "FILESYST" | "CLOUD" | "ADMIN"
 }
 
 interface AppConfig {
@@ -179,6 +180,17 @@ class ContextManagerClass {
     }
   }
 
+  invalidateNodeCache(appId: string, nodePath: string) {
+    const key = `${appId}:${nodePath}`
+    this.cache.nodeContexts.delete(key)
+    console.log(`[Cache] Invalidated node: ${key}`)
+  }
+
+  invalidateAppConfig(appId: string) {
+    this.cache.appConfigs.delete(appId)
+    console.log(`[Cache] Invalidated app config: ${appId}`)
+  }
+
   // Merge context for agent
   getMergedContext(tabKey: string): MainContext & { tab: TabContext | null } {
     return {
@@ -189,3 +201,17 @@ class ContextManagerClass {
 }
 
 export const ContextManager = new ContextManagerClass()
+
+// Alias for instance-based access
+export const contextManager = {
+  getTabContext: (tabKey: string) => Promise.resolve(ContextManager.getTab(tabKey)),
+  updateTabContext: async (tabKey: string, updates: Partial<TabContext>) => {
+    const existing = ContextManager.getTab(tabKey)
+    if (existing) {
+      await ContextManager.setTab(tabKey, { ...existing, ...updates })
+    }
+  },
+  getMainContext: () => ContextManager.getMain(),
+  invalidateCache: (appId: string, nodePath: string) => ContextManager.invalidateNodeCache(appId, nodePath),
+  invalidateAppConfig: (appId: string) => ContextManager.invalidateAppConfig(appId),
+}

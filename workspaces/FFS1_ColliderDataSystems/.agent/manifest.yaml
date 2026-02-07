@@ -1,10 +1,21 @@
 # Agent Context Manifest - FFS1 ColliderDataSystems
-# IDE workspace for Collider Data Systems code
+# Root workspace for Collider Data Systems
 
+# Manifest metadata
+name: collider-data-systems
+version: "1.0.0"
+display_name: Collider Data Systems
+description: Multi-agent system for context-aware AI applications
+
+# Inheritance settings
+inheritance:
+  enabled: true
+  strategy: deep_merge  # Options: deep_merge, replace, disabled
+
+# Parent context (factory level)
 includes:
-  # FFS0 Factory level (root)
   - path: "../../.agent"
-    type: "factory"
+    type: factory
     load:
       - rules/sandbox.md
       - rules/identity.md
@@ -12,7 +23,7 @@ includes:
       - instructions/knowledge_hierarchy.md
       - instructions/instruction_inheritance.md
 
-# Local context - IDE code assist
+# Local context directories
 local:
   instructions: "./instructions/"
   rules: "./rules/"
@@ -23,6 +34,7 @@ local:
   workflows: "./workflows/"
 
 # Exports to child workspaces (FFS2, FFS3, etc.)
+# NOTE: cloud/admin domain instructions belong in DB containers (seed.py), not IDE .agent
 exports:
   - instructions/agent_system.md
   - instructions/filesyst_domain.md
@@ -30,4 +42,15 @@ exports:
   - rules/context_loading.md
   - skills/ide_code_assist.md
   - tools/filesyst_tools.json
-  - configs/app_x.yaml
+  - configs/domains.yaml
+
+# Secrets this workspace may use (injected at runtime)
+secrets:
+  - OPENAI_API_KEY
+  - GOOGLE_AI_API_KEY
+  - FIREBASE_PROJECT_ID
+
+# Permission requirements
+permissions:
+  require_auth: true
+  default_role: viewer  # viewer, editor, admin

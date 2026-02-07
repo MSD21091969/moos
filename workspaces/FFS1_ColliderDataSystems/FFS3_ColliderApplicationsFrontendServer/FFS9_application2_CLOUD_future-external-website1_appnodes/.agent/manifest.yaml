@@ -1,19 +1,46 @@
-# Agent Context Manifest - FFS9_application2_CLOUD_future-external-website1_appnodes
-# Inherits from FFS3 (Frontend Context)
+# Agent Context Manifest - FFS9 Cloud App: Future External Website 1
+# Future cloud application placeholder
 
+# Manifest metadata
+name: future-external-website1
+version: "0.1.0"
+display_name: Future External Website 1
+description: Reserved cloud application slot for external website integration
+
+# Inheritance settings
+inheritance:
+  enabled: true
+  strategy: deep_merge
+
+# Domain context
+domain: cloud
+app_type: web-app
+app_id: future-external-website1
+status: planned
+features:
+  - tbd
+
+# Parent context (FFS3 frontend level)
 includes:
-  - path: ""../../.agent""
-    type: ""workspace""
+  - path: "../.agent"
+    type: workspace
     load:
-      - instructions/agent_system.md 
+      - knowledge/codebase.md
 
+# Local context
 local:
-  instructions: ""./instructions/""
-  rules: ""./rules/""
-  skills: ""./skills/""
-  tools: ""./tools/""
-  configs: ""./configs/""
-  knowledge: ""./knowledge/""
-  workflows: ""./workflows/""
+  instructions: "./instructions/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
+  configs: "./configs/"
+  knowledge: "./knowledge/"
+  workflows: "./workflows/"
 
+# Leaf node - no exports
 exports: []
+
+# Permissions
+permissions:
+  require_auth: true
+  default_role: viewer

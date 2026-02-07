@@ -1,10 +1,29 @@
 # Agent Context Manifest - FFS2 ColliderBackends
-# Backend services and Chrome Extension source code
+# Backend services and Chrome Extension development
 
+# Manifest metadata
+name: collider-backends
+version: "1.0.0"
+display_name: Collider Backends & Extension
+description: FastAPI backend servers and Plasmo Chrome Extension
+
+# Inheritance settings
+inheritance:
+  enabled: true
+  strategy: deep_merge
+
+# Domain context
+domain: development
+components:
+  - ColliderDataServer # REST/SSE API on :8000
+  - ColliderGraphToolServer # WebSocket/Agents on :8001
+  - ColliderVectorDbServer # Vector search on :8002
+  - ColliderMultiAgentsChromeExtension # Plasmo extension
+
+# Parent context (FFS1 workspace level)
 includes:
-  # FFS1 Level (Collider IDE Context)
-  - path: "../../.agent"
-    type: "workspace"
+  - path: "../.agent"
+    type: workspace
     load:
       - instructions/agent_system.md
       - instructions/filesyst_domain.md
@@ -12,9 +31,9 @@ includes:
       - rules/context_loading.md
       - skills/ide_code_assist.md
       - tools/filesyst_tools.json
-      - configs/app_x.yaml
 
-# Local context - Specific to Backends & Extension
+# Local context - Backend & Extension specific
+# NOTE: Empty folders inherit from parent
 local:
   instructions: "./instructions/"
   rules: "./rules/"
@@ -24,5 +43,19 @@ local:
   knowledge: "./knowledge/"
   workflows: "./workflows/"
 
-# Exports (Leaf node, usually doesn't export, but good practice to define)
-exports: []
+# Exports - provides codebase knowledge to sibling workspaces
+exports:
+  - knowledge/codebase.md
+
+# Secrets required by backend services
+secrets:
+  - OPENAI_API_KEY
+  - GOOGLE_AI_API_KEY
+  - FIREBASE_PROJECT_ID
+  - DATABASE_URL
+  - CHROMADB_HOST
+
+# Permission requirements
+permissions:
+  require_auth: true
+  default_role: viewer

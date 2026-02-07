@@ -1,20 +1,40 @@
 # Agent Context Manifest - FFS3 ColliderFrontend
-# Frontend Application Server (React/Vite)
+# Frontend Application Server (Nx + Next.js)
 
+# Manifest metadata
+name: collider-frontend-server
+version: "1.0.0"
+display_name: Collider Frontend Server
+description: Nx monorepo with Next.js applications and shared libraries
+
+# Inheritance settings
+inheritance:
+  enabled: true
+  strategy: deep_merge
+
+# Domain context
+domain: frontend
+framework: nx-next
+components:
+  - collider-frontend/ # Nx workspace root
+  - apps/portal/ # Main portal Next.js app
+  - libs/api-client/ # @collider/api-client
+  - libs/shared-ui/ # @collider/shared-ui
+  - libs/node-container/ # @collider/node-container
+
+# Parent context (FFS1 workspace level)
 includes:
-  # FFS1 Level (Collider IDE Context)
-  - path: "../../.agent"
-    type: "workspace"
+  - path: "../.agent"
+    type: workspace
     load:
       - instructions/agent_system.md
       - instructions/filesyst_domain.md
       - rules/extension_boundaries.md
       - rules/context_loading.md
-      - skills/ide_code_assist.md
-      - tools/filesyst_tools.json
-      - configs/app_x.yaml
+      - configs/domains.yaml
 
-# Local context - Specific to Frontend
+# Local context - Frontend specific
+# NOTE: Empty folders inherit from parent
 local:
   instructions: "./instructions/"
   rules: "./rules/"
@@ -24,5 +44,16 @@ local:
   knowledge: "./knowledge/"
   workflows: "./workflows/"
 
-# Exports (Leaf node)
-exports: []
+# Exports to application folders (FFS4-FFS10)
+exports:
+  - knowledge/codebase.md
+
+# Secrets for frontend builds
+secrets:
+  - NEXT_PUBLIC_API_BASE
+  - NEXT_PUBLIC_FIREBASE_CONFIG
+
+# Permission requirements
+permissions:
+  require_auth: true
+  default_role: viewer

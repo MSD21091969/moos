@@ -1,0 +1,78 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "noEmit": true,
+    "emitDeclarationOnly": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@collider-frontend/node-container": [
+        "../../libs/node-container/src/index.ts"
+      ],
+      "@collider-frontend/api-client": [
+        "../../libs/api-client/src/index.ts"
+      ],
+      "@collider-frontend/shared-ui": [
+        "../../libs/shared-ui/src/index.ts"
+      ]
+    },
+    "types": [
+      "jest",
+      "node"
+    ],
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "../../libs/api-client/src/**/*.ts",
+    "../../libs/node-container/src/**/*.ts",
+    "../../libs/shared-ui/src/**/*.ts",
+    "../../apps/portal/.next/types/**/*.ts",
+    "../../dist/apps/portal/.next/types/**/*.ts",
+    "next-env.d.ts"
+  ],
+  "exclude": [
+    "out-tsc",
+    "dist",
+    "node_modules",
+    "jest.config.ts",
+    "jest.config.cts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    ".next",
+    "eslint.config.js",
+    "eslint.config.cjs",
+    "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../libs/node-container"
+    },
+    {
+      "path": "../../libs/api-client"
+    }
+  ]
+}

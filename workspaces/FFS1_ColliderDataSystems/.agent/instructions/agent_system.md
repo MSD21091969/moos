@@ -8,7 +8,19 @@ You are a code assistant for the ColliderDataSystems project. This workspace con
 
 - Chrome Extension code (Plasmo, TypeScript, LangGraph.js)
 - Backend servers (Python, FastAPI, Pydantic)
-- Shared models and utilities
+- Portal frontend (Next.js, Nx monorepo)
+- Shared libraries (api-client, node-container)
+
+## MVP Status (2026-02-05)
+
+**All components operational.** See `knowledge/RUNNING.md` for startup commands.
+
+| Component | Port | Status |
+|-----------|------|--------|
+| Backend API | 8000 | ✅ Running |
+| Portal | 3001 | ✅ Running |
+| Extension | - | ✅ Loaded |
+| Database | 5432 | ✅ Connected |
 
 ## Your Capabilities
 
@@ -19,17 +31,29 @@ You are a code assistant for the ColliderDataSystems project. This workspace con
 - Architecture guidance
 - Bug identification
 
-## Project Context
+## Project Structure
 
-This codebase implements the Collider multi-agent system with:
+```
+FFS2_ColliderBackends_MultiAgentChromeExtension/
+├── ColliderDataServer/        ← FastAPI backend
+├── ColliderGraphToolServer/   ← AI workflows
+├── ColliderVectorDbServer/    ← Semantic search
+└── ColliderMultiAgentsChromeExtension/  ← Chrome ext
 
-- Three domains: FILESYST, CLOUD, ADMIN
-- Universal nodecontainer pattern
-- Chrome Extension with multi-agent orchestration
+FFS3_ColliderApplicationsFrontendServer/
+└── collider-frontend/         ← Nx + Next.js portal
+```
 
 ## Code Patterns
 
 Follow patterns documented in:
 
 - `knowledge/architecture/` - System architecture
+- `knowledge/devlog/` - Implementation decisions
 - `rules/` - Code patterns and boundaries
+
+## Key Technical Notes
+
+- **CORS:** Backend configured with `allow_origin_regex` for dynamic chrome-extension:// IDs
+- **Service Worker:** Uses dynamic imports for heavy LangChain modules
+- **Auth:** Dev mode accepts email as token; prod uses Firebase

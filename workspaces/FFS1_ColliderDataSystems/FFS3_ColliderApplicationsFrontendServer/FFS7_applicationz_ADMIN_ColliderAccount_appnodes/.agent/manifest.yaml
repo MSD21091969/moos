@@ -1,19 +1,54 @@
-# Agent Context Manifest - FFS7_applicationz_ADMIN_ColliderAccount_appnodes
-# Inherits from FFS3 (Frontend Context)
+# Agent Context Manifest - FFS7 ADMIN Application
+# Account management and admin controls
 
+# Manifest metadata
+name: collider-admin
+version: "1.0.0"
+display_name: Collider Admin Console
+description: Account management, permissions, and administrative functions
+
+# Inheritance settings
+inheritance:
+  enabled: true
+  strategy: deep_merge
+
+# Domain context
+domain: admin
+app_type: admin-console
+features:
+  - user_management
+  - permission_editor
+  - app_registry
+  - secret_management
+  - audit_log
+
+# Parent context (FFS3 frontend level)
 includes:
-  - path: ""../../.agent""
-    type: ""workspace""
+  - path: "../.agent"
+    type: workspace
     load:
-      - instructions/agent_system.md 
+      - knowledge/codebase.md
 
+# Local context
 local:
-  instructions: ""./instructions/""
-  rules: ""./rules/""
-  skills: ""./skills/""
-  tools: ""./tools/""
-  configs: ""./configs/""
-  knowledge: ""./knowledge/""
-  workflows: ""./workflows/""
+  instructions: "./instructions/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
+  configs: "./configs/"
+  knowledge: "./knowledge/"
+  workflows: "./workflows/"
 
+# Leaf node - no exports
 exports: []
+
+# Admin requires all secrets access
+secrets:
+  - FIREBASE_ADMIN_SDK
+  - DATABASE_ADMIN_URL
+
+# Permissions - admin only
+permissions:
+  require_auth: true
+  default_role: admin
+  restrict_to_admins: true

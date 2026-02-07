@@ -69,7 +69,7 @@ class NodeContainer(BaseModel):
 class NodeBase(BaseModel):
     path: str
     container: NodeContainer = Field(default_factory=NodeContainer)
-    metadata: dict = Field(default_factory=dict)
+    node_metadata: dict = Field(default_factory=dict, alias="node_metadata")
 
 
 class NodeCreate(NodeBase):
@@ -78,7 +78,7 @@ class NodeCreate(NodeBase):
 
 class NodeUpdate(BaseModel):
     container: Optional[NodeContainer] = None
-    metadata: Optional[dict] = None
+    node_metadata: Optional[dict] = None
 
 
 class NodeResponse(NodeBase):

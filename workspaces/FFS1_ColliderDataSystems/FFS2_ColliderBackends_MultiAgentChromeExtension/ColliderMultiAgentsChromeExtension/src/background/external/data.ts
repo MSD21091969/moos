@@ -4,6 +4,21 @@
 
 const DATA_SERVER_URL = "http://localhost:8000"
 
+// Auth token for authenticated requests
+let authToken: string | null = null
+
+export function setAuthToken(token: string | null) {
+  authToken = token
+}
+
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" }
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`
+  }
+  return headers
+}
+
 export interface AuthResponse {
   user: {
     id: string
@@ -37,12 +52,12 @@ export interface NodeResponse {
     instructions: string[]
     rules: string[]
     skills: string[]
-    tools: unknown[]
+    tools: { name: string; schema: unknown }[]
     knowledge: string[]
     workflows: unknown[]
     configs: Record<string, unknown>
   }
-  metadata: Record<string, unknown>
+  node_metadata: Record<string, unknown>
 }
 
 /**
@@ -55,6 +70,8 @@ export async function verifyAuth(token: string): Promise<AuthResponse> {
     body: JSON.stringify({ id_token: token }),
   })
   if (!res.ok) throw new Error(`Auth failed: ${res.status}`)
+  // Save token for subsequent requests
+  setAuthToken(token)
   return res.json()
 }
 
@@ -62,7 +79,9 @@ export async function verifyAuth(token: string): Promise<AuthResponse> {
  * List all applications
  */
 export async function listApps(): Promise<AppResponse[]> {
-  const res = await fetch(`${DATA_SERVER_URL}/api/v1/apps`)
+  const res = await fetch(`${DATA_SERVER_URL}/api/v1/apps`, {
+    headers: getAuthHeaders(),
+  })
   if (!res.ok) throw new Error(`Failed to list apps: ${res.status}`)
   return res.json()
 }
@@ -72,7 +91,8 @@ export async function listApps(): Promise<AppResponse[]> {
  */
 export async function getNode(appId: string, path: string): Promise<NodeResponse> {
   const res = await fetch(
-    `${DATA_SERVER_URL}/api/v1/apps/${appId}/nodes?path=${encodeURIComponent(path)}`
+    `${DATA_SERVER_URL}/api/v1/apps/${appId}/nodes?path=${encodeURIComponent(path)}`,
+    { headers: getAuthHeaders() }
   )
   if (!res.ok) throw new Error(`Failed to get node: ${res.status}`)
   return res.json()
@@ -82,8 +102,25 @@ export async function getNode(appId: string, path: string): Promise<NodeResponse
  * Get all nodes for an app
  */
 export async function getNodeTree(appId: string): Promise<NodeResponse[]> {
-  const res = await fetch(`${DATA_SERVER_URL}/api/v1/apps/${appId}/nodes/tree`)
+  const res = await fetch(`${DATA_SERVER_URL}/api/v1/apps/${appId}/nodes/tree`, {
+    headers: getAuthHeaders(),
+  })
   if (!res.ok) throw new Error(`Failed to get node tree: ${res.status}`)
+  return res.json()
+}
+
+/**
+ * Get resolved container with inheritance
+ */
+export async function getResolvedContainer(
+  appId: string,
+  path: string
+): Promise<{ path: string; container: NodeResponse["container"]; ancestry: string[] }> {
+  const res = await fetch(
+    `${DATA_SERVER_URL}/api/v1/apps/${appId}/nodes/resolved?path=${encodeURIComponent(path)}`,
+    { headers: getAuthHeaders() }
+  )
+  if (!res.ok) throw new Error(`Failed to get resolved container: ${res.status}`)
   return res.json()
 }
 
@@ -92,7 +129,7 @@ export async function getNodeTree(appId: string): Promise<NodeResponse[]> {
  */
 export function connectSSE(onEvent: (event: { type: string; data: unknown }) => void): EventSource {
   const eventSource = new EventSource(`${DATA_SERVER_URL}/api/v1/sse`)
-  
+
   eventSource.onmessage = (e) => {
     try {
       const data = JSON.parse(e.data)
@@ -101,10 +138,10 @@ export function connectSSE(onEvent: (event: { type: string; data: unknown }) => 
       onEvent({ type: e.type || "message", data: e.data })
     }
   }
-  
+
   eventSource.onerror = (e) => {
     console.error("SSE error:", e)
   }
-  
+
   return eventSource
 }

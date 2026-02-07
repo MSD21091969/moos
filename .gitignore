@@ -7,9 +7,32 @@ wheels/
 *.egg-info
 
 # Virtual environments
-
-# Virtual environments
 .venv
 
 # Local DB
 *.db
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Plasmo build artifacts (Chrome extension framework)
+.plasmo/
+
+# Pytest / Hypothesis test artifacts
+.hypothesis/
+.pytest_cache/
+
+# Temporary files
+*.log
+*.tmp
+git_status_full.txt
+
+# IDE / Editor
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

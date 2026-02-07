@@ -64,3 +64,13 @@ All child workspaces (FFS1, etc.) inherit:
 | Workspace | Path                                   | Purpose              |
 | --------- | -------------------------------------- | -------------------- |
 | FFS1      | `workspaces/FFS1_ColliderDataSystems/` | Collider IDE context |
+
+## MVP Status (2026-02-05)
+
+**Fully Operational:**
+- Backend API (FastAPI :8000)
+- Portal Frontend (Next.js :3001)
+- Chrome Extension (Plasmo)
+- Database (PostgreSQL :5432)
+
+**Running Guide:** `FFS1_ColliderDataSystems/.agent/knowledge/RUNNING.md`

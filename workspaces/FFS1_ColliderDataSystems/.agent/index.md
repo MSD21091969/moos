@@ -59,16 +59,21 @@ FFS2, FFS3...                     ← Child code projects
 ├── knowledge/
 │   ├── _index.md
 │   ├── _archive/          ← Archived legacy files
-│   └── architecture/      ← System architecture docs
+│   ├── architecture/      ← System architecture docs
+│   │   ├── _index.md
+│   │   ├── nodecontainer.md
+│   │   ├── context_hierarchy.md
+│   │   ├── chrome_extension.md
+│   │   ├── graph_integration.md
+│   │   ├── native_messaging.md
+│   │   ├── communication.md
+│   │   ├── domains.md
+│   │   └── applications.md
+│   └── devlog/            ← Development session logs
 │       ├── _index.md
-│       ├── nodecontainer.md
-│       ├── context_hierarchy.md
-│       ├── chrome_extension.md
-│       ├── graph_integration.md
-│       ├── native_messaging.md
-│       ├── communication.md
-│       ├── domains.md
-│       └── applications.md
+│       ├── 2026-02-05_phase2.md
+│       ├── 2026-02-05_phase3_plan.md
+│       └── 2026-02-05_phase3_implementation.md
 │
 └── workflows/
     ├── _index.md

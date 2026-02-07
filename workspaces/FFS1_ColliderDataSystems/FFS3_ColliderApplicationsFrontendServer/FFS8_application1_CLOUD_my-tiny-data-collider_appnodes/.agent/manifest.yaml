@@ -1,19 +1,52 @@
-# Agent Context Manifest - FFS8_application1_CLOUD_my-tiny-data-collider_appnodes
-# Inherits from FFS3 (Frontend Context)
+# Agent Context Manifest - FFS8 Cloud App: My Tiny Data Collider
+# Primary cloud application for data collection
 
+# Manifest metadata
+name: my-tiny-data-collider
+version: "1.0.0"
+display_name: My Tiny Data Collider
+description: Cloud application for personal data collection and organization
+
+# Inheritance settings
+inheritance:
+  enabled: true
+  strategy: deep_merge
+
+# Domain context
+domain: cloud
+app_type: web-app
+app_id: my-tiny-data-collider
+features:
+  - data_collection
+  - container_nodes
+  - cloud_sync
+  - export_import
+
+# Parent context (FFS3 frontend level)
 includes:
-  - path: ""../../.agent""
-    type: ""workspace""
+  - path: "../.agent"
+    type: workspace
     load:
-      - instructions/agent_system.md 
+      - knowledge/codebase.md
 
+# Local context
 local:
-  instructions: ""./instructions/""
-  rules: ""./rules/""
-  skills: ""./skills/""
-  tools: ""./tools/""
-  configs: ""./configs/""
-  knowledge: ""./knowledge/""
-  workflows: ""./workflows/""
+  instructions: "./instructions/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
+  configs: "./configs/"
+  knowledge: "./knowledge/"
+  workflows: "./workflows/"
 
+# Leaf node - no exports
 exports: []
+
+# App-specific secrets
+secrets:
+  - CLOUD_STORAGE_KEY
+
+# Permissions
+permissions:
+  require_auth: true
+  default_role: editor

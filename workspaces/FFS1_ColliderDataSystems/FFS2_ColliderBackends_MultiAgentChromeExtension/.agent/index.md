@@ -18,13 +18,25 @@ FFS0_Factory                     (Root)
 
 Specific context for:
 
-- Data Server (FastAPI)
-- GraphTool Server
-- Chrome Extension (Service Worker, Content Scripts)
-- Native Host
+- ColliderDataServer (FastAPI on :8000)
+- ColliderGraphToolServer (WebSocket on :8001)
+- ColliderVectorDbServer (Vector search on :8002)
+- ColliderMultiAgentsChromeExtension (Plasmo)
 
 ## Contents
 
-- **instructions/**: Backend-specific coding guides.
-- **knowledge/**: API specs, DB schemas.
-- **workflows/**: Deployment and testing for backends.
+- **instructions/**: Backend-specific coding guides (inherits from FFS1).
+- **knowledge/**: Codebase documentation.
+- **skills/**: Backend-specific skills (inherits from FFS1).
+- **tools/**: Backend-specific tools (inherits from FFS1).
+- **configs/**: Backend-specific configs (inherits from FFS1).
+- **workflows/**: Deployment and testing workflows (inherits from FFS1).
+
+## Component Folders
+
+```
+ColliderDataServer/              # REST/SSE API server
+ColliderGraphToolServer/         # WebSocket/Agents server
+ColliderVectorDbServer/          # Vector search server
+ColliderMultiAgentsChromeExtension/  # Plasmo extension
+```

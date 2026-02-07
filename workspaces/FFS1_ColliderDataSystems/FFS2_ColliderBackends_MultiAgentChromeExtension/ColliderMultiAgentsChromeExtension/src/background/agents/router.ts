@@ -3,6 +3,25 @@
  */
 
 import { ContextManager, type MainContext, type TabContext } from "../context/manager"
+// Dynamic import to avoid crashing service worker with heavy LangChain libs
+let runnerModule: typeof import("./runner") | null = null
+
+async function getRunner() {
+  if (!runnerModule) {
+    try {
+      runnerModule = await import("./runner")
+    } catch (e) {
+      console.error("[Router] Failed to load runner module:", e)
+      return null
+    }
+  }
+  return runnerModule
+}
+
+export async function getApiKey(): Promise<string | null> {
+  const runner = await getRunner()
+  return runner?.getApiKey() ?? null
+}
 
 export type AgentType = "cloud" | "filesyst" | "dom"
 
@@ -29,9 +48,9 @@ export function routeMessage(tabKey: string, message: string): RouteResult {
     }
 
     // Check if this is a DOM action request
-    if (message.toLowerCase().includes("click") || 
-        message.toLowerCase().includes("type") ||
-        message.toLowerCase().includes("scroll")) {
+    if (message.toLowerCase().includes("click") ||
+      message.toLowerCase().includes("type") ||
+      message.toLowerCase().includes("scroll")) {
       agent = "dom"
     }
   }
@@ -50,15 +69,39 @@ export async function processMessage(
 
   console.log(`🎯 Routing to ${agent} agent for tab ${tabKey}`)
 
-  // MVP: Simple echo response
-  // Production: Route to actual agent implementations
+  // Get API key from context
+  const apiKey = await getApiKey()
+
+  if (!apiKey) {
+    console.warn("⚠️ No API key found, falling back to stub response")
+    return getFallbackResponse(agent, message)
+  }
+
+  try {
+    // Dynamically load runner to avoid crashing service worker
+    const runner = await getRunner()
+    if (!runner) {
+      return "AI agent not available - module failed to load"
+    }
+    const response = await runner.runAgent(tabKey, message, apiKey)
+    return response
+  } catch (error) {
+    console.error("❌ Agent error:", error)
+    return `Error processing request: ${error instanceof Error ? error.message : String(error)}`
+  }
+}
+
+/**
+ * Fallback responses when API key not available
+ */
+function getFallbackResponse(agent: AgentType, message: string): string {
   switch (agent) {
     case "filesyst":
-      return `[FILESYST Agent] Processing: ${message}`
+      return `[FILESYST Agent] Processing: ${message}\n\n(Note: No API key configured. Add GOOGLE_API_KEY to secrets for AI responses.)`
     case "dom":
-      return `[DOM Agent] Processing: ${message}`
+      return `[DOM Agent] Processing: ${message}\n\n(Note: No API key configured. Add GOOGLE_API_KEY to secrets for AI responses.)`
     case "cloud":
     default:
-      return `[CLOUD Agent] Processing: ${message}`
+      return `[CLOUD Agent] Processing: ${message}\n\n(Note: No API key configured. Add GOOGLE_API_KEY to secrets for AI responses.)`
   }
 }

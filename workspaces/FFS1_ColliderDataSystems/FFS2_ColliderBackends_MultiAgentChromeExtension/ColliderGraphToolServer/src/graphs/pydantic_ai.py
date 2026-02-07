@@ -4,10 +4,18 @@ from typing import Any
 
 
 # Simple agent for MVP - can be extended with tools
-agent = Agent(
-    model="gemini:gemini-2.0-flash",
-    system_prompt="You are a helpful assistant that executes workflows for the Collider system.",
-)
+try:
+    agent = Agent(
+        model="gemini:gemini-2.0-flash",
+        system_prompt="You are a helpful assistant that executes workflows for the Collider system.",
+    )
+except ValueError:
+    print("Gemini provider not found or configured. Using TestModel.")
+    from pydantic_ai.models.test import TestModel
+    agent = Agent(
+        model=TestModel(),
+        system_prompt="You are a helpful assistant that executes workflows for the Collider system.",
+    )
 
 
 async def execute_workflow(

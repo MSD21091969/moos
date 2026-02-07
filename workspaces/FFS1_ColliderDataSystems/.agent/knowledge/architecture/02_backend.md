@@ -10,14 +10,15 @@
 │                                                                              │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐              │
 │  │  DATA SERVER    │  │ GRAPHTOOL       │  │ VECTORDB        │              │
-│  │  (Pydantic)     │  │ SERVER          │  │ SERVER          │              │
-│  │                 │  │ (Pyd AI Graph)  │  │                 │              │
+│  │  (FastAPI)      │  │ SERVER          │  │ SERVER          │              │
+│  │  Port: 8000     │  │ (Pyd AI Graph)  │  │                 │              │
+│  │                 │  │ Port: 8001      │  │  Port: 8002     │              │
 │  │  • CRUD nodes   │  │                 │  │  • Tool search  │              │
 │  │  • CRUD users   │  │  • Graph ops    │  │  • Semantic     │              │
 │  │  • SSE events   │  │  • Workflow     │  │    matching     │              │
-│  │                 │  │    execution    │  │  • GPU accel    │              │
-│  │  REST + SSE     │  │  • AI inference │  │                 │              │
-│  │                 │  │                 │  │  REST/gRPC      │              │
+│  │  • Auth verify  │  │    execution    │  │  • GPU accel    │              │
+│  │                 │  │  • AI inference │  │                 │              │
+│  │  REST + SSE     │  │                 │  │  REST/gRPC      │              │
 │  │                 │  │  WebSocket      │  │                 │              │
 │  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘              │
 │           │                    │                    │                        │
@@ -25,12 +26,12 @@
 │                                │                                             │
 │                         ┌──────┴──────┐                                      │
 │                         │ PostgreSQL  │                                      │
-│                         │ (shared DB) │                                      │
+│                         │ Port: 5432  │                                      │
 │                         └─────────────┘                                      │
 │                                                                              │
 │  ┌──────────────────────────────────────────────────────────────────────────┐│
-│  │                    FRONTEND SERVER                                        ││
-│  │         Hosts versioned React apps (my-tiny-data-collider, etc.)         ││
+│  │                    FRONTEND (Portal)                                      ││
+│  │         Next.js app on Port 3001 (my-tiny-data-collider)                 ││
 │  └──────────────────────────────────────────────────────────────────────────┘│
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -39,13 +40,41 @@
 
 ## Data Server
 
-**Tech:** Pydantic API (FastAPI)
-**Protocol:** REST + SSE
+**Location:** `ColliderDataServer/`  
+**Tech:** FastAPI + Pydantic  
+**Protocol:** REST + SSE  
+**Port:** 8000
+
+### Configuration
+
+Environment variables (`.env`):
+```env
+COLLIDER_ENV=development
+COLLIDER_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/collider
+COLLIDER_CORS_ORIGINS=["http://localhost:3000","http://localhost:3001"]
+FIREBASE_AUTH_ENABLED=false
+```
+
+### CORS Setup
+
+```python
+# main.py
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_origin_regex=r"^chrome-extension://.*$",  # Dynamic extension IDs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
 
 ### Endpoints
 
 | Endpoint          | Method    | Purpose                  |
 | ----------------- | --------- | ------------------------ |
+| `/health`         | GET       | Health check             |
+| `/api/v1/auth/verify` | POST  | Verify token, return user |
 | `/api/v1/context` | GET/POST  | Read/write nodecontainer |
 | `/api/v1/nodes`   | CRUD      | Node operations          |
 | `/api/v1/users`   | CRUD      | User/account operations  |

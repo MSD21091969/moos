@@ -1,11 +1,19 @@
 """Collider Data Server - FastAPI application."""
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import get_settings
 from src.db import init_db
-from src.api import auth_router, apps_router, nodes_router, sse_router
+from src.api import (
+    auth_router,
+    apps_router,
+    nodes_router,
+    sse_router,
+    users_router,
+    secrets_router,
+)
 
 
 settings = get_settings()
@@ -16,10 +24,10 @@ async def lifespan(app: FastAPI):
     """Application lifespan - init/shutdown."""
     # Startup
     await init_db()
-    print(f"🚀 Collider Data Server starting on {settings.host}:{settings.port}")
+    print(f"Collider Data Server starting on {settings.host}:{settings.port}")
     yield
     # Shutdown
-    print("👋 Collider Data Server shutting down")
+    print("Collider Data Server shutting down")
 
 
 app = FastAPI(
@@ -29,10 +37,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
+# CORS - allow configured origins + all chrome extensions
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    allow_origin_regex=r"^chrome-extension://.*$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,6 +52,8 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(apps_router, prefix="/api/v1")
 app.include_router(nodes_router, prefix="/api/v1")
 app.include_router(sse_router, prefix="/api/v1")
+app.include_router(users_router, prefix="/api/v1")
+app.include_router(secrets_router, prefix="/api/v1")
 
 
 @app.get("/health")
@@ -52,4 +63,5 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host=settings.host, port=settings.port)

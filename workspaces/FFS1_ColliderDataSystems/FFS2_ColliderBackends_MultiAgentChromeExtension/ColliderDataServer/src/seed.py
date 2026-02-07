@@ -1,24 +1,46 @@
 """Seed database with test data for MVP."""
+
 import asyncio
-from src.db import async_session, User, AdminAccount, Application, AppPermission, Node
+import os
+from src.db import (
+    async_session,
+    init_db,
+    User,
+    AdminAccount,
+    Application,
+    AppPermission,
+    Node,
+)
 
 
 async def seed():
     """Create test user, admin, application, and nodes."""
+    await init_db()
+
     async with async_session() as session:
         # Check if already seeded
         from sqlalchemy import select
-        existing = await session.execute(select(User).where(User.email == "superuser@test.com"))
+
+        existing = await session.execute(
+            select(User).where(User.email == "superuser@test.com")
+        )
         if existing.scalar_one_or_none():
             print("Database already seeded")
             return
+
+        # Get API key from environment
+        google_api_key = os.environ.get("GOOGLE_API_KEY", "")
 
         # Create test user
         user = User(
             email="superuser@test.com",
             firebase_uid="test_superuser",
             profile={"display_name": "Super User"},
-            container={"permissions": ["*"], "secrets": {}, "settings": {"theme": "dark"}},
+            container={
+                "permissions": ["*"],
+                "secrets": {"GOOGLE_API_KEY": google_api_key},
+                "settings": {"theme": "dark"},
+            },
         )
         session.add(user)
         await session.flush()
@@ -28,17 +50,42 @@ async def seed():
         session.add(admin)
         await session.flush()
 
-        # Create application1
+        # Create application1 (CLOUD domain - primary data app)
         app = Application(
-            app_id="application1",
-            display_name="My Test App",
+            app_id="my-tiny-data-collider",
+            display_name="My Tiny Data Collider",
+            domain="CLOUD",
             owner_id=admin.id,
-            config={"api_rules": {}, "rate_limits": {"default": 100}},
+            config={
+                "features": ["visual_analytics", "data_connectors", "collaboration"]
+            },
         )
         session.add(app)
         await session.flush()
 
-        # Create permission
+        # Create ADMIN domain application
+        admin_app = Application(
+            app_id="collider-account",
+            display_name="Collider Account",
+            domain="ADMIN",
+            owner_id=admin.id,
+            config={"features": ["user_management", "billing", "system_settings"]},
+        )
+        session.add(admin_app)
+        await session.flush()
+
+        # Create FILESYST domain application (IDE integration)
+        filesyst_app = Application(
+            app_id="collider-ide",
+            display_name="Collider IDE",
+            domain="FILESYST",
+            owner_id=admin.id,
+            config={"features": ["code_assist", "native_messaging", "project_tree"]},
+        )
+        session.add(filesyst_app)
+        await session.flush()
+
+        # Create permission for main app
         perm = AppPermission(
             user_id=user.id,
             application_id=app.id,
@@ -62,7 +109,7 @@ async def seed():
                 "workflows": [],
                 "configs": {},
             },
-            metadata={"type": "root"},
+            node_metadata={"type": "root"},
         )
         session.add(root)
         await session.flush()
@@ -81,7 +128,7 @@ async def seed():
                 "workflows": [],
                 "configs": {},
             },
-            metadata={"type": "page", "icon": "📊"},
+            node_metadata={"type": "page", "icon": "📊"},
         )
         session.add(dashboard)
 
@@ -99,7 +146,7 @@ async def seed():
                 "workflows": [],
                 "configs": {},
             },
-            metadata={"type": "page", "icon": "⚙️"},
+            node_metadata={"type": "page", "icon": "⚙️"},
         )
         session.add(settings)
 

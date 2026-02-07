@@ -23,6 +23,7 @@
             "**/.venv": true,
             "**/node_modules": true,
             "**/__pycache__": true
-        }
+        },
+        "powershell.cwd": "FFS0_Factory"
     }
 }

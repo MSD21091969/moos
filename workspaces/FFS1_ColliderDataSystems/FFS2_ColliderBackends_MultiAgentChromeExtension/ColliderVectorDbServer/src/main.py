@@ -13,9 +13,9 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan."""
-    print(f"🔍 Collider VectorDB Server starting on {settings.host}:{settings.port}")
+    print(f"Collider VectorDB Server starting on {settings.host}:{settings.port}")
     yield
-    print("👋 Collider VectorDB Server shutting down")
+    print("Collider VectorDB Server shutting down")
 
 
 app = FastAPI(
