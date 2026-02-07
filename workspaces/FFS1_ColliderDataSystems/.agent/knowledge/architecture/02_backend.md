@@ -71,15 +71,15 @@ app.add_middleware(
 
 ### Endpoints
 
-| Endpoint          | Method    | Purpose                  |
-| ----------------- | --------- | ------------------------ |
-| `/health`         | GET       | Health check             |
-| `/api/v1/auth/verify` | POST  | Verify token, return user |
-| `/api/v1/context` | GET/POST  | Read/write nodecontainer |
-| `/api/v1/nodes`   | CRUD      | Node operations          |
-| `/api/v1/users`   | CRUD      | User/account operations  |
-| `/api/v1/apps`    | CRUD      | Application management   |
-| `/api/v1/sse`     | GET (SSE) | Real-time events         |
+| Endpoint              | Method    | Purpose                   |
+| --------------------- | --------- | ------------------------- |
+| `/health`             | GET       | Health check              |
+| `/api/v1/auth/verify` | POST      | Verify token, return user |
+| `/api/v1/context`     | GET/POST  | Read/write nodecontainer  |
+| `/api/v1/nodes`       | CRUD      | Node operations           |
+| `/api/v1/users`       | CRUD      | User/account operations   |
+| `/api/v1/apps`        | CRUD      | Application management    |
+| `/api/v1/sse`         | GET (SSE) | Real-time events          |
 
 ### SSE Events
 

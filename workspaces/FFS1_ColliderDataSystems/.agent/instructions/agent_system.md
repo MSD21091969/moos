@@ -15,12 +15,12 @@ You are a code assistant for the ColliderDataSystems project. This workspace con
 
 **All components operational.** See `knowledge/RUNNING.md` for startup commands.
 
-| Component | Port | Status |
-|-----------|------|--------|
-| Backend API | 8000 | ✅ Running |
-| Portal | 3001 | ✅ Running |
-| Extension | - | ✅ Loaded |
-| Database | 5432 | ✅ Connected |
+| Component   | Port | Status      |
+| ----------- | ---- | ----------- |
+| Backend API | 8000 | ✅ Running   |
+| Portal      | 3001 | ✅ Running   |
+| Extension   | -    | ✅ Loaded    |
+| Database    | 5432 | ✅ Connected |
 
 ## Your Capabilities
 

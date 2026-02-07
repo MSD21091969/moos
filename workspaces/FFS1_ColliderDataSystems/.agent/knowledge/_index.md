@@ -15,23 +15,23 @@
 
 ## Architecture Documents
 
-| # | Document | Description |
-|---|----------|-------------|
-| 1 | [01_foundation.md](architecture/01_foundation.md) | NodeContainer, domains, hierarchy |
-| 2 | [02_backend.md](architecture/02_backend.md) | Servers, database, CORS setup |
-| 3 | [03_frontend.md](architecture/03_frontend.md) | Chrome Extension, Portal UI |
-| 4 | [04_data_flow.md](architecture/04_data_flow.md) | Protocols, messages, sync |
-| 5 | [05_security.md](architecture/05_security.md) | Auth, permissions, secrets |
-| 6 | [06_integration.md](architecture/06_integration.md) | LangGraph ↔ Pydantic AI |
+| #   | Document                                            | Description                       |
+| --- | --------------------------------------------------- | --------------------------------- |
+| 1   | [01_foundation.md](architecture/01_foundation.md)   | NodeContainer, domains, hierarchy |
+| 2   | [02_backend.md](architecture/02_backend.md)         | Servers, database, CORS setup     |
+| 3   | [03_frontend.md](architecture/03_frontend.md)       | Chrome Extension, Portal UI       |
+| 4   | [04_data_flow.md](architecture/04_data_flow.md)     | Protocols, messages, sync         |
+| 5   | [05_security.md](architecture/05_security.md)       | Auth, permissions, secrets        |
+| 6   | [06_integration.md](architecture/06_integration.md) | LangGraph ↔ Pydantic AI           |
 
 ## Development Log
 
-| Date | Entry | Status |
-|------|-------|--------|
-| 2026-02-05 | [Phase 2](devlog/2026-02-05_phase2.md) | Completed |
-| 2026-02-05 | [Phase 3 Plan](devlog/2026-02-05_phase3_plan.md) | Completed |
+| Date       | Entry                                                                | Status    |
+| ---------- | -------------------------------------------------------------------- | --------- |
+| 2026-02-05 | [Phase 2](devlog/2026-02-05_phase2.md)                               | Completed |
+| 2026-02-05 | [Phase 3 Plan](devlog/2026-02-05_phase3_plan.md)                     | Completed |
 | 2026-02-05 | [Phase 3 Implementation](devlog/2026-02-05_phase3_implementation.md) | Completed |
-| 2026-02-05 | [MVP Debugging](devlog/2026-02-05_mvp_debugging.md) | Completed |
+| 2026-02-05 | [MVP Debugging](devlog/2026-02-05_mvp_debugging.md)                  | Completed |
 
 ## MVP Status
 
