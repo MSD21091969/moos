@@ -1,0 +1,14 @@
+# Health Check Endpoints
+# Usage: Select environment (mock/production) in httpYac, then run requests
+
+### Health Check
+# @name health
+GET {{baseUrl}}/health
+
+### Ready Check  
+# @name ready
+GET {{baseUrl}}/ready
+
+### OpenAPI Schema
+# @name openapi
+GET {{baseUrl}}/openapi.json

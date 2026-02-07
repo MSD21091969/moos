@@ -1,0 +1,21 @@
+{
+  "recommendations": [
+    "github.copilot",
+    "github.copilot-chat",
+    "googlecloudtools.cloudcode",
+    "humao.rest-client",
+    "ms-azuretools.vscode-azurestorage",
+    "bradlc.vscode-tailwindcss",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "charliermarsh.ruff",
+    "ms-windows-ai-studio.windows-ai-studio",
+    "ms-edgedevtools.vscode-edge-devtools",
+    "ms-playwright.playwright",
+    "ms-vscode-remote.remote-wsl",
+    "42crunch.vscode-openapi",
+    "anweber.vscode-httpyac",
+    "cameron.vscode-pytest",
+    "littlefoxteam.vscode-python-test-adapter"
+  ]
+}

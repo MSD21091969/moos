@@ -1,0 +1,420 @@
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [vite] connecting...
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] [vite] connected.
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got 4 workspace resources
+[Browser] 🔄 loadContainer: Triggering loadSessionsFromBackend...
+[Browser] 🔄 loadSessionsFromBackend: Starting... {activeContainerId: null, workspaceResourcesLen: 4, containerResourcesLen: 0}
+[Browser] 🔄 loadSessionsFromBackend: Found 3 session resources out of 4 total
+[Browser] ✅ loadSessionsFromBackend: Updating nodes. New count: 3 (3 sessions)
+[Browser] ✅ Synced containers from V4 resources
+[Browser] 🎨 GameCanvas: Setting V4 nodes: [Object, Object, Object, Object]
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: true, mode: development, sessionsLen: 0, nodesLen: 3}
+[Browser] 🎨 Initial Fit View (Root)
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000001
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000002
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000003
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got 4 workspace resources
+[Browser] 🔄 loadContainer: Triggering loadSessionsFromBackend...
+[Browser] 🔄 loadSessionsFromBackend: Starting... {activeContainerId: null, workspaceResourcesLen: 4, containerResourcesLen: 0}
+[Browser] 🔄 loadSessionsFromBackend: Found 3 session resources out of 4 total
+[Browser] ✅ loadSessionsFromBackend: Updating nodes. New count: 3 (3 sessions)
+[Browser] ✅ Synced containers from V4 resources
+[Browser] 🎨 GameCanvas: Setting V4 nodes: [Object, Object, Object, Object]
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: true, mode: development, sessionsLen: 0, nodesLen: 3}
+[Browser] 🎨 Initial Fit View (Root)
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000001
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000002
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000003
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] [vite] connecting...
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got 4 workspace resources
+[Browser] 🔄 loadContainer: Triggering loadSessionsFromBackend...
+[Browser] 🔄 loadSessionsFromBackend: Starting... {activeContainerId: null, workspaceResourcesLen: 4, containerResourcesLen: 0}
+[Browser] 🔄 loadSessionsFromBackend: Found 3 session resources out of 4 total
+[Browser] ✅ loadSessionsFromBackend: Updating nodes. New count: 3 (3 sessions)
+[Browser] ✅ Synced containers from V4 resources
+[Browser] 🎨 GameCanvas: Setting V4 nodes: [Object, Object, Object, Object]
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: true, mode: development, sessionsLen: 0, nodesLen: 3}
+[Browser] 🎨 Initial Fit View (Root)
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000001
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000002
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000003
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got 4 workspace resources
+[Browser] 🔄 loadContainer: Triggering loadSessionsFromBackend...
+[Browser] 🔄 loadSessionsFromBackend: Starting... {activeContainerId: null, workspaceResourcesLen: 4, containerResourcesLen: 0}
+[Browser] 🔄 loadSessionsFromBackend: Found 3 session resources out of 4 total
+[Browser] ✅ loadSessionsFromBackend: Updating nodes. New count: 3 (3 sessions)
+[Browser] ✅ Synced containers from V4 resources
+[Browser] 🎨 GameCanvas: Setting V4 nodes: [Object, Object, Object, Object]
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: true, mode: development, sessionsLen: 0, nodesLen: 3}
+[Browser] 🎨 Initial Fit View (Root)
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000001
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000002
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000003
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [vite] connecting...
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] [vite] connected.
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got 4 workspace resources
+[Browser] 🔄 loadContainer: Triggering loadSessionsFromBackend...
+[Browser] 🔄 loadSessionsFromBackend: Starting... {activeContainerId: null, workspaceResourcesLen: 4, containerResourcesLen: 0}
+[Browser] 🔄 loadSessionsFromBackend: Found 3 session resources out of 4 total
+[Browser] ✅ loadSessionsFromBackend: Updating nodes. New count: 3 (3 sessions)
+[Browser] ✅ Synced containers from V4 resources
+[Browser] 🎨 GameCanvas: Setting V4 nodes: [Object, Object, Object, Object]
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: true, mode: development, sessionsLen: 0, nodesLen: 3}
+[Browser] 🎨 Initial Fit View (Root)
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000001
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000002
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000003
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] [vite] connecting...
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got 4 workspace resources
+[Browser] 🔄 loadContainer: Triggering loadSessionsFromBackend...
+[Browser] 🔄 loadSessionsFromBackend: Starting... {activeContainerId: null, workspaceResourcesLen: 4, containerResourcesLen: 0}
+[Browser] 🔄 loadSessionsFromBackend: Found 3 session resources out of 4 total
+[Browser] ✅ loadSessionsFromBackend: Updating nodes. New count: 3 (3 sessions)
+[Browser] ✅ Synced containers from V4 resources
+[Browser] 🎨 GameCanvas: Setting V4 nodes: [Object, Object, Object, Object]
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: true, mode: development, sessionsLen: 0, nodesLen: 3}
+[Browser] 🎨 Initial Fit View (Root)
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000001
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000002
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000003
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] ✅ [InitScript] Injected auth_token: eyJhbGciOi...
+[Browser] ✅ [InitScript] Injected auth_token: eyJhbGciOi...
+[Browser] [vite] connecting...
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ [InitScript] Injected auth_token: eyJhbGciOi...
+[Browser] [vite] connecting...
+[Browser] [vite] connected.
+[Browser] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[Browser] [BRIDGE] Initialized v1.0.0
+[Browser] [BRIDGE] Executor started (500ms poll)
+[Browser] [BRIDGE] Ready for commands
+[Browser] 🔄 loadContainer: Loading Root (UserSession)...
+[Browser] 🔄 loadContainer: Fetching user session for user_enterprise...
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: false, mode: development, sessionsLen: 0, nodesLen: 0}
+[Browser] 🌐 development Mode: Attempting backend sync
+[Browser] 🔄 WorkspacePage: Delegating backend sync to loadContainer...
+[Browser] 💡 Runtime diagnostics initialized
+[Browser]    Type: window.__diagnostics.status() for full report
+[Browser] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[Browser] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[Browser] ✅ loadContainer: Got user session: {instance_id: usersession_user_enterprise, depth: 0, acl: Object, created_at: 2025-12-08T02:49:05.142031+00:00, updated_at: 2025-12-08T02:49:05.142063+00:00}
+[Browser] 🔄 loadContainer: Fetching workspace resources for user_enterprise...
+[Browser] ✅ loadContainer: Got 4 workspace resources
+[Browser] 🔄 loadContainer: Triggering loadSessionsFromBackend...
+[Browser] 🔄 loadSessionsFromBackend: Starting... {activeContainerId: null, workspaceResourcesLen: 4, containerResourcesLen: 0}
+[Browser] 🔄 loadSessionsFromBackend: Found 3 session resources out of 4 total
+[Browser] ✅ loadSessionsFromBackend: Updating nodes. New count: 3 (3 sessions)
+[Browser] ✅ Synced containers from V4 resources
+[Browser] 🎨 GameCanvas: Setting V4 nodes: [Object, Object, Object, Object]
+[Browser] 🔍 WorkspacePage Effect: {hasInitialized: true, mode: development, sessionsLen: 0, nodesLen: 3}
+[Browser] 🎨 Initial Fit View (Root)
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000001
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000002
+[Browser] 🎨 ContainerNode MOUNTED: sess_000000000003
+[Browser] 🎨 ContainerNode Render: sess_000000000001 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000001 session
+[Browser] 🎨 ContainerNode Render: sess_000000000002 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000002 session
+[Browser] 🎨 ContainerNode Render: sess_000000000003 session type prop: session
+[Browser] 🎨 ContainerNode Rendering JSX: sess_000000000003 session

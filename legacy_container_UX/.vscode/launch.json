@@ -1,0 +1,79 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "msedge",
+      "request": "attach",
+      "name": "Attach to Edge (Port 9222)",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}/frontend",
+      "sourceMaps": true,
+      "trace": true,
+      "pathMapping": {
+        "/": "${workspaceFolder}/frontend",
+        "/src": "${workspaceFolder}/frontend/src"
+      }
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch Edge & Attach Debugger",
+      "url": "http://localhost:5173/workspace",
+      "webRoot": "${workspaceFolder}/frontend",
+      "runtimeArgs": [
+        "--remote-debugging-port=9222"
+      ],
+      "sourceMaps": true
+    },
+    {
+      "type": "pwa-msedge",
+      "name": "Launch Microsoft Edge",
+      "request": "launch",
+      "runtimeArgs": [
+        "--remote-debugging-port=9222"
+      ],
+      "url": "http://localhost:5173/workspace",
+      "presentation": {
+        "hidden": true
+      }
+    },
+    {
+      "type": "pwa-msedge",
+      "name": "Launch Microsoft Edge in headless mode",
+      "request": "launch",
+      "runtimeArgs": [
+        "--headless",
+        "--remote-debugging-port=9222"
+      ],
+      "url": "http://localhost:5173/workspace",
+      "presentation": {
+        "hidden": true
+      }
+    },
+    {
+      "type": "vscode-edge-devtools.debug",
+      "name": "Open Edge DevTools",
+      "request": "attach",
+      "url": "http://localhost:5173/workspace",
+      "presentation": {
+        "hidden": true
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Edge Headless and attach DevTools",
+      "configurations": [
+        "Launch Microsoft Edge in headless mode",
+        "Open Edge DevTools"
+      ]
+    },
+    {
+      "name": "Launch Edge and attach DevTools",
+      "configurations": [
+        "Launch Microsoft Edge",
+        "Open Edge DevTools"
+      ]
+    }
+  ]
+}

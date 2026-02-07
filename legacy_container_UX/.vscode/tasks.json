@@ -1,0 +1,289 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "� Build: Frontend",
+			"type": "shell",
+			"command": "npm run build",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$tsc"
+			],
+			"detail": "Runs TypeScript compiler and Vite build. Use this to check for type errors."
+		},
+		{
+			"label": "�🚀 Start: Dev Environment (Golden Path)",
+			"type": "shell",
+			"command": ".\\scripts\\start-dev-environment.ps1",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+				"focus": true,
+				"panel": "dedicated"
+			},
+			"detail": "Opens new terminals for Backend & Frontend, then launches Edge. The most stable way to start."
+		},
+		{
+			"label": "🚀 Launch: Phase 1 (Demo)",
+			"type": "shell",
+			"command": "powershell -ExecutionPolicy Bypass -File ${workspaceFolder}/scripts/start-phase1.ps1",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [],
+			"detail": "Demo Mode: Starts Vite + Edge with CDP (Playwright MCP ready)"
+		},
+		{
+			"label": "🧹 Clean: Environment",
+			"type": "shell",
+			"command": ".\\scripts\\cleanup-environment.ps1",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Kills Node/Python/Edge and clears caches. Run this before starting fresh."
+		},
+		{
+			"label": "🚀 Launch: Phase 3 (Cloud)",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; $env:VITE_MODE='production'; npm run dev; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^VITE",
+					"endsPattern": "ready in"
+				}
+			},
+			"detail": "Production Mode: Frontend points to Cloud Run backend"
+		},
+		{
+			"label": "Start: Backend",
+			"type": "shell",
+			"command": "$env:USE_FIRESTORE_MOCKS='false'; $env:ENVIRONMENT='development'; $env:SKIP_AUTH_FOR_TESTING='true'; py -3.11 -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^INFO",
+					"endsPattern": "Application startup complete"
+				}
+			},
+			"detail": "FastAPI backend with SKIP_AUTH_FOR_TESTING=true (defaults to enterprise@test.com)"
+		},
+		{
+			"label": "Start: Frontend",
+			"type": "shell",
+			"command": "npm run dev",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^VITE",
+					"endsPattern": "ready in"
+				}
+			},
+			"detail": "Vite dev server on localhost:5173"
+		},
+		{
+			"label": "🧹 Clean: Kill All",
+			"type": "shell",
+			"command": "Get-Process -Name 'node','python' -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host '✅ Killed node and python processes'",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Kills all node and python processes"
+		},
+		{
+			"label": "🧹 Clean: Vite Cache",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; Remove-Item -Recurse -Force node_modules/.vite -ErrorAction SilentlyContinue; Write-Host '✅ Cleared Vite cache'; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Clears node_modules/.vite for fresh rebuild"
+		},
+		{
+			"label": "🔄 Reset: Demo Data",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; npx tsx scripts/auth/clear-storage.ts; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Clears localStorage, triggers fresh demo data load"
+		},
+		{
+			"label": "Debug: Launch Edge CDP",
+			"type": "shell",
+			"command": "& '${workspaceFolder}/scripts/launch-edge.ps1'",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"detail": "Launches Edge with --remote-debugging-port=9222 for MCP Playwright"
+		},
+		{
+			"label": "🔍 Observe: Inject Watcher",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; npx tsx scripts/mcp/inject-observer.ts; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Injects observer for [CLICK], [NAV], [STATE], [ERROR] console events"
+		},
+		{
+			"label": "🔍 Observe: Poll State",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; npx tsx scripts/mcp/poll-state.ts; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Quick snapshot of URL, Zustand store, localStorage"
+		},
+		{
+			"label": "🎥 Record: UX (CDP 9222)",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; npx tsx scripts/mcp/record-ux.ts; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "UX Recorder starting",
+					"endsPattern": "UX Recorder finished"
+				}
+			},
+			"presentation": {
+				"panel": "dedicated",
+				"focus": true,
+				"reveal": "always"
+			},
+			"detail": "Option B: long-running UX recorder. Writes JSONL + summary to frontend/test-results/mcp/"
+		},
+		{
+			"label": "🚀 Phase 1 (Demo) + 🎥 UX Recorder",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"🚀 Launch: Phase 1 (Demo)",
+				"🎥 Record: UX (CDP 9222)"
+			],
+			"detail": "Golden path: start Phase 1 demo (5174 + Edge CDP 9222) then start the UX recorder"
+		},
+		{
+			"label": "🧪 Test: Quick (UOM Rules)",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; npx playwright test uom- --project=msedge --reporter=line --timeout=15000; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"detail": "Runs UOM rule tests: Terminal, Context Menu, Breadcrumb"
+		},
+		{
+			"label": "🧪 Test: Phase 1 (UX)",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/frontend'; npx playwright test --project=msedge --reporter=line --timeout=30000; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "test",
+			"detail": "All Playwright tests in Demo Mode"
+		},
+		{
+			"label": "📡 Sync: Full Pipeline",
+			"type": "shell",
+			"command": "Invoke-RestMethod -Uri 'http://localhost:8000/openapi.json' -OutFile '${workspaceFolder}/backend/openapi-schema.json'; Copy-Item '${workspaceFolder}/backend/openapi-schema.json' -Destination '${workspaceFolder}/frontend/openapi-spec.json' -Force; Push-Location '${workspaceFolder}/frontend'; npm run types:generate; Pop-Location; Write-Host '✅ OpenAPI exported and frontend types regenerated'",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Backend → OpenAPI → Frontend types"
+		},
+		{
+			"label": "Backend: Health Check",
+			"type": "shell",
+			"command": "Invoke-RestMethod -Uri 'http://localhost:8000/health' | ConvertTo-Json -Depth 5",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Checks backend /health endpoint"
+		},
+		{
+			"label": "🔥 Logfire: Query Errors",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/backend'; python scripts/logfire_tail.py --hours 1 --min-level error; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Recent errors from Logfire (last hour)"
+		},
+		{
+			"label": "🔥 Logfire: Query Warnings",
+			"type": "shell",
+			"command": "Push-Location '${workspaceFolder}/backend'; python scripts/logfire_tail.py --hours 2 --min-level warning; Pop-Location",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Recent warnings from Logfire (last 2 hours)"
+		},
+		{
+			"label": "☁️ GCP: Query Cloud Run Errors",
+			"type": "shell",
+			"command": "gcloud logging read 'resource.type=cloud_run_revision AND severity>=ERROR' --limit=20 --format='table(timestamp,textPayload)' --project=mailmind-ai-djbuw",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Recent errors from Cloud Run"
+		},
+		{
+			"label": "☁️ GCP: Tail Cloud Run Logs",
+			"type": "shell",
+			"command": "gcloud run services logs tail my-tiny-data-collider --project=mailmind-ai-djbuw --region=europe-west4",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"detail": "Live streaming logs from Cloud Run (Ctrl+C to stop)"
+		},
+		{
+			"label": "🔧 Auth: Inject Token (CDP)",
+			"type": "shell",
+			"command": "npm run auth:inject",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"isBackground": false,
+			"group": "none",
+			"detail": "Injects auth token into running Edge (port 9222)"
+		}
+	]
+}

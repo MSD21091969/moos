@@ -1,0 +1,22 @@
+# Authentication Endpoints
+# Run login first, then copy token to http-client.env.json
+
+### Login (Enterprise Test User)
+# @name login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "enterprise@test.com",
+  "password": "testpassword123"
+}
+
+### Get Current User
+# @name me
+GET {{baseUrl}}/api/v1/auth/me
+Authorization: Bearer {{authToken}}
+
+### Refresh Token
+# @name refresh
+POST {{baseUrl}}/api/v1/auth/refresh
+Authorization: Bearer {{authToken}}

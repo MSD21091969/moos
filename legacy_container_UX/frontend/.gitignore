@@ -1,0 +1,45 @@
+# Local environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build output
+dist
+dist-ssr
+*.local
+
+# TypeScript build cache
+*.tsbuildinfo
+vite.config.d.ts
+
+# Ephemeral files (never commit)
+temp-token.txt
+storage-dump.txt
+lint_report.txt
+*.log
+
+# Dependencies
+node_modules
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vercel

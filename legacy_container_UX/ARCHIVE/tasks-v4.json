@@ -1,0 +1,580 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // ═══════════════════════════════════════════════════════════
+        // 🎮 ONE-CLICK: Full debug environment in one command
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "🎮 Start: Demo + Edge Debug",
+            "type": "shell",
+            "command": ".\\scripts\\start-demo-debug.ps1",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+            "problemMatcher": [],
+            "detail": "Demo Mode: Kills processes → Starts Frontend (no backend) → Waits for ready → Launches Edge with CDP 9222"
+        },
+        {
+            "label": "🎮 Start: Debug Session (All-in-One)",
+            "type": "shell",
+            "command": ".\\scripts\\start-debug-session.ps1",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+            "problemMatcher": [],
+            "detail": "Full Stack: Kills processes → Starts Backend → Starts Frontend → Launches Edge with CDP 9222"
+        },
+        // ═══════════════════════════════════════════════════════════
+        // DEBUG: Browser inspection and Edge DevTools
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Debug: Launch Chromium (CDP 9222)",
+            "type": "shell",
+            "command": ".\\scripts\\launch-debug-edge.ps1",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Closes all Edge windows first, then launches with --remote-debugging-port=9222. MCP Playwright uses this browser."
+        },
+        // ═══════════════════════════════════════════════════════════
+        // MCP OBSERVATION: Real-time UX tracking for Phase 1
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "🔍 MCP: Inject Observer",
+            "type": "shell",
+            "command": "npx tsx scripts/inject-observer.ts",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Injects observer script into browser. Copilot can then use browser_console_messages to see [CLICK], [NAV], [STATE], [ERROR] events in real-time."
+        },
+        {
+            "label": "🔍 MCP: Poll State",
+            "type": "shell",
+            "command": "npx tsx scripts/poll-state.ts",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Quick snapshot of current browser state: URL, Zustand store, localStorage, breadcrumb."
+        },
+        {
+            "label": "🔍 MCP: Phase 1 Setup",
+            "dependsOn": ["Start: Demo Mode", "Debug: Launch Chromium (CDP 9222)", "🔍 MCP: Inject Observer"],
+            "dependsOrder": "sequence",
+            "problemMatcher": [],
+            "detail": "Full Phase 1 setup: Demo Mode → Edge → Inject Observer. Ready for MCP-assisted UX testing."
+        },
+        // NOTE: Debug: Watch Console REMOVED - Use MCP browser_console_messages instead
+        // NOTE: Debug: Check localStorage REMOVED - Use MCP browser_evaluate with window.__workspaceStore instead
+        {
+            "label": "Debug: Clear Storage & Reload",
+            "type": "shell",
+            "command": "npx tsx scripts/clear-storage.ts",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Clears localStorage and reloads. Demo data will reload if in Demo Mode."
+        },
+        {
+            "label": "🔄 Reset: Demo Data",
+            "type": "shell",
+            "command": "npx tsx scripts/clear-storage.ts",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Clears localStorage → triggers fresh demo data load (5 sessions with all container types)"
+        },
+        // ═══════════════════════════════════════════════════════════
+        // CLEAN: Process management
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Clean: Kill All Processes",
+            "type": "shell",
+            "command": ".\\frontend\\scripts\\cleanup-processes.ps1",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Wait: Backend Ready",
+            "type": "shell",
+            "command": ".\\backend\\scripts\\development\\wait-for-backend.ps1 -TimeoutSec 120",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Monitor: Backend Startup Time",
+            "type": "shell",
+            "dependsOn": ["Start: Backend"],
+            "command": ".\\backend\\scripts\\development\\wait-for-backend.ps1 -TimeoutSec 120",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Starts backend and measures time until healthy"
+        },
+        // ═══════════════════════════════════════════════════════════
+        // START: Server and stack startup
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Start: Testing Session",
+            "dependsOn": ["Clean: Kill All Processes", "Start: Full Stack"],
+            "dependsOrder": "sequence",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start: Full Stack",
+            "dependsOn": ["Start: Backend", "Start: Frontend"],
+            "dependsOrder": "parallel",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start: Demo Mode",
+            "type": "shell",
+            "dependsOn": ["Clean: Kill All Processes"],
+            "command": "$env:VITE_MODE='demo'; npm run dev",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": { "regexp": "^$", "file": 1, "location": 2, "message": 3 },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "VITE.*ready",
+                    "endsPattern": "Local:.*http://localhost:5173"
+                }
+            }
+        },
+        {
+            "label": "Start: Cloud Mode",
+            "dependsOn": ["Clean: Kill All Processes", "Start: Backend (Cloud)", "Start: Frontend (Cloud)"],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start: Backend (Cloud)",
+            "type": "shell",
+            "command": "cd '${workspaceFolder}/backend'; $env:USE_FIRESTORE_MOCKS='false'; $env:ENVIRONMENT='production'; python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": { "regexp": "^$", "file": 1, "location": 2, "message": 3 },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^INFO:\\s+Will watch for changes",
+                    "endsPattern": "^INFO:\\s+Application startup complete"
+                }
+            }
+        },
+        {
+            "label": "Start: Frontend (Cloud)",
+            "type": "shell",
+            "command": "$env:VITE_MODE='production'; npm run dev",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": { "regexp": "^$", "file": 1, "location": 2, "message": 3 },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "VITE.*ready",
+                    "endsPattern": "Local:.*http://localhost:5173"
+                }
+            }
+        },
+        {
+            "label": "Start: Backend",
+            "type": "shell",
+            "command": "cd '${workspaceFolder}/backend'; $env:USE_FIRESTORE_MOCKS='true'; $env:ENVIRONMENT='development'; $env:SKIP_AUTH_FOR_TESTING='true'; python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": { "regexp": "^$", "file": 1, "location": 2, "message": 3 },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^INFO:\\s+Will watch for changes",
+                    "endsPattern": "^INFO:\\s+Application startup complete"
+                }
+            }
+        },
+        {
+            "label": "Start: Frontend",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": { "regexp": "^$", "file": 1, "location": 2, "message": 3 },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "VITE.*ready",
+                    "endsPattern": "Local:.*http://localhost:5173"
+                }
+            }
+        },
+        // ═══════════════════════════════════════════════════════════
+        // AUTH: Authentication helpers
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Auth: Login as Enterprise",
+            "type": "shell",
+            "command": "npx tsx scripts/login-enterprise.ts",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ═══════════════════════════════════════════════════════════
+        // TEST: Backend pytest suites
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Test: V2 API Gate",
+            "type": "shell",
+            "dependsOn": ["Wait: Backend Ready"],
+            "command": "pytest tests/unit/api/test_resources_api.py -v --tb=short",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "group": { "kind": "test", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: All Backend",
+            "type": "shell",
+            "dependsOn": ["Wait: Backend Ready"],
+            "command": "pytest tests/unit/ tests/integration/ -v",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: Unit Only",
+            "type": "shell",
+            "dependsOn": ["Wait: Backend Ready"],
+            "command": "pytest tests/unit/ -v",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: Integration Only",
+            "type": "shell",
+            "dependsOn": ["Wait: Backend Ready"],
+            "command": "pytest tests/integration/ -v",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ═══════════════════════════════════════════════════════════
+        // E2E: Playwright tests
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "🧪 Test: UOM Rules (Quick)",
+            "type": "shell",
+            "command": "npx playwright test uom- --project=msedge --reporter=line --timeout=15000",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": { "kind": "test", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+            "problemMatcher": [],
+            "detail": "Runs UOM rule tests with 15s timeout - Terminal, Context Menu, Breadcrumb, Error Handling"
+        },
+        {
+            "label": "🧪 Test: UOM Terminal Rules",
+            "type": "shell",
+            "command": "npx playwright test uom-terminal-rules --project=msedge --reporter=line --timeout=15000",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+            "problemMatcher": [],
+            "detail": "Tests Source terminal rule - no Open, no double-click navigation"
+        },
+        {
+            "label": "🧪 Test: UOM Context Menus",
+            "type": "shell",
+            "command": "npx playwright test uom-context-menus --project=msedge --reporter=line --timeout=15000",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+            "problemMatcher": [],
+            "detail": "Tests context menu variations by node type"
+        },
+        {
+            "label": "Test: Phase 1 (UX/Demo)",
+            "type": "shell",
+            "command": "npx playwright test --project=msedge --reporter=line --timeout=30000",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": { "kind": "test", "isDefault": false },
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+            "problemMatcher": [],
+            "detail": "Runs all current E2E tests in Demo Mode (Frontend Only)"
+        },
+        {
+            "label": "Test: Phase 2 (Integration)",
+            "type": "shell",
+            "dependsOn": ["Wait: Backend Ready"],
+            "command": "npx playwright test --project=msedge --reporter=line",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": { "kind": "test", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+            "problemMatcher": [],
+            "detail": "Runs all current E2E tests against Local Backend"
+        },
+        {
+            "label": "Test: Phase 3 (Production)",
+            "type": "shell",
+            "dependsOn": ["Wait: Backend Ready"],
+            "command": "npx playwright test --project=msedge --reporter=line",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+            "problemMatcher": [],
+            "detail": "Runs all current E2E tests against Production Backend"
+        },
+        {
+            "label": "🔍 Test: Preflight Check",
+            "type": "shell",
+            "command": "npx tsx scripts/preflight-check.ts",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Validates environment config before testing"
+        },
+        {
+            "label": "E2E: Show Report",
+            "type": "shell",
+            "command": "npx playwright show-report",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "E2E: All Playwright Tests",
+            "type": "shell",
+            "dependsOn": ["Wait: Backend Ready"],
+            "command": "npx playwright test",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "E2E: Show Report",
+            "type": "shell",
+            "command": "npx playwright show-report",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ═══════════════════════════════════════════════════════════
+        // LINT: Code quality checks
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Lint: TypeScript Check",
+            "type": "shell",
+            "command": "npx tsc --noEmit",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "Lint: Frontend ESLint",
+            "type": "shell",
+            "command": "npm run lint",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Lint: Frontend TypeCheck",
+            "type": "shell",
+            "command": "npm run typecheck",
+            "options": { "cwd": "${workspaceFolder}/frontend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Lint: Backend Ruff Check",
+            "type": "shell",
+            "command": "ruff check src/ sdk/ tests/",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Lint: Backend Ruff Format",
+            "type": "shell",
+            "command": "ruff format src/ sdk/ tests/",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "presentation": { "reveal": "silent", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ═══════════════════════════════════════════════════════════
+        // SYNC: OpenAPI and type generation
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Sync: Export OpenAPI",
+            "type": "shell",
+            "command": "Invoke-RestMethod -Uri 'http://localhost:8000/openapi.json' -OutFile 'backend/openapi-schema.json'; Write-Host '✅ OpenAPI exported to backend/openapi-schema.json'",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Sync: OpenAPI Types",
+            "type": "shell",
+            "command": "Copy-Item 'backend/openapi-schema.json' -Destination 'frontend/openapi-spec.json' -Force; cd frontend; npm run types:generate; Write-Host '✅ Frontend types regenerated'",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Sync: Full Pipeline",
+            "type": "shell",
+            "command": "Invoke-RestMethod -Uri 'http://localhost:8000/openapi.json' -OutFile 'backend/openapi-schema.json'; Copy-Item 'backend/openapi-schema.json' -Destination 'frontend/openapi-spec.json' -Force; cd frontend; npm run types:generate; Write-Host '✅ OpenAPI exported and frontend types regenerated'",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ═══════════════════════════════════════════════════════════
+        // BACKEND: Quick checks
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Backend: Health Check",
+            "type": "shell",
+            "command": "Invoke-RestMethod -Uri 'http://localhost:8000/health' | ConvertTo-Json -Depth 5",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ═══════════════════════════════════════════════════════════
+        // DEPLOY: Production deployment (Phase B)
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Deploy: Trigger Cloud Run",
+            "type": "shell",
+            "command": "gh workflow run 'Deploy to Cloud Run'",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Deploy: Validate Prod Health",
+            "type": "shell",
+            "command": "Invoke-RestMethod -Uri 'https://my-tiny-data-collider-ng2rb7mwyq-ez.a.run.app/health' | ConvertTo-Json -Depth 10",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Deploy: Cloud Run Logs",
+            "type": "shell",
+            "command": "gcloud run services logs read my-tiny-data-collider --project=mailmind-ai-djbuw --region=europe-west4 --limit=50",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        },
+        // ═══════════════════════════════════════════════════════════
+        // GCP: Cloud observability tasks (Phase 2/3)
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "☁️ GCP: Cloud Run Errors",
+            "type": "shell",
+            "command": "gcloud logging read 'resource.type=cloud_run_revision AND severity>=ERROR' --limit=20 --format='table(timestamp,textPayload)' --project=mailmind-ai-djbuw",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": [],
+            "detail": "Shows recent errors from Cloud Run"
+        },
+        {
+            "label": "☁️ GCP: Cloud Run Requests",
+            "type": "shell",
+            "command": "gcloud logging read 'resource.type=cloud_run_revision AND httpRequest.requestUrl:*' --limit=20 --format='table(timestamp,httpRequest.requestMethod,httpRequest.requestUrl,httpRequest.status)' --project=mailmind-ai-djbuw",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": [],
+            "detail": "Shows recent HTTP requests to Cloud Run"
+        },
+        {
+            "label": "☁️ GCP: Service Status",
+            "type": "shell",
+            "command": "gcloud run services describe my-tiny-data-collider --region=europe-west4 --format='yaml(status)' --project=mailmind-ai-djbuw",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": [],
+            "detail": "Shows Cloud Run service status and URL"
+        },
+        {
+            "label": "☁️ GCP: Open Trace Explorer",
+            "type": "shell",
+            "command": "Start-Process 'https://console.cloud.google.com/traces/list?project=mailmind-ai-djbuw'",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "silent", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Opens GCP Trace Explorer in browser"
+        },
+        {
+            "label": "☁️ GCP: Open Cloud Logging",
+            "type": "shell",
+            "command": "Start-Process 'https://console.cloud.google.com/logs/query?project=mailmind-ai-djbuw'",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "silent", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Opens GCP Cloud Logging in browser"
+        },
+        {
+            "label": "🔥 Logfire: Open Dashboard",
+            "type": "shell",
+            "command": "Start-Process 'https://logfire-eu.pydantic.dev/msd-21091969/my-tiny-data-collider'",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "silent", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Opens Pydantic Logfire dashboard in browser"
+        },
+        // ═══════════════════════════════════════════════════════════
+        // CYCLE: Workflow Management
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "Cycle: Reset Bug List",
+            "type": "shell",
+            "command": ".\\frontend\\scripts\\reset-bug-list.ps1",
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Resets BUG_LIST.md to a clean template for a new cycle"
+        },
+        // ═══════════════════════════════════════════════════════════
+        // 📚 DOCS: Living document updates (Plan → Execute → Test)
+        // ═══════════════════════════════════════════════════════════
+        {
+            "label": "📋 Plan: Update Architecture",
+            "type": "shell",
+            "command": "code '${workspaceFolder}/ARCHITECTURE_V4.md'",
+            "presentation": { "reveal": "silent", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Open ARCHITECTURE_V4.md — object model, design decisions, open questions"
+        },
+        {
+            "label": "📝 Execute: Update Implementation Log",
+            "type": "shell",
+            "command": "code '${workspaceFolder}/IMPLEMENTATION_LOG.md'",
+            "presentation": { "reveal": "silent", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Open IMPLEMENTATION_LOG.md — what was done, when, files changed"
+        },
+        {
+            "label": "📚 Docs: Open All Living Documents",
+            "type": "shell",
+            "command": "code '${workspaceFolder}/ARCHITECTURE_V4.md' '${workspaceFolder}/IMPLEMENTATION_LOG.md'",
+            "presentation": { "reveal": "silent", "panel": "shared" },
+            "problemMatcher": [],
+            "detail": "Open living documents in tabs"
+        }
+    ]
+}

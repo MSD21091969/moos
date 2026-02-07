@@ -1,0 +1,148 @@
+import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import ChatAgent from '../components/ChatAgent';
+import GameCanvas from '../components/GameCanvas';
+import { NodeHighlightOverlay } from '../components/NodeHighlightOverlay';
+import { SessionEditModal } from '../components/SessionEditModal';
+import { StagingQueuePanel } from '../components/StagingQueuePanel';
+import { createDemoSessions } from '../lib/demo-data';
+import { useWorkspaceStore } from '../lib/workspace-store';
+
+export default function WorkspacePage() {
+  const { sessions, nodes, setNodes, addSession, loadSessionsFromBackend, editingSessionId, setEditingSessionId } = useWorkspaceStore();
+  const [chatOpen, setChatOpen] = useState(false);
+  const hasInitialized = useRef(false);
+
+  useEffect(() => {
+    // Only run once on mount
+    if (typeof window === 'undefined') return;
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
+    // Clear localStorage if we detect OLD nested data structure (data.data)
+    const hasNestedStructure = nodes.some((node) => {
+      if (node.type === 'tool' || node.type === 'agent' || node.type === 'object') {
+        const nodeData = node.data as any;
+        return nodeData?.data !== undefined; // Has nested data.data (old structure)
+      }
+      return false;
+    });
+
+    if (hasNestedStructure) {
+      console.log('🔧 Detected old nested structure (data.data), clearing localStorage...');
+      localStorage.removeItem('workspace-storage');
+      window.location.reload();
+      return;
+    }
+
+    // Try to load sessions from backend first
+    const initSessions = async () => {
+      // Always check persisted localStorage directly, because Zustand rehydration may not have finished yet
+      let persistedNodesCount = 0;
+      try {
+        const raw = localStorage.getItem('workspace-storage');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const st = parsed.state || parsed;
+          persistedNodesCount = Array.isArray(st?.nodes) ? st.nodes.length : 0;
+        }
+      } catch {}
+
+      // Flag to explicitly force backend sync if needed
+      const forceCloudSync =
+        localStorage.getItem('collider_force_cloud_sync') === 'true' ||
+        new URLSearchParams(location.search).get('sync') === '1';
+
+      const hasToken = !!(localStorage.getItem('auth_token') || import.meta.env.VITE_API_TOKEN);
+
+      // 1) If we have any persisted nodes and not explicitly forcing cloud sync, prefer local persisted state
+      if (persistedNodesCount > 0 && !forceCloudSync) {
+        console.log(
+          `📦 Using persisted workspace (${persistedNodesCount} nodes). Skipping backend load.`
+        );
+        return;
+      }
+
+      // 2) If we explicitly force cloud sync or there is a token and nothing persisted, try backend
+      if (hasToken) {
+        try {
+          await loadSessionsFromBackend();
+          console.log('✅ Backend load complete');
+          return;
+        } catch (error) {
+          console.warn('❌ Backend session load failed:', error);
+        }
+      }
+
+      // 3) Demo fallback (first-time dev runs)
+      if (!hasToken && sessions.length === 0 && nodes.length === 0 && import.meta.env.DEV) {
+        console.log('🎨 First run - loading demo data');
+        const demo = createDemoSessions();
+        demo.sessions.forEach(addSession);
+        setNodes(demo.nodes);
+      }
+    };
+
+    initSessions();
+  }, [sessions.length, nodes.length, addSession, setNodes, loadSessionsFromBackend]);
+
+  return (
+    <div className="relative w-screen h-screen bg-slate-950">
+      {/* Header */}
+      <header className="absolute top-0 left-0 right-0 z-10 bg-slate-900/80 backdrop-blur border-b border-slate-800">
+        <div className="flex items-center justify-between px-4 py-2">
+          {/* Left: collider_space label (no link) */}
+          <div className="text-xl font-bold text-white">
+            collider_space
+          </div>
+
+          {/* Right: MY-TINY-... - click to open chat */}
+          <button
+            onClick={() => setChatOpen(!chatOpen)}
+            className="text-base font-bold text-white hover:text-blue-400 transition-colors"
+            title="AI Assist"
+          >
+            my-tiny-data-collider
+          </button>
+        </div>
+      </header>
+
+      {/* Chat Panel */}
+      {chatOpen && (
+        <motion.div
+          drag
+          dragMomentum={false}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          onClick={(e) => e.stopPropagation()}
+          className=\"fixed top-[60px] left-4 w-96 h-[500px] bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg shadow-2xl flex flex-col z-50 cursor-move\"\n        >\n          <ChatAgent />\n        </motion.div>\n      )}
+        >
+          <ChatAgent />
+        </motion.div>
+      )}
+
+      {/* Main Canvas - Workspace View (Sessions + Their Children Only) */}
+      <div
+        className="absolute top-[49px] left-0 right-0 bottom-0"
+        onClick={() => setChatOpen(false)}
+      >
+        <GameCanvas key="workspace-canvas" workspaceView={true} />
+        <NodeHighlightOverlay />
+      </div>
+
+      {/* Staging Queue Panel */}
+      <StagingQueuePanel />
+
+      {/* Global Session Edit Modal */}
+      {editingSessionId && (
+        <SessionEditModal
+          sessionId={editingSessionId}
+          isOpen={true}
+          onClose={() => setEditingSessionId(null)}
+        />
+      )}
+    </div>
+  );
+}
+
