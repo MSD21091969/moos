@@ -10,7 +10,7 @@ description: Multi-agent system for context-aware AI applications
 # Inheritance settings
 inheritance:
   enabled: true
-  strategy: deep_merge  # Options: deep_merge, replace, disabled
+  strategy: deep_merge # Options: deep_merge, replace, disabled
 
 # Parent context (factory level)
 includes:
@@ -18,7 +18,6 @@ includes:
     type: factory
     load:
       - rules/sandbox.md
-      - rules/identity.md
       - rules/code_patterns.md
       - instructions/knowledge_hierarchy.md
       - instructions/instruction_inheritance.md
@@ -41,6 +40,11 @@ exports:
   - skills/ide_code_assist.md
   - tools/filesyst_tools.json
   - configs/domains.yaml
+  # Rules
+  - rules/stack_standards.md
+  - rules/communication_architecture.md
+  - rules/code_quality.md
+  - rules/project_structure.md
 
 # Secrets this workspace may use (injected at runtime)
 secrets:
@@ -51,4 +55,4 @@ secrets:
 # Permission requirements
 permissions:
   require_auth: true
-  default_role: viewer  # viewer, editor, admin
+  default_role: viewer # viewer, editor, admin
