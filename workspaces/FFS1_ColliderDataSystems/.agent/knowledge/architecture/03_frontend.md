@@ -44,11 +44,12 @@
 │                                                                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
 │  │ CONTENT      │  │ SIDEPANEL    │  │ DocPiP       │  │ OFFSCREEN DOC   │  │
-│  │ SCRIPTS      │  │ (Graph       │  │ (Agent Seat) │  │                 │  │
-│  │ (Per-tab)    │  │  Browser)    │  │              │  │ • WebGPU        │  │
-│  │              │  │              │  │ • Floats     │  │ • Heavy compute │  │
-│  │ • DOM access │  │ • Navigation │  │ • Multi-tab  │  │                 │  │
-│  │ • Tab agent  │  │ • Chat UI    │  │   focus      │  │                 │  │
+│  │ SCRIPTS      │  │ (Appnode     │  │ (User-to-User│  │                 │  │
+│  │ (Per-tab)    │  │  Browser +   │  │  Comms)      │  │ • WebGPU        │  │
+│  │              │  │  AI Pilot)   │  │              │  │ • Heavy compute │  │
+│  │ • DOM access │  │ • Navigation │  │ • WebRTC     │  │                 │  │
+│  │ • Tab agent  │  │ • Chat UI    │  │ • Video/Audio│  │                 │  │
+│  │              │  │ • Agent Seat │  │ • Floats     │  │                 │  │
 │  └──────────────┘  └──────────────┘  └──────────────┘  └─────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -180,28 +181,40 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 
 ## UI Components
 
-### Sidepanel (Graph Browser)
+### Sidepanel (Appnode Browser + AI Pilot/Agent Seat)
 
 - **API:** `chrome.sidePanel`
+- **Code Location:** FFS2 Chrome Extension (`sidepanel.tsx`, `src/components/sidepanel/`)
+- **Context Documentation:** FFS4 (`.agent/` context only)
 - **Context:** Tab-specific or Global
-- **Use Case:** Navigate appnode graph, contextual chat
+- **Use Case:**
+  - Navigate appnode graph (Appnode Browser)
+  - Interact with AI Pilot/Main Agent Seat
+  - Contextual chat with agent
+  - Quick actions on containers
 - **Lifecycle:** Tied to browser window
 
 Visual styles by domain:
-| Domain | Style |
-|--------|-------|
+| Domain   | Style                       |
+| -------- | --------------------------- |
 | FILESYST | Nested tree (File Explorer) |
-| CLOUD | 3D Force Graph |
-| ADMIN | Filing Cabinet |
+| CLOUD    | 3D Force Graph              |
+| ADMIN    | Filing Cabinet              |
 
-### DocPiP (Agent Seat)
+### DocPiP (User-to-User Communications)
 
 - **API:** `window.documentPictureInPicture`
+- **Code Location:** FFS2 Chrome Extension (`pipWindow.tsx`, `src/components/pip/`)
+- **Context Documentation:** FFS5 (`.agent/` context only)
 - **Context:** Global, floats over OS
-- **Use Case:** Avatar mode, persistent status, voice
+- **Use Case:**
+  - User-to-user video/audio calls (WebRTC)
+  - Screen sharing
+  - Chat overlay during calls
+  - Persistent communication window
 - **Lifecycle:** Independent of browser window
 
-Can focus on multiple tabs simultaneously.
+Can support multi-party calls and collaborative features.
 
 ---
 

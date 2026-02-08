@@ -22,6 +22,23 @@
             "**/node_modules": true,
             "**/__pycache__": true,
             "**/*.egg-info": true
+        },
+        "search.exclude": {
+            "**/.agent": false,
+            "**/node_modules": true,
+            "**/.venv": true
+        },
+        "files.watcherExclude": {
+            "**/.agent": false,
+            "**/node_modules": true,
+            "**/.venv": true
+        },
+        "files.associations": {
+            "**/.agent/**/*.md": "markdown",
+            "**/.agent/**/*.yaml": "yaml"
+        },
+        "github.copilot.enable": {
+            "*": true
         }
     }
 }

@@ -1,0 +1,41 @@
+{
+  "search.exclude": {
+    "**/.agent": false,
+    "**/node_modules": true,
+    "**/.plasmo": true,
+    "**/build": true
+  },
+  "files.watcherExclude": {
+    "**/.agent": false,
+    "**/node_modules": true,
+    "**/.plasmo": true,
+    "**/build": true
+  },
+  "files.associations": {
+    "**/.agent/**/*.md": "markdown",
+    "**/.agent/**/*.yaml": "yaml"
+  },
+  "github.copilot.enable": {
+    "*": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
