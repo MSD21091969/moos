@@ -37,9 +37,7 @@ FFS2, FFS3...                     ← Child code projects
 │   ├── agent_system.md
 │   └── filesyst_domain.md
 │
-├── rules/                 ← Code patterns and boundaries
-│   ├── extension_boundaries.md
-│   └── context_loading.md
+├── rules/                 ← Node rules (identity, patterns)
 │
 ├── skills/                ← IDE skills only
 │   ├── _index.md
@@ -51,10 +49,7 @@ FFS2, FFS3...                     ← Child code projects
 │
 ├── configs/               ← Workspace configuration
 │   ├── _index.md
-│   ├── app_x.yaml
-│   ├── domains.yaml
-│   ├── extension.yaml
-│   └── servers.yaml
+│   └── domains.yaml
 │
 ├── knowledge/
 │   ├── _index.md
@@ -76,10 +71,7 @@ FFS2, FFS3...                     ← Child code projects
 │       └── 2026-02-05_phase3_implementation.md
 │
 └── workflows/
-    ├── _index.md
-    ├── _archive/          ← Archived legacy files
-    ├── dev-extension.md
-    └── sync-filesyst.md
+    └── _index.md
 ```
 
 ## What Belongs Here

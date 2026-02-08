@@ -1,59 +1,65 @@
 # FFS0 Factory - Agent System Instruction
 
-> Root workspace instruction for all child workspaces.
+> Root workspace instruction. Inherited by all child workspaces.
 
 ## Role
 
-You are assisting in the FFS0_Factory root workspace. This is the top-level container for:
+You are assisting in the **FFS0_Factory** root workspace — the top-level container for the Collider ecosystem.
 
-- Agent Studio (AI development tools)
-- Collider Data Systems (FFS1)
-- Supporting infrastructure
+## Architecture Model
 
-## Workspace Structure
+```
+.agent/ = workspace state = ready for execution
+```
+
+All components (tools, workflows, applications) are the **same pattern at different scales**:
+
+- **Tool**: Atomic function (JSON schema)
+- **Workflow**: Sequence of tools (YAML+Markdown)
+- **Application**: Template cluster (graph)
+
+All derivable via `create_model()` → discoverable in registry.
+
+## Three Domains
+
+| Domain   | Apps            | Context Source            |
+| -------- | --------------- | ------------------------- |
+| FILESYST | IDE (App X)     | `.agent/` folders         |
+| CLOUD    | Apps 1-N        | `node.container` field    |
+| ADMIN    | Account (App Z) | `account.container` field |
+
+## FFS Hierarchy
 
 ```
 FFS0_Factory/
-├── .agent/                          ← This context (root)
-├── agent-studio/                    ← AI development tools
-├── docs/                            ← Documentation
-├── models_v2/                       ← Data models
-├── parts/                           ← Shared components
-├── secrets/                         ← Credentials (gitignored)
+├── .agent/                          ← This context (ROOT)
+├── models_v2/                       ← Core Pydantic models
+├── parts/                           ← SDK catalog
+│
 └── workspaces/
-    └── FFS1_ColliderDataSystems/    ← Collider system
-        ├── FFS2_ColliderBackends_MultiAgentChromeExtension/
-        │   ├── ColliderDataServer/      ← FastAPI backend (:8000)
-        │   ├── ColliderGraphToolServer/ ← AI workflows (:8001)
-        │   ├── ColliderVectorDbServer/  ← Semantic search (:8002)
-        │   └── ColliderMultiAgentsChromeExtension/  ← Plasmo extension
-        └── FFS3_ColliderApplicationsFrontendServer/
-            └── collider-frontend/       ← Nx monorepo (Next.js Portal)
+    └── FFS1_ColliderDataSystems/    ← IDE workspace
+        ├── FFS2.../                 ← Backends
+        └── FFS3.../                 ← Frontend + Apps
 ```
 
-## MVP Status (2026-02-05)
+## Key Principles
 
-**Operational Components:**
-- Backend API Server (FastAPI :8000) ✅
-- Portal Frontend (Next.js :3001) ✅
-- Chrome Extension (Plasmo) ✅
-- PostgreSQL Database (:5432) ✅
-
-**Running Guide:** See `FFS1_ColliderDataSystems/.agent/knowledge/RUNNING.md`
+1. **`.agent/` = workspace state** — ready for execution
+2. **Components scale** — Tool/Workflow/App are same pattern
+3. **User workflows = templates** — via `create_model()` derivation
+4. **Single source of truth** — Knowledge flows down from root
 
 ## Inheritance
 
-This workspace exports rules and configs to all children:
+Child workspaces inherit via `manifest.yaml`:
 
-- `rules/` - Coding patterns, sandbox, identity
-- `configs/` - Users, API providers, defaults
+- `rules/` — sandbox, identity, code_patterns
+- `configs/` — users, api_providers, defaults
 
-Child workspaces inherit via their `manifest.yaml`.
+## Running
 
-## Key Rules
+See `FFS1_ColliderDataSystems/.agent/knowledge/RUNNING.md`
 
-- Follow code patterns in `rules/`
-- Respect sandbox boundaries
-- Use established identity patterns
-- Check devlog entries before making architectural changes
+---
 
+_v2.0.0 — 2026-02-07_

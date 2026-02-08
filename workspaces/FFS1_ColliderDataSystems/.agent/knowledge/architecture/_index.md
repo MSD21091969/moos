@@ -1,23 +1,22 @@
-# Architecture Knowledge
+# Agent Architecture
 
-> System architecture documentation for Collider.
+> **The `.agent` structure IS the workspace** — ready for user and agent to execute, edit, or otherwise engage.
 
-## Documents
+## Quick Reference
 
-| #   | File                                   | Scope                                           |
-| --- | -------------------------------------- | ----------------------------------------------- |
-| 1   | [01_foundation.md](01_foundation.md)   | NodeContainer, domains, hierarchy, applications |
-| 2   | [02_backend.md](02_backend.md)         | Servers, database, storage                      |
-| 3   | [03_frontend.md](03_frontend.md)       | Chrome Extension, Context Manager, UI           |
-| 4   | [04_data_flow.md](04_data_flow.md)     | Protocols, messages, sync                       |
-| 5   | [05_security.md](05_security.md)       | Auth, permissions, secrets                      |
-| 6   | [06_integration.md](06_integration.md) | LangGraph ↔ Pydantic AI, workflows              |
+| Doc                                    | Purpose                   |
+| -------------------------------------- | ------------------------- |
+| [00_overview.md](./00_overview.md)     | Core concepts             |
+| [01_components.md](./01_components.md) | Unified component pattern |
+| [02_domains.md](./02_domains.md)       | Three domains             |
+| [07_templates.md](./07_templates.md)   | Topology & Hydration      |
 
-## Reading Order
+## Core Principle
 
-1. **Foundation** → Core data model
-2. **Backend** → Server infrastructure
-3. **Frontend** → Client architecture
-4. **Data Flow** → How they communicate
-5. **Security** → How it's protected
-6. **Integration** → How it all works together
+```
+.agent/ = workspace state
+       = purpose + relations + capabilities
+       = ready for execution
+```
+
+All components (tools, workflows, apps) are the **same pattern at different scales**.

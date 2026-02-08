@@ -15,7 +15,7 @@ description: Chrome Extension development workflow
 1. Install dependencies
 
 ```bash
-cd applications/chrome-extension
+cd ../FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderMultiAgentsChromeExtension
 npm install
 ```
 

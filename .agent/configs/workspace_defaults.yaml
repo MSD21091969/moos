@@ -3,7 +3,7 @@
 
 paths:
   # Factory root (resolved at runtime)
-  factory_root: "${FACTORY_ROOT:-D:/factory}"
+  factory_root: "${FACTORY_ROOT:-D:/FFS0_Factory}"
   
   # Standard locations relative to any workspace
   agents_dir: ".agent"

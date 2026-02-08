@@ -38,8 +38,6 @@ local:
 exports:
   - instructions/agent_system.md
   - instructions/filesyst_domain.md
-  - rules/extension_boundaries.md
-  - rules/context_loading.md
   - skills/ide_code_assist.md
   - tools/filesyst_tools.json
   - configs/domains.yaml

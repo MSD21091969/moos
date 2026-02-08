@@ -17,8 +17,8 @@ local:
 exports:
   # Rules
   - rules/sandbox.md
-  - rules/identity.md
   - rules/code_patterns.md
+  - rules/versioning.md
   # Instructions
   - instructions/agent_system.md
   # Configs (shared settings)

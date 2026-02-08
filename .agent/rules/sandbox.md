@@ -1,34 +1,31 @@
-# Factory Agent Sandbox Rules
+# Sandbox Rules
 
-## Access Control
+> Access boundaries and path constraints for FFS0 Factory
 
-### Write Access
-- **Allowed**: Current working directory only (CWD)
-- **Allowed**: Project-specific .agent/ folders
-- **Allowed**: D:\factory\knowledge\journal\ (for temporal notes)
+---
 
-### Read-Only Access
-- D:\factory\knowledge\ (centralized knowledge base)
-- D:\factory\parts\ (factory SDK/catalog)
-- D:\factory\models_v2\ (core architecture)
-- I:\DATALAKE\ (external data resources)
+## Allowed Paths
 
-### Denied Access
-- System directories outside D:\factory
-- Other project directories (unless explicitly passed as context)
-- .venv/ directories (managed by uv)
+| Path                          | Purpose            |
+| ----------------------------- | ------------------ |
+| `D:\FFS0_Factory\`            | Factory root       |
+| `D:\FFS0_Factory\.agent\`     | Root agent context |
+| `D:\FFS0_Factory\workspaces\` | Child workspaces   |
+| `D:\FFS0_Factory\models_v2\`  | Pydantic models    |
+| `D:\FFS0_Factory\parts\`      | SDK components     |
+
+## Denied Paths
+
+| Path                | Reason                      |
+| ------------------- | --------------------------- |
+| `C:\Windows\`       | System files                |
+| `C:\Program Files\` | Installed software          |
+| `%USERPROFILE%\`    | User home (except explicit) |
+
+---
 
 ## Behavioral Constraints
 
-1. **Single Source of Truth**: Never duplicate files from knowledge/ into project folders
-2. **Junction Respect**: Treat junction targets as read-only even when accessed via junction path
-3. **Dependency Isolation**: Use editable installs, never copy SDK files into projects
-4. **Checkpoint Before Modify**: Always verify current state before bulk edits
-
-## Inheritance
-
-All child .agent/rules/ inherit these constraints unless explicitly overridden.
-
----
-*Last updated: 2026-01-25*
-*Factory version: 1.0.0*
+1. **Single source of truth** — One definition per concept
+2. **Inherit don't duplicate** — Use manifest includes
+3. **Stay local** — Sovereignty over convenience

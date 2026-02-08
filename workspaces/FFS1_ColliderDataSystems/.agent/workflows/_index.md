@@ -4,10 +4,11 @@
 
 ## Available Workflows
 
-| Workflow         | Purpose                      |
-| ---------------- | ---------------------------- |
-| dev-extension.md | Chrome extension development |
-| sync-filesyst.md | FILESYST sync operations     |
+| Workflow | Purpose |
+| -------- | ------- |
+| Workflow | Purpose |
+| -------- | ------- |
+| (None)   |         |
 
 ## Archived
 
