@@ -37,7 +37,11 @@ FFS2, FFS3...                     ← Child code projects
 │   ├── agent_system.md
 │   └── filesyst_domain.md
 │
-├── rules/                 ← Node rules (identity, patterns)
+├── rules/                 ← Node rules (patterns, stack, comms)
+│   ├── stack_standards.md
+│   ├── communication_architecture.md
+│   ├── code_quality.md
+│   └── project_structure.md
 │
 ├── skills/                ← IDE skills only
 │   ├── _index.md

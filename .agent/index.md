@@ -45,11 +45,11 @@ FFS2, FFS3...                     ← Code Projects
 
 ## Exports to Children
 
-| Category     | Files                                     |
-| ------------ | ----------------------------------------- |
-| Rules        | sandbox.md, identity.md, code_patterns.md |
-| Instructions | agent_system.md                           |
-| Configs      | users.yaml, api_providers.yaml            |
+| Category     | Files                          |
+| ------------ | ------------------------------ |
+| Rules        | sandbox.md, code_patterns.md   |
+| Instructions | agent_system.md                |
+| Configs      | users.yaml, api_providers.yaml |
 
 ## Three Domains
 
