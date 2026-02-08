@@ -1,0 +1,27 @@
+# Database Configuration
+
+connections:
+  # Main application database (Postgres in Prod, SQLite in Dev)
+  primary:
+    driver: postgresql+asyncpg
+    host_env: POSTGRES_HOST
+    port_env: POSTGRES_PORT
+    user_env: POSTGRES_USER
+    password_env: POSTGRES_PASSWORD
+    db_env: POSTGRES_DB
+    pool_size: 20
+    max_overflow: 10
+
+  # Vector Store (ChromaDB)
+  vector:
+    host_env: CHROMADB_HOST
+    port_env: CHROMADB_PORT
+    collection_prefix: "collider_v1"
+
+  # Redis (Task Queue / Cache)
+  redis:
+    url_env: REDIS_URL
+
+migrations:
+  path: "alembic/"
+  script_location: "alembic/versions"

@@ -43,7 +43,11 @@ local:
 
 # Exports - provides codebase knowledge to sibling workspaces
 exports:
+  # Internal Rules
+  - instructions/agent_system.md
   - knowledge/codebase.md
+  # Service Rules
+  - rules/backend_api_design.md
 
 # Secrets required by backend services
 secrets:

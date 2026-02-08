@@ -10,33 +10,57 @@
 
 ```
 FFS0_Factory                     (Root)
-  └── FFS1_ColliderDataSystems   (IDE Context)
-        └── FFS2_ColliderBackends (This Workspace)
+  └── FFS1_ColliderDataSystems   (IDE Context - Parent)
+        └── FFS2_ColliderBackends (This Workspace - Backend/Extension)
 ```
 
 ## Purpose
 
 Specific context for:
 
-- ColliderDataServer (FastAPI on :8000)
-- ColliderGraphToolServer (WebSocket on :8001)
-- ColliderVectorDbServer (Vector search on :8002)
-- ColliderMultiAgentsChromeExtension (Plasmo)
+- **ColliderDataServer** (FastAPI on :8000)
+- **ColliderGraphToolServer** (WebSocket on :8001 - Workflow Engine)
+- **ColliderVectorDbServer** (Vector search on :8002)
+- **ColliderMultiAgentsChromeExtension** (Plasmo)
 
 ## Contents
 
-- **instructions/**: Backend-specific coding guides (inherits from FFS1).
-- **knowledge/**: Codebase documentation.
-- **skills/**: Backend-specific skills (inherits from FFS1).
-- **tools/**: Backend-specific tools (inherits from FFS1).
-- **configs/**: Backend-specific configs (inherits from FFS1).
-- **workflows/**: Deployment and testing workflows (inherits from FFS1).
+### [Instructions](instructions/)
+
+- **[agent_system.md](instructions/agent_system.md)**: "Backend Systems Engineer" persona.
+
+### [Rules](rules/)
+
+- **[backend_api_design.md](rules/backend_api_design.md)**: FastAPI standards, Pydantic V2 usage.
+- **context_loading.md**: Domain-specific context loading strategies.
+- **extension_boundaries.md**: Security and communication boundaries for the extension.
+
+### [Configs](configs/)
+
+- **[servers.yaml](configs/servers.yaml)**: Service ports (8000, 8001, 8002) and protocols (gRPC/WS).
+- **[extension.yaml](configs/extension.yaml)**: Extension permissions and capabilities.
+- **[database.yaml](configs/database.yaml)**: DB connection templates.
+- **[logging.yaml](configs/logging.yaml)**: Python logging config.
+
+### [Skills](skills/)
+
+- **[`api_client.py`](skills/api_client.py)**: Python client for testing the DataServer.
+
+### [Tools](tools/)
+
+- **[`run_migrations.py`](tools/run_migrations.py)**: Wrapper for Alembic migrations.
+- **[`seed_db.py`](tools/seed_db.py)**: Wrapper for database seeding.
+
+### [Workflows](workflows/)
+
+- **dev-extension.md**: Chrome Extension dev guide.
+- **sync-filesyst.md**: File sync guide.
 
 ## Component Folders
 
 ```
 ColliderDataServer/              # REST/SSE API server
-ColliderGraphToolServer/         # WebSocket/Agents server
+ColliderGraphToolServer/         # WebSocket Workflow Engine
 ColliderVectorDbServer/          # Vector search server
 ColliderMultiAgentsChromeExtension/  # Plasmo extension
 ```
