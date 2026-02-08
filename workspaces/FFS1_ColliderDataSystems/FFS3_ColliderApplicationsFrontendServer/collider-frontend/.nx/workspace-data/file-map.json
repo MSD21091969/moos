@@ -1,0 +1,498 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.4.5",
+  "pathMappings": {
+    "@collider-frontend/node-container": [
+      "libs/node-container/src/index.ts"
+    ],
+    "@collider-frontend/api-client": [
+      "libs/api-client/src/index.ts"
+    ],
+    "@collider-frontend/shared-ui": [
+      "libs/shared-ui/src/index.ts"
+    ]
+  },
+  "nxJsonPlugins": [
+    {
+      "name": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "build-deps",
+          "watchDepsName": "watch-deps"
+        }
+      }
+    },
+    {
+      "name": "@nx/next/plugin",
+      "options": {
+        "startTargetName": "start",
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "serveStaticTargetName": "serve-static",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    },
+    {
+      "name": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "name": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
+    },
+    {
+      "name": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    },
+    {
+      "name": "@nx/rollup/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    }
+  ],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": "package.json",
+        "hash": "2504274457321893449"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "16267754514737964994"
+      },
+      {
+        "file": "build.log",
+        "hash": "7316298173803381056"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "6167645835658331489"
+      },
+      {
+        "file": ".vscode/extensions.json",
+        "hash": "11309362834336059819"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "14688272390704683536"
+      },
+      {
+        "file": "nx.json",
+        "hash": "1294415236546608950"
+      },
+      {
+        "file": "pnpm-workspace.yaml",
+        "hash": "6820106938215623083"
+      },
+      {
+        "file": "README.md",
+        "hash": "16197838269525982651"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "6870352021923392442"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "11648749874208438836"
+      },
+      {
+        "file": ".editorconfig",
+        "hash": "5443105041930014821"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "11781386581622614206"
+      },
+      {
+        "file": "eslint.config.mjs",
+        "hash": "6927958956019882428"
+      },
+      {
+        "file": "pnpm-lock.yaml",
+        "hash": "9227817525500667787"
+      }
+    ],
+    "projectFileMap": {
+      "@collider-frontend/shared-ui": [
+        {
+          "file": "libs/shared-ui/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "libs/shared-ui/README.md",
+          "hash": "11279802349526568370"
+        },
+        {
+          "file": "libs/shared-ui/jest.config.cts",
+          "hash": "146129174549585619"
+        },
+        {
+          "file": "libs/shared-ui/package.json",
+          "hash": "14074447909791126898"
+        },
+        {
+          "file": "libs/shared-ui/rollup.config.cjs",
+          "hash": "2593965619745688816",
+          "deps": [
+            "npm:@nx/rollup",
+            "npm:@rollup/plugin-url",
+            "npm:@svgr/rollup"
+          ]
+        },
+        {
+          "file": "libs/shared-ui/src/index.ts",
+          "hash": "15682517005854060669"
+        },
+        {
+          "file": "libs/shared-ui/src/lib/shared-ui.module.css",
+          "hash": "125145030238681982"
+        },
+        {
+          "file": "libs/shared-ui/src/lib/shared-ui.spec.tsx",
+          "hash": "5746952681277132322",
+          "deps": [
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "libs/shared-ui/src/lib/shared-ui.tsx",
+          "hash": "11310236814879114197"
+        },
+        {
+          "file": "libs/shared-ui/tsconfig.json",
+          "hash": "1138660533399177677"
+        },
+        {
+          "file": "libs/shared-ui/tsconfig.lib.json",
+          "hash": "4954703335201594126"
+        },
+        {
+          "file": "libs/shared-ui/tsconfig.spec.json",
+          "hash": "5324642384920426034"
+        }
+      ],
+      "@collider-frontend/node-container": [
+        {
+          "file": "libs/node-container/.babelrc",
+          "hash": "2946678488919325452"
+        },
+        {
+          "file": "libs/node-container/README.md",
+          "hash": "5067739457507080877"
+        },
+        {
+          "file": "libs/node-container/jest.config.cts",
+          "hash": "6741046431814237112"
+        },
+        {
+          "file": "libs/node-container/package.json",
+          "hash": "11524700747828733739"
+        },
+        {
+          "file": "libs/node-container/rollup.config.cjs",
+          "hash": "2593965619745688816",
+          "deps": [
+            "npm:@nx/rollup",
+            "npm:@rollup/plugin-url",
+            "npm:@svgr/rollup"
+          ]
+        },
+        {
+          "file": "libs/node-container/src/index.ts",
+          "hash": "7445237792243445184"
+        },
+        {
+          "file": "libs/node-container/src/lib/node-container.module.css",
+          "hash": "5943244802079163594"
+        },
+        {
+          "file": "libs/node-container/src/lib/node-container.spec.tsx",
+          "hash": "13458014448537275577",
+          "deps": [
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "libs/node-container/src/lib/node-container.tsx",
+          "hash": "7497642973266380749",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "libs/node-container/src/lib/use-container.ts",
+          "hash": "15026320568924040289",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "libs/node-container/src/lib/use-sse.ts",
+          "hash": "993399768094272067",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "libs/node-container/tsconfig.json",
+          "hash": "15624987478551381231"
+        },
+        {
+          "file": "libs/node-container/tsconfig.lib.json",
+          "hash": "4954703335201594126"
+        },
+        {
+          "file": "libs/node-container/tsconfig.spec.json",
+          "hash": "5324642384920426034"
+        }
+      ],
+      "@collider-frontend/portal-e2e": [
+        {
+          "file": "apps/portal-e2e/eslint.config.mjs",
+          "hash": "1172734138943286526",
+          "deps": [
+            "npm:eslint-plugin-playwright"
+          ]
+        },
+        {
+          "file": "apps/portal-e2e/package.json",
+          "hash": "5003930954038377527"
+        },
+        {
+          "file": "apps/portal-e2e/playwright.config.ts",
+          "hash": "3721664813057972344",
+          "deps": [
+            "npm:@playwright/test",
+            "npm:@nx/playwright",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "apps/portal-e2e/src/example.spec.ts",
+          "hash": "16019101014373124625",
+          "deps": [
+            "npm:@playwright/test"
+          ]
+        },
+        {
+          "file": "apps/portal-e2e/tsconfig.json",
+          "hash": "15001458170383955177"
+        }
+      ],
+      "@collider-frontend/portal": [
+        {
+          "file": "apps/portal/.env.example",
+          "hash": "1511980577520479513"
+        },
+        {
+          "file": "apps/portal/.swcrc",
+          "hash": "4532740859193830353"
+        },
+        {
+          "file": "apps/portal/eslint.config.mjs",
+          "hash": "858341604460046485",
+          "deps": [
+            "npm:@next/eslint-plugin-next",
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "apps/portal/index.d.ts",
+          "hash": "5498222895072842432"
+        },
+        {
+          "file": "apps/portal/jest.config.cts",
+          "hash": "3184675941592390309",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portal/next-env.d.ts",
+          "hash": "373744204795424001"
+        },
+        {
+          "file": "apps/portal/next.config.js",
+          "hash": "1456748161811383057",
+          "deps": [
+            "npm:@nx/next"
+          ]
+        },
+        {
+          "file": "apps/portal/package.json",
+          "hash": "17134406859355201107",
+          "deps": [
+            "npm:firebase",
+            "npm:next",
+            "npm:react",
+            "npm:react-dom"
+          ]
+        },
+        {
+          "file": "apps/portal/public/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/portal/public/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "apps/portal/specs/index.spec.tsx",
+          "hash": "2873936096691223229",
+          "deps": [
+            "npm:react",
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "apps/portal/src/app/AuthContext.tsx",
+          "hash": "6986982633776170240",
+          "deps": [
+            "npm:react",
+            "npm:firebase"
+          ]
+        },
+        {
+          "file": "apps/portal/src/app/api.ts",
+          "hash": "13660547928657922336",
+          "deps": [
+            "@collider-frontend/api-client"
+          ]
+        },
+        {
+          "file": "apps/portal/src/app/api/hello/route.ts",
+          "hash": "495073956729887886"
+        },
+        {
+          "file": "apps/portal/src/app/apps/[appId]/page.tsx",
+          "hash": "4046501747868474335",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "@collider-frontend/node-container",
+            "@collider-frontend/api-client"
+          ]
+        },
+        {
+          "file": "apps/portal/src/app/apps/page.tsx",
+          "hash": "12080479075588781805",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "@collider-frontend/api-client"
+          ]
+        },
+        {
+          "file": "apps/portal/src/app/firebase.ts",
+          "hash": "10083632849594777995",
+          "deps": [
+            "npm:firebase"
+          ]
+        },
+        {
+          "file": "apps/portal/src/app/global.css",
+          "hash": "5221762088766465567"
+        },
+        {
+          "file": "apps/portal/src/app/layout.tsx",
+          "hash": "741270227123662972"
+        },
+        {
+          "file": "apps/portal/src/app/page.module.css",
+          "hash": "8304782439360177478"
+        },
+        {
+          "file": "apps/portal/src/app/page.tsx",
+          "hash": "52689838874260791",
+          "deps": [
+            "npm:react",
+            "npm:next",
+            "@collider-frontend/api-client"
+          ]
+        },
+        {
+          "file": "apps/portal/tsconfig.json",
+          "hash": "16176607426265291012"
+        },
+        {
+          "file": "apps/portal/tsconfig.spec.json",
+          "hash": "15963641842635655445"
+        }
+      ],
+      "@collider-frontend/api-client": [
+        {
+          "file": "libs/api-client/.spec.swcrc",
+          "hash": "18201067170784284381"
+        },
+        {
+          "file": "libs/api-client/.swcrc",
+          "hash": "7750634230069384064"
+        },
+        {
+          "file": "libs/api-client/README.md",
+          "hash": "7690025743337817772"
+        },
+        {
+          "file": "libs/api-client/jest.config.cts",
+          "hash": "12458294518176152492"
+        },
+        {
+          "file": "libs/api-client/package.json",
+          "hash": "18288045592877279840"
+        },
+        {
+          "file": "libs/api-client/rollup.config.cjs",
+          "hash": "3906299977452067029",
+          "deps": [
+            "npm:@nx/rollup"
+          ]
+        },
+        {
+          "file": "libs/api-client/src/index.ts",
+          "hash": "3652867921044571464"
+        },
+        {
+          "file": "libs/api-client/src/lib/api-client.spec.ts",
+          "hash": "7991337012531560936"
+        },
+        {
+          "file": "libs/api-client/src/lib/api-client.ts",
+          "hash": "1364496381803709887"
+        },
+        {
+          "file": "libs/api-client/tsconfig.json",
+          "hash": "12834038490315927699"
+        },
+        {
+          "file": "libs/api-client/tsconfig.lib.json",
+          "hash": "14915788521357049098"
+        },
+        {
+          "file": "libs/api-client/tsconfig.spec.json",
+          "hash": "5815104515492683916"
+        }
+      ]
+    }
+  },
+  "externalNodesHash": "1721828216047173817"
+}

@@ -1,0 +1,9 @@
+{
+  "run": {
+    "command": "nx run-many --target=test --projects=api-client node-container",
+    "startTime": "2026-02-05T04:59:08.013Z",
+    "endTime": "2026-02-05T04:59:08.037Z",
+    "inner": false
+  },
+  "tasks": []
+}

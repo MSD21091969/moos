@@ -1,0 +1,34 @@
+> rollup -c rollup.config.cjs
+
+[36m
+[1m/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/collider-frontend/libs/api-client/src/index.ts[22m → [1mdist[22m...[39m
+  [31mERROR[0m  [31mfailed to read input source map: failed to parse inline source map url
+index.js.map
+
+Caused by:
+    relative URL without a base[0m
+    [2;3mat[0m C:\Users\runneradmin/.cargo\registry\src\index.crates.io-6f17d22bba15001f\swc-0.276.0\src\lib.rs:405
+
+  [31mERROR[0m  [31mfailed to read input source map: failed to parse inline source map url
+api-client.js.map
+
+Caused by:
+    relative URL without a base[0m
+    [2;3mat[0m C:\Users\runneradmin/.cargo\registry\src\index.crates.io-6f17d22bba15001f\swc-0.276.0\src\lib.rs:405
+
+  [1mindex.esm.js[22m [36m4.536 KB[39m
+[1m[33m(!) [plugin typescript] src/lib/api-client.ts (117:9): @rollup/plugin-typescript TS18046: 'error' is of type 'unknown'.[39m[22m
+[1mD:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/collider-frontend/libs/api-client/src/lib/api-client.ts:117:9[22m
+[90m
+[7m117[0m         error.detail || `HTTP ${response.status}`,
+[7m   [0m [91m        ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/lib/api-client.ts (123:5): @rollup/plugin-typescript TS2322: Type 'unknown' is not assignable to type 'T'.
+  'T' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.[39m[22m
+[1mD:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/collider-frontend/libs/api-client/src/lib/api-client.ts:123:5[22m
+[90m  'T' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.
+
+[7m123[0m     return response.json();
+[7m   [0m [91m    ~~~~~~[0m
+[39m
+[32mcreated [1mdist[22m in [1m1.5s[22m[39m

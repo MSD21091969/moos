@@ -1,0 +1,18 @@
+[2m> [22mrollup -c rollup.config.cjs
+
+[36m
+[1m/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/collider-frontend/libs/node-container/src/index.ts[22m → [1mdist[22m...[39m
+  [1mindex.esm.js[22m [36m120.969 KB[39m
+[1m[33m(!) [plugin typescript] src/lib/use-container.ts (60:27): @rollup/plugin-typescript TS18046: 'errorData' is of type 'unknown'.[39m[22m
+[1mD:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/collider-frontend/libs/node-container/src/lib/use-container.ts:60:27[22m
+[90m
+[7m60[0m           throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+[7m  [0m [91m                          ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/lib/use-container.ts (67:24): @rollup/plugin-typescript TS18046: 'data' is of type 'unknown'.[39m[22m
+[1mD:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/collider-frontend/libs/node-container/src/lib/use-container.ts:67:24[22m
+[90m
+[7m67[0m           setContainer(data.container || data);
+[7m  [0m [91m                       ~~~~[0m
+[39m
+[32mcreated [1mdist[22m in [1m3.6s[22m[39m

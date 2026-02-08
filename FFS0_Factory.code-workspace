@@ -9,10 +9,36 @@
             "path": "workspaces/FFS1_ColliderDataSystems"
         },
         {
+            "name": "FFS2_Backends+ChromeExt",
             "path": "workspaces/FFS1_ColliderDataSystems/FFS2_ColliderBackends_MultiAgentChromeExtension"
         },
         {
+            "name": "FFS3_Frontend",
             "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer"
+        },
+        {
+            "name": "FFS4_Sidepanel",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS4_application00_ColliderSidepanelAppnodeBrowser"
+        },
+        {
+            "name": "FFS5_PiP_AgentSeat",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS5_application01_ColliderPictureInPictureMainAgentSeat"
+        },
+        {
+            "name": "FFS6_IDE_Filesystem",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS6_applicationx_FILESYST_ColliderIDE_appnodes"
+        },
+        {
+            "name": "FFS7_Admin",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS7_applicationz_ADMIN_ColliderAccount_appnodes"
+        },
+        {
+            "name": "FFS8_CloudCollider",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS8_application1_CLOUD_my-tiny-data-collider_appnodes"
+        },
+        {
+            "name": "maassen_hochrath",
+            "path": "workspaces/maassen_hochrath"
         }
     ],
     "settings": {
@@ -39,6 +65,32 @@
         },
         "github.copilot.enable": {
             "*": true
+        },
+        "[python]": {
+            "editor.defaultFormatter": "charliermarsh.ruff",
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.fixAll": "explicit",
+                "source.organizeImports": "explicit"
+            }
+        },
+        "python.testing.pytestEnabled": true,
+        "python.defaultInterpreterPath": "${workspaceFolder:FFS0_Factory}/.venv/Scripts/python.exe",
+        "[markdown]": {
+            "editor.wordWrap": "on"
         }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "charliermarsh.ruff",
+            "esbenp.prettier-vscode",
+            "dbaeumer.vscode-eslint",
+            "nrwl.angular-console",
+            "ms-playwright.playwright",
+            "firsttris.vscode-jest-runner",
+            "ms-vscode.live-server"
+        ]
     }
 }
