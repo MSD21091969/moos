@@ -1,498 +1,1908 @@
 {
   "version": "6.0",
-  "nxVersion": "22.4.5",
+  "nxVersion": "20.8.4",
   "pathMappings": {
-    "@collider-frontend/node-container": [
-      "libs/node-container/src/index.ts"
-    ],
-    "@collider-frontend/api-client": [
+    "@collider/api-client": [
       "libs/api-client/src/index.ts"
     ],
-    "@collider-frontend/shared-ui": [
+    "@collider/node-container": [
+      "libs/node-container/src/index.ts"
+    ],
+    "@collider/shared-ui": [
       "libs/shared-ui/src/index.ts"
     ]
   },
-  "nxJsonPlugins": [
-    {
-      "name": "@nx/js/typescript",
-      "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
-        "build": {
-          "targetName": "build",
-          "configName": "tsconfig.lib.json",
-          "buildDepsName": "build-deps",
-          "watchDepsName": "watch-deps"
-        }
-      }
-    },
-    {
-      "name": "@nx/next/plugin",
-      "options": {
-        "startTargetName": "start",
-        "buildTargetName": "build",
-        "devTargetName": "dev",
-        "serveStaticTargetName": "serve-static",
-        "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
-      }
-    },
-    {
-      "name": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
-    {
-      "name": "@nx/playwright/plugin",
-      "options": {
-        "targetName": "e2e"
-      }
-    },
-    {
-      "name": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      }
-    },
-    {
-      "name": "@nx/rollup/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
-      }
-    }
-  ],
+  "nxJsonPlugins": [],
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "package.json",
-        "hash": "2504274457321893449"
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-any-link.js",
+        "hash": "6854366937694663890"
       },
       {
-        "file": ".prettierrc",
-        "hash": "16267754514737964994"
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/text-decoration.js",
+        "hash": "9125682063571726222"
       },
       {
-        "file": "build.log",
-        "hash": "7316298173803381056"
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/index.js",
+        "hash": "4708721250791089582"
       },
       {
-        "file": "tsconfig.base.json",
-        "hash": "6167645835658331489"
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/autoprefixer.js",
+        "hash": "5640792204254165880"
+      },
+      {
+        "file": "node_modules/.pnpm/node-releases@2.0.27/node_modules/node-releases/data/release-schedule/release-schedule.json",
+        "hash": "17183779199158564093"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.d.ts",
+        "hash": "3837823945019485182"
+      },
+      {
+        "file": ".nx/cache/terminalOutputs/523889995674857416",
+        "hash": "14708478963856469914"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/at-rule.js",
+        "hash": "7589772981219505141"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/_/_interop_require_default/package.json",
+        "hash": "15875398657519232931"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-template.js",
+        "hash": "9638368897040457202"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-text-decoration-shorthand.js",
+        "hash": "7690361115207760246"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-width-stretch.js",
+        "hash": "12123407799032201863"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.proxy.d.ts",
+        "hash": "15619396280021228191"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.d.ts",
+        "hash": "2199292131422094402"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css3-cursors-newer.js",
+        "hash": "17748388154546425694"
+      },
+      {
+        "file": "dist/libs/api-client/src/vector-server.js",
+        "hash": "16102796891417770881"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/calc.js",
+        "hash": "15906929929967520936"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-text-align-last.js",
+        "hash": "15874373803107351859"
+      },
+      {
+        "file": "dist/libs/shared-ui/package.json",
+        "hash": "1613837776312262398"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2022.array.d.ts",
+        "hash": "3969520358261593592"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.intl.d.ts",
+        "hash": "5108114148373436973"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-masks.js",
+        "hash": "7273201654756282335"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/pixelated.js",
+        "hash": "8661205392289894389"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/writing-mode.js",
+        "hash": "17921237151583819395"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.d.ts",
+        "hash": "17067311801718798353"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css3-cursors-grab.js",
+        "hash": "14549700419045260808"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/selector.js",
+        "hash": "6991011423291353808"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/overscroll-behavior.js",
+        "hash": "11500389723082784568"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/utils.js",
+        "hash": "8427897241017407874"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/user-select.js",
+        "hash": "10889834039834609081"
+      },
+      {
+        "file": ".nx/cache/terminalOutputs/14368078910301401944",
+        "hash": "5414820564625486644"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+        "hash": "4610596001067206970"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-css-backdrop-pseudo-element.js",
+        "hash": "10237913523419988839"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/intrinsic.js",
+        "hash": "17774532790778622076"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2016.intl.d.ts",
+        "hash": "14335847356878289334"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/gradient.js",
+        "hash": "3801018019688104196"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.collection.d.ts",
+        "hash": "14665032525150553246"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/resolution.js",
+        "hash": "2102441208048359824"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/cross-fade.js",
+        "hash": "18191042832557461076"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/index.js.map",
+        "hash": "1581477231500662321"
+      },
+      {
+        "file": "node_modules/.pnpm/browserslist@4.28.1/node_modules/browserslist/index.js",
+        "hash": "1873490409236795249"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-css-unicode-bidi-isolate.js",
+        "hash": "8444665207180042225"
+      },
+      {
+        "file": ".nx/workspace-data/project-graph.json",
+        "hash": "11678000281702653122"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-writing-mode.js",
+        "hash": "3153657928123170152"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.number.d.ts",
+        "hash": "2174665625677694169"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/components/Button.js.map",
+        "hash": "6764616427598030753"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-transitions.js",
+        "hash": "5974160868297371902"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/esm/_class_private_field_loose_base.js",
+        "hash": "7062755260474309914"
+      },
+      {
+        "file": "node_modules/.pnpm/picomatch@4.0.2/node_modules/picomatch/index.js",
+        "hash": "1964010988279409747"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2022.string.d.ts",
+        "hash": "8640141288587076580"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.decorators.legacy.d.ts",
+        "hash": "12283858618538598805"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.error.d.ts",
+        "hash": "9889583925855715275"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.promise.d.ts",
+        "hash": "6179818367251174306"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/filter.js",
+        "hash": "602739013147601803"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/prefixes.js",
+        "hash": "7071523916590709671"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2016.array.include.d.ts",
+        "hash": "10345118177846372272"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/esm/_interop_require_wildcard.js",
+        "hash": "438967354232819660"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
+        "hash": "5357053652927258515"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/browserVersions.js",
+        "hash": "3976962630561986139"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2019.d.ts",
+        "hash": "5732140056051331726"
+      },
+      {
+        "file": "node_modules/.pnpm/path-key@3.1.1/node_modules/path-key/index.js",
+        "hash": "6620080824144293861"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex-shrink.js",
+        "hash": "16027863373182254270"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/place-self.js",
+        "hash": "10430598585476309478"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-shapes.js",
+        "hash": "10721532942310673917"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/mask-composite.js",
+        "hash": "5103284700479787830"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/text-decoration.js",
+        "hash": "12635408564253070717"
+      },
+      {
+        "file": "node_modules/.pnpm/electron-to-chromium@1.5.286/node_modules/electron-to-chromium/package.json",
+        "hash": "591584467068097088"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.decorators.d.ts",
+        "hash": "16073859129445731086"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.array.d.ts",
+        "hash": "56148454106155975"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex-basis.js",
+        "hash": "16902737890960603746"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/declaration.js",
+        "hash": "8511301849340233384"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-selection.js",
+        "hash": "12663983376182513234"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.promise.d.ts",
+        "hash": "9498427733769913418"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-snappoints.js",
+        "hash": "16367172710510378424"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.arraybuffer.d.ts",
+        "hash": "16877556348102904785"
+      },
+      {
+        "file": "node_modules/.pnpm/tinyglobby@0.2.15/node_modules/tinyglobby/package.json",
+        "hash": "17702749647921198082"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-file-selector-button.js",
+        "hash": "9134182649381444895"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.sharedmemory.d.ts",
+        "hash": "17300440408141191560"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/at-rule.js",
+        "hash": "17919588433549387797"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/dist/unpacker/agents.js",
+        "hash": "469547323584817975"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2019.intl.d.ts",
+        "hash": "14327600469659492036"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-boxdecorationbreak.js",
+        "hash": "11485807526985387544"
+      },
+      {
+        "file": "node_modules/.pnpm/picomatch@4.0.2/node_modules/picomatch/lib/picomatch.js",
+        "hash": "6422177882743318953"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-row-align.js",
+        "hash": "14978636315595475101"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/esm/_interop_require_default.js",
+        "hash": "15504038107532901221"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2022.object.d.ts",
+        "hash": "17685121830767258118"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/processor.js",
+        "hash": "13664143093795829761"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex-grow.js",
+        "hash": "1071854301749113446"
+      },
+      {
+        "file": "dist/libs/api-client/src/index.js.map",
+        "hash": "3940282307189547453"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.string.d.ts",
+        "hash": "11760867371978111943"
+      },
+      {
+        "file": "dist/libs/api-client/src/vector-server.d.ts",
+        "hash": "14286384330539169165"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/index.js.map",
+        "hash": "3940282307189547453"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/package.json",
+        "hash": "1453433929878013649"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/info.js",
+        "hash": "10900876178614401572"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.core.d.ts",
+        "hash": "2093835499312556611"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.sharedmemory.d.ts",
+        "hash": "4411412290758742123"
+      },
+      {
+        "file": "libs/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/_/_interop_require_wildcard/package.json",
+        "hash": "7137475299353554629"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/comment.js",
+        "hash": "15122763232274383277"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/border-image.js",
+        "hash": "5511906494154782991"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-print-color-adjust.js",
+        "hash": "221451788327193285"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-utils.js",
+        "hash": "4296852081813764979"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2023.collection.d.ts",
+        "hash": "11138029835163525142"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/dist/lib/supported.js",
+        "hash": "734902809986893251"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/text-size-adjust.js",
+        "hash": "10740162199490522357"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/graph-server.d.ts",
+        "hash": "11474782265557365220"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/font-feature.js",
+        "hash": "2581121610239434792"
+      },
+      {
+        "file": "dist/libs/api-client/src/types.d.ts",
+        "hash": "362666337342513870"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex-spec.js",
+        "hash": "7983371718070707801"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/dist/unpacker/browserVersions.js",
+        "hash": "7619980368684405626"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-start.js",
+        "hash": "3294437086656798843"
+      },
+      {
+        "file": ".nx/workspace-data/file-map.json",
+        "hash": "8464931469509570131"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.d.ts",
+        "hash": "9697495355969790460"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/background-clip.js",
+        "hash": "2475881363396510456"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-sticky.js",
+        "hash": "12448450072868171090"
+      },
+      {
+        "file": "node_modules/.pnpm/client-only@0.0.1/node_modules/client-only/package.json",
+        "hash": "8436981126097515812"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex-direction.js",
+        "hash": "1516133761830518611"
+      },
+      {
+        "file": "dist/libs/api-client/src/graph-server.js.map",
+        "hash": "10351242767782488033"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/supports.js",
+        "hash": "5676161285718948282"
+      },
+      {
+        "file": "tmpclaude-8f29-cwd",
+        "hash": "12302638291578339799"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/order.js",
+        "hash": "10489720563258472456"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2021.string.d.ts",
+        "hash": "12900065791569611395"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/font-kerning.js",
+        "hash": "9608437234129893582"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/multicolumn.js",
+        "hash": "4909910008835183042"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-clip-path.js",
+        "hash": "6685760818166564536"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/types.d.ts",
+        "hash": "362666337342513870"
+      },
+      {
+        "file": "postcss.config.js",
+        "hash": "8055263870272897227"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/transforms3d.js",
+        "hash": "5548879587443751595"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2022.error.d.ts",
+        "hash": "4427647427458578049"
+      },
+      {
+        "file": "node_modules/.pnpm/node-releases@2.0.27/node_modules/node-releases/package.json",
+        "hash": "431876518686429725"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/components/Button.js",
+        "hash": "15593164963989620762"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/animation.js",
+        "hash": "4979110978940685860"
+      },
+      {
+        "file": "dist/libs/api-client/src/data-server.js.map",
+        "hash": "17243931698151470645"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss-value-parser@4.2.0/node_modules/postcss-value-parser/lib/parse.js",
+        "hash": "1025445685676863577"
+      },
+      {
+        "file": "node_modules/.pnpm/@nx+devkit@20.8.4_nx@20.8.4_340cd1a881d77cfe022a54a21c8d43f7/node_modules/@nx/devkit/src/utils/versions.js",
+        "hash": "7473894315158201640"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2018.promise.d.ts",
+        "hash": "10544303587089311591"
+      },
+      {
+        "file": ".nx/workspace-data/2a86bebd-cc6f-4406-ab76-4b837d12c447.db",
+        "hash": "6240709564311096908"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-backdrop-filter.js",
+        "hash": "12372002251801855996"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/border-image.js",
+        "hash": "3790490073176746115"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/border-radius.js",
+        "hash": "5622637495821276037"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-text-orientation.js",
+        "hash": "12600330582439054970"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.iterable.d.ts",
+        "hash": "3490044965182687409"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/dist/unpacker/feature.js",
+        "hash": "9340842279212490720"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/terminal-highlight.js",
+        "hash": "9754551364571824531"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/browsers.js",
+        "hash": "6697849646466187026"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-text-decoration-style.js",
+        "hash": "12556502408619916888"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/components/Card.js",
+        "hash": "10251041652895321533"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/background-size.js",
+        "hash": "5095115879200840641"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-image-set.js",
+        "hash": "10586313823772340198"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2022.regexp.d.ts",
+        "hash": "18419480472339760282"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/components/Card.js",
+        "hash": "10251041652895321533"
+      },
+      {
+        "file": "node_modules/.pnpm/scheduler@0.27.0/node_modules/scheduler/package.json",
+        "hash": "7258768730414601326"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/index.d.ts",
+        "hash": "12503622914319567378"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-autofill.js",
+        "hash": "11012303125804833801"
+      },
+      {
+        "file": "node_modules/.pnpm/@types+react@19.2.11/node_modules/@types/react/global.d.ts",
+        "hash": "9314733887173241401"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.iterator.d.ts",
+        "hash": "18157250115381574226"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/align-items.js",
+        "hash": "16538195021767218881"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/text-decoration-skip-ink.js",
+        "hash": "1677943932657019516"
+      },
+      {
+        "file": ".nx/workspace-data/source-maps.json",
+        "hash": "11880832075086552517"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-text-decoration-color.js",
+        "hash": "1796072999843611893"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-area.js",
+        "hash": "8205189833789537947"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts",
+        "hash": "6558314612989965410"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/display-grid.js",
+        "hash": "17708461165257392133"
+      },
+      {
+        "file": "node_modules/.pnpm/csstype@3.2.3/node_modules/csstype/package.json",
+        "hash": "1449334987529295575"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.promise.d.ts",
+        "hash": "1822547018016878365"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2023.array.d.ts",
+        "hash": "8161738339819378231"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/root.js",
+        "hash": "9795682785602523814"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.float16.d.ts",
+        "hash": "15842192357274968272"
+      },
+      {
+        "file": "node_modules/.pnpm/npm-run-path@4.0.1/node_modules/npm-run-path/package.json",
+        "hash": "18360258078653557395"
+      },
+      {
+        "file": "node_modules/.pnpm/fdir@6.5.0_picomatch@4.0.3/node_modules/fdir/package.json",
+        "hash": "14352009419165453999"
       },
       {
         "file": ".vscode/extensions.json",
         "hash": "11309362834336059819"
       },
       {
-        "file": ".prettierignore",
-        "hash": "14688272390704683536"
+        "file": "dist/libs/api-client/src/graph-server.d.ts",
+        "hash": "11474782265557365220"
       },
       {
-        "file": "nx.json",
-        "hash": "1294415236546608950"
+        "file": "node_modules/.pnpm/@types+react@19.2.11/node_modules/@types/react/jsx-runtime.d.ts",
+        "hash": "8648593964632352661"
       },
       {
-        "file": "pnpm-workspace.yaml",
-        "hash": "6820106938215623083"
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/data/prefixes.js",
+        "hash": "13358293401811802119"
       },
       {
-        "file": "README.md",
-        "hash": "16197838269525982651"
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css3-tabsize.js",
+        "hash": "2042383640603058783"
       },
       {
-        "file": "jest.preset.js",
-        "hash": "9430166341120122740"
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-read-only-write.js",
+        "hash": "16939716973853025388"
       },
       {
-        "file": "jest.config.ts",
-        "hash": "6870352021923392442"
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/break-props.js",
+        "hash": "11631527987678565757"
       },
       {
-        "file": "tsconfig.json",
-        "hash": "11648749874208438836"
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/autofill.js",
+        "hash": "13489864323204088928"
       },
       {
-        "file": ".editorconfig",
-        "hash": "5443105041930014821"
+        "file": "dist/libs/shared-ui/src/components/Button.js",
+        "hash": "15593164963989620762"
       },
       {
-        "file": ".gitignore",
-        "hash": "11781386581622614206"
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.symbol.d.ts",
+        "hash": "891533368674585660"
       },
       {
-        "file": "eslint.config.mjs",
-        "hash": "6927958956019882428"
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2022.intl.d.ts",
+        "hash": "8017207592484629980"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.object.d.ts",
+        "hash": "17190975640975357585"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/display-flex.js",
+        "hash": "2294554381313240753"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/value.js",
+        "hash": "7542297480064510399"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/filter-value.js",
+        "hash": "1149511829707498998"
+      },
+      {
+        "file": "node_modules/.pnpm/picomatch@4.0.3/node_modules/picomatch/lib/constants.js",
+        "hash": "1844741571343012891"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2016.d.ts",
+        "hash": "9490375986666399434"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/stringifier.js",
+        "hash": "14452539919519795045"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/index.js",
+        "hash": "13911203934576121913"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss-value-parser@4.2.0/node_modules/postcss-value-parser/lib/unit.js",
+        "hash": "9397689627508083273"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2023.intl.d.ts",
+        "hash": "432914846472335835"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.intl.d.ts",
+        "hash": "8212264318749017308"
+      },
+      {
+        "file": "package.json",
+        "hash": "3396992629828311187"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2022.d.ts",
+        "hash": "5848250271769923497"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/old-value.js",
+        "hash": "14002779418540273670"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/esm/_class_private_field_loose_key.js",
+        "hash": "17101661003162461124"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/print-color-adjust.js",
+        "hash": "3968153170755265914"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/typescript.js",
+        "hash": "4164843456411927824"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-regions.js",
+        "hash": "8259061500425158910"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/prefixer.js",
+        "hash": "12863974424161600405"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex.js",
+        "hash": "15540581881219682108"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.dom.iterable.d.ts",
+        "hash": "6119848269864642997"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/text-overflow.js",
+        "hash": "4415919285913397918"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/graph-server.js.map",
+        "hash": "10351242767782488033"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2019.symbol.d.ts",
+        "hash": "5478332072266535503"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/vector-server.d.ts",
+        "hash": "14286384330539169165"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2018.intl.d.ts",
+        "hash": "7502047709139939483"
+      },
+      {
+        "file": "dist/libs/api-client/src/vector-server.js.map",
+        "hash": "8314764070805939245"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/components/Card.js.map",
+        "hash": "7774636329573364607"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts",
+        "hash": "13335126650710084438"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2019.array.d.ts",
+        "hash": "18346274752621624344"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/align-content.js",
+        "hash": "13124513770903374146"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/symbols.js",
+        "hash": "5776981806868676548"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/text-emphasis.js",
+        "hash": "10092263638301378846"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/vector-server.js.map",
+        "hash": "8314764070805939245"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-row-column.js",
+        "hash": "17669186819124169592"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/index.d.ts",
+        "hash": "12503622914319567378"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/inline-logical.js",
+        "hash": "3734727512807180737"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts",
+        "hash": "16135965184391849753"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts",
+        "hash": "14840614253471355484"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.d.ts",
+        "hash": "15064124449769910457"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-grid.js",
+        "hash": "5325247047708476622"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/components/Button.d.ts",
+        "hash": "12492855315837554601"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-overscroll-behavior.js",
+        "hash": "17516074677524189364"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex-flow.js",
+        "hash": "9081258712387182605"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/types.js",
+        "hash": "14712619198338248242"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/object-fit.js",
+        "hash": "10465396977254667899"
+      },
+      {
+        "file": ".vscode/settings.json",
+        "hash": "17852781406967005695"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/block-logical.js",
+        "hash": "2808673154532016163"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-logical-props.js",
+        "hash": "8408372481193015584"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/warning.js",
+        "hash": "7070678282097435256"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-placeholder.js",
+        "hash": "10649662478960581357"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2021.weakref.d.ts",
+        "hash": "17842174458577496616"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.reflect.d.ts",
+        "hash": "7357703865182716811"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/transform-decl.js",
+        "hash": "2093080938683470076"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/flex-wrap.js",
+        "hash": "10367593106730893192"
+      },
+      {
+        "file": ".nx/workspace-data/lockfile.hash",
+        "hash": "7483546640281552786"
+      },
+      {
+        "file": "dist/libs/api-client/src/graph-server.js",
+        "hash": "6383435805353370450"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.date.d.ts",
+        "hash": "10224305437242026991"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/_/_class_private_field_loose_key/package.json",
+        "hash": "4435474798956157880"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-boxshadow.js",
+        "hash": "11714729623381182945"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-featurequeries.js",
+        "hash": "3268423204337907293"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss-value-parser@4.2.0/node_modules/postcss-value-parser/package.json",
+        "hash": "4527236648738907531"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts",
+        "hash": "1872814792029755937"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/background-img-opts.js",
+        "hash": "2703109868995559407"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-rows-columns.js",
+        "hash": "161601630215779502"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss-value-parser@4.2.0/node_modules/postcss-value-parser/lib/index.js",
+        "hash": "4143062628705148624"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/old-selector.js",
+        "hash": "6429099549206170646"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-gradients.js",
+        "hash": "894652741845950991"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.disposable.d.ts",
+        "hash": "18118967778933542666"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2019.object.d.ts",
+        "hash": "7279590234913451377"
+      },
+      {
+        "file": "tmpclaude-dcf8-cwd",
+        "hash": "12302638291578339799"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.arraybuffer.d.ts",
+        "hash": "6373705971904904473"
+      },
+      {
+        "file": "node_modules/.pnpm/electron-to-chromium@1.5.286/node_modules/electron-to-chromium/versions.js",
+        "hash": "14418587699533745023"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.dom.d.ts",
+        "hash": "1222030551504574586"
+      },
+      {
+        "file": "node_modules/.pnpm/picomatch@4.0.3/node_modules/picomatch/package.json",
+        "hash": "16941127613583830221"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.intl.d.ts",
+        "hash": "3502068496653187556"
+      },
+      {
+        "file": "node_modules/.pnpm/csstype@3.2.3/node_modules/csstype/index.d.ts",
+        "hash": "14269171859322537411"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2018.d.ts",
+        "hash": "14210540613628414297"
+      },
+      {
+        "file": ".nx/workspace-data/parsed-lock-file.json",
+        "hash": "10190986549878633753"
+      },
+      {
+        "file": "node_modules/.pnpm/node-releases@2.0.27/node_modules/node-releases/data/processed/envs.json",
+        "hash": "12927923121074490304"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/intrinsic-width.js",
+        "hash": "12021059288915297361"
+      },
+      {
+        "file": "dist/libs/api-client/src/index.js",
+        "hash": "4708721250791089582"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.date.d.ts",
+        "hash": "8668408675983325562"
+      },
+      {
+        "file": "node_modules/.pnpm/react@19.2.4/node_modules/react/cjs/react.development.js",
+        "hash": "14421369070013254538"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/data-server.js",
+        "hash": "4258003285067269307"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/graph-server.js",
+        "hash": "6383435805353370450"
+      },
+      {
+        "file": ".nx/cache/terminalOutputs/13447536205931553680",
+        "hash": "6723120180736549691"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/fullscreen.js",
+        "hash": "13616240247535963344"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-deviceadaptation.js",
+        "hash": "15771077236051948911"
+      },
+      {
+        "file": "dist/libs/api-client/src/data-server.d.ts",
+        "hash": "14399032499013545719"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2021.promise.d.ts",
+        "hash": "7615257879832605752"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-crisp-edges.js",
+        "hash": "2191479973227580627"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/types.js.map",
+        "hash": "391547392259525844"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/brackets.js",
+        "hash": "13437696624615925545"
+      },
+      {
+        "file": "node_modules/.pnpm/@swc+helpers@0.5.15/node_modules/@swc/helpers/_/_class_private_field_loose_base/package.json",
+        "hash": "8418502533475043810"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-end.js",
+        "hash": "18318312082881930856"
+      },
+      {
+        "file": "node_modules/.pnpm/browserslist@4.28.1/node_modules/browserslist/error.js",
+        "hash": "1715875553527311680"
       },
       {
         "file": "pnpm-lock.yaml",
-        "hash": "9227817525500667787"
+        "hash": "11987415756939173636"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/document.js",
+        "hash": "2536763546037916692"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-media-resolution.js",
+        "hash": "10601219587744907154"
+      },
+      {
+        "file": "node_modules/.pnpm/fraction.js@5.3.4/node_modules/fraction.js/package.json",
+        "hash": "6950978675088859003"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss-value-parser@4.2.0/node_modules/postcss-value-parser/lib/stringify.js",
+        "hash": "17559968288241219175"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-filter-function.js",
+        "hash": "11303616807887300527"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/index.js.map",
+        "hash": "1581477231500662321"
+      },
+      {
+        "file": "apps/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/placeholder.js",
+        "hash": "1817182193893465527"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-appearance.js",
+        "hash": "1292102384873741614"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/browsers.js",
+        "hash": "221137263004088082"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/mask-border.js",
+        "hash": "5464249104136312532"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/image-rendering.js",
+        "hash": "3160104429157885892"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/package.json",
+        "hash": "1613837776312262398"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.collection.d.ts",
+        "hash": "6771980125738583905"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts",
+        "hash": "687968851518430219"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-animation.js",
+        "hash": "16798786399924715506"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2023.d.ts",
+        "hash": "3892200754257051222"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/list.js",
+        "hash": "5219054373790489797"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/index.js",
+        "hash": "13911203934576121913"
+      },
+      {
+        "file": "node_modules/.pnpm/picomatch@4.0.2/node_modules/picomatch/lib/parse.js",
+        "hash": "10894168358300786418"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/transition.js",
+        "hash": "12619157707965584593"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/vector-server.js",
+        "hash": "16102796891417770881"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/placeholder-shown.js",
+        "hash": "5976184501769243716"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.string.d.ts",
+        "hash": "14311648127067016861"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/index.d.ts",
+        "hash": "10053823588214558724"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/components/Button.d.ts",
+        "hash": "12492855315837554601"
+      },
+      {
+        "file": "dist/libs/api-client/src/types.js.map",
+        "hash": "391547392259525844"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.generator.d.ts",
+        "hash": "15858770508667582685"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-template-areas.js",
+        "hash": "9754421286360730777"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-element-function.js",
+        "hash": "8918578401677688040"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2020.bigint.d.ts",
+        "hash": "9291054094194015305"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-placeholder-shown.js",
+        "hash": "3280135534149140250"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/dist/unpacker/region.js",
+        "hash": "7480039235997232094"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-text-decoration-line.js",
+        "hash": "9478428548347328351"
+      },
+      {
+        "file": "dist/libs/api-client/src/data-server.js",
+        "hash": "4258003285067269307"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2015.collection.d.ts",
+        "hash": "6925034314799468488"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-hyphens.js",
+        "hash": "4066094360941955794"
+      },
+      {
+        "file": "tailwind.config.ts",
+        "hash": "17537043366417292659"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2018.regexp.d.ts",
+        "hash": "9315389805199358553"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/components/Button.js.map",
+        "hash": "6764616427598030753"
+      },
+      {
+        "file": "node_modules/.pnpm/npm-run-path@4.0.1/node_modules/npm-run-path/index.js",
+        "hash": "2776785932717594875"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css3-boxsizing.js",
+        "hash": "15555478660995356329"
+      },
+      {
+        "file": "nx.json",
+        "hash": "5228073526068885191"
+      },
+      {
+        "file": ".nx/cache/run.json",
+        "hash": "5691617435861857167"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/align-self.js",
+        "hash": "17725978487777748148"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/components/Card.js.map",
+        "hash": "7774636329573364607"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/image-set.js",
+        "hash": "5742136415934638746"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/pointer.js",
+        "hash": "16098486345405139315"
+      },
+      {
+        "file": ".nx/workspace-data/2a86bebd-cc6f-4406-ab76-4b837d12c447.db-shm",
+        "hash": "13805867435437658188"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.regexp.d.ts",
+        "hash": "3820700975630205713"
+      },
+      {
+        "file": ".nx/cache/13447536205931553680/dist/libs/shared-ui/src/components/Card.d.ts",
+        "hash": "352980644893835873"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "6099590910643175814"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/backdrop-filter.js",
+        "hash": "2175081534063291616"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/fullscreen.js",
+        "hash": "11572513120269874909"
+      },
+      {
+        "file": "node_modules/.pnpm/path-key@3.1.1/node_modules/path-key/package.json",
+        "hash": "6893000917739814324"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/stringify.js",
+        "hash": "13569282009718736343"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2019.string.d.ts",
+        "hash": "4424220716653849732"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/transforms2d.js",
+        "hash": "3083207895286267626"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.promise.d.ts",
+        "hash": "10695833995577427165"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-text-spacing.js",
+        "hash": "8144550000417454257"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/appearance.js",
+        "hash": "5470386247529870305"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/border-radius.js",
+        "hash": "16844215993486922787"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.object.d.ts",
+        "hash": "13860822149602422797"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss-value-parser@4.2.0/node_modules/postcss-value-parser/lib/walk.js",
+        "hash": "17682337191886643177"
+      },
+      {
+        "file": "node_modules/.pnpm/browserslist@4.28.1/node_modules/browserslist/parse.js",
+        "hash": "10110287367886178185"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-cross-fade.js",
+        "hash": "15057486254955614803"
+      },
+      {
+        "file": "node_modules/.pnpm/fraction.js@5.3.4/node_modules/fraction.js/dist/fraction.js",
+        "hash": "15593378588799371796"
+      },
+      {
+        "file": "node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/warn-once.js",
+        "hash": "4984765863761039765"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-css-unicode-bidi-isolate-override.js",
+        "hash": "13481713413529411553"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/mdn-css-unicode-bidi-plaintext.js",
+        "hash": "10280963126979427528"
+      },
+      {
+        "file": ".nx/workspace-data/2a86bebd-cc6f-4406-ab76-4b837d12c447.db-wal",
+        "hash": "9948609569070809474"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/dist/lib/statuses.js",
+        "hash": "1020629257972746213"
+      },
+      {
+        "file": "node_modules/.pnpm/browserslist@4.28.1/node_modules/browserslist/node.js",
+        "hash": "2586535422088047155"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/grid-column-align.js",
+        "hash": "5334771973537990418"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2021.intl.d.ts",
+        "hash": "13435879737207785312"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/flexbox.js",
+        "hash": "12723369973648973091"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/vendor.js",
+        "hash": "12213489536027542485"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/dist/unpacker/browsers.js",
+        "hash": "18301535236229208815"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2024.string.d.ts",
+        "hash": "4297976844947567094"
+      },
+      {
+        "file": "dist/libs/api-client/src/types.js",
+        "hash": "14712619198338248242"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/text-emphasis-position.js",
+        "hash": "13110907726699168843"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/data-server.js.map",
+        "hash": "17243931698151470645"
+      },
+      {
+        "file": "dist/libs/api-client/package.json",
+        "hash": "1453433929878013649"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/file-selector-button.js",
+        "hash": "10610022611804458365"
+      },
+      {
+        "file": "dist/libs/shared-ui/src/components/Card.d.ts",
+        "hash": "352980644893835873"
+      },
+      {
+        "file": "dist/libs/api-client/src/index.d.ts",
+        "hash": "10053823588214558724"
+      },
+      {
+        "file": "node_modules/.pnpm/autoprefixer@10.4.24_postcss@8.5.6/node_modules/autoprefixer/lib/hacks/justify-content.js",
+        "hash": "8411736139343479490"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.esnext.decorators.d.ts",
+        "hash": "2774309090551801276"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/user-select-none.js",
+        "hash": "14029128602771374326"
+      },
+      {
+        "file": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es2021.d.ts",
+        "hash": "5428800885944181910"
+      },
+      {
+        "file": "node_modules/.pnpm/picomatch@4.0.2/node_modules/picomatch/lib/utils.js",
+        "hash": "619727509094092342"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/css-filters.js",
+        "hash": "2472533398041259919"
+      },
+      {
+        "file": "node_modules/.pnpm/caniuse-lite@1.0.30001767/node_modules/caniuse-lite/data/features/background-clip-text.js",
+        "hash": "6357076283790356550"
+      },
+      {
+        "file": ".nx/cache/14368078910301401944/dist/libs/api-client/src/data-server.d.ts",
+        "hash": "14399032499013545719"
       }
     ],
     "projectFileMap": {
-      "@collider-frontend/shared-ui": [
+      "api-client": [
         {
-          "file": "libs/shared-ui/.babelrc",
-          "hash": "2946678488919325452"
+          "file": "libs/api-client/project.json",
+          "hash": "18060365577434231717"
         },
         {
-          "file": "libs/shared-ui/README.md",
-          "hash": "11279802349526568370"
+          "file": "libs/api-client/src/data-server.ts",
+          "hash": "10938341704754137023"
         },
         {
-          "file": "libs/shared-ui/jest.config.cts",
-          "hash": "146129174549585619"
+          "file": "libs/api-client/src/graph-server.ts",
+          "hash": "14124615446317316991"
         },
         {
-          "file": "libs/shared-ui/package.json",
-          "hash": "14074447909791126898"
+          "file": "libs/api-client/src/index.ts",
+          "hash": "12536281667465005173"
         },
         {
-          "file": "libs/shared-ui/rollup.config.cjs",
-          "hash": "2593965619745688816",
-          "deps": [
-            "npm:@nx/rollup",
-            "npm:@rollup/plugin-url",
-            "npm:@svgr/rollup"
-          ]
+          "file": "libs/api-client/src/types.ts",
+          "hash": "80544609674737361"
         },
         {
-          "file": "libs/shared-ui/src/index.ts",
-          "hash": "15682517005854060669"
+          "file": "libs/api-client/src/vector-server.ts",
+          "hash": "12778062075828456829"
         },
         {
-          "file": "libs/shared-ui/src/lib/shared-ui.module.css",
-          "hash": "125145030238681982"
-        },
-        {
-          "file": "libs/shared-ui/src/lib/shared-ui.spec.tsx",
-          "hash": "5746952681277132322",
-          "deps": [
-            "npm:@testing-library/react"
-          ]
-        },
-        {
-          "file": "libs/shared-ui/src/lib/shared-ui.tsx",
-          "hash": "11310236814879114197"
-        },
-        {
-          "file": "libs/shared-ui/tsconfig.json",
-          "hash": "1138660533399177677"
-        },
-        {
-          "file": "libs/shared-ui/tsconfig.lib.json",
-          "hash": "4954703335201594126"
-        },
-        {
-          "file": "libs/shared-ui/tsconfig.spec.json",
-          "hash": "5324642384920426034"
+          "file": "libs/api-client/tsconfig.json",
+          "hash": "5012404241517611581"
         }
       ],
-      "@collider-frontend/node-container": [
+      "node-container": [
         {
-          "file": "libs/node-container/.babelrc",
-          "hash": "2946678488919325452"
-        },
-        {
-          "file": "libs/node-container/README.md",
-          "hash": "5067739457507080877"
-        },
-        {
-          "file": "libs/node-container/jest.config.cts",
-          "hash": "6741046431814237112"
-        },
-        {
-          "file": "libs/node-container/package.json",
-          "hash": "11524700747828733739"
-        },
-        {
-          "file": "libs/node-container/rollup.config.cjs",
-          "hash": "2593965619745688816",
-          "deps": [
-            "npm:@nx/rollup",
-            "npm:@rollup/plugin-url",
-            "npm:@svgr/rollup"
-          ]
+          "file": "libs/node-container/project.json",
+          "hash": "539325235859043136"
         },
         {
           "file": "libs/node-container/src/index.ts",
-          "hash": "7445237792243445184"
+          "hash": "3420108530700516478"
         },
         {
-          "file": "libs/node-container/src/lib/node-container.module.css",
-          "hash": "5943244802079163594"
+          "file": "libs/node-container/src/merger.ts",
+          "hash": "1690342965722904641"
         },
         {
-          "file": "libs/node-container/src/lib/node-container.spec.tsx",
-          "hash": "13458014448537275577",
-          "deps": [
-            "npm:@testing-library/react"
-          ]
-        },
-        {
-          "file": "libs/node-container/src/lib/node-container.tsx",
-          "hash": "7497642973266380749",
-          "deps": [
-            "npm:react"
-          ]
-        },
-        {
-          "file": "libs/node-container/src/lib/use-container.ts",
-          "hash": "15026320568924040289",
-          "deps": [
-            "npm:react"
-          ]
-        },
-        {
-          "file": "libs/node-container/src/lib/use-sse.ts",
-          "hash": "993399768094272067",
-          "deps": [
-            "npm:react"
-          ]
+          "file": "libs/node-container/src/types.ts",
+          "hash": "17780060613844083170"
         },
         {
           "file": "libs/node-container/tsconfig.json",
-          "hash": "15624987478551381231"
-        },
-        {
-          "file": "libs/node-container/tsconfig.lib.json",
-          "hash": "4954703335201594126"
-        },
-        {
-          "file": "libs/node-container/tsconfig.spec.json",
-          "hash": "5324642384920426034"
+          "hash": "3574823945291946039"
         }
       ],
-      "@collider-frontend/portal-e2e": [
+      "portal": [
         {
-          "file": "apps/portal-e2e/eslint.config.mjs",
-          "hash": "1172734138943286526",
+          "file": "apps/portal/.next/app-build-manifest.json",
+          "hash": "8160653261663257972"
+        },
+        {
+          "file": "apps/portal/.next/build-manifest.json",
+          "hash": "5125768831124365349"
+        },
+        {
+          "file": "apps/portal/.next/cache/.rscinfo",
+          "hash": "4982994447030797066"
+        },
+        {
+          "file": "apps/portal/.next/cache/next-devtools-config.json",
+          "hash": "1389868326933519382"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/client-development/0.pack.gz",
+          "hash": "6695220352382288653"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/client-development/1.pack.gz",
+          "hash": "17994139035453059315"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/client-development/2.pack.gz",
+          "hash": "10722164236078808615"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/client-development/index.pack.gz",
+          "hash": "11765821026978335076"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/client-development/index.pack.gz.old",
+          "hash": "10878257162612355127"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/server-development/0.pack.gz",
+          "hash": "17017328150700316032"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/server-development/1.pack.gz",
+          "hash": "4845969722487230159"
+        },
+        {
+          "file": "apps/portal/.next/cache/webpack/server-development/index.pack.gz.old",
+          "hash": "278591616132778465"
+        },
+        {
+          "file": "apps/portal/.next/package.json",
+          "hash": "11338307439248427064"
+        },
+        {
+          "file": "apps/portal/.next/prerender-manifest.json",
+          "hash": "6916998117163487064"
+        },
+        {
+          "file": "apps/portal/.next/react-loadable-manifest.json",
+          "hash": "8968759833147155341"
+        },
+        {
+          "file": "apps/portal/.next/routes-manifest.json",
+          "hash": "2282505038782265489"
+        },
+        {
+          "file": "apps/portal/.next/server/app-paths-manifest.json",
+          "hash": "7240895514377590677"
+        },
+        {
+          "file": "apps/portal/.next/server/app/apps/[appId]/page.js",
+          "hash": "2963993493695505071",
           "deps": [
-            "npm:eslint-plugin-playwright"
+            [
+              "npm:next",
+              "dynamic"
+            ]
           ]
         },
         {
-          "file": "apps/portal-e2e/package.json",
-          "hash": "5003930954038377527"
+          "file": "apps/portal/.next/server/app/apps/[appId]/page_client-reference-manifest.js",
+          "hash": "16868656247271790026"
         },
         {
-          "file": "apps/portal-e2e/playwright.config.ts",
-          "hash": "3721664813057972344",
+          "file": "apps/portal/.next/server/app/page.js",
+          "hash": "8413376274726925508",
           "deps": [
-            "npm:@playwright/test",
-            "npm:@nx/playwright",
-            "npm:@nx/devkit"
+            [
+              "npm:next",
+              "dynamic"
+            ]
           ]
         },
         {
-          "file": "apps/portal-e2e/src/example.spec.ts",
-          "hash": "16019101014373124625",
+          "file": "apps/portal/.next/server/app/page_client-reference-manifest.js",
+          "hash": "6171710869919416440"
+        },
+        {
+          "file": "apps/portal/.next/server/interception-route-rewrite-manifest.js",
+          "hash": "10484309360224763022"
+        },
+        {
+          "file": "apps/portal/.next/server/middleware-build-manifest.js",
+          "hash": "10146558356613894909"
+        },
+        {
+          "file": "apps/portal/.next/server/middleware-manifest.json",
+          "hash": "9889576824779923310"
+        },
+        {
+          "file": "apps/portal/.next/server/middleware-react-loadable-manifest.js",
+          "hash": "12335685854178095916"
+        },
+        {
+          "file": "apps/portal/.next/server/next-font-manifest.js",
+          "hash": "16541577805185552134"
+        },
+        {
+          "file": "apps/portal/.next/server/next-font-manifest.json",
+          "hash": "11891788324563068681"
+        },
+        {
+          "file": "apps/portal/.next/server/pages-manifest.json",
+          "hash": "1389868326933519382"
+        },
+        {
+          "file": "apps/portal/.next/server/server-reference-manifest.js",
+          "hash": "13062913855343812063"
+        },
+        {
+          "file": "apps/portal/.next/server/server-reference-manifest.json",
+          "hash": "6085016141433662120"
+        },
+        {
+          "file": "apps/portal/.next/server/vendor-chunks/@radix-ui+react-compose-ref_a6324f9e6567b2542a0186c6ec537eed.js",
+          "hash": "10940503835386090690"
+        },
+        {
+          "file": "apps/portal/.next/server/vendor-chunks/@radix-ui+react-slot@1.2.4_@types+react@19.2.11_react@19.2.4.js",
+          "hash": "619810281038474696"
+        },
+        {
+          "file": "apps/portal/.next/server/vendor-chunks/@swc+helpers@0.5.15.js",
+          "hash": "15182122757849883021"
+        },
+        {
+          "file": "apps/portal/.next/server/vendor-chunks/clsx@2.1.1.js",
+          "hash": "7999851485028705557"
+        },
+        {
+          "file": "apps/portal/.next/server/vendor-chunks/next@15.5.12_@babel+core@7._75d4a0bf1f4ae87ad1941d3415910049.js",
+          "hash": "5884254651717243586"
+        },
+        {
+          "file": "apps/portal/.next/server/vendor-chunks/tailwind-merge@3.4.0.js",
+          "hash": "16836180142482488765"
+        },
+        {
+          "file": "apps/portal/.next/server/webpack-runtime.js",
+          "hash": "9240654619557011840"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/_app-pages-browser_node_modules_pnpm_next_15_5_12__babel_core_7__75d4a0bf1f4ae87ad1941d341591-49fa25.js",
+          "hash": "6210112238747389296"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/app-pages-internals.js",
+          "hash": "2099191725512131113"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/app/apps/[appId]/page.js",
+          "hash": "3682226722389598756"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/app/layout.js",
+          "hash": "6707617496479665195"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/app/page.js",
+          "hash": "16951044001640288810"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/main-app.js",
+          "hash": "15578603291923738732"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/polyfills.js",
+          "hash": "8152964857117933876"
+        },
+        {
+          "file": "apps/portal/.next/static/chunks/webpack.js",
+          "hash": "10608045441309676645"
+        },
+        {
+          "file": "apps/portal/.next/static/css/app/layout.css",
+          "hash": "8455968694406296704"
+        },
+        {
+          "file": "apps/portal/.next/static/development/_buildManifest.js",
+          "hash": "13063724784290855366"
+        },
+        {
+          "file": "apps/portal/.next/static/development/_ssgManifest.js",
+          "hash": "17018243955171961484"
+        },
+        {
+          "file": "apps/portal/.next/static/webpack/633457081244afec._.hot-update.json",
+          "hash": "10481436618516908015"
+        },
+        {
+          "file": "apps/portal/.next/static/webpack/b0579e607d1c228e.webpack.hot-update.json",
+          "hash": "13405125561290911638"
+        },
+        {
+          "file": "apps/portal/.next/static/webpack/webpack.b0579e607d1c228e.hot-update.js",
+          "hash": "13094809341466998891"
+        },
+        {
+          "file": "apps/portal/.next/trace",
+          "hash": "9370301725553019493"
+        },
+        {
+          "file": "apps/portal/.next/types/app/apps/[appId]/page.ts",
+          "hash": "10265974006397247153",
           "deps": [
-            "npm:@playwright/test"
+            "npm:next"
           ]
         },
         {
-          "file": "apps/portal-e2e/tsconfig.json",
-          "hash": "15001458170383955177"
-        }
-      ],
-      "@collider-frontend/portal": [
-        {
-          "file": "apps/portal/.env.example",
-          "hash": "1511980577520479513"
-        },
-        {
-          "file": "apps/portal/.swcrc",
-          "hash": "4532740859193830353"
-        },
-        {
-          "file": "apps/portal/eslint.config.mjs",
-          "hash": "858341604460046485",
+          "file": "apps/portal/.next/types/app/layout.ts",
+          "hash": "6869893913317628279",
           "deps": [
-            "npm:@next/eslint-plugin-next",
-            "npm:@nx/eslint-plugin"
+            "npm:next"
           ]
         },
         {
-          "file": "apps/portal/index.d.ts",
-          "hash": "5498222895072842432"
+          "file": "apps/portal/.next/types/app/page.ts",
+          "hash": "6633928484961279314",
+          "deps": [
+            "npm:next"
+          ]
         },
         {
-          "file": "apps/portal/jest.config.cts",
-          "hash": "3184675941592390309",
+          "file": "apps/portal/.next/types/cache-life.d.ts",
+          "hash": "4146217227981141382",
+          "deps": [
+            "npm:next"
+          ]
+        },
+        {
+          "file": "apps/portal/.next/types/package.json",
+          "hash": "6094546126370684104"
+        },
+        {
+          "file": "apps/portal/.next/types/routes.d.ts",
+          "hash": "13123272952761440351"
+        },
+        {
+          "file": "apps/portal/.next/types/validator.ts",
+          "hash": "6490663141138832717",
           "deps": [
             "npm:next"
           ]
         },
         {
           "file": "apps/portal/next-env.d.ts",
-          "hash": "373744204795424001"
+          "hash": "2079576359933084494"
         },
         {
           "file": "apps/portal/next.config.js",
-          "hash": "1456748161811383057",
-          "deps": [
-            "npm:@nx/next"
-          ]
+          "hash": "16319902671470336244"
         },
         {
-          "file": "apps/portal/package.json",
-          "hash": "17134406859355201107",
-          "deps": [
-            "npm:firebase",
-            "npm:next",
-            "npm:react",
-            "npm:react-dom"
-          ]
-        },
-        {
-          "file": "apps/portal/public/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "apps/portal/public/favicon.ico",
-          "hash": "9303420814833116677"
-        },
-        {
-          "file": "apps/portal/specs/index.spec.tsx",
-          "hash": "2873936096691223229",
-          "deps": [
-            "npm:react",
-            "npm:@testing-library/react"
-          ]
-        },
-        {
-          "file": "apps/portal/src/app/AuthContext.tsx",
-          "hash": "6986982633776170240",
-          "deps": [
-            "npm:react",
-            "npm:firebase"
-          ]
-        },
-        {
-          "file": "apps/portal/src/app/api.ts",
-          "hash": "13660547928657922336",
-          "deps": [
-            "@collider-frontend/api-client"
-          ]
-        },
-        {
-          "file": "apps/portal/src/app/api/hello/route.ts",
-          "hash": "495073956729887886"
+          "file": "apps/portal/project.json",
+          "hash": "1553147876523520811"
         },
         {
           "file": "apps/portal/src/app/apps/[appId]/page.tsx",
-          "hash": "4046501747868474335",
+          "hash": "11442339032691179865",
           "deps": [
-            "npm:react",
-            "npm:next",
-            "@collider-frontend/node-container",
-            "@collider-frontend/api-client"
+            "api-client",
+            "npm:next"
           ]
         },
         {
-          "file": "apps/portal/src/app/apps/page.tsx",
-          "hash": "12080479075588781805",
-          "deps": [
-            "npm:react",
-            "npm:next",
-            "@collider-frontend/api-client"
-          ]
-        },
-        {
-          "file": "apps/portal/src/app/firebase.ts",
-          "hash": "10083632849594777995",
-          "deps": [
-            "npm:firebase"
-          ]
-        },
-        {
-          "file": "apps/portal/src/app/global.css",
-          "hash": "5221762088766465567"
+          "file": "apps/portal/src/app/globals.css",
+          "hash": "2172668849966456987"
         },
         {
           "file": "apps/portal/src/app/layout.tsx",
-          "hash": "741270227123662972"
-        },
-        {
-          "file": "apps/portal/src/app/page.module.css",
-          "hash": "8304782439360177478"
+          "hash": "703822036059295695",
+          "deps": [
+            "npm:next"
+          ]
         },
         {
           "file": "apps/portal/src/app/page.tsx",
-          "hash": "52689838874260791",
+          "hash": "5267311269126611062",
           "deps": [
-            "npm:react",
-            "npm:next",
-            "@collider-frontend/api-client"
+            "api-client",
+            "shared-ui",
+            "npm:next"
           ]
         },
         {
           "file": "apps/portal/tsconfig.json",
-          "hash": "16176607426265291012"
-        },
-        {
-          "file": "apps/portal/tsconfig.spec.json",
-          "hash": "15963641842635655445"
+          "hash": "18240448709489301505"
         }
       ],
-      "@collider-frontend/api-client": [
+      "shared-ui": [
         {
-          "file": "libs/api-client/.spec.swcrc",
-          "hash": "18201067170784284381"
+          "file": "libs/shared-ui/project.json",
+          "hash": "11964900178777607971"
         },
         {
-          "file": "libs/api-client/.swcrc",
-          "hash": "7750634230069384064"
-        },
-        {
-          "file": "libs/api-client/README.md",
-          "hash": "7690025743337817772"
-        },
-        {
-          "file": "libs/api-client/jest.config.cts",
-          "hash": "12458294518176152492"
-        },
-        {
-          "file": "libs/api-client/package.json",
-          "hash": "18288045592877279840"
-        },
-        {
-          "file": "libs/api-client/rollup.config.cjs",
-          "hash": "3906299977452067029",
+          "file": "libs/shared-ui/src/components/Button.tsx",
+          "hash": "8772709833245832981",
           "deps": [
-            "npm:@nx/rollup"
+            "npm:react",
+            "npm:@radix-ui/react-slot",
+            "npm:clsx",
+            "npm:tailwind-merge"
           ]
         },
         {
-          "file": "libs/api-client/src/index.ts",
-          "hash": "3652867921044571464"
+          "file": "libs/shared-ui/src/components/Card.tsx",
+          "hash": "12853737413522699512",
+          "deps": [
+            "npm:react",
+            "npm:clsx",
+            "npm:tailwind-merge"
+          ]
         },
         {
-          "file": "libs/api-client/src/lib/api-client.spec.ts",
-          "hash": "7991337012531560936"
+          "file": "libs/shared-ui/src/index.ts",
+          "hash": "12503622914319567378"
         },
         {
-          "file": "libs/api-client/src/lib/api-client.ts",
-          "hash": "1364496381803709887"
-        },
-        {
-          "file": "libs/api-client/tsconfig.json",
-          "hash": "12834038490315927699"
-        },
-        {
-          "file": "libs/api-client/tsconfig.lib.json",
-          "hash": "14915788521357049098"
-        },
-        {
-          "file": "libs/api-client/tsconfig.spec.json",
-          "hash": "5815104515492683916"
+          "file": "libs/shared-ui/tsconfig.json",
+          "hash": "9344517304242948061"
         }
       ]
     }
-  },
-  "externalNodesHash": "1721828216047173817"
+  }
 }

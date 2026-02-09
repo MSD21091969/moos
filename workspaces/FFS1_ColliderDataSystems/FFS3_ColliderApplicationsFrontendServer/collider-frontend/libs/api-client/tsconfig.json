@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/libs/api-client",
+    "declaration": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

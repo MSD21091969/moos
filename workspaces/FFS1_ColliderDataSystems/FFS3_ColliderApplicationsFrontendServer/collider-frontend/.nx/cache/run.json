@@ -1,9 +1,43 @@
 {
   "run": {
-    "command": "nx run-many --target=test --projects=api-client node-container",
-    "startTime": "2026-02-05T04:59:08.013Z",
-    "endTime": "2026-02-05T04:59:08.037Z",
+    "command": "nx dev portal",
+    "startTime": "2026-02-09T10:49:08.576Z",
+    "endTime": "2026-02-09T10:49:13.203Z",
     "inner": false
   },
-  "tasks": []
+  "tasks": [
+    {
+      "taskId": "api-client:build",
+      "target": "build",
+      "projectName": "api-client",
+      "hash": "14368078910301401944",
+      "startTime": "2026-02-09T10:49:08.603Z",
+      "endTime": "2026-02-09T10:49:10.964Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    },
+    {
+      "taskId": "shared-ui:build",
+      "target": "build",
+      "projectName": "shared-ui",
+      "hash": "13447536205931553680",
+      "startTime": "2026-02-09T10:49:08.603Z",
+      "endTime": "2026-02-09T10:49:11.232Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    },
+    {
+      "taskId": "portal:dev",
+      "target": "dev",
+      "projectName": "portal",
+      "hash": "523889995674857416",
+      "startTime": "2026-02-09T10:49:11.255Z",
+      "endTime": "2026-02-09T10:49:13.199Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    }
+  ]
 }

@@ -1,0 +1,16 @@
+{
+  "name": "node-container",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/node-container/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/node-container",
+        "main": "libs/node-container/src/index.ts",
+        "tsConfig": "libs/node-container/tsconfig.json"
+      }
+    }
+  }
+}

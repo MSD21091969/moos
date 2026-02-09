@@ -1,0 +1,52 @@
+{
+  "name": "collider-chrome-extension",
+  "displayName": "Collider Multi-Agent Chrome Extension",
+  "version": "0.1.0",
+  "description": "Multi-agent Chrome Extension for the Collider ecosystem",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "plasmo": "^0.89.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.0",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "esbuild",
+      "sharp"
+    ]
+  },
+  "manifest": {
+    "permissions": [
+      "sidePanel",
+      "activeTab",
+      "tabs",
+      "storage",
+      "nativeMessaging",
+      "scripting"
+    ],
+    "host_permissions": [
+      "http://localhost:8000/*",
+      "http://localhost:8001/*",
+      "http://localhost:8002/*"
+    ],
+    "side_panel": {
+      "default_path": "sidepanel.html"
+    }
+  }
+}
