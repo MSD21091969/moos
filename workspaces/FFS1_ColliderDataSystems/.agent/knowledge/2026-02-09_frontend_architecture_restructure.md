@@ -19,19 +19,19 @@ Successfully implemented a complete frontend architecture restructuring for the 
 
 ### 9 Core Components + Sharp Fix
 
-| Component             | Status | Package                    | Size     | Files Modified                       |
-| --------------------- | ------ | -------------------------- | -------- | ------------------------------------ |
-| 0: FETCH_TREE Bug Fix | ✅      | -                          | -        | background/index.ts                  |
-| 1: WebRTC Endpoint    | ✅      | -                          | -        | ColliderDataServer/src/api/rtc.py    |
-| 2: FFS3 Restructure   | ✅      | collider-frontend          | -        | Libs extracted, portal deleted       |
-| 3: FFS4 Sidepanel UI  | ✅      | @collider/sidepanel-ui     | 25.04 kB | AppTree, AgentSeat, WorkspaceBrowser |
-| 4: FFS2 Integration   | ✅      | -                          | 381 kB   | Extension now imports FFS4           |
-| 5: FFS5 PiP UI        | ✅      | @collider/pip-ui           | 24.57 kB | WebRTC user-user comms               |
-| 6: FFS6 IDE Viewer    | ✅      | @collider/ide-viewer       | 23.85 kB | FILESYST domain                      |
-| 7: FFS7 ADMIN Viewer  | ✅      | @collider/admin-viewer     | 22.57 kB | ADMIN domain                         |
-| 8: FFS8 CLOUD Viewer  | ✅      | @collider/cloud-viewer     | 22.74 kB | CLOUD domain                         |
-| 9: Context Router     | ✅      | @collider/workspace-router | -        | ContextManager enhanced              |
-| **Sharp Fix**         | ✅      | -                          | -        | Native module resolution             |
+| Component             | Status | Package                    | Size     | Files Modified                                                                     |
+| --------------------- | ------ | -------------------------- | -------- | ---------------------------------------------------------------------------------- |
+| 0: FETCH_TREE Bug Fix | ✅     | -                          | -        | background/index.ts                                                                |
+| 1: WebRTC Endpoint    | ✅     | -                          | -        | FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/src/api/rtc.py |
+| 2: FFS3 Restructure   | ✅     | collider-frontend          | -        | Libs extracted, portal deleted                                                     |
+| 3: FFS4 Sidepanel UI  | ✅     | @collider/sidepanel-ui     | 25.04 kB | AppTree, AgentSeat, WorkspaceBrowser                                               |
+| 4: FFS2 Integration   | ✅     | -                          | 381 kB   | Extension now imports FFS4                                                         |
+| 5: FFS5 PiP UI        | ✅     | @collider/pip-ui           | 24.57 kB | WebRTC user-user comms                                                             |
+| 6: FFS6 IDE Viewer    | ✅     | @collider/ide-viewer       | 23.85 kB | FILESYST domain                                                                    |
+| 7: FFS7 ADMIN Viewer  | ✅     | @collider/admin-viewer     | 22.57 kB | ADMIN domain                                                                       |
+| 8: FFS8 CLOUD Viewer  | ✅     | @collider/cloud-viewer     | 22.74 kB | CLOUD domain                                                                       |
+| 9: Context Router     | ✅     | @collider/workspace-router | -        | ContextManager enhanced                                                            |
+| **Sharp Fix**         | ✅     | -                          | -        | Native module resolution                                                           |
 
 **Total Output**: 7 packages, ~165 kB (gzipped: ~46 kB)
 
@@ -69,9 +69,11 @@ case "FETCH_TREE": {
 **Purpose**: Enable user-to-user WebRTC communication via Picture-in-Picture.
 
 **Implementation**:
-- **File**: `ColliderDataServer/src/api/rtc.py`
+- **File**: `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/src/api/rtc.py`
 - **Endpoint**: `ws://localhost:8000/api/v1/ws/rtc/`
 - **Protocol**: WebSocket with room-based signaling
+
+**Note**: There is only ONE FFS2 directory: `FFS2_ColliderBackends_MultiAgentChromeExtension/` which contains the ColliderDataServer backend.
 
 **Message Types**:
 ```javascript
@@ -83,10 +85,14 @@ case "FETCH_TREE": {
 
 **Integration**:
 ```python
-# ColliderDataServer/src/main.py
+# FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/src/main.py
 from src.api import apps, auth, context, health, nodes, permissions, rtc, sse, users
 app.include_router(rtc.router)
 ```
+
+**Files Modified**:
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/src/api/rtc.py` (created, 3,096 bytes)
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/src/main.py` (registered router)
 
 **Test Result**: ✅ Server starts without errors
 
@@ -514,7 +520,7 @@ All 7 packages build successfully:
 ### Created Files (52 total)
 
 **Backend**:
-- `ColliderDataServer/src/api/rtc.py`
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/src/api/rtc.py`
 
 **Workspace Config**:
 - `FFS1_ColliderDataSystems/pnpm-workspace.yaml`
@@ -566,14 +572,16 @@ All 7 packages build successfully:
 
 ### Modified Files (7 total)
 
+**Note**: There is only ONE FFS2 directory: `FFS2_ColliderBackends_MultiAgentChromeExtension/` containing both the Chrome extension and ColliderDataServer backend.
+
 **FFS2 Extension**:
-- `ColliderMultiAgentsChromeExtension/src/background/index.ts` (added FETCH_TREE handler)
-- `ColliderMultiAgentsChromeExtension/src/background/context-manager.ts` (added routing methods)
-- `ColliderMultiAgentsChromeExtension/src/sidepanel/index.tsx` (updated imports)
-- `ColliderMultiAgentsChromeExtension/package.json` (added FFS4 dependency, sharp override)
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderMultiAgentsChromeExtension/src/background/index.ts` (added FETCH_TREE handler)
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderMultiAgentsChromeExtension/src/background/context-manager.ts` (added routing methods)
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderMultiAgentsChromeExtension/src/sidepanel/index.tsx` (updated imports)
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderMultiAgentsChromeExtension/package.json` (added FFS4 dependency, sharp override)
 
 **Backend**:
-- `ColliderDataServer/src/main.py` (registered rtc router)
+- `FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/src/main.py` (registered rtc router)
 
 **FFS3**:
 - `collider-frontend/package.json` (removed portal scripts, renamed package)
