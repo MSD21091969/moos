@@ -1,0 +1,298 @@
+{
+  "libs/api-client": {
+    "root": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "$schema": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.outputPath": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.main": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.tsConfig": [
+      "libs/api-client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  },
+  "libs/node-container": {
+    "root": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "$schema": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.outputPath": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.main": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.tsConfig": [
+      "libs/node-container/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  },
+  "libs/shared-ui": {
+    "root": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "$schema": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.outputPath": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.main": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.tsConfig": [
+      "libs/shared-ui/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  },
+  "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin": {
+    "root": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "$schema": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "tags": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.type:pkg": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.commands": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.executor": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options.parallel": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options.commands": [
+      "node_modules/.pnpm/@module-federation+bridge-react-webpack-plugin@0.21.6/node_modules/@module-federation/bridge-react-webpack-plugin/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  }
+}

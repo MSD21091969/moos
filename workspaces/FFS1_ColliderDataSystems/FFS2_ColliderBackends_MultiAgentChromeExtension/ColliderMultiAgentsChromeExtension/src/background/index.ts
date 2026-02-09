@@ -1,7 +1,7 @@
 import { contextManager } from "./context-manager";
 import { initCloudAgent } from "./agents/cloud-agent";
 import { handleDomQuery } from "./agents/dom-agent";
-import { verifyAuth, fetchApps, connectSSE } from "./external/data-server";
+import { verifyAuth, fetchApps, fetchTree, connectSSE } from "./external/data-server";
 import { searchForTools, executeWorkflow } from "./agents/cloud-agent";
 import { readFile, writeFile, listDir } from "./agents/filesyst-agent";
 import type { ColliderMessage, ColliderResponse } from "~/types";
@@ -99,6 +99,13 @@ async function handleMessage(
       const apps = await fetchApps();
       contextManager.setApplications(apps);
       return { success: true, data: apps };
+    }
+
+    case "FETCH_TREE": {
+      const appId = (message.payload as Record<string, string>)?.app_id;
+      if (!appId) return { success: false, error: "Missing app_id" };
+      const tree = await fetchTree(appId);
+      return { success: true, data: tree };
     }
 
     case "DOM_QUERY": {

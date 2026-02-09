@@ -12,7 +12,8 @@
     "plasmo": "^0.89.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.0",
+    "@collider/sidepanel-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",
@@ -29,7 +30,10 @@
       "@swc/core",
       "esbuild",
       "sharp"
-    ]
+    ],
+    "overrides": {
+      "sharp": "^0.34.5"
+    }
   },
   "manifest": {
     "permissions": [

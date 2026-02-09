@@ -1,0 +1,11 @@
+{
+  "name": "ffs1-collider-data-systems",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FFS1 ColliderDataSystems Workspace Root",
+  "pnpm": {
+    "overrides": {
+      "sharp": "^0.34.5"
+    }
+  }
+}

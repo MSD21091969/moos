@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api import apps, auth, context, health, nodes, permissions, sse, users
+from src.api import apps, auth, context, health, nodes, permissions, rtc, sse, users
 from src.core.config import settings
 from src.core.database import Base, engine
 
@@ -45,3 +45,4 @@ app.include_router(nodes.router)
 app.include_router(context.router)
 app.include_router(sse.router)
 app.include_router(permissions.router)
+app.include_router(rtc.router)

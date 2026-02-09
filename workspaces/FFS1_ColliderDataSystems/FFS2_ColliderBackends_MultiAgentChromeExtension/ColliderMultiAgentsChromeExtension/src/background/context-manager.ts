@@ -76,6 +76,44 @@ class ContextManager {
     };
   }
 
+  /**
+   * Get the active workspace type based on the current application
+   */
+  getActiveWorkspaceType(): string {
+    const activeApp = this.context.applications.find(
+      (app) => app.app_id === this.context.user?.active_application
+    );
+    if (!activeApp) return "SIDEPANEL";
+
+    // Extract domain from app config
+    const domain = (activeApp.config as any)?.domain;
+    return domain || "CLOUD";
+  }
+
+  /**
+   * Switch workspace context and broadcast to sidepanel
+   */
+  async switchWorkspaceContext(appId: string): Promise<void> {
+    // Update user's active application
+    if (this.context.user) {
+      this.context.user.active_application = appId;
+      this.persist();
+    }
+
+    const workspaceType = this.getActiveWorkspaceType();
+
+    // Broadcast context change to all extension pages (sidepanel, popup, etc.)
+    chrome.runtime.sendMessage({
+      type: "CONTEXT_CHANGED",
+      payload: {
+        appId,
+        workspaceType,
+      },
+    }).catch(() => {
+      // Sidepanel might not be open, ignore error
+    });
+  }
+
   private persist(): void {
     chrome.storage.session
       .set({ colliderContext: this.getSerializableContext() })

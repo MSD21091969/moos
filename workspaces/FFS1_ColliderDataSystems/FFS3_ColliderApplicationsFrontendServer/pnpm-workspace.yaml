@@ -1,0 +1,7 @@
+packages:
+  - "collider-frontend/libs/*"
+  - "FFS4_application00_ColliderSidepanelAppnodeBrowser/app"
+  - "FFS5_application01_ColliderPictureInPictureMainAgentSeat/app"
+  - "FFS6_applicationx_FILESYST_ColliderIDE_appnodes/app"
+  - "FFS7_applicationz_ADMIN_ColliderAccount_appnodes/app"
+  - "FFS8_application1_CLOUD_my-tiny-data-collider_appnodes/app"

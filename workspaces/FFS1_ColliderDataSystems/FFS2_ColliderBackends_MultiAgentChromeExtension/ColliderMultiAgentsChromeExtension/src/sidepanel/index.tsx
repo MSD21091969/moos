@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppStore } from "./stores/appStore";
-import { AppTree } from "./components/AppTree";
-import { AgentSeat } from "./components/AgentSeat";
+import { AppTree, AgentSeat } from "@collider/sidepanel-ui";
 import type { Application, AppNodeTree, ColliderMessage } from "~/types";
 import "~/style.css";
 
