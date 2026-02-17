@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from src.db.models import AppRole
+
 
 class NodeContainer(BaseModel):
     manifest: dict = {}
@@ -55,15 +57,11 @@ class NodeTreeResponse(BaseModel):
 class PermissionCreate(BaseModel):
     user_id: str
     application_id: str
-    can_read: bool = False
-    can_write: bool = False
-    is_admin: bool = False
+    role: AppRole = AppRole.APP_USER
 
 
 class PermissionUpdate(BaseModel):
-    can_read: bool | None = None
-    can_write: bool | None = None
-    is_admin: bool | None = None
+    role: AppRole | None = None
 
 
 class PermissionResponse(BaseModel):
@@ -72,7 +70,33 @@ class PermissionResponse(BaseModel):
     id: str
     user_id: str
     application_id: str
-    can_read: bool
-    can_write: bool
-    is_admin: bool
+    role: AppRole
     created_at: datetime
+
+
+class AppAccessRequestCreate(BaseModel):
+    """Request access to an application."""
+
+    application_id: str
+    message: str | None = None
+
+
+class AppAccessRequestResponse(BaseModel):
+    """Response for access request."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    user_id: str
+    application_id: str
+    message: str | None
+    status: str
+    requested_at: datetime
+    resolved_at: datetime | None
+    resolved_by: str | None
+
+
+class AppAccessRequestApprove(BaseModel):
+    """Approve access request with specified role."""
+
+    role: AppRole = AppRole.APP_USER

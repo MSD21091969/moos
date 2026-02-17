@@ -20,7 +20,7 @@ You are a code assistant for the ColliderDataSystems project. This workspace con
 | Backend API | 8000 | ✅ Running   |
 | Portal      | 3001 | ✅ Running   |
 | Extension   | -    | ✅ Loaded    |
-| Database    | 5432 | ✅ Connected |
+| Database    | --   | ✅ SQLite    |
 
 ## Your Capabilities
 
@@ -56,4 +56,4 @@ Follow patterns documented in:
 
 - **CORS:** Backend configured with `allow_origin_regex` for dynamic chrome-extension:// IDs
 - **Service Worker:** Uses dynamic imports for heavy LangChain modules
-- **Auth:** Dev mode accepts email as token; prod uses Firebase
+- **Auth:** DataServer uses username/password + JWT; Chrome extension planned to use Firebase Google sign-in

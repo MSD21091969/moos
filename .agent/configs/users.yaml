@@ -1,51 +1,35 @@
-# Factory Test Users
-# These are shared across all workspaces for development/testing
-# In production, use proper identity provider
-
-default_password: "test123"
+# Factory Seed Users
+# Used by ColliderDataServer seed.py (username/password auth)
 
 users:
-  superuser@test.com:
-    role: superuser
-    display_name: "Super User"
-    clients:
-      - container-app
-      - studio-app
-      - admin-app
-      - viewer-app
-    permissions:
-      containers: [create, read, update, delete]
-      studio: [create, read, update, delete]
-      admin: [read, update]
-      files: [create, read, update, delete]
-    preferences:
-      theme: dark
-      pilot_position: bottom-right
-
-  lola@test.com:
-    role: user
+  Sam:
+    system_role: superadmin
+    display_name: "Sam"
+  Lola:
+    system_role: collider_admin
     display_name: "Lola"
-    clients:
-      - container-app
-      - studio-app
-    permissions:
-      containers: [create, read, update]
-      studio: [create, read, update]
-      files: [read]
-    preferences:
-      theme: dark
-      pilot_position: bottom-right
-
-  menno@test.com:
-    role: user
+  Menno:
+    system_role: collider_admin
     display_name: "Menno"
-    clients:
-      - container-app
-      - studio-app
-    permissions:
-      containers: [create, read, update]
-      studio: [create, read, update]
-      files: [read]
-    preferences:
-      theme: light
-      pilot_position: bottom-left
+
+# System roles (on User model, assigned by SAD/CAD only)
+system_roles:
+  - superadmin        # Full system access (SAD)
+  - collider_admin    # Can assign roles, manage all apps (CAD)
+  - app_admin         # Can create apps, grant app permissions
+  - app_user          # Basic authenticated user
+
+# App roles (on AppPermission, per-application)
+app_roles:
+  - app_admin   # Owner/admin of an application
+  - app_user    # Regular member
+
+# Auth methods by component
+auth:
+  dataserver:
+    method: username_password
+    jwt_algorithm: HS256
+    note: "Direct auth for DataServer API"
+  extension:
+    method: firebase_google_signin
+    note: "Planned for Chrome extension sign-in"

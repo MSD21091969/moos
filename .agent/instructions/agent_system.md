@@ -18,7 +18,7 @@ All components (tools, workflows, applications) are the **same pattern at differ
 - **Workflow**: Sequence of tools (YAML+Markdown)
 - **Application**: Template cluster (graph)
 
-All derivable via `create_model()` → discoverable in registry.
+All derivable via `create_model()` — discoverable in registry.
 
 ## Three Domains
 
@@ -28,18 +28,28 @@ All derivable via `create_model()` → discoverable in registry.
 | CLOUD    | Apps 1-N        | `node.container` field    |
 | ADMIN    | Account (App Z) | `account.container` field |
 
+## x1z Application
+
+The Collider system itself is application **x1z** — a self-hosting recursive tree:
+
+- **Container-nodes** (DB): rows in `nodes` table with `path`, `container` JSON, `metadata_`
+- **View-components** (FFS6): Next.js pages that render container-nodes
+- These are two separate but related graphs (NOT 1:1)
+- `metadata_` field links nodes to frontend: `frontend_app`, `frontend_route`
+- Node tree: `/`, `/admin`, `/admin/assign-roles`, `/admin/grant-permission`
+
 ## FFS Hierarchy
 
 ```
 FFS0_Factory/
-├── .agent/                          ← This context (ROOT)
-├── models_v2/                       ← Core Pydantic models
-├── parts/                           ← SDK catalog
+├── .agent/                          <- This context (ROOT)
+├── models/                          <- Core Pydantic models
+├── sdk/                             <- SDK catalog
 │
 └── workspaces/
-    └── FFS1_ColliderDataSystems/    ← IDE workspace
-        ├── FFS2.../                 ← Backends
-        └── FFS3.../                 ← Frontend + Apps
+    └── FFS1_ColliderDataSystems/    <- IDE workspace
+        ├── FFS2.../                 <- Backends
+        └── FFS3.../                 <- Frontend + Apps
 ```
 
 ## Key Principles
@@ -53,7 +63,7 @@ FFS0_Factory/
 
 Child workspaces inherit via `manifest.yaml`:
 
-- `rules/` — sandbox, identity, code_patterns
+- `rules/` — sandbox, identity, code_patterns, env_and_secrets
 - `configs/` — users, api_providers, defaults
 
 ## Running
@@ -62,4 +72,4 @@ See `FFS1_ColliderDataSystems/.agent/knowledge/RUNNING.md`
 
 ---
 
-_v2.0.0 — 2026-02-07_
+_v3.0.0 — 2026-02-17_

@@ -11,8 +11,9 @@
 | `D:\FFS0_Factory\`            | Factory root       |
 | `D:\FFS0_Factory\.agent\`     | Root agent context |
 | `D:\FFS0_Factory\workspaces\` | Child workspaces   |
-| `D:\FFS0_Factory\models_v2\`  | Pydantic models    |
-| `D:\FFS0_Factory\parts\`      | SDK components     |
+| `D:\FFS0_Factory\models\`     | Pydantic models    |
+| `D:\FFS0_Factory\sdk\`        | SDK components     |
+| `D:\FFS0_Factory\secrets\`    | API keys (gitignored) |
 
 ## Denied Paths
 

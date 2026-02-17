@@ -5,6 +5,10 @@
             "path": "."
         },
         {
+            "name": "maassen_hochrath",
+            "path": "workspaces/maassen_hochrath"
+        },
+        {
             "name": "FFS1_ColliderDataSystems",
             "path": "workspaces/FFS1_ColliderDataSystems"
         },
@@ -17,28 +21,16 @@
             "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer"
         },
         {
-            "name": "FFS4_Sidepanel",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS4_application00_ColliderSidepanelAppnodeBrowser"
+            "name": "ffs4",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/apps/ffs4"
         },
         {
-            "name": "FFS5_PiP_AgentSeat",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS5_application01_ColliderPictureInPictureMainAgentSeat"
+            "name": "ffs5",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/apps/ffs5"
         },
         {
-            "name": "FFS6_IDE_Filesystem",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS6_applicationx_FILESYST_ColliderIDE_appnodes"
-        },
-        {
-            "name": "FFS7_Admin",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS7_applicationz_ADMIN_ColliderAccount_appnodes"
-        },
-        {
-            "name": "FFS8_CloudCollider",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/FFS8_application1_CLOUD_my-tiny-data-collider_appnodes"
-        },
-        {
-            "name": "maassen_hochrath",
-            "path": "workspaces/maassen_hochrath"
+            "name": "ffs6",
+            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/apps/ffs6"
         }
     ],
     "settings": {

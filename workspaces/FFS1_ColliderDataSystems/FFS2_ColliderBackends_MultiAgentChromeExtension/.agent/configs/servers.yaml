@@ -3,21 +3,26 @@
 # Data Server (FastAPI)
 data_server:
   base_url: "http://localhost:8000"
+  host_env: COLLIDER_HOST
+  port_env: COLLIDER_PORT
   api_prefix: "/api/v1"
-  http_port: 8000
-  grpc_port: 50051       # Internal service-to-service
-  grpc_web_port: 8080    # Public/Proxy for Frontend
 
   endpoints:
-    context: "/context"
-    nodes: "/nodes"
+    auth: "/auth"
     users: "/users"
-    sync: "/sync"
+    roles: "/users/{user_id}/assign-role"
+    apps: "/apps"
+    nodes: "/apps/{id}/nodes"
+    permissions: "/permissions"
+    app_permissions: "/apps/{id}/request-access"
+    context: "/context"
+    sse: "/sse"
+    health: "/health"
 
 # Graph Tool Server (Agent Runtime)
 graphtool_server:
   base_url: "ws://localhost:8001"
-  ws_port: 8001
+  port_env: GRAPHTOOL_PORT
   endpoints:
     graph: "/graph"
     workflow: "/workflow"
@@ -25,7 +30,7 @@ graphtool_server:
 # Vector Database Server (ChromaDB)
 vector_server:
   base_url: "http://localhost:8002"
-  http_port: 8002
+  port_env: VECTORDB_PORT
 
 native_host:
   name: "com.collider.agent_host"

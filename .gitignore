@@ -12,6 +12,13 @@ wheels/
 # Local DB
 *.db
 
+# Environment files (secrets)
+.env
+.env.local
+.env.development
+.env.production
+!.env.example
+
 # Node.js
 node_modules/
 package-lock.json

@@ -19,8 +19,7 @@ includes:
     load:
       - rules/sandbox.md
       - rules/code_patterns.md
-      - instructions/knowledge_hierarchy.md
-      - instructions/instruction_inheritance.md
+      - rules/env_and_secrets.md
 
 # Local context directories
 local:
@@ -49,7 +48,7 @@ exports:
 # Secrets this workspace may use (injected at runtime)
 secrets:
   - OPENAI_API_KEY
-  - GOOGLE_AI_API_KEY
+  - GEMINI_API_KEY
   - FIREBASE_PROJECT_ID
 
 # Permission requirements

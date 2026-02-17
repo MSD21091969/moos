@@ -52,9 +52,9 @@ exports:
 # Secrets required by backend services
 secrets:
   - OPENAI_API_KEY
-  - GOOGLE_AI_API_KEY
+  - GEMINI_API_KEY
   - FIREBASE_PROJECT_ID
-  - DATABASE_URL
+  - COLLIDER_DATABASE_URL
   - CHROMADB_HOST
 
 # Permission requirements

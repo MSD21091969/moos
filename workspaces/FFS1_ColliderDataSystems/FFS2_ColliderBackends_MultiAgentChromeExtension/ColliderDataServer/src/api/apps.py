@@ -13,13 +13,13 @@ router = APIRouter(prefix="/api/v1/apps", tags=["applications"])
 
 @router.get("/", response_model=list[ApplicationResponse])
 async def list_apps(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Application).order_by(Application.app_id))
+    result = await db.execute(select(Application).order_by(Application.id))
     return result.scalars().all()
 
 
-@router.get("/{app_id}", response_model=ApplicationResponse)
-async def get_app(app_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Application).where(Application.app_id == app_id))
+@router.get("/{id}", response_model=ApplicationResponse)
+async def get_app(id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Application).where(Application.id == id))
     app = result.scalar_one_or_none()
     if app is None:
         raise HTTPException(status_code=404, detail="Application not found")
@@ -34,11 +34,11 @@ async def create_app(body: ApplicationCreate, db: AsyncSession = Depends(get_db)
     return app
 
 
-@router.patch("/{app_id}", response_model=ApplicationResponse)
+@router.patch("/{id}", response_model=ApplicationResponse)
 async def update_app(
-    app_id: str, body: ApplicationUpdate, db: AsyncSession = Depends(get_db)
+    id: str, body: ApplicationUpdate, db: AsyncSession = Depends(get_db)
 ):
-    result = await db.execute(select(Application).where(Application.app_id == app_id))
+    result = await db.execute(select(Application).where(Application.id == id))
     app = result.scalar_one_or_none()
     if app is None:
         raise HTTPException(status_code=404, detail="Application not found")
@@ -49,9 +49,9 @@ async def update_app(
     return app
 
 
-@router.delete("/{app_id}", status_code=204)
-async def delete_app(app_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Application).where(Application.app_id == app_id))
+@router.delete("/{id}", status_code=204)
+async def delete_app(id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Application).where(Application.id == id))
     app = result.scalar_one_or_none()
     if app is None:
         raise HTTPException(status_code=404, detail="Application not found")

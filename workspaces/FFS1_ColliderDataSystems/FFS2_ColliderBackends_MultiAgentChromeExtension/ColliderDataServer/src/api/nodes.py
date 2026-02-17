@@ -9,11 +9,11 @@ from src.core.database import get_db
 from src.db.models import Application, Node
 from src.schemas.nodes import NodeCreate, NodeResponse, NodeTreeResponse, NodeUpdate
 
-router = APIRouter(prefix="/api/v1/apps/{app_id}/nodes", tags=["nodes"])
+router = APIRouter(prefix="/api/v1/apps/{id}/nodes", tags=["nodes"])
 
 
-async def _get_application(app_id: str, db: AsyncSession) -> Application:
-    result = await db.execute(select(Application).where(Application.app_id == app_id))
+async def _get_application(id: str, db: AsyncSession) -> Application:
+    result = await db.execute(select(Application).where(Application.id == id))
     app = result.scalar_one_or_none()
     if app is None:
         raise HTTPException(status_code=404, detail="Application not found")
@@ -21,8 +21,8 @@ async def _get_application(app_id: str, db: AsyncSession) -> Application:
 
 
 @router.get("/", response_model=list[NodeResponse])
-async def list_nodes(app_id: str, db: AsyncSession = Depends(get_db)):
-    app = await _get_application(app_id, db)
+async def list_nodes(id: str, db: AsyncSession = Depends(get_db)):
+    app = await _get_application(id, db)
     result = await db.execute(
         select(Node).where(Node.application_id == app.id).order_by(Node.path)
     )
@@ -30,9 +30,9 @@ async def list_nodes(app_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/tree", response_model=list[NodeTreeResponse])
-async def get_tree(app_id: str, db: AsyncSession = Depends(get_db)):
+async def get_tree(id: str, db: AsyncSession = Depends(get_db)):
     """Return the full node tree for an application."""
-    app = await _get_application(app_id, db)
+    app = await _get_application(id, db)
     result = await db.execute(
         select(Node)
         .where(Node.application_id == app.id)
@@ -57,8 +57,8 @@ async def get_tree(app_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{node_id}", response_model=NodeResponse)
-async def get_node(app_id: str, node_id: str, db: AsyncSession = Depends(get_db)):
-    app = await _get_application(app_id, db)
+async def get_node(id: str, node_id: str, db: AsyncSession = Depends(get_db)):
+    app = await _get_application(id, db)
     result = await db.execute(
         select(Node).where(Node.id == node_id, Node.application_id == app.id)
     )
@@ -69,10 +69,8 @@ async def get_node(app_id: str, node_id: str, db: AsyncSession = Depends(get_db)
 
 
 @router.post("/", response_model=NodeResponse, status_code=201)
-async def create_node(
-    app_id: str, body: NodeCreate, db: AsyncSession = Depends(get_db)
-):
-    app = await _get_application(app_id, db)
+async def create_node(id: str, body: NodeCreate, db: AsyncSession = Depends(get_db)):
+    app = await _get_application(id, db)
     node = Node(
         application_id=app.id,
         parent_id=body.parent_id,
@@ -87,12 +85,12 @@ async def create_node(
 
 @router.patch("/{node_id}", response_model=NodeResponse)
 async def update_node(
-    app_id: str,
+    id: str,
     node_id: str,
     body: NodeUpdate,
     db: AsyncSession = Depends(get_db),
 ):
-    app = await _get_application(app_id, db)
+    app = await _get_application(id, db)
     result = await db.execute(
         select(Node).where(Node.id == node_id, Node.application_id == app.id)
     )
@@ -110,10 +108,8 @@ async def update_node(
 
 
 @router.delete("/{node_id}", status_code=204)
-async def delete_node(
-    app_id: str, node_id: str, db: AsyncSession = Depends(get_db)
-):
-    app = await _get_application(app_id, db)
+async def delete_node(id: str, node_id: str, db: AsyncSession = Depends(get_db)):
+    app = await _get_application(id, db)
     result = await db.execute(
         select(Node).where(Node.id == node_id, Node.application_id == app.id)
     )

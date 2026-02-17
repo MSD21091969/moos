@@ -8,7 +8,7 @@
 
 **Core Frameworks**
 
-- **Language**: Python 3.10+
+- **Language**: Python 3.12+
 - **API Framework**: FastAPI (Async)
 - **Data Validation**: Pydantic v2
 - **Task Queue**: Celery / Redis (where applicable)
@@ -23,7 +23,8 @@
 **Persistence**
 
 - **Vector DB**: ChromaDB (Local/Docker)
-- **Relational**: SQLite (Dev) / Postgres (Prod)
+- **Relational**: SQLite + aiosqlite (Dev) / Postgres (Prod)
+- **Package Manager**: pnpm (TypeScript), UV (Python)
 - **Graph**: NetworkX (In-memory analysis)
 
 ---
@@ -33,7 +34,7 @@
 **Core Frameworks**
 
 - **Monorepo**: Nx (encapsulated workspace)
-- **App Framework**: Next.js 14+ (App Router)
+- **App Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript 5+
 
 **UI/UX**

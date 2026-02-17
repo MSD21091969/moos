@@ -8,8 +8,8 @@
 
 ### Protocol
 
-- **Primary**: gRPC for inter-service (efficient, typed).
-- **Secondary**: REST (JSON) for simple CRUD / Debugging.
+- **Primary planned**: gRPC for inter-service (efficient, typed).
+- **Currently implemented**: REST (JSON) for all CRUD, auth, and permissions.
 - **Streaming**: Server-Sent Events (SSE) for agent thought streams.
 
 ### Framework: FastAPI
@@ -45,7 +45,31 @@
 ## Router Structure
 
 ```python
-# app/main.py
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
-app.include_router(agents.router, prefix="/api/v1/agents", tags=["Agents"])
+# src/main.py
+app.include_router(auth.router)       # /api/v1/auth
+app.include_router(users.router)      # /api/v1/users
+app.include_router(apps.router)       # /api/v1/apps
+app.include_router(nodes.router)      # /api/v1/apps/{id}/nodes
+app.include_router(roles.router)      # /api/v1/users/{id}/assign-role
+app.include_router(app_permissions.router)  # /api/v1/apps/{id}/request-access
+```
+
+---
+
+## RBAC Pattern
+
+Use `Depends()` for role-based access control:
+
+```python
+from src.api.auth import require_collider_admin, get_current_user
+
+# Endpoint restricted to SAD/CAD
+@router.post("/{user_id}/assign-role")
+async def assign_role(user_id: str, ..., current_user=Depends(require_collider_admin)):
+    ...
+
+# Endpoint for any authenticated user
+@router.post("/{id}/request-access")
+async def request_access(id: str, ..., current_user=Depends(get_current_user)):
+    ...
 ```

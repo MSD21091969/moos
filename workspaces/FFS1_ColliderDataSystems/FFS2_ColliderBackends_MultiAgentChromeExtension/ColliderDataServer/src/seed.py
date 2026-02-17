@@ -13,70 +13,14 @@ from pathlib import Path
 import yaml
 from sqlalchemy import select
 
+from src.core.auth import hash_password
 from src.core.database import Base, async_session, engine
-from src.db.models import AdminAccount, Application, AppPermission, Node, User
+from src.db.models import Application, AppPermission, AppRole, Node, SystemRole, User
 
-# FFS application definitions. Each maps an app_id to its FFS .agent directory.
-FFS3_ROOT = Path(__file__).resolve().parent.parent.parent.parent / (
-    "FFS3_ColliderApplicationsFrontendServer"
-)
-
+# FFS6 application definition
 APPLICATIONS = [
     {
-        "app_id": "application00",
-        "display_name": "Collider Sidepanel Browser",
-        "domain": "SIDEPANEL",
-        "agent_dir": FFS3_ROOT
-        / "FFS4_application00_ColliderSidepanelAppnodeBrowser"
-        / ".agent",
-    },
-    {
-        "app_id": "application01",
-        "display_name": "Collider PiP Agent Seat",
-        "domain": "AGENT_SEAT",
-        "agent_dir": FFS3_ROOT
-        / "FFS5_application01_ColliderPictureInPictureMainAgentSeat"
-        / ".agent",
-    },
-    {
-        "app_id": "applicationx",
-        "display_name": "Collider IDE",
-        "domain": "FILESYST",
-        "agent_dir": FFS3_ROOT
-        / "FFS6_applicationx_FILESYST_ColliderIDE_appnodes"
-        / ".agent",
-    },
-    {
-        "app_id": "applicationz",
-        "display_name": "Collider Account Manager",
-        "domain": "ADMIN",
-        "agent_dir": FFS3_ROOT
-        / "FFS7_applicationz_ADMIN_ColliderAccount_appnodes"
-        / ".agent",
-    },
-    {
-        "app_id": "application1",
-        "display_name": "My Tiny Data Collider",
-        "domain": "CLOUD",
-        "agent_dir": FFS3_ROOT
-        / "FFS8_application1_CLOUD_my-tiny-data-collider_appnodes"
-        / ".agent",
-    },
-    {
-        "app_id": "application2",
-        "display_name": "Future External Website 1",
-        "domain": "CLOUD",
-        "agent_dir": FFS3_ROOT
-        / "FFS9_application2_CLOUD_future-external-website1_appnodes"
-        / ".agent",
-    },
-    {
-        "app_id": "application3",
-        "display_name": "Future External Website 2",
-        "domain": "CLOUD",
-        "agent_dir": FFS3_ROOT
-        / "FFS10_application3_CLOUD_future-external-website2_appnodes"
-        / ".agent",
+        "display_name": "Application 1XZ",
     },
 ]
 
@@ -138,64 +82,75 @@ def load_agent_container(agent_dir: Path) -> dict:
 
 
 async def seed():
-    """Create dev user, applications, root nodes, and permissions."""
+    """Create seed users, FFS6 application, and permissions."""
     # Create tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
     async with async_session() as session:
-        # 1. Create dev user
-        result = await session.execute(
-            select(User).where(User.firebase_uid == "dev-firebase-uid-000")
-        )
-        user = result.scalar_one_or_none()
-        if user is None:
-            user = User(
-                email="dev@collider.local",
-                firebase_uid="dev-firebase-uid-000",
-                profile={"name": "Dev User", "role": "admin"},
+        print("\n== Seeding Collider Database ==\n")
+
+        # 1. Create seed users
+        seed_users = [
+            {
+                "username": "Sam",
+                "password": "Sam",
+                "system_role": SystemRole.SUPERADMIN,
+            },
+            {
+                "username": "Lola",
+                "password": "Lola",
+                "system_role": SystemRole.COLLIDER_ADMIN,
+            },
+            {
+                "username": "Menno",
+                "password": "Menno",
+                "system_role": SystemRole.COLLIDER_ADMIN,
+            },
+        ]
+
+        created_users = []
+        for user_data in seed_users:
+            result = await session.execute(
+                select(User).where(User.username == user_data["username"])
             )
-            session.add(user)
-            await session.flush()
-            print(f"  Created dev user: {user.email} ({user.id})")
+            user = result.scalar_one_or_none()
 
-        # 2. Create admin account
-        result = await session.execute(
-            select(AdminAccount).where(AdminAccount.user_id == user.id)
-        )
-        admin = result.scalar_one_or_none()
-        if admin is None:
-            admin = AdminAccount(user_id=user.id)
-            session.add(admin)
-            await session.flush()
-            print(f"  Created admin account: {admin.id}")
+            if user is None:
+                password = user_data.pop("password")
+                user = User(
+                    **user_data,
+                    password_hash=hash_password(password),
+                )
+                session.add(user)
+                await session.flush()
+                print(f"[+] Created user: {user.username} ({user.system_role.value})")
+            else:
+                print(f"[-] User already exists: {user.username}")
 
-        # 3. Create applications + root nodes
+            created_users.append(user)
+
+        # Get Lola as default app owner
+        lola = next(u for u in created_users if u.username == "Lola")
+
+        # 2. Create FFS6 application with empty root node
         for app_def in APPLICATIONS:
             result = await session.execute(
-                select(Application).where(Application.app_id == app_def["app_id"])
+                select(Application).where(
+                    Application.display_name == app_def["display_name"]
+                )
             )
             app = result.scalar_one_or_none()
 
             if app is not None:
-                print(f"  Skipping existing app: {app_def['app_id']}")
+                print(f"[-] App already exists: {app_def['display_name']}")
                 continue
-
-            # Load .agent context
-            agent_dir = app_def["agent_dir"]
-            if agent_dir.exists():
-                container = load_agent_container(agent_dir)
-                print(f"  Loaded .agent from {agent_dir}")
-            else:
-                container = {}
-                print(f"  WARNING: .agent dir not found: {agent_dir}")
 
             # Create application
             app = Application(
-                app_id=app_def["app_id"],
-                owner_id=admin.id,
+                owner_id=lola.id,
                 display_name=app_def["display_name"],
-                config={"domain": app_def["domain"]},
+                config={},
             )
             session.add(app)
             await session.flush()
@@ -203,36 +158,131 @@ async def seed():
             # Create root node
             root_node = Node(
                 application_id=app.id,
+                parent_id=None,
                 path="/",
-                container=container,
-                metadata_={"domain": app_def["domain"], "is_root": True},
+                container={
+                    "manifest": {"title": "x1z Root", "version": "1.0"},
+                    "instructions": [
+                        "Root container for Collider x1z application tree"
+                    ],
+                    "rules": [],
+                    "skills": [],
+                    "tools": [],
+                    "knowledge": [],
+                    "workflows": [],
+                    "configs": {},
+                },
+                metadata_={"frontend_app": "ffs6", "frontend_route": "/"},
             )
             session.add(root_node)
+            await session.flush()
+
+            # Create /admin node
+            admin_node = Node(
+                application_id=app.id,
+                parent_id=root_node.id,
+                path="/admin",
+                container={
+                    "manifest": {
+                        "title": "Administration",
+                        "rbac": ["superadmin", "collider_admin"],
+                    },
+                    "instructions": ["Admin section for system management"],
+                    "rules": [],
+                    "skills": [],
+                    "tools": [],
+                    "knowledge": [],
+                    "workflows": [],
+                    "configs": {},
+                },
+                metadata_={"frontend_app": "ffs6", "frontend_route": "/admin"},
+            )
+            session.add(admin_node)
+            await session.flush()
+
+            # Create /admin/assign-roles node
+            assign_roles_node = Node(
+                application_id=app.id,
+                parent_id=admin_node.id,
+                path="/admin/assign-roles",
+                container={
+                    "manifest": {
+                        "title": "Assign System Roles",
+                        "rbac": ["superadmin", "collider_admin"],
+                    },
+                    "instructions": [
+                        "Only SUPERADMIN and COLLIDER_ADMIN can assign system roles",
+                        "COLLIDER_ADMIN can only assign APP_ADMIN or APP_USER roles",
+                    ],
+                    "rules": [],
+                    "skills": [],
+                    "tools": [],
+                    "knowledge": [],
+                    "workflows": [],
+                    "configs": {},
+                },
+                metadata_={
+                    "frontend_app": "ffs6",
+                    "frontend_route": "/admin/assign-roles",
+                },
+            )
+            session.add(assign_roles_node)
+            await session.flush()
+
+            # Create /admin/grant-permission node
+            grant_permission_node = Node(
+                application_id=app.id,
+                parent_id=admin_node.id,
+                path="/admin/grant-permission",
+                container={
+                    "manifest": {
+                        "title": "Grant App Permissions",
+                        "rbac": ["superadmin", "collider_admin", "app_admin"],
+                    },
+                    "instructions": [
+                        "View and approve pending access requests",
+                        "Grant app_admin or app_user permissions",
+                    ],
+                    "rules": [],
+                    "skills": [],
+                    "tools": [],
+                    "knowledge": [],
+                    "workflows": [],
+                    "configs": {},
+                },
+                metadata_={
+                    "frontend_app": "ffs6",
+                    "frontend_route": "/admin/grant-permission",
+                },
+            )
+            session.add(grant_permission_node)
             await session.flush()
 
             # Link root node
             app.root_node_id = root_node.id
             await session.flush()
 
-            # Create permissions for dev user
-            perm = AppPermission(
-                user_id=user.id,
-                application_id=app.id,
-                can_read=True,
-                can_write=True,
-                is_admin=True,
-            )
-            session.add(perm)
-            await session.flush()
+            # Grant all seed users app_admin role on the app
+            for user in created_users:
+                perm = AppPermission(
+                    user_id=user.id,
+                    application_id=app.id,
+                    role=AppRole.APP_ADMIN,
+                )
+                session.add(perm)
 
+            await session.flush()
             print(
-                f"  Created app: {app_def['app_id']} "
-                f"({app_def['display_name']}) "
-                f"root_node={root_node.id}"
+                f"[+] Created app: {app_def['display_name']} (owner: {lola.username})"
             )
 
         await session.commit()
-        print("\nSeeding complete.")
+        print("\n== Seeding Complete ==\n")
+        print("Login credentials:")
+        print("  Sam/Sam (superadmin)")
+        print("  Lola/Lola (collider_admin)")
+        print("  Menno/Menno (collider_admin)")
+        print()
 
 
 if __name__ == "__main__":
