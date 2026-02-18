@@ -57,22 +57,14 @@ FFS2, FFS3...                     ← Child code projects
 │
 ├── knowledge/
 │   ├── _index.md
-│   ├── _archive/          ← Archived legacy files
 │   ├── architecture/      ← System architecture docs
 │   │   ├── _index.md
-│   │   ├── nodecontainer.md
-│   │   ├── context_hierarchy.md
-│   │   ├── chrome_extension.md
-│   │   ├── graph_integration.md
-│   │   ├── native_messaging.md
-│   │   ├── communication.md
-│   │   ├── domains.md
-│   │   └── applications.md
+│   │   ├── 01_ffs2_backend_services.md
+│   │   ├── 02_ffs2_chrome_extension.md
+│   │   ├── 03_ffs3_frontend_appnodes.md
+│   │   ├── 04_communication_protocols.md
+│   │   └── _archive/      ← Pre-Feb-17 docs
 │   └── devlog/            ← Development session logs
-│       ├── _index.md
-│       ├── 2026-02-05_phase2.md
-│       ├── 2026-02-05_phase3_plan.md
-│       └── 2026-02-05_phase3_implementation.md
 │
 └── workflows/
     └── _index.md
@@ -87,12 +79,12 @@ FFS2, FFS3...                     ← Child code projects
 
 ## What Does NOT Belong Here
 
-CLOUD and ADMIN domain context belongs in their respective containers on Data Server:
+Per-application context belongs in the DataServer (node containers), not here:
 
-- `cloud_tools.json` → App1 container
-- `admin_tools.json` → AppZ container
-- DOM skills → Chrome Extension codebase
-- `app_1.yaml`, `app_z.yaml` → Domain containers
+- Application-specific tools → stored in `node.container.tools`
+- Application-specific instructions → stored in `node.container.instructions`
+- User secrets → stored in user's ADMIN container on DataServer
+- DOM agent skills → Chrome Extension codebase (FFS2)
 
 ## Quick Links
 

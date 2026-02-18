@@ -6,7 +6,6 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ApplicationCreate(BaseModel):
-    app_id: str
     display_name: str | None = None
     config: dict = {}
 
@@ -20,7 +19,6 @@ class ApplicationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: str
-    app_id: str
     owner_id: str | None
     display_name: str | None
     config: dict
@@ -33,5 +31,4 @@ class ApplicationBrief(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: str
-    app_id: str
     display_name: str | None

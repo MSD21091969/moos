@@ -16,14 +16,21 @@ FFS2_ColliderBackends/
 │   │   │   ├── nodes.py             <- Node CRUD (tree operations)
 │   │   │   ├── roles.py             <- System role assignment (SAD/CAD)
 │   │   │   ├── app_permissions.py   <- Request/approve/reject access
+│   │   │   ├── permissions.py       <- Per-app permission checks
 │   │   │   ├── context.py           <- Context hydration
-│   │   │   └── sse.py               <- Server-Sent Events
+│   │   │   ├── sse.py               <- Server-Sent Events
+│   │   │   ├── rtc.py               <- WebRTC signaling WebSocket
+│   │   │   └── health.py            <- Health check endpoint
+│   │   ├── core/
+│   │   │   ├── auth.py              <- JWT utilities
+│   │   │   ├── config.py            <- pydantic-settings
+│   │   │   └── database.py          <- SQLAlchemy async engine
 │   │   ├── db/
 │   │   │   └── models.py            <- SQLAlchemy models
 │   │   ├── schemas/
 │   │   │   ├── users.py             <- User DTOs
-│   │   │   └── nodes.py             <- Node/App/Permission DTOs
-│   │   ├── config.py                <- pydantic-settings config
+│   │   │   ├── apps.py              <- Application DTOs
+│   │   │   └── nodes.py             <- Node/Permission DTOs
 │   │   └── seed.py                  <- x1z tree seeder
 │   └── collider.db                  <- SQLite database (dev)
 │
@@ -45,10 +52,12 @@ FFS2_ColliderBackends/
 ## Database Models
 
 ### Core Enums
+
 - **SystemRole**: `superadmin`, `collider_admin`, `app_admin`, `app_user`
 - **AppRole**: `app_admin`, `app_user`
 
 ### Tables
+
 - **users**: `id`, `username`, `password_hash`, `display_name`, `system_role`
 - **applications**: `id`, `app_id`, `owner_id` (FK users), `display_name`, `config` (JSON), `root_node_id`
 - **nodes**: `id`, `application_id`, `parent_id` (self-ref), `path`, `container` (JSON), `metadata_` (JSON)
@@ -56,7 +65,9 @@ FFS2_ColliderBackends/
 - **app_access_requests**: `id`, `user_id`, `application_id`, `message`, `status`, `requested_at`, `resolved_at`, `resolved_by`
 
 ### x1z Seed Tree
+
 Application x1z is seeded with 4 nodes:
+
 - `/` — root (frontend_app: x1z, frontend_route: /)
 - `/admin` — admin panel (frontend_app: x1z, frontend_route: /admin)
 - `/admin/assign-roles` — role assignment (frontend_app: x1z, frontend_route: /admin/roles)
@@ -67,12 +78,14 @@ Application x1z is seeded with 4 nodes:
 ### Running Services
 
 Start the DataServer:
+
 ```bash
 cd ColliderDataServer
 uv run uvicorn src.main:app --reload --port 8000
 ```
 
 Seed the database:
+
 ```bash
 cd ColliderDataServer
 uv run python -m src.seed

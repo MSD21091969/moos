@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.auth import require_collider_admin, require_superadmin
 from src.core.database import get_db
 from src.db.models import User
 from src.schemas.users import UserCreate, UserResponse, UserUpdate
@@ -12,13 +13,20 @@ router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
 
 @router.get("/", response_model=list[UserResponse])
-async def list_users(db: AsyncSession = Depends(get_db)):
+async def list_users(
+    db: AsyncSession = Depends(get_db),
+    _current_user: User = Depends(require_collider_admin),
+):
     result = await db.execute(select(User).order_by(User.created_at))
     return result.scalars().all()
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
+async def get_user(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    _current_user: User = Depends(require_collider_admin),
+):
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if user is None:
@@ -27,7 +35,11 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/", response_model=UserResponse, status_code=201)
-async def create_user(body: UserCreate, db: AsyncSession = Depends(get_db)):
+async def create_user(
+    body: UserCreate,
+    db: AsyncSession = Depends(get_db),
+    _current_user: User = Depends(require_collider_admin),
+):
     user = User(**body.model_dump())
     db.add(user)
     await db.flush()
@@ -36,7 +48,10 @@ async def create_user(body: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @router.patch("/{user_id}", response_model=UserResponse)
 async def update_user(
-    user_id: str, body: UserUpdate, db: AsyncSession = Depends(get_db)
+    user_id: str,
+    body: UserUpdate,
+    db: AsyncSession = Depends(get_db),
+    _current_user: User = Depends(require_collider_admin),
 ):
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
@@ -50,7 +65,11 @@ async def update_user(
 
 
 @router.delete("/{user_id}", status_code=204)
-async def delete_user(user_id: str, db: AsyncSession = Depends(get_db)):
+async def delete_user(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    _current_user: User = Depends(require_superadmin),
+):
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if user is None:

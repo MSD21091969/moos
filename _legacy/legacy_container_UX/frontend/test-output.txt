@@ -1,5 +1,0 @@
-
-Running 3 tests using 2 workers
-
-[1A[2K[1/3] [msedge] ÔÇ║ tests\e2e\v5-persistence-sync.spec.ts:78:3 ÔÇ║ V5 Persistence & Sync ÔÇ║ persists color change
-[1A[2K[2/3] [msedge] ÔÇ║ tests\e2e\v5-persistence-sync.spec.ts:37:3 ÔÇ║ V5 Persistence & Sync ÔÇ║ persists grid position after drag

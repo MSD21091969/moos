@@ -51,19 +51,27 @@ FFS2, FFS3...                     ← Code Projects
 | Instructions | agent_system.md                |
 | Configs      | users.yaml, api_providers.yaml |
 
-## Three Domains
+## Backend API Configs
 
-| Domain   | App         | Context             |
-| -------- | ----------- | ------------------- |
-| FILESYST | App X (IDE) | `.agent/` folders   |
-| CLOUD    | Apps 1-N    | `node.container`    |
-| ADMIN    | App Z       | `account.container` |
+Applications carry a "domain" label — a set of permitted backend APIs:
+
+| Config   | APIs Enabled                     | Use Case             |
+| -------- | -------------------------------- | -------------------- |
+| FILESYST | Native Messaging, sync, file ops | Local workspace apps |
+| CLOUD    | REST, SSE, WebSocket workflows   | Cloud-hosted apps    |
+| ADMIN    | User management, role assignment | System management    |
+
+This is a backend API config label on the application, not an architectural concept.
 
 ## Key Docs
 
-- [Architecture Overview](./knowledge/architecture/00_overview.md)
-- [Component Pattern](./knowledge/architecture/01_components.md)
-- [Three Domains](./knowledge/architecture/02_domains.md)
+Architecture docs live in FFS1 (the IDE workspace):
+
+- [Architecture Index](../workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/_index.md)
+- [Backend Services](../workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/01_ffs2_backend_services.md)
+- [Chrome Extension](../workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/02_ffs2_chrome_extension.md)
+- [Frontend Appnodes](../workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/03_ffs3_frontend_appnodes.md)
+- [Communication Protocols](../workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/04_communication_protocols.md)
 
 ---
 

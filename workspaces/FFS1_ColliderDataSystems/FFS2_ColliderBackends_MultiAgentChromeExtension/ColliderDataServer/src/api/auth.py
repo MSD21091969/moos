@@ -71,22 +71,11 @@ async def signup(
             detail="Username already registered",
         )
 
-    # Check if email already exists (if provided)
-    if body.email:
-        result = await db.execute(select(User).where(User.email == body.email))
-        if result.scalar_one_or_none() is not None:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered",
-            )
-
     # Create new user
     user = User(
         username=body.username,
         password_hash=hash_password(body.password),
-        email=body.email,
         system_role=body.system_role,
-        profile=body.profile,
     )
     db.add(user)
     await db.flush()

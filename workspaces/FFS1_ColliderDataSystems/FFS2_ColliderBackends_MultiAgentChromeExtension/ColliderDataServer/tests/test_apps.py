@@ -5,46 +5,59 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_create_app(client: AsyncClient):
+async def test_create_app(client: AsyncClient, admin_headers: dict):
     response = await client.post(
         "/api/v1/apps/",
-        json={"app_id": "test-app", "display_name": "Test App"},
+        json={"display_name": "Test App"},
+        headers=admin_headers,
     )
     assert response.status_code == 201
     data = response.json()
-    assert data["app_id"] == "test-app"
     assert data["display_name"] == "Test App"
+    assert "id" in data
 
 
 @pytest.mark.asyncio
-async def test_list_apps(client: AsyncClient):
-    # Create an app first
+async def test_list_apps(client: AsyncClient, admin_headers: dict):
     await client.post(
         "/api/v1/apps/",
-        json={"app_id": "list-test", "display_name": "List Test"},
+        json={"display_name": "List Test"},
+        headers=admin_headers,
     )
-    response = await client.get("/api/v1/apps/")
+    response = await client.get("/api/v1/apps/", headers=admin_headers)
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
 
 
 @pytest.mark.asyncio
-async def test_get_app(client: AsyncClient):
-    # Create
+async def test_get_app(client: AsyncClient, admin_headers: dict):
     create = await client.post(
         "/api/v1/apps/",
-        json={"app_id": "get-test", "display_name": "Get Test"},
+        json={"display_name": "Get Test"},
+        headers=admin_headers,
     )
     assert create.status_code == 201
+    app_id = create.json()["id"]
 
-    # Get
-    response = await client.get("/api/v1/apps/get-test")
+    response = await client.get(f"/api/v1/apps/{app_id}", headers=admin_headers)
     assert response.status_code == 200
-    assert response.json()["app_id"] == "get-test"
+    assert response.json()["id"] == app_id
 
 
 @pytest.mark.asyncio
-async def test_get_app_not_found(client: AsyncClient):
-    response = await client.get("/api/v1/apps/nonexistent")
+async def test_get_app_not_found(client: AsyncClient, admin_headers: dict):
+    response = await client.get(
+        "/api/v1/apps/00000000-0000-0000-0000-000000000000",
+        headers=admin_headers,
+    )
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_create_app_unauthenticated(client: AsyncClient):
+    response = await client.post(
+        "/api/v1/apps/",
+        json={"display_name": "Unauth Test"},
+    )
+    assert response.status_code == 401

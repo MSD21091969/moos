@@ -72,7 +72,7 @@ async def request_app_access(
         status="pending",
     )
     db.add(access_request)
-    await db.commit()
+    await db.flush()
     await db.refresh(access_request)
 
     return access_request
@@ -159,7 +159,7 @@ async def approve_access_request(
     access_request.resolved_at = datetime.now(timezone.utc)
     access_request.resolved_by = current_user.id
 
-    await db.commit()
+    await db.flush()
 
     return {"message": "Access granted"}
 
@@ -203,6 +203,6 @@ async def reject_access_request(
     access_request.resolved_at = datetime.now(timezone.utc)
     access_request.resolved_by = current_user.id
 
-    await db.commit()
+    await db.flush()
 
     return {"message": "Access denied"}

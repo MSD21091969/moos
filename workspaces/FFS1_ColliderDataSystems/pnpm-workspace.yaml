@@ -2,12 +2,5 @@ packages:
   # FFS2 - Chrome Extension
   - "FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderMultiAgentsChromeExtension"
 
-  # FFS3 - Frontend Libraries
-  - "FFS3_ColliderApplicationsFrontendServer/collider-frontend/libs/*"
-
-  # FFS4-8 - Application Packages
-  - "FFS3_ColliderApplicationsFrontendServer/FFS4_application00_ColliderSidepanelAppnodeBrowser/app"
-  - "FFS3_ColliderApplicationsFrontendServer/FFS5_application01_ColliderPictureInPictureMainAgentSeat/app"
-  - "FFS3_ColliderApplicationsFrontendServer/FFS6_applicationx_FILESYST_ColliderIDE_appnodes/app"
-  - "FFS3_ColliderApplicationsFrontendServer/FFS7_applicationz_ADMIN_ColliderAccount_appnodes/app"
-  - "FFS3_ColliderApplicationsFrontendServer/FFS8_application1_CLOUD_my-tiny-data-collider_appnodes/app"
+  # FFS3 - Frontend Monorepo (Nx workspace)
+  - "FFS3_ColliderApplicationsFrontendServer"

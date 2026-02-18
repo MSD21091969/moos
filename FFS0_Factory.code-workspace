@@ -70,7 +70,11 @@
         "python.defaultInterpreterPath": "${workspaceFolder:FFS0_Factory}/.venv/Scripts/python.exe",
         "[markdown]": {
             "editor.wordWrap": "on"
-        }
+        },
+        "chat.tools.terminal.autoApprove": {
+            "gcloud": true
+        },
+        "powershell.cwd": "FFS0_Factory"
     },
     "extensions": {
         "recommendations": [

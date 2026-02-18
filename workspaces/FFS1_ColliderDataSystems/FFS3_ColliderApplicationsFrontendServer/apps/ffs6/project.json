@@ -1,0 +1,9 @@
+{
+  "name": "ffs6",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ffs6/src",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project ffs6 --web",
+  "targets": {}
+}

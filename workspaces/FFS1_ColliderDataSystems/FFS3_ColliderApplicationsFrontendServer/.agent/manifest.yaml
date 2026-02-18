@@ -1,11 +1,11 @@
 # Agent Context Manifest - FFS3 ColliderFrontend
-# Frontend Application Server (Nx + Next.js)
+# Frontend Application Server (Nx + Vite/Next.js + React 19)
 
 # Manifest metadata
 name: collider-frontend-server
-version: "1.0.0"
+version: '2.0.0'
 display_name: Collider Frontend Server
-description: Nx monorepo with Next.js applications and shared libraries
+description: Nx monorepo with Vite + React 19 applications (Next.js supported via @nx/next)
 
 # Inheritance settings
 inheritance:
@@ -14,17 +14,19 @@ inheritance:
 
 # Domain context
 domain: frontend
-framework: nx-next
+framework: nx-react # bundler-agnostic: Vite default, Next.js optional
 components:
-  - collider-frontend/ # Nx workspace root
-  - apps/portal/ # Main portal Next.js app
-  - libs/api-client/ # @collider/api-client
-  - libs/shared-ui/ # @collider/shared-ui
-  - libs/node-container/ # @collider/node-container
+  - apps/ffs4/ # Sidepanel appnode (Vite + React 19)
+  - apps/ffs5/ # PiP appnode (Vite + React 19)
+  - apps/ffs6/ # IDE viewer appnode (Vite + React 19, default project)
+  - libs/shared-ui/ # @collider/shared-ui (shared components + utilities)
+
+key_libraries:
+  - '@xyflow/react' # Graph visualization (XYFlow)
 
 # Parent context (FFS1 workspace level)
 includes:
-  - path: "../.agent"
+  - path: '../.agent'
     type: workspace
     load:
       - instructions/agent_system.md
@@ -34,22 +36,22 @@ includes:
 # Local context - Frontend specific
 # NOTE: Empty folders inherit from parent
 local:
-  instructions: "./instructions/"
-  rules: "./rules/"
-  skills: "./skills/"
-  tools: "./tools/"
-  configs: "./configs/"
-  knowledge: "./knowledge/"
-  workflows: "./workflows/"
+  instructions: './instructions/'
+  rules: './rules/'
+  skills: './skills/'
+  tools: './tools/'
+  configs: './configs/'
+  knowledge: './knowledge/'
+  workflows: './workflows/'
 
-# Exports to application folders (FFS4-FFS10)
+# Exports to child apps
 exports:
   - knowledge/codebase.md
 
-# Secrets for frontend builds
+# Secrets for frontend builds (Vite env vars)
 secrets:
-  - NEXT_PUBLIC_API_BASE
-  - NEXT_PUBLIC_FIREBASE_CONFIG
+  - VITE_API_BASE
+  - VITE_FIREBASE_CONFIG
 
 # Permission requirements
 permissions:

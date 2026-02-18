@@ -1,75 +1,113 @@
-# Codebase: FFS3 ColliderFrontend
+# FFS3 Codebase
 
-> Nx monorepo with Next.js applications and shared libraries.
-
-## Role
-
-Hosts the web-based "AppNodes" when they are not running inside the Chrome Extension sidepanel or are being developed in isolation.
+> Nx monorepo with Vite + React 19 applications. Next.js supported via `@nx/next`.
 
 ## Structure
 
 ```
-FFS3_ColliderApplicationsFrontendServer/
-├── collider-frontend/           ← Nx workspace root
-│   ├── apps/
-│   │   └── portal/             ← Main Next.js app
-│   └── libs/
-│       ├── api-client/         ← @collider/api-client
-│       ├── shared-ui/          ← @collider/shared-ui
-│       └── node-container/     ← @collider/node-container
-│
-├── FFS4_...Sidepanel/           ← .agent/ context only (code in FFS2 Chrome Extension)
-├── FFS5_...PictureInPicture/    ← .agent/ context only (code in FFS2 Chrome Extension)
-├── FFS6_...IDE/                 ← FILESYST domain app
-├── FFS7_...Account/             ← ADMIN domain app
-├── FFS8_...my-tiny-data/        ← CLOUD domain app
-├── FFS9_...website1/            ← Future CLOUD app (placeholder)
-└── FFS10_...website2/           ← Future CLOUD app (placeholder)
+FFS3_ColliderApplicationsFrontendServer/   ← This IS the Nx workspace root
+├── apps/
+│   ├── ffs4/                              ← Sidepanel appnode
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── app.tsx                ← Root component
+│   │   │   │   ├── app.module.css
+│   │   │   │   └── nx-welcome.tsx         ← Nx scaffold placeholder
+│   │   │   ├── main.tsx                   ← Entry point
+│   │   │   └── styles.css
+│   │   ├── index.html
+│   │   ├── vite.config.mts
+│   │   ├── project.json                   ← Nx project config
+│   │   └── tsconfig.json
+│   ├── ffs5/                              ← PiP appnode (same structure)
+│   │   └── ...
+│   └── ffs6/                              ← IDE viewer appnode (default project)
+│       └── ...
+├── libs/
+│   └── shared-ui/                         ← @collider/shared-ui
+│       ├── src/
+│       │   ├── lib/
+│       │   │   ├── shared-ui.tsx
+│       │   │   └── shared-ui.spec.tsx
+│       │   └── index.ts                   ← Public API barrel
+│       ├── vite.config.mts
+│       ├── project.json
+│       └── tsconfig.json
+├── nx.json                                ← @nx/vite plugin, defaultProject: ffs6
+├── package.json                           ← ffs3-monorepo, React 19, Vite 7, Vitest 4
+├── tsconfig.base.json                     ← Base TypeScript config
+└── pnpm-lock.yaml
+```
+
+## Key Files
+
+| File                     | Purpose                                                           |
+| ------------------------ | ----------------------------------------------------------------- |
+| `nx.json`                | Nx workspace config. Default project: `ffs6`. Plugin: `@nx/vite`. |
+| `package.json`           | Root deps: `react@19`, `vite@7`, `vitest@4`, `@nx/*` packages.    |
+| `tsconfig.base.json`     | Base TS config. Path aliases for `@collider/shared-ui`.           |
+| `apps/*/project.json`    | Per-app Nx targets: `build`, `serve`, `test`, `lint`.             |
+| `apps/*/vite.config.mts` | Per-app Vite config. Port defaults (ffs6 = 4200).                 |
+
+## Appnode Concept
+
+Each app in `apps/` is an **appnode** — a frontend view that renders workspace nodes from the DB:
+
+| App  | Role                                        | Default Port   |
+| ---- | ------------------------------------------- | -------------- |
+| ffs4 | Sidepanel: agent seat, app tree browser     | 4201           |
+| ffs5 | PiP: Picture-in-Picture communication       | 4202           |
+| ffs6 | IDE viewer: renders selected workspace node | 4200 (default) |
+
+The node-container's `metadata_.frontend_app` field determines which appnode renders a given workspace.
+
+## Shared Library
+
+`libs/shared-ui` is consumed via TypeScript path alias:
+
+```typescript
+import { SharedUi } from '@collider/shared-ui';
+```
+
+Path defined in `tsconfig.base.json`:
+
+```json
+{
+  "paths": {
+    "@collider/shared-ui": ["libs/shared-ui/src/index.ts"]
+  }
+}
 ```
 
 ## Developer Guide
 
-### Running the Frontend
+### Setup
 
 ```bash
-cd collider-frontend
+cd FFS3_ColliderApplicationsFrontendServer
 pnpm install
-pnpm dev       # Starts Next.js dev server
 ```
 
-### Nx Commands
+### Dev Server
 
 ```bash
-npx nx build portal          # Build the portal app
-npx nx test portal           # Run tests
-npx nx graph                 # View dependency graph
+nx serve ffs6          # Start default app (port 4200)
+nx serve ffs4          # Start sidepanel app
+nx serve ffs5          # Start PiP app
 ```
 
-## Key Apps
+### Build & Test
 
-- **FFS4 Sidepanel**: Browser companion UI with Appnode Browser + AI Pilot/Agent Seat *(code in FFS2 Chrome Extension)*
-- **FFS5 PiP**: User-to-user communications (WebRTC video/audio calls) *(code in FFS2 Chrome Extension)*
-- **FFS6 IDE**: FILESYST domain - local file system access via native messaging
-- **FFS7 Admin**: ADMIN domain - account management and permissions
-- **FFS8 my-tiny-data-collider**: Main CLOUD domain app - personal data collection
+```bash
+nx build ffs6          # Production build
+nx test ffs6           # Run Vitest tests
+nx lint ffs6           # ESLint
+nx run-many -t build   # Build all apps
+```
 
-## Important Architecture Note
+### Add New App
 
-**FFS4 and FFS5 Implementation Location:**
-- FFS4 (Sidepanel) and FFS5 (PiP) are **conceptual application spaces** within FFS3
-- Their actual **implementation code lives in FFS2** Chrome Extension:
-  ```
-  FFS2_ColliderBackends_MultiAgentChromeExtension/
-  └── ColliderMultiAgentsChromeExtension/
-      └── src/
-          ├── sidepanel.tsx              # FFS4 entry point
-          ├── pipWindow.tsx              # FFS5 entry point
-          └── components/
-              ├── sidepanel/             # FFS4 components
-              └── pip/                   # FFS5 components
-  ```
-- FFS4 and FFS5 folders in FFS3 contain **only .agent/ context** (documentation, AI instructions)
-
-**FFS6-8 Implementation Location:**
-- These are **Nx applications** within the collider-frontend monorepo
-- Actual code: `FFS3_ColliderApplicationsFrontendServer/collider-frontend/apps/`
+```bash
+nx g @nx/react:app apps/ffs7       # New Vite + React app
+nx g @nx/next:app apps/ffs-next    # New Next.js app (optional)
+```

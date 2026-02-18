@@ -46,7 +46,7 @@ async def assign_system_role(
 
     # Update role
     user.system_role = request.system_role
-    await db.commit()
+    await db.flush()
     await db.refresh(user)
 
     return {"message": f"User {user.username} assigned role {request.system_role}"}

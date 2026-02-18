@@ -1,6 +1,6 @@
 # FFS3 ColliderFrontend - Agent Context
 
-> Frontend Application Server implementation.
+> Frontend Application Server (Nx + Vite + React 19, Next.js optional)
 
 ## Location
 
@@ -11,17 +11,19 @@
 ```
 FFS0_Factory                     (Root)
   └── FFS1_ColliderDataSystems   (IDE Context)
-        └── FFS3_ColliderFrontend (This Workspace)
+        └── FFS3_ColliderFrontend (This Workspace = Nx monorepo root)
 ```
 
 ## Purpose
 
-Specific context for:
+Specific context for the frontend monorepo, which delivers **appnodes** — frontend views that render workspace nodes from the DB:
 
-- Main Application Server (Nx + Next.js)
-- Shared UI Libraries (@collider/shared-ui)
-- API Client (@collider/api-client)
-- Node Container (@collider/node-container)
+- **apps/ffs4** — Sidepanel appnode: agent seat, app tree, workspace browser
+- **apps/ffs5** — PiP appnode: Picture-in-Picture communication window (WebRTC)
+- **apps/ffs6** — IDE viewer appnode: renders selected workspace node (default project)
+- **libs/shared-ui** — Shared UI components, utilities, and XYFlow graph visualization
+
+Each app is a Vite + React 19 appnode. The node-container's `metadata_.frontend_app` field determines which appnode renders a given workspace node.
 
 ## Contents
 
@@ -31,15 +33,3 @@ Specific context for:
 - **tools/**: Frontend-specific tools (inherits from FFS1).
 - **configs/**: Frontend-specific configs (inherits from FFS1).
 - **workflows/**: Frontend build and test workflows (inherits from FFS1).
-
-## Application Folders
-
-```
-FFS4_application00_ColliderSidepanelAppnodeBrowser/
-FFS5_application01_ColliderPictureInPictureMainAgentSeat/
-FFS6_applicationx_FILESYST_ColliderIDE_appnodes/
-FFS7_applicationz_ADMIN_ColliderAccount_appnodes/
-FFS8_application1_CLOUD_my-tiny-data-collider_appnodes/
-FFS9_application2_CLOUD_future-external-website1_appnodes/
-FFS10_application3_CLOUD_future-external-website2_appnodes/
-```

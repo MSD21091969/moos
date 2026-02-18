@@ -1,1 +1,0 @@
-"""Collider GraphTool Server package."""

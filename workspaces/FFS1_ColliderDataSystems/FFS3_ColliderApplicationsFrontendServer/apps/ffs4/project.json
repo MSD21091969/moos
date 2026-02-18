@@ -1,0 +1,9 @@
+{
+  "name": "ffs4",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ffs4/src",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project ffs4 --web",
+  "targets": {}
+}

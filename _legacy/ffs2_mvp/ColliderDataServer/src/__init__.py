@@ -1,1 +1,0 @@
-"""Collider Data Server package."""

@@ -1,1 +1,0 @@
-"""Collider VectorDB Server package."""
