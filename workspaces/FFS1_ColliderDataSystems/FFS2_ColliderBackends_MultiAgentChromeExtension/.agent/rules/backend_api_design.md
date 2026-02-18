@@ -1,3 +1,8 @@
+---
+description: FastAPI standards for FFS2 — async routes, Pydantic V2, RBAC via Depends(), schema separation, error handling
+activation: always
+---
+
 # Backend API Design
 
 > Standards for FastAPI services in FFS2.

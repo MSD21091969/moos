@@ -1,3 +1,8 @@
+---
+description: Authorized technology stack — Python/FastAPI (FFS2), Nx/Vite/React 19 (FFS3), ChromaDB, aiosqlite, Plasmo extension
+activation: always
+---
+
 # Stack Standards
 
 > Authorized technology stack for FFS1 ColliderDataSystems and its children.

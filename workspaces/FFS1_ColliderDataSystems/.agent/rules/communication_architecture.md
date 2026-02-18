@@ -1,3 +1,8 @@
+---
+description: Protocol standards connecting FFS2 (Backend/Extension) and FFS3 (Frontend) — REST, SSE, WebSocket, WebRTC, Native Messaging
+activation: model_decision
+---
+
 # Communication Architecture
 
 > The "Nervous System" connecting FFS2 (Backend/Extension) and FFS3 (Frontend).

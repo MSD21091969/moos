@@ -1,3 +1,8 @@
+---
+description: Enforced coding standards for reliability and maintainability across Python (FFS2) and TypeScript (FFS3)
+activation: always
+---
+
 # Code Quality & Best Practices
 
 > Enforced coding standards for reliability and maintainability.

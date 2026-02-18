@@ -1,3 +1,8 @@
+---
+description: How agent context is layered — App0 base layer, active tab appnode additive layer, domain-specific loading (FILESYST/CLOUD/ADMIN)
+activation: model_decision
+---
+
 # Context Loading Rules
 
 > Rules for how agent context is loaded and layered.

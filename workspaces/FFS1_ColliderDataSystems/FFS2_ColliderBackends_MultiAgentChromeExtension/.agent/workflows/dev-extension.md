@@ -1,45 +1,38 @@
 ---
-description: Chrome Extension development workflow
+description: Build and load the ColliderMultiAgentsChromeExtension in Chrome for development
 ---
 
-# Chrome Extension Development
+# Dev: Chrome Extension
 
-## Prerequisites
+Build the Plasmo extension and load it into Chrome for development.
 
-- Node.js 18+
-- pnpm or npm
-- Chrome browser
+## Steps
 
-## Setup
+1. Install dependencies (first time only):
 
-1. Install dependencies
+   ```powershell
+   cd D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderMultiAgentsChromeExtension
+   pnpm install
+   ```
 
-```bash
-cd ../FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderMultiAgentsChromeExtension
-npm install
-```
+2. Start the Plasmo dev server (auto-rebuilds on save):
 
-2. Start development server
+   ```powershell
+   pnpm dev
+   ```
 
-```bash
-npm run dev
-```
+   This outputs the extension to `build/chrome-mv3-dev/`.
 
-3. Load in Chrome
+3. Load in Chrome:
+   - Open `chrome://extensions`
+   - Enable **Developer mode** (top right toggle)
+   - Click **Load unpacked**
+   - Select: `ColliderMultiAgentsChromeExtension/build/chrome-mv3-dev/`
 
-- Navigate to `chrome://extensions`
-- Enable Developer mode
-- Click "Load unpacked"
-- Select `build/chrome-mv3-dev`
+4. After loading, pin the extension and open the sidepanel.
 
-## Development
+## Notes
 
-- Changes hot-reload automatically
-- Check console for errors
-- Use Chrome DevTools for debugging
-
-## Build
-
-```bash
-npm run build
-```
+- The extension connects to ColliderDataServer on `:8000` — make sure it's running.
+- Changes to source files trigger automatic rebuild; reload the extension in `chrome://extensions` to pick them up.
+- Check `chrome://extensions` → Details → Errors for runtime errors.

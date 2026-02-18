@@ -1,3 +1,8 @@
+---
+description: Coding standards for FFS3 Nx monorepo — TypeScript strict, React 19, Vite, React Router, Zustand, XYFlow, CSS Modules, Vitest
+activation: always
+---
+
 # Frontend Standards
 
 > Coding standards for FFS3 Nx monorepo: Vite + React 19 default, Next.js optional.
