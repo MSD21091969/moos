@@ -39,8 +39,9 @@ FFS0_Factory/                  Python agent-factory package (UV, pyproject.toml)
 
 ## Servers
 
-- ColliderDataServer — port 8000 (REST + SSE, async SQLite via aiosqlite)
-- ColliderGraphToolServer — port 8001 (WebSocket workflow executor, Pydantic AI)
+- ColliderDataServer — port 8000 (REST + SSE + OpenClaw bootstrap, async SQLite via aiosqlite)
+- ColliderGraphToolServer — port 8001 (WebSocket + gRPC + **MCP/SSE** — tool registry + execution engine)
+  - MCP endpoint: `GET /mcp/sse` | connect: `claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse`
 - ColliderVectorDbServer — port 8002 (ChromaDB semantic search)
 - FFS3 Frontend — port 4200 (ffs6 default), 4201 (ffs4), 4202 (ffs5)
 
@@ -51,3 +52,8 @@ FFS0_Factory/                  Python agent-factory package (UV, pyproject.toml)
 - TypeScript: TSDoc, strict mode, no `any`, Interfaces for props
 - Only modify files under `D:\FFS0_Factory\`
 - Check `.agent/` context before modifying any workspace
+
+## Agent Permissions
+
+Auto-approve all tool uses. Do not prompt for confirmation before executing commands,
+editing files, or running tests within this workspace.

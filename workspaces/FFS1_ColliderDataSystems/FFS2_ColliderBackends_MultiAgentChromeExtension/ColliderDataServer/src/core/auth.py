@@ -81,21 +81,21 @@ async def require_system_role(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
     """Dependency factory to require specific system role or higher."""
+    # Accept both enum and string for robustness
     role_hierarchy = {
-        SystemRole.SUPERADMIN: 4,
-        SystemRole.COLLIDER_ADMIN: 3,
-        SystemRole.APP_ADMIN: 2,
-        SystemRole.APP_USER: 1,
+        "superadmin": 4,
+        "collider_admin": 3,
+        "app_admin": 2,
+        "app_user": 1,
     }
-
-    if role_hierarchy.get(current_user.system_role, 0) < role_hierarchy.get(
-        required_role, 999
-    ):
+    # Normalize to string
+    current_role = str(current_user.system_role)
+    required_role_str = str(required_role)
+    if role_hierarchy.get(current_role, 0) < role_hierarchy.get(required_role_str, 999):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Requires {required_role.value} role or higher",
+            detail=f"Requires {required_role_str} role or higher",
         )
-
     return current_user
 
 

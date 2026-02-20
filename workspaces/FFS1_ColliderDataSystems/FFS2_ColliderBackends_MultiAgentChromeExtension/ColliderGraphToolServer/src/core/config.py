@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     )
 
     port: int = 8001
-    default_model: str = "gemini:gemini-2.0-flash"
+    default_model: str = "gemini:gemini-3.1-pro"
     vectordb_url: str = "http://localhost:8002"
 
 

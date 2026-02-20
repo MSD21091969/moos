@@ -200,19 +200,48 @@ Agent (LangGraph.js in SW) → REST call (create/modify/delete node)
 ## ColliderGraphToolServer (:8001)
 
 **Path**: `ColliderGraphToolServer/`
-**Stack**: FastAPI + WebSocket + Pydantic AI
+**Stack**: FastAPI + WebSocket + gRPC + MCP/SSE
 
-### WebSocket Endpoints
+### Endpoints
 
-| Endpoint       | Handler         | Purpose                                |
-| -------------- | --------------- | -------------------------------------- |
-| `/ws/workflow` | WorkflowHandler | Execute multi-step agent workflows     |
-| `/ws/graph`    | GraphHandler    | Graph operations (create/modify nodes) |
+| Transport | Endpoint                 | Purpose                                           |
+| --------- | ------------------------ | ------------------------------------------------- |
+| WebSocket | `/ws/workflow`           | Execute multi-step agent workflows (streamed)     |
+| WebSocket | `/ws/graph`              | Graph operations (create/modify nodes)            |
+| REST      | `/api/v1/registry/tools` | Register / list / delete tools                    |
+| gRPC      | `:50051`                 | `ExecuteSubgraph`, `ExecuteTool`, `DiscoverTools` |
+| MCP/SSE   | `/mcp/sse`               | SSE stream — AI client connects here              |
+| MCP/SSE   | `/mcp/messages/`         | JSON-RPC POST body endpoint                       |
+| REST      | `/health`                | Health + registry stats                           |
+
+### MCP Integration
+
+GraphToolServer is the authoritative **MCP server** for the Collider ecosystem.
+Every `ToolDefinition` registered in the in-memory `ToolRegistry` with
+`visibility: "group"` or `"global"` is exposed as a native MCP tool.
+
+```bash
+# Connect any MCP-compatible client (Claude Code, VS Code Copilot, Cursor…)
+claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
+```
+
+The `list_tools` handler queries the registry on every request (pull-based),
+so tools registered after server start appear immediately.
+
+### gRPC Service (`ColliderGraph`)
+
+| RPC                     | Request / Response                               | Purpose                         |
+| ----------------------- | ------------------------------------------------ | ------------------------------- |
+| `RegisterTool`          | `RegisterToolRequest` → `RegisterToolResponse`   | Register a tool in the registry |
+| `DiscoverTools`         | `ToolDiscoveryRequest` → `ToolDiscoveryResponse` | Semantic tool search            |
+| `ExecuteSubgraph`       | `SubgraphRequest` → `SubgraphResponse`           | Run a workflow by name          |
+| `ExecuteSubgraphStream` | `SubgraphRequest` → `stream SubgraphProgress`    | Streaming workflow execution    |
+| `ExecuteTool`           | `ToolExecutionRequest` → `ToolExecutionResponse` | Execute a single tool by name   |
 
 ### Workflow Execution Flow
 
 ```
-Agent submits workflow via WebSocket
+Agent submits workflow via WebSocket / gRPC
     │
     ▼
 Server processes steps (Pydantic AI Graph)

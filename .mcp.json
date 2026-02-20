@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "collider-tools": {
+      "type": "sse",
+      "url": "http://localhost:8001/mcp/sse"
+    }
+  }
+}

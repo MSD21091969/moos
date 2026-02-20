@@ -1,6 +1,6 @@
 # Communication Protocols
 
-> All 7 protocols used across the Collider system.
+> All 8 protocols used across the Collider system.
 
 ## Protocol Matrix
 
@@ -11,8 +11,9 @@
 | 3   | **WebSocket**          | WS                 | Bidirectional           | Extension ↔ GraphToolServer, Extension ↔ DataServer (RTC) |
 | 4   | **WebRTC**             | P2P (STUN/TURN)    | Peer-to-Peer            | Browser ↔ Browser (via ffs5 PiP)                          |
 | 5   | **Native Messaging**   | stdio              | Extension ↔ Host        | Extension SW ↔ Native Host binary                         |
-| 6   | **gRPC**               | HTTP/2             | Bidirectional streaming | Planned: inter-service communication                      |
-| 7   | **Internal Messaging** | `chrome.runtime.*` | Intra-extension         | SW ↔ Sidepanel ↔ Content Scripts                          |
+| 6   | **gRPC**               | HTTP/2             | Bidirectional streaming | DataServer ↔ GraphToolServer (tool execution, discovery)  |
+| 7   | **MCP/SSE**            | HTTP (SSE + POST)  | AI Client ↔ Server      | Claude Code / Copilot / Cursor ↔ GraphToolServer          |
+| 8   | **Internal Messaging** | `chrome.runtime.*` | Intra-extension         | SW ↔ Sidepanel ↔ Content Scripts                          |
 
 ---
 

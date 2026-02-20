@@ -1,0 +1,22 @@
+{
+  "files.associations": {
+    "**/.agent/**/*.md": "markdown",
+    "**/.agent/**/*.yaml": "yaml"
+  },
+  "search.exclude": {
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/*.egg-info": true,
+    "**/node_modules": true,
+    "**/.nx": true
+  },
+  "files.watcherExclude": {
+    "**/.venv/**": true,
+    "**/__pycache__/**": true,
+    "**/node_modules/**": true,
+    "**/.nx/**": true
+  },
+  "github.copilot.enable": {
+    "*": true
+  }
+}

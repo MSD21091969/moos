@@ -1,64 +1,54 @@
-from __future__ import annotations
+"""Collider VectorDb Server Entry Point."""
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+import asyncio
+import logging
+import sys
+from concurrent import futures
+from pathlib import Path
 
-app = FastAPI(
-    title="Collider VectorDB Server",
-    version="0.1.0",
+# Add project root to path for proto imports
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
+import grpc
+from grpc_reflection.v1alpha import reflection
+
+from proto import collider_vectordb_pb2
+from proto import collider_vectordb_pb2_grpc
+from src.handlers.grpc_servicer import ColliderVectorServicer
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+logger = logging.getLogger(__name__)
 
-
-class SearchRequest(BaseModel):
-    collection: str = "tools"
-    query: str
-    n_results: int = 5
-
-
-class EmbedRequest(BaseModel):
-    texts: list[str]
-
-
-class IndexRequest(BaseModel):
-    collection: str = "tools"
-    ids: list[str]
-    documents: list[str]
-    metadatas: list[dict] | None = None
-
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "service": "collider-vectordb-server"}
-
-
-@app.post("/api/v1/search")
-async def search(body: SearchRequest):
-    from src.search.engine import search_engine
-
-    results = search_engine.search(
-        collection=body.collection,
-        query=body.query,
-        n_results=body.n_results,
+async def serve():
+    """Start the gRPC server."""
+    server = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
+    
+    # Register Servicer
+    collider_vectordb_pb2_grpc.add_ColliderVectorDbServicer_to_server(
+        ColliderVectorServicer(), server
     )
-    return {"results": results, "query": body.query, "collection": body.collection}
-
-
-@app.post("/api/v1/embed")
-async def embed(body: EmbedRequest):
-    from src.embeddings.generator import embedding_generator
-
-    embeddings = embedding_generator.embed(body.texts)
-    return {"embeddings": embeddings, "count": len(embeddings)}
-
-
-@app.post("/api/v1/index")
-async def index(body: IndexRequest):
-    from src.search.engine import search_engine
-
-    count = search_engine.index(
-        collection=body.collection,
-        ids=body.ids,
-        documents=body.documents,
-        metadatas=body.metadatas,
+    
+    # Enable reflection for debugging tools (e.g. grpcurl)
+    SERVICE_NAMES = (
+        collider_vectordb_pb2.DESCRIPTOR.services_by_name["ColliderVectorDb"].full_name,
+        reflection.SERVICE_NAME,
     )
-    return {"indexed": count, "collection": body.collection}
+    reflection.enable_server_reflection(SERVICE_NAMES, server)
+    
+    # Listen on port 8002
+    server.add_insecure_port("[::]:8002")
+    logger.info("Collider VectorDb Server starting on port 8002...")
+    await server.start()
+    
+    try:
+        await server.wait_for_termination()
+    except asyncio.CancelledError:
+        logger.info("Server stopped.")
+        await server.stop(0)
+
+if __name__ == "__main__":
+    asyncio.run(serve())

@@ -1,0 +1,41 @@
+version: "1.0.0"
+name: "system-defaults"
+templates:
+  - name: "ide-workspace"
+    description: "Standard VS Code-like workspace with file explorer and terminal"
+    species: "ide"
+    container:
+      species: "ide"
+      manifest:
+        name: "IDE Workspace"
+        icon: "code"
+      api_boundary:
+        rest: true
+        sse: true
+        websocket: true
+        native_messaging: true
+      tools:
+        - name: "list_files"
+          description: "List files in directory"
+        - name: "read_file"
+          description: "Read file content"
+      workflows: []
+
+  - name: "chrome-agent"
+    description: "Browser-based agent for web automation"
+    species: "cloud"
+    container:
+      species: "cloud"
+      manifest:
+        name: "Chrome Agent"
+        icon: "chrome"
+      api_boundary:
+        rest: true
+        sse: true
+        webrtc: true
+      tools:
+        - name: "navigate"
+          description: "Go to URL"
+        - name: "click"
+          description: "Click element"
+      workflows: []

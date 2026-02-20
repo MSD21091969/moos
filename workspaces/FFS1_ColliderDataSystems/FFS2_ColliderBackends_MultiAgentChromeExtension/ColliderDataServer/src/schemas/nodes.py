@@ -1,21 +1,193 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from src.db.models import AppRole
 
 
+# ---------------------------------------------------------------------------
+# Container classification & boundary types
+# ---------------------------------------------------------------------------
+
+
+class ContainerSpecies(str, Enum):
+    """Human-readable template classification for workspace visualization.
+
+    NOT an access control gate — helps users see what kind of context a
+    node carries.  For AI, it's all just typed JSON/protobuf.
+    """
+
+    OFFICE = "office"  # Doc / productivity context
+    SETTINGS = "settings"  # Configuration / admin context
+    IDE = "ide"  # Code context (synced to local FS)
+    CLOUD = "cloud"  # Cloud-only API context
+    CUSTOM = "custom"  # User-defined
+
+
+class ApiBoundary(BaseModel):
+    """Per-node protocol permissions.
+
+    The app creator controls which protocols each node is allowed to use.
+    Species can provide DEFAULTS, but the node owner overrides.
+    """
+
+    rest: bool = True
+    sse: bool = True
+    websocket: bool = False
+    webrtc: bool = False
+    native_messaging: bool = False
+    grpc: bool = False
+
+
+# ---------------------------------------------------------------------------
+# Node kind — semantic role discriminator
+# ---------------------------------------------------------------------------
+
+
+class NodeKind(str, Enum):
+    """Declares the semantic role of a NodeContainer.
+
+    Workspace — provides context, rules, knowledge, and child nodes.
+    Tool      — leaf unit; exposes ToolDefinition(s) for direct execution.
+    Workflow  — orchestration unit; sequences tool calls via WorkflowDefinition(s).
+    """
+
+    WORKSPACE = "workspace"
+    TOOL = "tool"
+    WORKFLOW = "workflow"
+
+
+# ---------------------------------------------------------------------------
+# Skill definitions — OpenClaw-compatible interface layer
+# ---------------------------------------------------------------------------
+
+
+class SkillInvocationPolicy(BaseModel):
+    """Controls who can invoke this skill in OpenClaw."""
+
+    user_invocable: bool = True
+    model_invocable: bool = True
+
+
+class SkillDefinition(BaseModel):
+    """An OpenClaw-compatible skill entry backed by a Collider ToolDefinition.
+
+    Maps to OpenClaw's ``SkillEntry`` / SKILL.md frontmatter format.
+    When the bootstrap endpoint is called, each SkillDefinition is rendered
+    into a SKILL.md-compatible entry that OpenClaw injects into the agent's
+    system prompt.
+    """
+
+    name: str
+    description: str = ""
+    emoji: str = ""
+    tool_ref: str | None = None  # References ToolDefinition.name in same container
+    requires_bins: list[str] = []  # CLI binaries needed, e.g. ["gh", "curl"]
+    requires_env: list[str] = []  # Env vars needed, e.g. ["GITHUB_TOKEN"]
+    invocation: SkillInvocationPolicy = SkillInvocationPolicy()
+    markdown_body: str = ""  # Usage docs: when to use, examples, avoid
+
+
+# ---------------------------------------------------------------------------
+# Typed tool & workflow definitions inside a container
+# ---------------------------------------------------------------------------
+
+
+class ToolDefinition(BaseModel):
+    """A typed tool contract living inside a NodeContainer.
+
+    When registered on the GraphToolServer, ``params_schema`` is used by
+    ``pydantic.create_model()`` to build a dynamic args model, and the
+    tool becomes a Pydantic Graph Beta step discoverable to all agents.
+    """
+
+    name: str
+    description: str = ""
+    params_schema: dict = {}  # JSON Schema (from create_model)
+    code_ref: str = ""  # Module path or script reference
+    visibility: Literal["local", "group", "global"] = "local"
+
+
+class WorkflowStep(BaseModel):
+    """One step in a workflow sequence."""
+
+    tool_name: str  # References a ToolDefinition.name
+    condition: str | None = None  # Edge condition expression
+    inputs_map: dict = {}  # Maps step inputs from prior outputs
+
+
+class WorkflowDefinition(BaseModel):
+    """A workflow = ordered tool calls with conditions.
+
+    Translatable to Pydantic Graph Beta nodes on the GraphToolServer.
+    """
+
+    name: str
+    description: str = ""
+    steps: list[WorkflowStep] = []
+    entry_step: str | None = None  # First step name
+
+
+# ---------------------------------------------------------------------------
+# NodeContainer — the single recursive DNA type
+# ---------------------------------------------------------------------------
+
+
 class NodeContainer(BaseModel):
+    """The recursive DNA unit.  Same type at all scales.
+
+    ``kind`` declares the semantic role so agents can reason about scope:
+    - ``workspace`` — provides context (instructions, rules, knowledge) and may
+      have child nodes.  The default.
+    - ``tool`` — leaf unit exposing one or more ToolDefinitions for execution.
+    - ``workflow`` — orchestration unit sequencing tool calls.
+
+    ``skills`` replaces the former ``list[str]`` stub with properly typed
+    SkillDefinition entries that map 1-to-1 onto OpenClaw SKILL.md format,
+    enabling the OpenClaw bootstrap endpoint to render the container as an
+    agent workspace with full skill injection.
+    """
+
+    version: str = "1.0.0"
+    kind: NodeKind = NodeKind.WORKSPACE  # semantic role discriminator
+    species: ContainerSpecies | None = None
+    api_boundary: ApiBoundary = ApiBoundary()
+
+    # Context (the .agent structure)
     manifest: dict = {}
     instructions: list[str] = []
     rules: list[str] = []
-    skills: list[str] = []
-    tools: list[dict] = []
     knowledge: list[str] = []
-    workflows: list[dict] = []
     configs: dict = {}
+
+    # Skills interface — OpenClaw-compatible (was list[str], now typed)
+    skills: list[SkillDefinition] = []
+
+    # Executable definitions
+    tools: list[ToolDefinition] = []
+    workflows: list[WorkflowDefinition] = []
+
+    @model_validator(mode="before")
+    @classmethod
+    def migrate_legacy_skills(cls, values: Any) -> Any:
+        """Convert legacy ``skills: list[str]`` to ``list[SkillDefinition]``.
+
+        Nodes seeded before the typed skill model was introduced stored plain
+        strings (e.g. filenames from .agent/skills/).  This validator converts
+        them so old data keeps deserializing cleanly.
+        """
+        skills = values.get("skills", [])
+        if skills and isinstance(skills[0], str):
+            values["skills"] = [
+                {"name": s.strip(), "description": s.strip()}
+                for s in skills
+                if isinstance(s, str) and s.strip()
+            ]
+        return values
 
 
 class NodeCreate(BaseModel):

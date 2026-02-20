@@ -12,11 +12,14 @@ from src.api import (
     context,
     health,
     nodes,
+    openclaw,
     permissions,
     roles,
     rtc,
     sse,
+    templates,
     users,
+    execution,
 )
 from src.core.config import settings
 from src.core.database import Base, engine
@@ -27,6 +30,11 @@ async def lifespan(app: FastAPI):
     # Startup: create tables if they don't exist
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    
+    # Load templates
+    from src.core.templates import registry
+    registry.load_all()
+    
     yield
     # Shutdown: dispose engine
     await engine.dispose()
@@ -60,3 +68,6 @@ app.include_router(context.router)
 app.include_router(sse.router)
 app.include_router(permissions.router)
 app.include_router(rtc.router)
+app.include_router(templates.router)
+app.include_router(execution.router)
+app.include_router(openclaw.router)

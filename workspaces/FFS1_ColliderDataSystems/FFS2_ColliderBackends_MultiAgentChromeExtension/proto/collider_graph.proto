@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package collider.graph;
+
+// ---------------------------------------------------------------------------
+// ColliderGraph — gRPC service on the GraphToolServer (:8001)
+//
+// Manages the living graph of tools and workflows.  Agents discover
+// and execute tools/subgraphs through this service.
+// ---------------------------------------------------------------------------
+
+service ColliderGraph {
+  // Register a tool as a Pydantic Graph step
+  rpc RegisterTool (RegisterToolRequest) returns (RegisterToolResponse);
+
+  // Register a workflow as a subgraph
+  rpc RegisterWorkflow (RegisterWorkflowRequest) returns (RegisterWorkflowResponse);
+
+  // Discover tools matching a query
+  rpc DiscoverTools (ToolDiscoveryRequest) returns (ToolDiscoveryResponse);
+
+  // Execute a subgraph (workflow) and get the result
+  rpc ExecuteSubgraph (SubgraphRequest) returns (SubgraphResponse);
+
+  // Stream execution progress for a subgraph
+  rpc ExecuteSubgraphStream (SubgraphRequest) returns (stream SubgraphProgress);
+
+  // Execute a single registered tool by name (no workflow wrapper required)
+  rpc ExecuteTool (ToolExecutionRequest) returns (ToolExecutionResponse);
+}
+
+// ---------------------------------------------------------------------------
+// Tool Registration
+// ---------------------------------------------------------------------------
+
+message RegisterToolRequest {
+  string tool_name = 1;
+  string origin_node_id = 2;
+  string owner_user_id = 3;
+  bytes params_schema_json = 4;   // JSON Schema
+  string code_ref = 5;
+  string visibility = 6;         // "local" | "group" | "global"
+}
+
+message RegisterToolResponse {
+  bool success = 1;
+  string tool_name = 2;
+  bytes args_schema_json = 3;     // Generated Pydantic model schema
+  string message = 4;
+}
+
+// ---------------------------------------------------------------------------
+// Workflow Registration
+// ---------------------------------------------------------------------------
+
+message RegisterWorkflowRequest {
+  string workflow_name = 1;
+  string origin_node_id = 2;
+  string owner_user_id = 3;
+  repeated string steps = 4;     // Ordered tool_name references
+  string entry_point = 5;
+}
+
+message RegisterWorkflowResponse {
+  bool success = 1;
+  string workflow_name = 2;
+  string message = 3;
+}
+
+// ---------------------------------------------------------------------------
+// Tool Discovery
+// ---------------------------------------------------------------------------
+
+message ToolDiscoveryRequest {
+  string query = 1;
+  string user_id = 2;
+  repeated string visibility_filter = 3;  // ["local", "group", "global"]
+  int32 limit = 4;
+}
+
+message ToolEntry {
+  string tool_name = 1;
+  string origin_node_id = 2;
+  string owner_user_id = 3;
+  bytes params_schema_json = 4;
+  string code_ref = 5;
+  string visibility = 6;
+}
+
+message ToolDiscoveryResponse {
+  repeated ToolEntry tools = 1;
+  int32 total_count = 2;
+}
+
+// ---------------------------------------------------------------------------
+// Subgraph Execution
+// ---------------------------------------------------------------------------
+
+message SubgraphRequest {
+  string workflow_name = 1;
+  string user_id = 2;
+  bytes inputs_json = 3;          // Serialised input dict
+}
+
+message SubgraphResponse {
+  bool success = 1;
+  string workflow_name = 2;
+  bytes result_json = 3;          // Serialised output dict
+  string error_message = 4;
+}
+
+// ---------------------------------------------------------------------------
+// Single Tool Execution
+// ---------------------------------------------------------------------------
+
+message ToolExecutionRequest {
+  string tool_name = 1;
+  string user_id = 2;
+  bytes inputs_json = 3;          // Serialised input dict
+}
+
+message ToolExecutionResponse {
+  bool success = 1;
+  string tool_name = 2;
+  bytes result_json = 3;          // Serialised output dict
+  string error_message = 4;
+}
+
+message SubgraphProgress {
+  string workflow_name = 1;
+  string current_step = 2;
+  int32 step_index = 3;
+  int32 total_steps = 4;
+  string status = 5;              // "running" | "completed" | "failed"
+  bytes partial_result_json = 6;
+}

@@ -20,7 +20,7 @@ from src.db.models import Application, AppPermission, AppRole, Node, SystemRole,
 # FFS6 application definition
 APPLICATIONS = [
     {
-        "display_name": "Application 1XZ",
+        "display_name": "Application 2XZ",
     },
 ]
 
@@ -256,6 +256,21 @@ async def seed():
                 },
             )
             session.add(grant_permission_node)
+            await session.flush()
+
+            # Create a mock workflow node for UI testing
+            workflow_node = Node(
+                application_id=app.id,
+                parent_id=root_node.id,
+                path="/test-workflow",
+                container={
+                    "species": "workflow",
+                    "name": "mock_workflow",
+                    "manifest": {"title": "Mock Workflow"},
+                },
+                metadata_={"frontend_app": "ffs6", "frontend_route": "/test-workflow"}
+            )
+            session.add(workflow_node)
             await session.flush()
 
             # Link root node
