@@ -43,7 +43,19 @@ Starts all FFS1 services in the correct order for local development.
    uv run sqlite_web collider.db -p 8003 -H 0.0.0.0
    ```
 
-6. Connect Claude Code to the Collider MCP server (once GraphToolServer is running on :8001):
+6. Start the ColliderAgentRunner (pydantic-ai local agent on :8004):
+
+   Fill in `D:\FFS0_Factory\secrets\api_keys.env` first:
+
+   - `ANTHROPIC_API_KEY` — your Anthropic key
+   - `COLLIDER_USERNAME` / `COLLIDER_PASSWORD` — a seeded DataServer account
+
+   ```powershell
+   cd D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderAgentRunner
+   uv run uvicorn src.main:app --reload --port 8004
+   ```
+
+7. Connect Claude Code to the Collider MCP server (once GraphToolServer is running on :8001):
 
    ```powershell
    claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
@@ -58,5 +70,6 @@ Starts all FFS1 services in the correct order for local development.
 - GraphToolServer: http://localhost:8001/docs (+ MCP at /mcp/sse)
 - VectorDbServer: http://localhost:8002/docs
 - SQL Viewer: http://localhost:8003
+- AgentRunner: <http://localhost:8004/health>
 - Frontend (ffs6): http://localhost:4200
 - Claude Code MCP: `claude mcp list` → collider-tools
