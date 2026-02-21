@@ -1,14 +1,15 @@
 # FFS2 Backend Services
 
-> Three FastAPI servers in `FFS2_ColliderBackends_MultiAgentChromeExtension/`.
+> Four FastAPI services in `FFS2_ColliderBackends_MultiAgentChromeExtension/`.
 
 ## Service Map
 
-| Service                 | Port  | Stack                      | Storage            | Role                                     |
-| ----------------------- | ----- | -------------------------- | ------------------ | ---------------------------------------- |
-| ColliderDataServer      | :8000 | FastAPI + SQLAlchemy async | SQLite (aiosqlite) | Primary API, auth, SSE, WebRTC signaling |
-| ColliderGraphToolServer | :8001 | FastAPI + WebSocket        | —                  | Workflow execution + graph processing    |
-| ColliderVectorDbServer  | :8002 | FastAPI                    | ChromaDB           | Semantic search + embeddings             |
+| Service                 | Port  | Stack                          | Storage            | Role                                            |
+| ----------------------- | ----- | ------------------------------ | ------------------ | ----------------------------------------------- |
+| ColliderDataServer      | :8000 | FastAPI + SQLAlchemy async     | SQLite (aiosqlite) | Primary API, auth, SSE, WebRTC, OpenClaw        |
+| ColliderGraphToolServer | :8001 | FastAPI + WebSocket + gRPC MCP | —                  | Tool registry, workflow execution, MCP server   |
+| ColliderVectorDbServer  | :8002 | FastAPI + ChromaDB             | ChromaDB           | Semantic search + embeddings                    |
+| ColliderAgentRunner     | :8004 | FastAPI + pydantic-ai          | —                  | ContextSet sessions, LLM streaming (claude-s46) |
 
 ---
 
@@ -275,6 +276,83 @@ When a workflow step has `can_spawn: true`, the GraphToolServer can create sub-n
 | `/api/v1/index`  | POST   | Index documents into ChromaDB |
 
 Documents are indexed from NodeContainer `knowledge` and `tools` fields. Used by agents for semantic tool discovery (`TOOL_SEARCH` message type).
+
+---
+
+## ColliderAgentRunner (:8004)
+
+**Path**: `ColliderAgentRunner/`
+**Stack**: FastAPI + pydantic-ai + httpx
+**Model**: `claude-sonnet-4-6` via Anthropic SDK
+**Config**: `D:/FFS0_Factory/secrets/api_keys.env`
+
+### AgentRunner API
+
+| Endpoint          | Method | Purpose                                                |
+| ----------------- | ------ | ------------------------------------------------------ |
+| `/health`         | GET    | Liveness probe                                         |
+| `/agent/session`  | POST   | Compose ContextSet → cache session → return session_id |
+| `/agent/chat`     | GET    | SSE stream: LLM response (session_id or node_id)       |
+| `/tools/discover` | GET    | Proxy to GraphToolServer tool discovery                |
+
+### ContextSet (`POST /agent/session`)
+
+```python
+class ContextSet(BaseModel):
+    role: Literal["superadmin", "collider_admin", "app_admin", "app_user"]
+    app_id: str                        # ACL boundary
+    node_ids: list[str]                # nodes to compose (leaf-wins merge)
+    vector_query: str | None = None    # semantic tool discovery
+    visibility_filter: list[Literal["local", "group", "global"]] = ["global", "group"]
+    depth: int | None = None           # bootstrap depth per node (None = full subtree)
+```
+
+Compose flow:
+
+1. `get_token_for_role(ctx.role)` — per-role JWT cache, falls back to default credentials
+2. `get_bootstrap(node_id, token, depth)` for each `node_id` (OpenClaw endpoint)
+3. Merge: agents_md/soul_md/tools_md concatenated with node-path headers; skills + tool_schemas by name dict (leaf-wins: later node_id wins)
+4. If `vector_query`: `POST /api/v1/registry/tools/discover` on GraphToolServer → extend tool map (add only, don't override bootstrap tools)
+5. Build system prompt → `SessionStore.create()` → return `session_id`
+
+### Session Cache
+
+```python
+class SessionStore:
+    """In-memory: session_id → {system_prompt, tool_schemas, created_at}. TTL: 4h."""
+```
+
+### Per-Role Auth
+
+```python
+_ROLE_CREDENTIAL_MAP = {
+    "superadmin":      ("collider_superadmin_username", "collider_superadmin_password"),
+    "collider_admin":  ("collider_collider_admin_username", "collider_collider_admin_password"),
+    "app_admin":       ("collider_app_admin_username", "collider_app_admin_password"),
+    "app_user":        ("collider_app_user_username", "collider_app_user_password"),
+}
+```
+
+Each role maps to optional env credentials in `secrets/api_keys.env`. Falls back to `COLLIDER_USERNAME`/`COLLIDER_PASSWORD`.
+
+### AgentRunner Source Structure
+
+```
+ColliderAgentRunner/
+└── src/
+    ├── main.py                  ← FastAPI app + routes
+    ├── schemas/
+    │   └── context_set.py       ← ContextSet, SessionPreview, SessionResponse
+    ├── core/
+    │   ├── config.py            ← Settings (pydantic-settings, reads api_keys.env)
+    │   ├── auth_client.py       ← Per-role JWT cache + login
+    │   ├── collider_client.py   ← GET /openclaw/bootstrap, POST /execution/tool
+    │   ├── graph_tool_client.py ← POST /registry/tools/discover (vector proxy)
+    │   └── session_store.py     ← In-memory session cache (4h TTL)
+    └── agent/
+        ├── runner.py            ← compose_context_set(), run_session_stream()
+        └── tools.py             ← build_tools() → pydantic-ai Tool wrappers
+```
 
 ---
 

@@ -4,11 +4,34 @@
 
 ---
 
+## MVP State — z440 Workstation
+
+The OpenClaw agent is live. From the Chrome extension sidepanel you can:
+
+1. Select an application and pick a **role** (superadmin / collider_admin / app_admin / app_user)
+2. Check one or more **workspace nodes** from the tree
+3. Type a natural-language task description to **discover tools** semantically via vector search
+4. Hit **Compose & Start Session** — the AgentRunner merges all node contexts into a single system prompt, caches it as a session, and returns a `session_id`
+5. Chat with the agent in the panel below — it streams responses via SSE, has access to all tools from the composed nodes, and knows its Collider role and ACL context
+
+Services running locally:
+
+| Service | Port | Purpose |
+|---|---|---|
+| ColliderDataServer | :8000 | REST + SSE + OpenClaw bootstrap |
+| ColliderGraphToolServer | :8001 | Tool registry + gRPC + MCP |
+| ColliderVectorDbServer | :8002 | ChromaDB semantic search |
+| SQLite Web Viewer | :8003 | DB inspection (dev only) |
+| **ColliderAgentRunner** | **:8004** | **pydantic-ai agent + ContextSet sessions** |
+| FFS3 Frontend (ffs6) | :4200 | IDE appnode viewer |
+
+---
+
 ## What Is This?
 
 Collider is a platform for building and running AI-powered workspaces. The core idea: **every workspace is a node in a tree**, and every node carries a `NodeContainer` — a JSON manifest holding the tools, instructions, rules, knowledge, skills, and workflows that define what an AI agent can do in that context.
 
-Three servers talk to each other. A Chrome extension bridges the browser to the backend. A React frontend renders whichever "appnode" the current workspace node points to. An AI model (Claude, GPT, Gemini) can bootstrap from any node in the tree and immediately know what tools it has, how to behave, and how to escalate.
+Four servers talk to each other. A Chrome extension bridges the browser to the backend. A React frontend renders whichever "appnode" the current workspace node points to. An AI model (Claude) bootstraps from any set of nodes in the tree, composes their contexts into a unified session, and streams responses via SSE.
 
 ---
 
@@ -19,22 +42,23 @@ FFS0_Factory/
 ├── workspaces/
 │   └── FFS1_ColliderDataSystems/
 │       ├── FFS2_ColliderBackends_MultiAgentChromeExtension/
-│       │   ├── ColliderDataServer/       ← Port 8000  (REST + SSE + OpenClaw)
-│       │   ├── ColliderGraphToolServer/  ← Port 8001  (WebSocket + gRPC + MCP)
-│       │   ├── ColliderVectorDbServer/   ← Port 8002  (ChromaDB semantic search)
-│       │   ├── proto/                   ← Shared protobuf definitions + compiled stubs
-│       │   └── ChromeExtension/         ← Plasmo, Manifest V3, LangGraph.js agents
+│       │   ├── ColliderDataServer/               ← Port 8000  (REST + SSE + OpenClaw)
+│       │   ├── ColliderGraphToolServer/          ← Port 8001  (WebSocket + gRPC + MCP)
+│       │   ├── ColliderVectorDbServer/           ← Port 8002  (ChromaDB semantic search)
+│       │   ├── ColliderAgentRunner/              ← Port 8004  (pydantic-ai, ContextSet)
+│       │   ├── proto/                            ← Shared protobuf definitions
+│       │   └── ColliderMultiAgentsChromeExtension/  ← Plasmo, Manifest V3
 │       └── FFS3_ColliderApplicationsFrontendServer/
-│           ├── apps/ffs4/               ← Sidepanel appnode   (port 4201)
-│           ├── apps/ffs5/               ← PiP appnode         (port 4202)
-│           ├── apps/ffs6/               ← IDE viewer appnode  (port 4200, default)
-│           └── libs/shared-ui/          ← Shared components + XYFlow
-└── models/                              ← Shared Pydantic models
+│           ├── apps/ffs4/                        ← Sidepanel appnode  (port 4201)
+│           ├── apps/ffs5/                        ← PiP appnode        (port 4202)
+│           ├── apps/ffs6/                        ← IDE viewer appnode (port 4200)
+│           └── libs/shared-ui/                  ← Shared components + XYFlow
+└── models/                                      ← Shared Pydantic models
 ```
 
 ---
 
-## The Three Servers
+## The Services
 
 ### ColliderDataServer — :8000
 
@@ -60,6 +84,7 @@ The tool registry and execution engine. Owns the in-memory tool registry, workfl
 |---|---|---|
 | REST | `GET /health` | Health + registry stats |
 | REST | `/api/v1/registry/tools` | Register / list / delete tools |
+| REST | `POST /api/v1/registry/tools/discover` | Semantic tool discovery (proxies to VectorDb) |
 | WebSocket | `/ws/workflow` | Stream multi-step workflow execution |
 | WebSocket | `/ws/graph` | Graph node operations |
 | gRPC | `:50051` | `ExecuteTool`, `ExecuteSubgraph`, `DiscoverTools` |
@@ -77,6 +102,26 @@ Semantic search over NodeContainer content using ChromaDB.
 | `POST /api/v1/search` | Find tools / knowledge by similarity |
 | `POST /api/v1/embed` | Generate text embeddings |
 | `POST /api/v1/index` | Index NodeContainer documents |
+
+### ColliderAgentRunner — :8004
+
+The local pydantic-ai agent. Composes ContextSets from OpenClaw bootstrap data, caches sessions, and streams LLM responses to the Chrome extension sidepanel.
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/health` | GET | Liveness probe |
+| `/agent/session` | POST | Compose a ContextSet → cache as session → return `session_id` |
+| `/agent/chat` | GET | SSE stream: chat against a session (or single node, legacy) |
+| `/tools/discover` | GET | Proxy to GraphToolServer discover (single CORS origin for ext) |
+
+**ContextSet composition** (`POST /agent/session`):
+
+1. Authenticate as the selected role (separate JWT per role, falls back to default)
+2. Bootstrap each selected node via OpenClaw (`GET /openclaw/bootstrap/{id}`)
+3. Merge all bootstraps — leaf-wins: later nodes override earlier for skills/tools
+4. If `vector_query`: discover additional tools via GraphToolServer vector search
+5. Build unified system prompt (agents_md + soul_md + tools_md + skill playbooks + session context)
+6. Cache as session (4h TTL), return `session_id`
 
 ---
 
@@ -100,7 +145,7 @@ When an agent bootstraps from a node, it receives the full aggregated context of
 
 ## OpenClaw Integration
 
-[OpenClaw](https://github.com/openclaw-ai/openclaw) is an open-source self-hosted agent gateway. Collider exposes an OpenClaw-compatible bootstrap endpoint:
+Collider exposes an OpenClaw-compatible bootstrap endpoint:
 
 ```bash
 GET /api/v1/openclaw/bootstrap/{node_id}?depth=3
@@ -115,7 +160,9 @@ The response gives an OpenClaw agent its:
 - `tool_schemas[]` — JSON function definitions for direct tool invocation
 - `execute_tool_schema` — schema for `POST /execution/tool/{name}`
 
-This means any OpenClaw-compatible agent that connects to Collider gets a fully configured context from the workspace node tree, with no manual configuration.
+The **ColliderAgentRunner** uses this endpoint to bootstrap multi-node sessions:
+it fetches each selected node's context, merges them (leaf-wins), augments with
+vector-discovered tools, and builds a single system prompt for the pydantic-ai `Agent`.
 
 ---
 
@@ -131,51 +178,110 @@ After connecting, every registered group/global tool appears as a native tool in
 
 ---
 
+## Chrome Extension — WorkspaceBrowser
+
+The ffs4 sidepanel hosts the **WorkspaceBrowser** — a two-panel UI:
+
+```
+┌─────────────────────────────────┐
+│ ▼ Context Composer              │  collapsible
+│   Role   [app_user          ▼]  │  pick identity level
+│   Nodes  [☑ root  ☐ tools  …]  │  multi-select from tree
+│   Search [describe your task…]  │
+│           [Discover Tools   🔍] │  → GET :8004/tools/discover
+│   Found  [3 tools matched]      │
+│   [Compose & Start Session  →]  │  → POST :8004/agent/session
+└─────────────────────────────────┘
+┌─────────────────────────────────┐
+│ Agent Chat                      │  streaming SSE from :8004
+│  [messages…]                    │
+│  [input…           ]  [Send]    │
+└─────────────────────────────────┘
+```
+
+---
+
 ## Getting Started
 
 ### Prerequisites
 
 - Python 3.12+ with [UV](https://docs.astral.sh/uv/)
 - Node.js 20+ with [pnpm](https://pnpm.io/)
-- (Optional) Chrome for the extension
+- Chrome (for the extension)
+- Anthropic API key (for the AgentRunner LLM)
 
-### Start all services
+### 1 — Fill in secrets
+
+Edit `D:\FFS0_Factory\secrets\api_keys.env`:
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+COLLIDER_USERNAME=your_seeded_user
+COLLIDER_PASSWORD=your_password
+```
+
+Per-role credentials (optional — fall back to above if blank):
+
+```bash
+COLLIDER_SUPERADMIN_USERNAME=
+COLLIDER_APP_USER_USERNAME=
+# etc.
+```
+
+### 2 — Start all services
 
 ```powershell
-# 1. DataServer (REST + SSE)
+# DataServer (REST + SSE + OpenClaw)
 cd workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderDataServer
 uv run uvicorn src.main:app --reload --port 8000
 
-# 2. GraphToolServer (WebSocket + gRPC + MCP)
+# GraphToolServer (WebSocket + gRPC + MCP)
 cd ..\ColliderGraphToolServer
 uv run uvicorn src.main:app --reload --port 8001
 
-# 3. VectorDbServer (ChromaDB)
+# VectorDbServer (ChromaDB)
 cd ..\ColliderVectorDbServer
 uv run python -m src.main
 
-# 4. Frontend — ffs6 IDE viewer
+# AgentRunner (pydantic-ai + ContextSet sessions)
+cd ..\ColliderAgentRunner
+uv run uvicorn src.main:app --reload --port 8004
+
+# Frontend — ffs6 IDE viewer
 cd ..\..\FFS3_ColliderApplicationsFrontendServer
 pnpm nx serve ffs6
 
-# 5. Connect Claude Code to the MCP server
-claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
+# SQLite Viewer (optional, dev only)
+cd ..\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderDataServer
+uv run sqlite_web collider.db -p 8003 -H 0.0.0.0
 ```
 
-See [dev-start.md](workspaces/FFS1_ColliderDataSystems/.agent/workflows/dev-start.md) for the full workflow including the SQLite viewer.
-
-### Seed the database
+### 3 — Seed the database
 
 ```powershell
 cd workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderDataServer
 uv run python seed.py
 ```
 
+### 4 — Connect Claude Code to the MCP server
+
+```powershell
+claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
+```
+
+### 5 — Load the Chrome extension
+
+Load `ColliderMultiAgentsChromeExtension` as an unpacked extension in Chrome developer mode. Open the sidepanel, select an application, switch to **Agent** view.
+
 ### API docs (when running)
 
-- DataServer Swagger: http://localhost:8000/docs
-- GraphToolServer Swagger: http://localhost:8001/docs
-- VectorDbServer Swagger: http://localhost:8002/docs
+- DataServer: <http://localhost:8000/docs>
+- GraphToolServer: <http://localhost:8001/docs>
+- VectorDbServer: <http://localhost:8002/docs>
+- AgentRunner: <http://localhost:8004/docs>
+- SQL Viewer: <http://localhost:8003>
+
+See [dev-start.md](workspaces/FFS1_ColliderDataSystems/.agent/workflows/dev-start.md) for the full ordered startup workflow.
 
 ---
 
@@ -184,9 +290,10 @@ uv run python seed.py
 | Layer | Stack |
 |---|---|
 | Python backends | Python 3.12+, FastAPI, Pydantic v2, SQLAlchemy async, aiosqlite |
-| Execution engine | gRPC (protobuf), MCP (SSE transport), Pydantic AI |
+| Agent | pydantic-ai, AnthropicModel (claude-sonnet-4-6) |
+| Execution engine | gRPC (protobuf), MCP (SSE transport) |
 | Vector search | ChromaDB |
-| Chrome extension | Plasmo, Manifest V3, React + TypeScript, LangGraph.js |
+| Chrome extension | Plasmo, Manifest V3, React + TypeScript |
 | Frontend | Nx, Vite 7, React 19, TypeScript 5+, XYFlow, Zustand |
 | Tooling | UV (Python), pnpm (Node), Ruff, Mypy, Vitest, Pytest |
 
@@ -196,13 +303,24 @@ uv run python seed.py
 
 | Protocol | Transport | Used Between |
 |---|---|---|
-| REST | HTTP | Extension / agents ↔ DataServer, VectorDbServer |
-| SSE | HTTP long-lived | DataServer → Extension (live node change events) |
+| REST | HTTP | Extension / agents ↔ DataServer, AgentRunner |
+| SSE | HTTP long-lived | DataServer → Extension (live events); AgentRunner → Extension (chat stream) |
 | WebSocket | WS | Extension ↔ GraphToolServer (workflow streaming) |
 | WebRTC | P2P (STUN/TURN) | Browser ↔ Browser (ffs5 PiP) |
 | Native Messaging | stdio | Extension ↔ local filesystem host |
-| gRPC | HTTP/2 | DataServer ↔ GraphToolServer (tool/workflow RPCs) |
+| gRPC | HTTP/2 | DataServer ↔ GraphToolServer; VectorDbServer ↔ GraphToolServer |
 | MCP/SSE | HTTP SSE + POST | Claude Code / Copilot / Cursor ↔ GraphToolServer |
+
+---
+
+## Security
+
+- JWT authentication on all DataServer endpoints
+- System roles: `superadmin` → `collider_admin` → `app_admin` → `app_user`
+- Per-role pre-seeded accounts used by AgentRunner; each role gets its own JWT cache
+- Per-application permissions (request / approve / revoke)
+- MCP tool visibility: only `group` and `global` tools exposed — `local` tools remain owner-private
+- Secrets injected at runtime by the tool executor — the agent never sees raw values
 
 ---
 
@@ -224,16 +342,6 @@ Every workspace directory has an `.agent/` folder:
 ```
 
 Context is inherited top-down: `FFS0 → FFS1 → FFS2 / FFS3`. Child workspaces extend and override parent context using `deep_merge`.
-
----
-
-## Security
-
-- JWT authentication on all DataServer endpoints
-- System roles: `superadmin` → `collider_admin` → `app_admin` → `app_user`
-- Per-application permissions (request / approve / revoke)
-- MCP tool visibility: only `group` and `global` tools exposed — `local` tools remain owner-private
-- Secrets injected at runtime by the tool executor — the agent never sees raw values
 
 ---
 
