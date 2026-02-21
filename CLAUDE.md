@@ -22,20 +22,24 @@ FFS0_Factory/                  Python agent-factory package (UV, pyproject.toml)
 ├── sdk/                       SDK components
 └── workspaces/
     ├── FFS1_ColliderDataSystems/       Schemas, governance, orchestration
-    │   ├── FFS2_...ChromeExtension/    3 FastAPI servers + Chrome ext (Plasmo)
-    │   └── FFS3_...FrontendServer/     Nx monorepo (Vite 7 + React 19, Next.js optional)
+    │   ├── FFS2_...ChromeExtension/    4 FastAPI services + Chrome ext (Plasmo)
+    │   │   ├── ColliderDataServer/         ← :8000 REST + SSE + OpenClaw
+    │   │   ├── ColliderGraphToolServer/    ← :8001 WebSocket + gRPC + MCP
+    │   │   ├── ColliderVectorDbServer/     ← :8002 ChromaDB
+    │   │   └── ColliderAgentRunner/        ← :8004 pydantic-ai, ContextSet
+    │   └── FFS3_...FrontendServer/     Nx monorepo (Vite 7 + React 19)
     │       ├── apps/ffs4              Sidepanel appnode
     │       ├── apps/ffs5              PiP appnode
     │       ├── apps/ffs6              IDE viewer appnode (default project)
     │       └── libs/shared-ui         Shared components + XYFlow
-    └── maassen_hochrath/               IADORE personal AI workspace (Ollama, BakLLaVA)
+    └── maassen_hochrath/               IADORE personal AI workspace (Ollama)
 ```
 
 ## Tech Stack
 
-**Python** (FFS0, FFS1, FFS2): Python 3.12+, UV, FastAPI, Pydantic v2, SQLAlchemy async, aiosqlite, ChromaDB, Ruff, Mypy strict, Pytest
+**Python** (FFS0, FFS1, FFS2): Python 3.12+, UV, FastAPI, Pydantic v2, SQLAlchemy async, aiosqlite, ChromaDB, pydantic-ai, Ruff, Mypy strict, Pytest
 **TypeScript** (FFS3): Nx, Vite 7, React 19, TS 5+, XYFlow, Zustand, React Router, CSS Modules, ESLint, Vitest
-**Chrome Extension** (FFS2): Plasmo, Manifest V3, React + TypeScript, LangGraph.js
+**Chrome Extension** (FFS2): Plasmo, Manifest V3, React + TypeScript
 
 ## Servers
 
@@ -43,7 +47,13 @@ FFS0_Factory/                  Python agent-factory package (UV, pyproject.toml)
 - ColliderGraphToolServer — port 8001 (WebSocket + gRPC + **MCP/SSE** — tool registry + execution engine)
   - MCP endpoint: `GET /mcp/sse` | connect: `claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse`
 - ColliderVectorDbServer — port 8002 (ChromaDB semantic search)
+- **ColliderAgentRunner — port 8004** (pydantic-ai agent, ContextSet sessions, claude-sonnet-4-6)
+  - Credentials: `D:\FFS0_Factory\secrets\api_keys.env` (`ANTHROPIC_API_KEY`, `COLLIDER_USERNAME`, `COLLIDER_PASSWORD`)
 - FFS3 Frontend — port 4200 (ffs6 default), 4201 (ffs4), 4202 (ffs5)
+
+## MVP — OpenClaw Agent (z440)
+
+The Chrome extension sidepanel hosts a **WorkspaceBrowser**: compose a ContextSet (role + nodes + vector query) → `POST :8004/agent/session` → chat with streaming pydantic-ai agent via `GET :8004/agent/chat?session_id=...`.
 
 ## Rules
 

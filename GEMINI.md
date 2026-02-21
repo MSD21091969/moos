@@ -25,7 +25,11 @@ FFS0_Factory/                  Python agent-factory package (UV, pyproject.toml)
 ├── sdk/                       SDK components
 └── workspaces/
     ├── FFS1_ColliderDataSystems/       Schemas, governance, orchestration
-    │   ├── FFS2_...ChromeExtension/    3 FastAPI servers + Chrome ext (Plasmo)
+    │   ├── FFS2_...ChromeExtension/    4 FastAPI services + Chrome ext (Plasmo)
+    │   │   ├── ColliderDataServer/         ← :8000 REST + SSE + OpenClaw
+    │   │   ├── ColliderGraphToolServer/    ← :8001 WebSocket + gRPC + MCP
+    │   │   ├── ColliderVectorDbServer/     ← :8002 ChromaDB
+    │   │   └── ColliderAgentRunner/        ← :8004 pydantic-ai, ContextSet
     │   └── FFS3_...FrontendServer/     Nx monorepo (Vite 7 + React 19)
     │       ├── apps/ffs4              Sidepanel appnode
     │       ├── apps/ffs5              PiP appnode
@@ -37,12 +41,12 @@ FFS0_Factory/                  Python agent-factory package (UV, pyproject.toml)
 ## Tech Stack
 
 **Python** (FFS0, FFS1, FFS2): Python 3.12+, UV, FastAPI, Pydantic v2, SQLAlchemy async,
-aiosqlite, ChromaDB, Ruff, Mypy strict, Pytest
+aiosqlite, ChromaDB, pydantic-ai, Ruff, Mypy strict, Pytest
 
 **TypeScript** (FFS3): Nx, Vite 7, React 19, TS 5+, XYFlow, Zustand, React Router,
 CSS Modules, ESLint, Vitest
 
-**Chrome Extension** (FFS2): Plasmo, Manifest V3, React + TypeScript, LangGraph.js
+**Chrome Extension** (FFS2): Plasmo, Manifest V3, React + TypeScript
 
 ## Servers
 
@@ -50,7 +54,20 @@ CSS Modules, ESLint, Vitest
 - ColliderGraphToolServer — port 8001 (WebSocket + gRPC + MCP/SSE)
   - MCP endpoint: `GET /mcp/sse`
 - ColliderVectorDbServer — port 8002 (ChromaDB semantic search)
+- **ColliderAgentRunner — port 8004** (pydantic-ai, ContextSet sessions, claude-sonnet-4-6)
+  - Secrets: `D:\FFS0_Factory\secrets\api_keys.env`
 - FFS3 Frontend — port 4200 (ffs6 default), 4201 (ffs4), 4202 (ffs5)
+
+## MVP — OpenClaw Agent
+
+The Chrome extension sidepanel (**WorkspaceBrowser**) lets you:
+
+1. Pick a role (superadmin / collider_admin / app_admin / app_user)
+2. Select workspace nodes from the tree (multi-select)
+3. Describe a task to discover tools via vector search
+4. Compose a ContextSet → pydantic-ai session → streaming LLM chat
+
+Data flow: `POST :8004/agent/session` (role + node_ids + vector_query) → session_id → `GET :8004/agent/chat?session_id=...` → SSE stream.
 
 ## Collider MCP Tools
 
