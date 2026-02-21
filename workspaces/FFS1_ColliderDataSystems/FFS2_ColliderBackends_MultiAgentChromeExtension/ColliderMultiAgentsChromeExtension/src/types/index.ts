@@ -76,6 +76,29 @@ export interface MainContext {
   tabs: Map<number, TabContext>;
 }
 
+// ContextSet + WorkspaceBrowser types
+export type ContextRole = "superadmin" | "collider_admin" | "app_admin" | "app_user";
+
+export interface DiscoveredTool {
+  name: string;
+  description: string;
+  score: number;
+  origin_node_id: string;
+}
+
+export interface SessionPreview {
+  node_count: number;
+  skill_count: number;
+  tool_count: number;
+  role: string;
+  vector_matches: number;
+}
+
+export interface SessionResponse {
+  session_id: string;
+  preview: SessionPreview;
+}
+
 export type ColliderMessageType =
   | "INIT"
   | "AUTH_VERIFY"

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppStore } from "./stores/appStore";
 import { AppTree } from "@collider/sidepanel-ui";
-import AgentSeat from "./components/AgentSeat";
+import WorkspaceBrowser from "./components/WorkspaceBrowser";
 import type { Application, AppNodeTree, ColliderMessage } from "~/types";
 import "~/style.css";
 
@@ -143,7 +143,7 @@ function SidePanel() {
             )}
           </div>
         ) : (
-          <AgentSeat />
+          <WorkspaceBrowser />
         )}
       </div>
     </div>

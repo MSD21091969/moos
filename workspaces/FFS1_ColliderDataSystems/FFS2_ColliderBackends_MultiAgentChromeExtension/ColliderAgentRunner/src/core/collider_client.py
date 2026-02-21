@@ -9,12 +9,18 @@ import httpx
 from src.core.config import settings
 
 
-async def get_bootstrap(node_id: str, token: str) -> dict[str, Any]:
+async def get_bootstrap(
+    node_id: str,
+    token: str,
+    depth: int | None = None,
+) -> dict[str, Any]:
     """Fetch the OpenClaw bootstrap context for a node.
 
     Args:
         node_id: The Collider node UUID to bootstrap from.
         token: Valid Bearer JWT.
+        depth: Optional subtree depth limit passed to the bootstrap endpoint.
+            ``None`` means full subtree (default).
 
     Returns:
         OpenClawBootstrap JSON dict (agents_md, soul_md, tools_md,
@@ -23,10 +29,15 @@ async def get_bootstrap(node_id: str, token: str) -> dict[str, Any]:
     Raises:
         httpx.HTTPStatusError: On non-2xx response.
     """
+    params = {}
+    if depth is not None:
+        params["depth"] = depth
+
     async with httpx.AsyncClient() as client:
         resp = await client.get(
             f"{settings.data_server_url}/api/v1/openclaw/bootstrap/{node_id}",
             headers={"Authorization": f"Bearer {token}"},
+            params=params,
             timeout=15.0,
         )
         resp.raise_for_status()

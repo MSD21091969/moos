@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useAppStore } from "../stores/appStore";
 
 const AGENT_RUNNER_URL = "http://localhost:8004";
 
@@ -9,20 +8,28 @@ interface Message {
   streaming?: boolean;
 }
 
-export default function AgentSeat() {
-  const { selectedNodePath } = useAppStore();
+interface AgentSeatProps {
+  sessionId: string | null;
+}
+
+export default function AgentSeat({ sessionId }: AgentSeatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const esRef = useRef<EventSource | null>(null);
 
-  // Derive leaf node_id from the selected path (last segment)
-  const nodeId = selectedNodePath?.split("/").pop() ?? null;
-
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Reset messages when session changes
+  useEffect(() => {
+    setMessages([]);
+    setInput("");
+    setBusy(false);
+    esRef.current?.close();
+  }, [sessionId]);
 
   // Clean up open SSE connection on unmount
   useEffect(() => {
@@ -33,7 +40,7 @@ export default function AgentSeat() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!input.trim() || busy || !nodeId) return;
+    if (!input.trim() || busy || !sessionId) return;
 
     const userMsg = input.trim();
     setInput("");
@@ -45,7 +52,7 @@ export default function AgentSeat() {
       { role: "assistant", content: "", streaming: true },
     ]);
 
-    const params = new URLSearchParams({ node_id: nodeId, message: userMsg });
+    const params = new URLSearchParams({ session_id: sessionId, message: userMsg });
     const es = new EventSource(`${AGENT_RUNNER_URL}/agent/chat?${params}`);
     esRef.current = es;
 
@@ -109,7 +116,7 @@ export default function AgentSeat() {
           updated[updated.length - 1] = {
             ...last,
             content:
-              last.content || "[Agent Runner unavailable — is it running on :8003?]",
+              last.content || "[Agent Runner unavailable — is it running on :8004?]",
             streaming: false,
           };
         }
@@ -120,26 +127,26 @@ export default function AgentSeat() {
     };
   }
 
-  if (!nodeId) {
+  if (!sessionId) {
     return (
       <div className="flex items-center justify-center h-full text-sm text-gray-500 px-4 text-center">
-        Select a node from the Tree view to start an agent session.
+        Compose a context set above to start an agent session.
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full">
-      {/* Node context indicator */}
+      {/* Session indicator */}
       <div className="px-3 py-1 text-xs text-gray-500 border-b border-gray-700 truncate">
-        Node: <span className="text-gray-400">{nodeId}</span>
+        Session: <span className="text-green-400">{sessionId.slice(0, 8)}…</span>
       </div>
 
       {/* Message list */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-3">
         {messages.length === 0 && (
           <p className="text-xs text-gray-600 mt-4 text-center">
-            Ask anything about this workspace node.
+            Ask anything about this composed context.
           </p>
         )}
         {messages.map((msg, i) => (
