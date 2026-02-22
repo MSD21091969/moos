@@ -57,17 +57,19 @@ class ToolRegistry:
         model = build_args_model(entry.tool_name, entry.params_schema)
         self._models[entry.tool_name] = model
 
-        # Index in VectorDB (fire and forget or await? await for reliability)
-        from src.core.vector_client import vector_client
-        import json
-        
-        await vector_client.index_tool(
-            tool_name=entry.tool_name,
-            description=entry.description if hasattr(entry, "description") else "", # Access description safely
-            origin_node_id=entry.origin_node_id,
-            owner_user_id=entry.owner_user_id,
-            params_schema_json=json.dumps(entry.params_schema)
-        )
+        # Index in VectorDB — optional, skipped if VectorDbServer is unavailable
+        try:
+            from src.core.vector_client import vector_client
+            import json
+            await vector_client.index_tool(
+                tool_name=entry.tool_name,
+                description=entry.description if hasattr(entry, "description") else "",
+                origin_node_id=entry.origin_node_id,
+                owner_user_id=entry.owner_user_id,
+                params_schema_json=json.dumps(entry.params_schema),
+            )
+        except Exception as _vec_exc:  # noqa: BLE001
+            logger.debug("VectorDB indexing skipped for %r: %s", entry.tool_name, _vec_exc)
 
         logger.info(
             "Registered tool %r (visibility=%s, origin=%s)",
@@ -115,12 +117,15 @@ class ToolRegistry:
         
         vector_matches = []
         if q_lower:
-            from src.core.vector_client import vector_client
-            vector_matches = await vector_client.search_tools(
-                query=query.query,
-                limit=query.limit,
-                owner_user_id=query.user_id
-            )
+            try:
+                from src.core.vector_client import vector_client
+                vector_matches = await vector_client.search_tools(
+                    query=query.query,
+                    limit=query.limit,
+                    owner_user_id=query.user_id,
+                )
+            except Exception as _vec_exc:  # noqa: BLE001
+                logger.debug("VectorDB search skipped: %s", _vec_exc)
         
         # If we got vector matches, use them (filtering by visibility still needed)
         # For now, let's keep the existing logic but prioritize/mix vector results?

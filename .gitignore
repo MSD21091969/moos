@@ -19,6 +19,10 @@ wheels/
 .env.production
 !.env.example
 
+# GCP service account credentials (must live in secrets/)
+*-service-account*.json
+mailmind-ai-djbuw-*.json
+
 # Node.js
 node_modules/
 package-lock.json

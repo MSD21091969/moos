@@ -30,7 +30,7 @@ providers:
       - gemini-3.1-pro
       - claude-opus-4-6
       - claude-sonnet-4-6
-    default_model: gemini-3.1-pro
+    default_model: claude-opus-4-6
 
   # Local Ollama
   ollama:
@@ -57,7 +57,7 @@ providers:
       - gpt-5.1-codex-mini
       - gpt-5.2
       - gpt-5.2-codex
-      - gpt-5.3-codex          # Latest Codex — code gen, debugging, software dev (1x rate)
+      - gpt-5.3-codex # Latest Codex — code gen, debugging, software dev (1x rate)
       - o1-preview
       - o3-pro
     default_model: gpt-5.3-codex
@@ -75,7 +75,7 @@ providers:
       - claude-opus-4
       - claude-opus-4.5
       - claude-opus-4-6
-      - claude-opus-4-6-fast     # Fast mode (Preview, 30x rate)
+      - claude-opus-4-6-fast # Fast mode (Preview, 30x rate)
     default_model: claude-opus-4-6
 
 # Default provider for the Factory

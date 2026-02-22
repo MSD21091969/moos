@@ -31,26 +31,14 @@ dependencies = [
     "gradio>=4.0.0",
     "sse-starlette>=2.0.0",
     "click>=8.0.0",
+    "pyyaml>=6.0",
+    "httpx>=0.27.0",
     "uvicorn>=0.30.0",
 ]
 
-[tool.setuptools]
-packages = [
-    "agent_factory", 
-    "agent_factory.models_v2", 
-    "agent_factory.parts",
-    "agent_factory.parts.agents",
-    "agent_factory.parts.config",
-    "agent_factory.parts.runtimes",
-    "agent_factory.parts.runtimes.local_ux",
-    "agent_factory.parts.skills",
-    "agent_factory.parts.templates",
-    "agent_factory.parts.templates.backend",
-    "agent_factory.parts.templates.persistence",
-    "agent_factory.parts.templates.vision",
-    "agent_factory.parts.toolsets",
-    "agent_factory.parts.ui"
-]
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["workspaces*", ".venv*", "build*", "*.egg-info*"]
 
 
 
@@ -68,6 +56,7 @@ members = [
 
 [project.scripts]
 local-ux = "agent_factory.parts.runtimes.local_ux.cli:main"
+ffs0-seed = "agent_factory.sdk.seeder.cli:main"
 
 [dependency-groups]
 dev = [

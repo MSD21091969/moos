@@ -2,36 +2,42 @@
 
 ## Project Overview
 
-Monorepo at `D:\FFS0_Factory` for the **Collider** multi-agent AI workspace platform.
+Monorepo at `D:\FFS0_Factory` for the **Collider** multi-agent AI workspace platform — an
+"Antigravity" code-assist system that combines a Chrome extension sidepanel, four Python FastAPI
+services, and a React frontend. The active LLM provider is **Gemini 2.5 Flash**.
 
-Four Python FastAPI services + a Chrome extension + a React frontend. Each workspace node carries a `NodeContainer` — a JSON manifest holding the tools, instructions, rules, skills, and workflows that define what an AI agent can do in that context.
+Each workspace node carries a `NodeContainer` JSON — tools, instructions, rules, skills, and
+workflows that define what an AI agent can do in that context. The **Root Agent** has 15 live
+Collider tools and DOM capabilities via Chrome extension content scripts.
 
-**MVP state**: The OpenClaw agent (`ColliderAgentRunner`) is operational. The Chrome extension sidepanel hosts a **WorkspaceBrowser** — users compose a ContextSet (role + nodes + vector query), the AgentRunner bootstraps context via OpenClaw and streams LLM responses (claude-sonnet-4-6) via SSE.
-
-Full architecture docs: `.agent/knowledge/architecture/` in `FFS1_ColliderDataSystems/`.
+Full architecture: `.agent/knowledge/architecture/` in `FFS1_ColliderDataSystems/`.
 
 ---
 
 ## Workspace Structure
 
-```
+```text
 FFS0_Factory/
 ├── CLAUDE.md               ← Claude Code context
-├── GEMINI.md               ← Gemini CLI context
+├── GEMINI.md               ← Gemini CLI (Antigravity) context
+├── README.md               ← Project documentation
 ├── .mcp.json               ← Claude Code project MCP config
 ├── .vscode/mcp.json        ← VS Code Copilot MCP config
 ├── .agent/                 ← Root context (rules, configs, knowledge)
-├── models/                 ← Shared Pydantic models
+├── sdk/
+│   ├── seeder/             ← .agent/ filesystem → DB sync
+│   └── tools/
+│       └── collider_tools/ ← Atomic tool implementations
 └── workspaces/
     ├── FFS1_ColliderDataSystems/
     │   ├── .agent/         ← Architecture docs, rules, dev workflows
     │   ├── FFS2_ColliderBackends_MultiAgentChromeExtension/
-    │   │   ├── ColliderDataServer/               ← :8000  REST + SSE + OpenClaw
+    │   │   ├── ColliderDataServer/               ← :8000  REST + SSE + NanoClaw
     │   │   ├── ColliderGraphToolServer/          ← :8001  WebSocket + gRPC + MCP
     │   │   ├── ColliderVectorDbServer/           ← :8002  ChromaDB semantic search
-    │   │   ├── ColliderAgentRunner/              ← :8004  pydantic-ai, ContextSet
-    │   │   ├── proto/                            ← Protobuf definitions + stubs
-    │   │   └── ColliderMultiAgentsChromeExtension/  ← Plasmo MV3, WorkspaceBrowser
+    │   │   ├── ColliderAgentRunner/              ← :8004  pydantic-ai + Gemini
+    │   │   ├── ColliderMultiAgentsChromeExtension/  ← Plasmo MV3, 3-tab sidepanel
+    │   │   └── NanoClawBridge/skills/            ← bootstrap.sh (SSE watch mode)
     │   └── FFS3_ColliderApplicationsFrontendServer/
     │       ├── apps/ffs4/   ← Sidepanel appnode   (:4201)
     │       ├── apps/ffs5/   ← PiP appnode          (:4202)
@@ -40,22 +46,32 @@ FFS0_Factory/
     └── maassen_hochrath/    ← Personal AI workspace (Ollama)
 ```
 
-**Source code lives in:** `ColliderDataServer/src/`, `ColliderGraphToolServer/src/`, `ColliderVectorDbServer/src/`, `ColliderAgentRunner/src/`, `apps/ffs*/src/`, `libs/*/src/`
+**Source code lives in:** `ColliderDataServer/src/`, `ColliderGraphToolServer/src/`,
+`ColliderVectorDbServer/src/`, `ColliderAgentRunner/src/`, `sdk/seeder/`, `sdk/tools/`,
+`apps/ffs*/src/`, `libs/*/src/`
 
 ---
 
 ## Servers
 
 | Server | Port | Stack | Role |
-|---|---|---|---|
-| ColliderDataServer | 8000 | FastAPI + SQLAlchemy + aiosqlite | Auth, node CRUD, SSE, OpenClaw bootstrap |
-| ColliderGraphToolServer | 8001 | FastAPI + gRPC + MCP/SSE | Tool registry, workflow execution, MCP server |
+| --- | --- | --- | --- |
+| ColliderDataServer | 8000 | FastAPI + SQLAlchemy + aiosqlite | Auth, node CRUD, SSE, NanoClaw |
+| ColliderGraphToolServer | 8001 | FastAPI + gRPC + MCP/SSE | Tool registry, execution, MCP server |
 | ColliderVectorDbServer | 8002 | FastAPI + ChromaDB | Semantic search + embeddings |
-| **ColliderAgentRunner** | **8004** | **FastAPI + pydantic-ai** | **ContextSet sessions, LLM streaming** |
+| **ColliderAgentRunner** | **8004** | **FastAPI** | **Context composer → workspace files** |
+| **NanoClawBridge** | **18789** | **Node.js + WebSocket** | **WebSocket agent chat** |
 | ffs6 (IDE viewer) | 4200 | Nx + Vite 7 + React 19 | Default frontend appnode |
 
-Secrets for AgentRunner: `D:\FFS0_Factory\secrets\api_keys.env`
-(`ANTHROPIC_API_KEY`, `COLLIDER_USERNAME`, `COLLIDER_PASSWORD`, optional per-role credentials)
+**Secrets**: `D:\FFS0_Factory\secrets\api_keys.env`
+(`COLLIDER_AGENT_PROVIDER=gemini`, `GEMINI_API_KEY`, `COLLIDER_USERNAME`, `COLLIDER_PASSWORD`)
+
+**MCP endpoint** (connect Copilot, Claude Code, Gemini):
+
+```bash
+claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
+# .vscode/mcp.json already configures this for VS Code Copilot
+```
 
 ---
 
@@ -64,8 +80,8 @@ Secrets for AgentRunner: `D:\FFS0_Factory\secrets\api_keys.env`
 ### Python — FFS0 / FFS2 backends
 
 - Python 3.12+, **UV** package manager (`uv run`, `uv add`)
-- FastAPI (async), Pydantic v2, SQLAlchemy async, **aiosqlite** (SQLite, not Postgres)
-- **pydantic-ai** (AgentRunner), ChromaDB (vector store), gRPC (`grpcio`, `grpcio-tools`), MCP (`mcp>=1.0.0`)
+- FastAPI (async), Pydantic v2, SQLAlchemy async, **aiosqlite** (SQLite, NOT Postgres)
+- **pydantic-ai** (AgentRunner), ChromaDB (vector), gRPC (`grpcio`, `grpcio-tools`), MCP (`mcp>=1.0.0`)
 - Linter: **Ruff**. Type checker: **Mypy strict**. Docstrings: Google-style.
 - Testing: **Pytest** + `pytest-asyncio`. Target ≥80% coverage on core logic.
 
@@ -80,17 +96,17 @@ Secrets for AgentRunner: `D:\FFS0_Factory\secrets\api_keys.env`
 
 - **Plasmo** framework, Manifest V3
 - React + TypeScript, Zustand (`appStore`)
-- Key component: `WorkspaceBrowser.tsx` — Context Composer + AgentSeat chat
+- Three sidepanel tabs: WorkspaceBrowser, AgentSeat, RootAgentPanel
 
 ---
 
 ## Code Quality Rules
 
 - **Conventional Commits**: `feat:`, `fix:`, `chore:`, `docs:` — one logical change per commit
-- **Python**: Google docstrings on public endpoints, Ruff formatting
+- **Python**: Google docstrings on public endpoints, Ruff formatting, `# type: ignore` with explanation
 - **TypeScript**: TSDoc on exported components, no `any` (use `unknown` or generics)
-- **React**: Custom hooks for logic, components for view. Props via `interface`, not `type`.
-- **No** direct secret values in code — use environment variables
+- **React**: Custom hooks for logic, `interface` for props (not `type`)
+- **No** secret values in code — environment variables only
 
 ---
 
@@ -104,118 +120,159 @@ Every node in the DB carries a `NodeContainer` JSON:
 {
   "kind": "workspace",
   "instructions": ["...agent role..."],
-  "rules": ["...constraints..."],
-  "knowledge": ["...reference docs..."],
-  "tools": [{ "name": "...", "code_ref": "module:fn", "params_schema": {} }],
-  "skills": [{ "name": "...", "skill_md": "...", "tool_ref": "..." }],
-  "workflows": [{ "name": "...", "steps": [] }]
+  "rules":        ["...constraints..."],
+  "knowledge":    ["...reference docs..."],
+  "tools": [{
+    "name": "create_node",
+    "description": "...",
+    "code_ref": "sdk.tools.collider_tools.nodes:create_node",
+    "params_schema": {},
+    "visibility": "global"
+  }],
+  "skills": [{"name": "...", "skill_md": "...", "tool_ref": "..."}],
+  "workflows": []
 }
 ```
 
-### OpenClaw Bootstrap
+### Agent Bootstrap
 
-`GET /api/v1/openclaw/bootstrap/{node_id}` returns the full aggregated context
-(skills, tools, instructions) for a node and all its descendants. Leaf entries win.
+`GET /api/v1/agent/bootstrap/{node_id}?depth=N` returns the aggregated context
+(agents_md, soul_md, tools_md, skills, tool_schemas) for a node and all its descendants.
+Leaf entries win on name collision.
 
-### ContextSet (MVP pattern)
-
-`POST :8004/agent/session` accepts:
+### ContextSet (session agent)
 
 ```json
+POST :8004/agent/session
 {
-  "role": "app_user",
-  "app_id": "my-app",
+  "role": "superadmin",
+  "app_id": "c57ab23a-4a57-4b28-a34c-9700320565ea",
   "node_ids": ["uuid-1", "uuid-2"],
   "vector_query": "find tools for data extraction",
-  "visibility_filter": ["global", "group"]
+  "visibility_filter": ["global", "group"],
+  "inherit_ancestors": true
 }
 ```
 
-AgentRunner bootstraps each node, merges contexts (leaf-wins), augments with vector-discovered tools, builds a system prompt, caches as session (4h TTL), returns `session_id`.
+AgentRunner bootstraps each node, optionally prepends ancestor contexts (root-first), merges
+(leaf-wins), augments with vector-discovered tools, writes workspace files to
+`~/.nanoclaw/workspaces/collider/`, and returns `session_id` + `nanoclaw_ws_url`.
+Chat is handled by **NanoClawBridge** (WebSocket at `:18789`).
 
-Then `GET :8004/agent/chat?session_id=...&message=...` streams LLM responses via SSE.
+### Root Agent
+
+`POST :8004/agent/root/session` — auto-composes from `Application.root_node_id`:
+- Authenticates as `superadmin`
+- Full subtree depth, writes to `~/.nanoclaw/workspaces/collider-root/`
+- 15 Collider tools + Claude Code built-ins (file, exec, browser)
+- 24h session TTL
+- Returns `nanoclaw_ws_url` for direct WebSocket chat
+
+### Multi-Provider LLM
+
+`COLLIDER_AGENT_PROVIDER` in `secrets/api_keys.env`:
+
+| Value | Auth | Default model |
+| --- | --- | --- |
+| `gemini` *(active)* | `GEMINI_API_KEY` | `gemini-2.5-flash` |
+| `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
+| `google-vertex` | ADC (gcloud) | `claude-sonnet-4-6` |
+
+### SDK Tool Pipeline
+
+```text
+.agent/tools/*.json  →  sdk/seeder (node_upserter)  →  DataServer nodes
+                                                     →  GraphToolServer registry
+                                                     →  ToolRunner.execute() via importlib
+                                                     →  sdk/tools/collider_tools/*.py
+```
 
 ### MCP Server
 
-GraphToolServer is the MCP server. All `group`/`global` visibility tools are exposed:
-
-```bash
-claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
-```
-
-### gRPC
-
-DataServer ↔ GraphToolServer communicate via gRPC (`:50051`).
-Proto files: `proto/collider_graph.proto`. Compiled stubs: `proto/*_pb2*.py`.
-Recompile with: `python -m proto.compile_protos` (from within a server venv).
+GraphToolServer is the MCP server. All `group`/`global` visibility tools are exposed at `:8001/mcp/sse`.
+`.vscode/mcp.json` configures this for VS Code Copilot automatically.
 
 ---
 
 ## Data Flow
 
-### ContextSet (preferred — session-based)
+### ContextSet (session-based)
 
-```
+```text
 Chrome ext WorkspaceBrowser
-  → POST :8004/agent/session (role, node_ids, vector_query)
-  → AgentRunner: bootstrap each node via OpenClaw
+  → POST :8004/agent/session (role, node_ids, vector_query, inherit_ancestors)
+  → AgentRunner: bootstrap nodes (+ ancestors) via DataServer NanoClaw
   → merge contexts, vector-augment tools
-  → cache session → session_id
-  → GET :8004/agent/chat?session_id=...&message=...
-  → pydantic-ai Agent streams SSE deltas to extension
+  → write workspace files → ~/.nanoclaw/workspaces/collider/
+  → return session_id + nanoclaw_ws_url (ws://127.0.0.1:18789?token=...)
+  → Chrome ext connects WebSocket → NanoClawBridge
+  → NanoClawBridge reads workspace files, builds agent, handles chat
 ```
 
-### Tool execution (via session agent)
+### Tool execution
 
-```
+```text
 Agent invokes tool → POST :8000/execution/tool/{name}
   → DataServer → gRPC → GraphToolServer ExecuteTool RPC
-  → ToolRunner.execute() → result returned to agent
+  → ToolRunner.execute() → importlib → sdk/tools/collider_tools/*.py
+  → result returned to agent → agent includes in response
 ```
 
-### MCP (direct)
+### MCP (direct from IDE)
 
-```
-MCP client → GET /mcp/sse → POST /mcp/messages/ → ToolRunner.execute()
+```text
+VS Code Copilot / Claude Code → GET /mcp/sse → POST /mcp/messages/
+  → ToolRunner.execute() → same Python functions
 ```
 
 ---
 
-## Important: What NOT to Do
+## What NOT to Do
 
-- Do NOT look for source code in `FFS1/` root, `.agent/` folders, or `models/` — those are metadata/schemas
+- Do NOT look for source code in `FFS1/` root or `.agent/` folders — those are metadata
 - Do NOT use `PostgreSQL` — the project uses **SQLite** via aiosqlite
-- Do NOT use `Next.js` — FFS3 uses **Vite 7 + React 19** (no SSR, no App Router)
+- Do NOT use `Next.js` — FFS3 uses **Vite 7 + React 19** (no SSR)
 - Do NOT use `npm` or `yarn` in FFS3 — use **pnpm**
-- Do NOT commit `C:\Users\hp\.claude\` — that is Claude Code session state
-- Do NOT commit `mailmind-ai-*.json` or other credential files
-- Do NOT use port 8003 for new services — reserved for SQLite Web Viewer (dev only)
+- Do NOT use `AGENT_MODEL` env var for AgentRunner — use **`COLLIDER_AGENT_MODEL`**
+  (FFS2 shared `.env` has `AGENT_MODEL=claude-sonnet-4-6` which would override)
+- Do NOT commit `C:\Users\hp\.claude\` — Claude Code session state
+- Do NOT commit `mailmind-ai-*.json` or `secrets/api_keys.env` — credentials
+- Do NOT use port 8003 — reserved for SQLite Web Viewer (dev only)
 - Only modify files under `D:\FFS0_Factory\`
 
 ---
 
 ## Dev Commands
 
-```powershell
-# Start AgentRunner (fill secrets/api_keys.env first)
-cd ColliderAgentRunner && uv run uvicorn src.main:app --reload --port 8004
+```bash
+# Start services (from their respective directories)
+cd ColliderDataServer      && uv run uvicorn src.main:app --reload --port 8000
+cd ColliderGraphToolServer && uv run uvicorn src.main:app --reload --port 8001
+cd ColliderAgentRunner     && uv run uvicorn src.main:app --reload --port 8004
 
-# Start DataServer
-cd ColliderDataServer && uv run uvicorn src.main:app --reload --port 8000
+# Start NanoClawBridge (after configuring ~/.nanoclaw/nanoclaw.json)
+cd NanoClawBridge && npm run dev
 
-# Start other Python servers
-uv run uvicorn src.main:app --reload --port 8001   # GraphToolServer
-uv run python -m src.main                           # VectorDbServer
+# Seed DB from .agent/ filesystem
+uv run python -m sdk.seeder.cli --root D:/FFS0_Factory --app-id <uuid>
+
+# Chrome extension (from ColliderMultiAgentsChromeExtension/)
+pnpm plasmo dev
 
 # Frontend
 pnpm nx serve ffs6
 
-# Seed DB
-cd ColliderDataServer && uv run python seed.py
+# Connect MCP
+claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
 
 # Recompile protos
 cd ColliderDataServer && uv run python -m proto.compile_protos
-
-# Connect MCP
-claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
 ```
+
+---
+
+## App 2XZ (primary test app — z440)
+
+- App ID: `c57ab23a-4a57-4b28-a34c-9700320565ea`
+- Root node: `9848b323-5e65-4179-a1d6-5b99be9f8b87`
+- Default creds: Sam / Sam (superadmin)

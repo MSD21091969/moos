@@ -16,9 +16,11 @@ inheritance:
 domain: development
 components:
   - ColliderDataServer # REST/SSE API on :8000
-  - ColliderGraphToolServer # WebSocket/Agents on :8001
+  - ColliderGraphToolServer # Tool registry + gRPC + MCP on :8001/:50052
   - ColliderVectorDbServer # Vector search on :8002
+  - ColliderAgentRunner # Context composer on :8004
   - ColliderMultiAgentsChromeExtension # Plasmo extension
+  - NanoClawBridge/skills # NanoClaw skill (gRPC tools)
 
 # Parent context (FFS1 workspace level)
 includes:
@@ -51,11 +53,11 @@ exports:
 
 # Secrets required by backend services
 secrets:
-  - OPENAI_API_KEY
   - GEMINI_API_KEY
-  - FIREBASE_PROJECT_ID
-  - COLLIDER_DATABASE_URL
-  - CHROMADB_HOST
+  - ANTHROPIC_API_KEY
+  - COLLIDER_USERNAME
+  - COLLIDER_PASSWORD
+  - COLLIDER_AGENT_PROVIDER
 
 # Permission requirements
 permissions:

@@ -1,80 +1,42 @@
-"""pydantic-ai agent runner — hydrates from OpenClaw bootstrap, streams responses."""
+"""Agent runner — composes Collider bootstrap context for NanoClaw sessions.
+
+NanoClaw (ws://127.0.0.1:18789) is the LLM agent. This module handles:
+  - Context hydration: bootstrap Collider nodes → system prompt + tool schemas
+  - Session composition: merge multiple node bootstraps (leaf-wins strategy)
+  - Vector tool discovery: augment composed context via GraphToolServer
+
+Chat streaming is handled directly by the Chrome extension via WebSocket to
+NanoClaw's bridge. AgentRunner returns nanoclaw_ws_url in session responses.
+NanoClaw calls Collider tools via gRPC at grpc://localhost:50052.
+"""
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+from dataclasses import dataclass, field
 from typing import Any
 
-from pydantic_ai import Agent
-from pydantic_ai.models.anthropic import AnthropicModel
-
-from src.agent.tools import build_tools
-from src.core.auth_client import auth_client
 from src.core import collider_client, graph_tool_client
-from src.core.config import settings
+from src.core.auth_client import auth_client
 from src.schemas.context_set import ContextSet, SessionPreview
 
 
-async def run_agent_stream(node_id: str, user_message: str) -> AsyncIterator[str]:
-    """Authenticate, bootstrap a single node, and stream an LLM response.
+@dataclass
+class ComposedContext:
+    """Full output of compose_context_set — raw parts + merged prompt."""
 
-    Legacy single-node path — kept for backward compatibility.
-
-    Args:
-        node_id: Collider node UUID (leaf segment of selectedNodePath).
-        user_message: The user's chat input.
-
-    Yields:
-        String chunks (text deltas) from the LLM.
-    """
-    token = await auth_client.get_token()
-    bootstrap = await collider_client.get_bootstrap(node_id, token)
-
-    system_prompt = _build_system_prompt(bootstrap, auth_client.user)
-    tools = build_tools(bootstrap.get("tool_schemas", []), token)
-
-    agent: Agent[None, str] = Agent(
-        model=AnthropicModel(settings.agent_model),
-        system_prompt=system_prompt,
-        tools=tools,
-    )
-
-    async with agent.run_stream(user_message) as result:
-        async for chunk in result.stream_text(delta=True):
-            yield chunk
-
-
-async def run_session_stream(
-    system_prompt: str,
-    tool_schemas: list[dict[str, Any]],
-    user_message: str,
-    token: str,
-) -> AsyncIterator[str]:
-    """Stream an LLM response from a pre-composed session context.
-
-    Args:
-        system_prompt: Pre-built system prompt from compose_context_set().
-        tool_schemas: Pre-merged tool schema list from compose_context_set().
-        user_message: The user's chat input.
-        token: Valid Bearer JWT (default credentials).
-
-    Yields:
-        String chunks (text deltas) from the LLM.
-    """
-    tools = build_tools(tool_schemas, token)
-    agent: Agent[None, str] = Agent(
-        model=AnthropicModel(settings.agent_model),
-        system_prompt=system_prompt,
-        tools=tools,
-    )
-    async with agent.run_stream(user_message) as result:
-        async for chunk in result.stream_text(delta=True):
-            yield chunk
+    system_prompt: str
+    agents_md: str
+    soul_md: str
+    tools_md: str
+    tool_schemas: list[dict[str, Any]]
+    skills: list[dict[str, Any]]
+    preview: SessionPreview
+    session_meta: dict[str, Any] = field(default_factory=dict)
 
 
 async def compose_context_set(
     ctx: ContextSet,
-) -> tuple[str, list[dict[str, Any]], SessionPreview]:
+) -> ComposedContext:
     """Compose a full agent context from a ContextSet specification.
 
     Steps:
@@ -95,27 +57,68 @@ async def compose_context_set(
         ctx: The ContextSet specifying role, nodes, vector query, and filters.
 
     Returns:
-        Tuple of (system_prompt, tool_schemas_list, SessionPreview).
+        ComposedContext with system prompt, raw parts, and preview.
     """
     token = await auth_client.get_token_for_role(ctx.role)
     user = auth_client.user_for_role(ctx.role)
 
-    # --- Fetch all bootstraps ---
+    # --- Fetch all bootstraps (optionally prepend ancestors) ---
     bootstraps: list[dict[str, Any]] = []
+    seen_node_ids: set[str] = set()
+
     for node_id in ctx.node_ids:
-        try:
-            b = await collider_client.get_bootstrap(node_id, token, depth=ctx.depth)
-            bootstraps.append(b)
-        except Exception:  # noqa: BLE001
-            # Skip unreachable nodes; log is handled in collider_client
-            pass
+        # Prepend ancestor context (root-first) before the selected node
+        if ctx.inherit_ancestors:
+            try:
+                ancestors = await collider_client.get_node_ancestors(
+                    ctx.app_id, node_id, token
+                )
+                for ancestor in ancestors:
+                    ancestor_id = ancestor["id"]
+                    if ancestor_id not in seen_node_ids:
+                        seen_node_ids.add(ancestor_id)
+                        try:
+                            ab = await collider_client.get_bootstrap(
+                                ancestor_id,
+                                token,
+                                depth=0,  # root only, no subtree
+                            )
+                            bootstraps.append(ab)
+                        except Exception:  # noqa: BLE001
+                            pass
+            except Exception:  # noqa: BLE001
+                pass  # Ancestor fetch failure is non-fatal
+
+        if node_id not in seen_node_ids:
+            seen_node_ids.add(node_id)
+            try:
+                b = await collider_client.get_bootstrap(node_id, token, depth=ctx.depth)
+                bootstraps.append(b)
+            except Exception:  # noqa: BLE001
+                pass
 
     if not bootstraps:
         # No valid nodes — return a minimal identity context
         system_prompt = _role_context_only(ctx.role, user)
-        return system_prompt, [], SessionPreview(
-            node_count=0, skill_count=0, tool_count=0,
-            role=ctx.role, vector_matches=0,
+        return ComposedContext(
+            system_prompt=system_prompt,
+            agents_md="",
+            soul_md="",
+            tools_md="",
+            tool_schemas=[],
+            skills=[],
+            preview=SessionPreview(
+                node_count=0,
+                skill_count=0,
+                tool_count=0,
+                role=ctx.role,
+                vector_matches=0,
+            ),
+            session_meta={
+                "role": ctx.role,
+                "app_id": ctx.app_id,
+                "composed_nodes": ctx.node_ids,
+            },
         )
 
     # --- Merge bootstraps (leaf-wins: later entries in node_ids win) ---
@@ -176,6 +179,7 @@ async def compose_context_set(
 
     system_prompt = _build_system_prompt(merged_bootstrap, user)
     tool_schemas_list = list(tool_schema_map.values())
+    skills_list = list(skill_map.values())
 
     preview = SessionPreview(
         node_count=len(bootstraps),
@@ -185,7 +189,20 @@ async def compose_context_set(
         vector_matches=vector_matches,
     )
 
-    return system_prompt, tool_schemas_list, preview
+    return ComposedContext(
+        system_prompt=system_prompt,
+        agents_md="\n\n".join(agents_md_parts),
+        soul_md="\n\n".join(soul_md_parts),
+        tools_md="\n\n".join(tools_md_parts),
+        tool_schemas=tool_schemas_list,
+        skills=skills_list,
+        preview=preview,
+        session_meta={
+            "role": ctx.role,
+            "app_id": ctx.app_id,
+            "composed_nodes": ctx.node_ids,
+        },
+    )
 
 
 def _role_context_only(role: str, user: dict[str, Any]) -> str:
@@ -201,7 +218,7 @@ def _role_context_only(role: str, user: dict[str, Any]) -> str:
 
 
 def _build_system_prompt(bootstrap: dict[str, Any], user: dict[str, Any]) -> str:
-    """Compose the full system prompt from OpenClaw bootstrap fields.
+    """Compose the full system prompt from agent bootstrap fields.
 
     Sections (separated by ``---``):
       - agents_md (agent identity / role)
@@ -211,7 +228,7 @@ def _build_system_prompt(bootstrap: dict[str, Any], user: dict[str, Any]) -> str
       - Session context (username, system_role, app_id, composed nodes)
 
     Args:
-        bootstrap: Merged OpenClawBootstrap-like dict.
+        bootstrap: Merged AgentBootstrap-like dict.
         user: User dict from the role login (username, system_role, id).
 
     Returns:
@@ -252,7 +269,9 @@ def _build_system_prompt(bootstrap: dict[str, Any], user: dict[str, Any]) -> str
     if composed:
         ctx_lines.append(f"- **Composed nodes:** {', '.join(composed)}")
     else:
-        ctx_lines.append(f"- **Active node:** {node_path or bootstrap.get('node_id', '')}")
+        ctx_lines.append(
+            f"- **Active node:** {node_path or bootstrap.get('node_id', '')}"
+        )
 
     parts.append("## Session Context\n\n" + "\n".join(ctx_lines))
 

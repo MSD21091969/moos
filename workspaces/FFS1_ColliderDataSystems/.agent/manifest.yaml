@@ -47,9 +47,11 @@ exports:
 
 # Secrets this workspace may use (injected at runtime)
 secrets:
-  - OPENAI_API_KEY
   - GEMINI_API_KEY
-  - FIREBASE_PROJECT_ID
+  - ANTHROPIC_API_KEY
+  - COLLIDER_USERNAME
+  - COLLIDER_PASSWORD
+  - COLLIDER_AGENT_PROVIDER
 
 # Permission requirements
 permissions:

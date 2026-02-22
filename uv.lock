@@ -20,7 +20,7 @@ wheels = [
 
 [[package]]
 name = "agent-factory"
-version = "0.2.5"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiosqlite" },
@@ -28,6 +28,7 @@ dependencies = [
     { name = "faiss-cpu" },
     { name = "fastapi" },
     { name = "gradio" },
+    { name = "httpx" },
     { name = "networkx" },
     { name = "numpy" },
     { name = "ollama" },
@@ -35,6 +36,7 @@ dependencies = [
     { name = "pydantic-ai" },
     { name = "pydantic-deep" },
     { name = "python-dotenv" },
+    { name = "pyyaml" },
     { name = "rich" },
     { name = "scipy" },
     { name = "sentence-transformers" },
@@ -58,6 +60,7 @@ requires-dist = [
     { name = "faiss-cpu", specifier = ">=1.13.2" },
     { name = "fastapi", specifier = ">=0.128.0" },
     { name = "gradio", specifier = ">=4.0.0" },
+    { name = "httpx", specifier = ">=0.27.0" },
     { name = "networkx", specifier = ">=3.4.0" },
     { name = "numpy", specifier = ">=2.4.0" },
     { name = "ollama", specifier = ">=0.6.1" },
@@ -65,6 +68,7 @@ requires-dist = [
     { name = "pydantic-ai", specifier = ">=0.0.14" },
     { name = "pydantic-deep", specifier = ">=0.1.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "scipy", specifier = ">=1.15.0" },
     { name = "sentence-transformers", specifier = ">=3.0.0" },

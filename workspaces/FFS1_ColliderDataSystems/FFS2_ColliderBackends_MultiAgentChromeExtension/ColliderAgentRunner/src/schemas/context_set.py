@@ -23,6 +23,10 @@ class ContextSet(BaseModel):
     vector_query: str | None = None
     visibility_filter: list[Literal["local", "group", "global"]] = ["global", "group"]
     depth: int | None = None  # bootstrap subtree depth per node; None = full subtree
+    inherit_ancestors: bool = (
+        False  # prepend ancestor node context (root-first, leaf-wins)
+    )
+    ancestor_depth: int | None = None  # max ancestor levels to walk up; None = all
 
 
 class SessionPreview(BaseModel):
@@ -40,3 +44,4 @@ class SessionResponse(BaseModel):
 
     session_id: str
     preview: SessionPreview
+    nanoclaw_ws_url: str | None = None  # Direct WebSocket URL for NanoClawBridge chat

@@ -1,5 +1,7 @@
 """API endpoints for executing workflows and individual tools."""
 
+import logging
+import os
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -7,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.auth import get_current_user
 from src.core.database import get_db
-from src.core.grpc_client import GraphToolClient
 from src.db.models import User
 
 router = APIRouter(prefix="/execution", tags=["execution"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/workflow/{workflow_name}", response_model=Dict[str, Any])
@@ -21,27 +23,25 @@ async def execute_workflow(
     db: AsyncSession = Depends(get_db),
 ):
     """Execute a workflow by name."""
-    
-    # TODO: Check permissions? 
+
+    # TODO: Check permissions?
     # For now, any auth'd user can execute any workflow they can see.
     # The GraphToolServer handles visibility checks (in theory), or we should check here?
     # Discovery checks visibility. Execution might need separate checks.
     # We pass the user_id to GraphToolServer, so it can check ownership/visibility if needed.
-    
+
     client = GraphToolClient()
     try:
         response = await client.execute_subgraph(
-            workflow_name=workflow_name,
-            user_id=str(current_user.id),
-            inputs=inputs
+            workflow_name=workflow_name, user_id=str(current_user.id), inputs=inputs
         )
-        
+
         if not response["success"]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=response.get("error_message", "Execution failed")
+                detail=response.get("error_message", "Execution failed"),
             )
-            
+
         return response["result"]
 
     finally:
@@ -55,32 +55,31 @@ async def execute_tool(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Execute a single registered tool by name.
+    """Execute a registered tool by name via GraphToolServer REST API."""
+    import httpx
 
-    Calls the GraphToolServer ``ExecuteTool`` RPC directly, bypassing any
-    workflow wrapper.  The tool must be registered in the GraphToolServer's
-    in-memory registry (via ``POST /api/v1/registry/tools`` or via a
-    NodeContainer seed that triggers ``register_tool``).
-
-    This endpoint is referenced in the OpenClaw bootstrap response as the
-    ``execute_tool_schema`` function definition, enabling OpenClaw agents to
-    invoke individual Collider tools via function calling.
-    """
-    client = GraphToolClient()
+    graph_tool_url = os.environ.get(
+        "GRAPHTOOL_SERVER_URL", "http://localhost:8005"
+    ).rstrip("/")
     try:
-        response = await client.execute_tool(
-            tool_name=tool_name,
-            user_id=str(current_user.id),
-            inputs=inputs,
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{graph_tool_url}/api/v1/registry/tools/{tool_name}/execute",
+                json=inputs,
+                timeout=30.0,
+            )
+            response = resp.json()
+    except Exception as e:
+        logger.exception(f"GraphToolServer request failed for tool '{tool_name}'")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"GraphToolServer unreachable: {e}",
         )
 
-        if not response["success"]:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=response.get("error_message", "Tool execution failed"),
-            )
+    if not response.get("success"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Tool '{tool_name}' failed: {response.get('error_message', 'unknown')}",
+        )
 
-        return response["result"]
-
-    finally:
-        await client.close()
+    return response.get("result", {})

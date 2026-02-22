@@ -33,7 +33,7 @@ All derivable via `create_model()` — discoverable in registry.
 The Collider system itself is application **x1z** — a self-hosting recursive tree:
 
 - **Container-nodes** (DB): rows in `nodes` table with `path`, `container` JSON, `metadata_`
-- **View-components** (FFS6): Next.js pages that render container-nodes
+- **View-components** (FFS6): Vite + React pages that render container-nodes
 - These are two separate but related graphs (NOT 1:1)
 - `metadata_` field links nodes to frontend: `frontend_app`, `frontend_route`
 - Node tree: `/`, `/admin`, `/admin/assign-roles`, `/admin/grant-permission`
@@ -70,6 +70,14 @@ Child workspaces inherit via `manifest.yaml`:
 
 See `FFS1_ColliderDataSystems/.agent/knowledge/RUNNING.md`
 
+## NanoClaw Agent Integration
+
+Agent sessions are composed by **ColliderAgentRunner** (:8004), which bootstraps node
+contexts from the DataServer and writes workspace files to `~/.nanoclaw/workspaces/`.
+The **NanoClawBridge** (:18789) spawns Claude Code CLI processes and streams events
+back to the Chrome Extension via WebSocket. Tools execute through MCP on the
+GraphToolServer (:8001/mcp/sse).
+
 ---
 
-_v3.0.0 — 2026-02-17_
+_v4.0.0 — 2026-02-22_

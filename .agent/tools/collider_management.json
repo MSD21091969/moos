@@ -1,0 +1,355 @@
+[
+  {
+    "name": "list_nodes",
+    "description": "List all workspace nodes in a Collider application.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "description": "Application UUID"
+        }
+      },
+      "required": [
+        "app_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:list_nodes",
+    "visibility": "global"
+  },
+  {
+    "name": "get_node",
+    "description": "Get a single workspace node by ID, including its full NodeContainer.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "description": "Application UUID"
+        },
+        "node_id": {
+          "type": "string",
+          "description": "Node UUID"
+        }
+      },
+      "required": [
+        "app_id",
+        "node_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:get_node",
+    "visibility": "global"
+  },
+  {
+    "name": "get_node_tree",
+    "description": "Get the full hierarchical node tree for a Collider application.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "description": "Application UUID"
+        }
+      },
+      "required": [
+        "app_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:get_node_tree",
+    "visibility": "global"
+  },
+  {
+    "name": "create_node",
+    "description": "Create a new workspace node in the Collider graph with instructions, rules, and knowledge.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "description": "Application UUID"
+        },
+        "path": {
+          "type": "string",
+          "description": "Logical dot-path, e.g. factory/ffs1/my-node"
+        },
+        "parent_id": {
+          "type": "string",
+          "description": "Parent node UUID (optional)"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "workspace",
+            "tool",
+            "workflow"
+          ],
+          "default": "workspace",
+          "description": "Semantic role of this node"
+        },
+        "instructions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Agent identity / system instructions (agents_md)"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Guardrails and constraints (soul_md)"
+        },
+        "knowledge": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Reference documentation (tools_md)"
+        }
+      },
+      "required": [
+        "app_id",
+        "path"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:create_node",
+    "visibility": "global"
+  },
+  {
+    "name": "update_node",
+    "description": "Update an existing node's instructions, rules, or knowledge (partial update).",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "description": "Application UUID"
+        },
+        "node_id": {
+          "type": "string",
+          "description": "Node UUID to update"
+        },
+        "instructions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "New instructions (replaces existing)"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "New rules (replaces existing)"
+        },
+        "knowledge": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "New knowledge docs (replaces existing)"
+        }
+      },
+      "required": [
+        "app_id",
+        "node_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:update_node",
+    "visibility": "global"
+  },
+  {
+    "name": "delete_node",
+    "description": "Delete a workspace node from the Collider graph. Irreversible.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "description": "Application UUID"
+        },
+        "node_id": {
+          "type": "string",
+          "description": "Node UUID to delete"
+        }
+      },
+      "required": [
+        "app_id",
+        "node_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:delete_node",
+    "visibility": "global"
+  },
+  {
+    "name": "list_apps",
+    "description": "List all Collider applications in the cluster.",
+    "params_schema": {
+      "type": "object",
+      "properties": {}
+    },
+    "code_ref": "src.tools.collider_management:list_apps",
+    "visibility": "global"
+  },
+  {
+    "name": "get_app",
+    "description": "Get details for a Collider application, including its root_node_id.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "description": "Application UUID"
+        }
+      },
+      "required": [
+        "app_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:get_app",
+    "visibility": "global"
+  },
+  {
+    "name": "create_app",
+    "description": "Create a new Collider application.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "description": "Human-readable application name"
+        },
+        "config": {
+          "type": "object",
+          "description": "Optional configuration dict"
+        }
+      },
+      "required": [
+        "display_name"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:create_app",
+    "visibility": "global"
+  },
+  {
+    "name": "list_permissions",
+    "description": "List user permissions for an application or across the cluster.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "application_id": {
+          "type": "string",
+          "description": "Filter by application UUID (optional)"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "Filter by user UUID (optional)"
+        }
+      }
+    },
+    "code_ref": "src.tools.collider_management:list_permissions",
+    "visibility": "global"
+  },
+  {
+    "name": "grant_permission",
+    "description": "Grant a user access to a Collider application with a specified role.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "description": "Target user UUID"
+        },
+        "application_id": {
+          "type": "string",
+          "description": "Target application UUID"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "app_user",
+            "app_admin",
+            "collider_admin",
+            "superadmin"
+          ],
+          "default": "app_user",
+          "description": "Role to grant"
+        }
+      },
+      "required": [
+        "user_id",
+        "application_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:grant_permission",
+    "visibility": "global"
+  },
+  {
+    "name": "update_permission",
+    "description": "Change the role on an existing permission entry.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "perm_id": {
+          "type": "string",
+          "description": "Permission UUID"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "app_user",
+            "app_admin",
+            "collider_admin",
+            "superadmin"
+          ],
+          "description": "New role to assign"
+        }
+      },
+      "required": [
+        "perm_id",
+        "role"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:update_permission",
+    "visibility": "global"
+  },
+  {
+    "name": "bootstrap_node",
+    "description": "Fetch the full agent bootstrap context for a node (agents_md, soul_md, tools_md, skills, tool_schemas).",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "description": "Node UUID to bootstrap"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "Subtree depth limit (null = full subtree, 0 = root only)"
+        }
+      },
+      "required": [
+        "node_id"
+      ]
+    },
+    "code_ref": "src.tools.collider_management:bootstrap_node",
+    "visibility": "global"
+  },
+  {
+    "name": "list_skills",
+    "description": "List available agent skills, optionally filtered to a specific node.",
+    "params_schema": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "description": "Filter to a specific node UUID (optional)"
+        }
+      }
+    },
+    "code_ref": "src.tools.collider_management:list_skills",
+    "visibility": "global"
+  }
+]

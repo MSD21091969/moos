@@ -56,7 +56,10 @@
             "**/.agent/**/*.yaml": "yaml"
         },
         "github.copilot.enable": {
-            "*": true
+            "*": true,
+            "plaintext": false,
+            "markdown": true,
+            "scminput": false
         },
         "[python]": {
             "editor.defaultFormatter": "charliermarsh.ruff",

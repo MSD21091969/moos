@@ -19,7 +19,7 @@ async def discover_tools(
     """POST {graph_tool_url}/api/v1/registry/tools/discover → tool_schema dicts.
 
     Calls the GraphToolServer registry discover endpoint (ToolQuery schema).
-    Returns a list of OpenClawToolSchema-compatible dicts ready to be merged
+    Returns a list of AgentToolSchema-compatible dicts ready to be merged
     into the agent's tool set.
 
     Args:
@@ -53,7 +53,7 @@ async def discover_tools(
         # GraphToolServer may not be running; silently return empty
         return []
 
-    # Convert GraphToolServer GraphStepEntry list → OpenClawToolSchema dicts
+    # Convert GraphToolServer GraphStepEntry list → AgentToolSchema dicts
     schemas: list[dict[str, Any]] = []
     for entry in data if isinstance(data, list) else []:
         tool_name: str = entry.get("tool_name", "")

@@ -7,7 +7,8 @@
 FFS1_ColliderDataSystems is an IDE workspace containing:
 
 - Code for Chrome Extension
-- Code for Backend Servers (Data Server, GraphTool Server)
+- Code for Backend Servers (DataServer, GraphToolServer, VectorDbServer, AgentRunner)
+- NanoClawBridge (replaces legacy skill package)
 - Shared libraries
 
 ## Child Workspaces

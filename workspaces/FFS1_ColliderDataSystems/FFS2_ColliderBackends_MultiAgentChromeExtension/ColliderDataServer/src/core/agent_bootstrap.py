@@ -1,24 +1,24 @@
-"""OpenClaw rendering logic.
+"""Agent bootstrap rendering logic.
 
 Converts a database ``Node`` + its ``NodeContainer`` into an
-``OpenClawBootstrap`` response that an OpenClaw agent workspace can consume
+``AgentBootstrap`` response that a NanoClaw agent workspace can consume
 directly.
 
 The bootstrap renderer supports **recursive subtree aggregation**: when
 ``descendants`` is supplied (a BFS-ordered list of child nodes), skills and
 tool schemas from each descendant are merged into the response.  Leaf entries
-take precedence over root entries (more-specific wins), mirroring OpenClaw's
-own skill-precedence stack (workspace < project < personal < bundled).
+take precedence over root entries (more-specific wins), mirroring the Agent
+Skills precedence model.
 """
 
 from __future__ import annotations
 
 from src.db.models import Node, User
 from src.schemas.nodes import NodeContainer
-from src.schemas.openclaw import (
-    OpenClawBootstrap,
-    OpenClawSkillEntry,
-    OpenClawToolSchema,
+from src.schemas.agent_bootstrap import (
+    AgentBootstrap,
+    AgentSkillEntry,
+    AgentToolSchema,
 )
 
 # ---------------------------------------------------------------------------
@@ -81,8 +81,8 @@ _EXECUTE_TOOL_SCHEMA: dict = {
 # ---------------------------------------------------------------------------
 
 
-def _skill_entry(skill) -> OpenClawSkillEntry:
-    return OpenClawSkillEntry(
+def _skill_entry(skill) -> AgentSkillEntry:
+    return AgentSkillEntry(
         name=skill.name,
         description=skill.description,
         emoji=skill.emoji,
@@ -94,8 +94,8 @@ def _skill_entry(skill) -> OpenClawSkillEntry:
     )
 
 
-def _tool_schema(tool) -> OpenClawToolSchema:
-    return OpenClawToolSchema(
+def _tool_schema(tool) -> AgentToolSchema:
+    return AgentToolSchema(
         function={
             "name": tool.name,
             "description": tool.description,
@@ -113,8 +113,8 @@ def render_bootstrap(
     node: Node,
     current_user: User,
     descendants: list[Node] | None = None,
-) -> OpenClawBootstrap:
-    """Render a Node's container as an OpenClaw-compatible bootstrap payload.
+) -> AgentBootstrap:
+    """Render a Node's container as an agent-compatible bootstrap payload.
 
     Args:
         node: The database Node whose container is rendered (workspace root).
@@ -125,7 +125,7 @@ def render_bootstrap(
             definition wins.
 
     Returns:
-        An ``OpenClawBootstrap`` instance ready to be serialised as JSON.
+        An ``AgentBootstrap`` instance ready to be serialised as JSON.
     """
     container = NodeContainer.model_validate(node.container)
 
@@ -135,10 +135,10 @@ def render_bootstrap(
     tools_md = "\n\n".join(container.knowledge)
 
     # --- Build skill + tool maps from root (inserted first, lower priority) ---
-    skill_map: dict[str, OpenClawSkillEntry] = {
+    skill_map: dict[str, AgentSkillEntry] = {
         skill.name: _skill_entry(skill) for skill in container.skills
     }
-    tool_schema_map: dict[str, OpenClawToolSchema] = {
+    tool_schema_map: dict[str, AgentToolSchema] = {
         tool.name: _tool_schema(tool) for tool in container.tools
     }
 
@@ -151,7 +151,7 @@ def render_bootstrap(
             for tool in desc_container.tools:
                 tool_schema_map[tool.name] = _tool_schema(tool)
 
-    return OpenClawBootstrap(
+    return AgentBootstrap(
         node_id=str(node.id),
         node_path=node.path,
         kind=container.kind.value,

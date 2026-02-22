@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useAppStore } from "./stores/appStore";
-import { AppTree } from "@collider/sidepanel-ui";
+import { AppTree } from "./components/AppTree";
 import WorkspaceBrowser from "./components/WorkspaceBrowser";
+import RootAgentPanel from "./components/RootAgentPanel";
 import type { Application, AppNodeTree, ColliderMessage } from "~/types";
 import "~/style.css";
 
-type ViewMode = "tree" | "agent";
+type ViewMode = "tree" | "agent" | "root";
 
 function SidePanel() {
   const {
@@ -71,7 +72,7 @@ function SidePanel() {
     }
   }
 
-  const selectedApp = applications.find((a) => a.app_id === selectedAppId);
+  const selectedApp = applications.find((a) => a.id === selectedAppId);
   const domain = (selectedApp?.config as Record<string, string>)?.domain ?? "CLOUD";
 
   return (
@@ -94,6 +95,13 @@ function SidePanel() {
           >
             Agent
           </button>
+          <button
+            onClick={() => setViewMode("root")}
+            className={`text-xs px-2 py-1 rounded ${viewMode === "root" ? "bg-green-800" : "hover:bg-gray-800"
+              }`}
+          >
+            Root
+          </button>
         </div>
       </div>
 
@@ -106,8 +114,8 @@ function SidePanel() {
         >
           <option value="">Select application...</option>
           {applications.map((app) => (
-            <option key={app.app_id} value={app.app_id}>
-              {app.display_name ?? app.app_id}
+            <option key={app.id} value={app.id}>
+              {app.display_name ?? app.id}
             </option>
           ))}
         </select>
@@ -142,6 +150,8 @@ function SidePanel() {
               </div>
             )}
           </div>
+        ) : viewMode === "root" ? (
+          <RootAgentPanel />
         ) : (
           <WorkspaceBrowser />
         )}

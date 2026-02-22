@@ -27,10 +27,15 @@ logger = logging.getLogger(__name__)
 # This lets the REST API work even without grpcio installed.
 # ---------------------------------------------------------------------------
 
+
 def _load_stubs():
     """Import compiled proto stubs (call after proto compilation)."""
     # These will exist after running `python -m proto.compile_protos`
-    from proto import collider_graph_pb2, collider_graph_pb2_grpc  # type: ignore[import-untyped]
+    from proto import (  # type: ignore[import-untyped]
+        collider_graph_pb2,
+        collider_graph_pb2_grpc,
+    )
+
     return collider_graph_pb2, collider_graph_pb2_grpc
 
 
@@ -53,7 +58,9 @@ class ColliderGraphServicer:
         """Register a tool from a DataServer ToolDefinition."""
         from src.schemas.registry import GraphStepEntry
 
-        params_schema = json.loads(request.params_schema_json) if request.params_schema_json else {}
+        params_schema = (
+            json.loads(request.params_schema_json) if request.params_schema_json else {}
+        )
 
         entry = GraphStepEntry(
             tool_name=request.tool_name,
@@ -122,7 +129,8 @@ class ColliderGraphServicer:
         query = ToolQuery(
             query=request.query,
             user_id=request.user_id or None,
-            visibility_filter=list(request.visibility_filter) or ["local", "group", "global"],
+            visibility_filter=list(request.visibility_filter)
+            or ["local", "group", "global"],
             limit=request.limit or 50,
         )
 
@@ -151,7 +159,11 @@ class ColliderGraphServicer:
 
     async def ExecuteSubgraph(self, request, context: grpc.aio.ServicerContext):
         """Execute a subgraph synchronously — returns final result."""
-        from src.core.execution import WorkflowExecutor, ToolExecutionError, WorkflowExecutionError
+        from src.core.execution import (
+            ToolExecutionError,
+            WorkflowExecutionError,
+            WorkflowExecutor,
+        )
 
         workflow = self._registry.get_workflow(request.workflow_name)
         if workflow is None:
@@ -164,10 +176,10 @@ class ColliderGraphServicer:
         try:
             inputs = json.loads(request.inputs_json) if request.inputs_json else {}
             executor = WorkflowExecutor(self._registry)
-            
+
             # Execute
             result_ctx = await executor.execute(workflow, inputs)
-            
+
             return self._pb2.SubgraphResponse(
                 success=True,
                 workflow_name=request.workflow_name,
@@ -194,7 +206,7 @@ class ColliderGraphServicer:
 
     async def ExecuteTool(self, request, context: grpc.aio.ServicerContext):
         """Execute a single registered tool by name, bypassing any workflow wrapper."""
-        from src.core.execution import ToolRunner, ToolExecutionError
+        from src.core.execution import ToolExecutionError, ToolRunner
 
         tool = self._registry.get_tool(request.tool_name)
         if tool is None:
@@ -255,6 +267,7 @@ class ColliderGraphServicer:
 # Server bootstrap helper
 # ---------------------------------------------------------------------------
 
+
 async def serve_grpc(registry: ToolRegistry, port: int = 50052) -> None:
     """Start the gRPC server on the given port.
 
@@ -268,7 +281,7 @@ async def serve_grpc(registry: ToolRegistry, port: int = 50052) -> None:
     pb2_grpc.add_ColliderGraphServicer_to_server(
         ColliderGraphServicer(registry), server
     )
-    server.add_insecure_port(f"[::]:{port}")
+    server.add_insecure_port(f"localhost:{port}")
     logger.info("gRPC ColliderGraph server listening on port %d", port)
     await server.start()
     await server.wait_for_termination()

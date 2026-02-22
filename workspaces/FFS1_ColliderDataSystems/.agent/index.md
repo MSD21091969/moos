@@ -67,7 +67,7 @@ FFS2, FFS3...                     ← Child code projects
 │   └── devlog/            ← Development session logs
 │
 └── workflows/
-    └── _index.md
+    └── dev-start.md
 ```
 
 ## What Belongs Here

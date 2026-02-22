@@ -62,23 +62,23 @@ class NodeKind(str, Enum):
 
 
 # ---------------------------------------------------------------------------
-# Skill definitions — OpenClaw-compatible interface layer
+# Skill definitions — Agent Skills interface layer
 # ---------------------------------------------------------------------------
 
 
 class SkillInvocationPolicy(BaseModel):
-    """Controls who can invoke this skill in OpenClaw."""
+    """Controls who can invoke this skill."""
 
     user_invocable: bool = True
     model_invocable: bool = True
 
 
 class SkillDefinition(BaseModel):
-    """An OpenClaw-compatible skill entry backed by a Collider ToolDefinition.
+    """An agent-compatible skill entry backed by a Collider ToolDefinition.
 
-    Maps to OpenClaw's ``SkillEntry`` / SKILL.md frontmatter format.
+    Maps to the agent ``SkillEntry`` / SKILL.md frontmatter format.
     When the bootstrap endpoint is called, each SkillDefinition is rendered
-    into a SKILL.md-compatible entry that OpenClaw injects into the agent's
+    into a SKILL.md-compatible entry that the agent runtime injects into the
     system prompt.
     """
 
@@ -147,8 +147,8 @@ class NodeContainer(BaseModel):
     - ``workflow`` — orchestration unit sequencing tool calls.
 
     ``skills`` replaces the former ``list[str]`` stub with properly typed
-    SkillDefinition entries that map 1-to-1 onto OpenClaw SKILL.md format,
-    enabling the OpenClaw bootstrap endpoint to render the container as an
+    SkillDefinition entries that map 1-to-1 onto SKILL.md format,
+    enabling the agent bootstrap endpoint to render the container as an
     agent workspace with full skill injection.
     """
 
@@ -164,7 +164,7 @@ class NodeContainer(BaseModel):
     knowledge: list[str] = []
     configs: dict = {}
 
-    # Skills interface — OpenClaw-compatible (was list[str], now typed)
+    # Skills interface — Agent-compatible (was list[str], now typed)
     skills: list[SkillDefinition] = []
 
     # Executable definitions

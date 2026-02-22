@@ -1,83 +1,154 @@
-# GEMINI.md — FFS0 Factory
+# GEMINI.md — FFS0 Factory (Antigravity)
 
-> Project instructions for the Gemini CLI (Antigravity knowledge store).
+> Project instructions for the Gemini CLI and Gemini-powered agents.
+> The Collider platform uses Gemini as its **default LLM provider** (`COLLIDER_AGENT_PROVIDER=gemini`).
 > Knowledge base: `~/.gemini/antigravity/brain/`
 
 This is the root of the Collider ecosystem monorepo at `D:\FFS0_Factory`.
 
+## What Is Antigravity?
+
+**Antigravity** is the Collider-powered AI code-assist system:
+
+- **Gemini 2.5 Flash** is the active LLM (via `GEMINI_API_KEY` in `secrets/api_keys.env`)
+- The Chrome extension sidepanel has three tabs:
+  1. **WorkspaceBrowser (Compose)** — pick nodes from the app tree, compose ContextSet
+  2. **AgentSeat (Chat)** — stream responses from the composed context
+  3. **Root Agent** — auto-boots from `Application.root_node_id`, has 15 Collider tools,
+     can create/modify nodes, and controls browser DOM via content scripts
+- All registered tools are exposed via **MCP** at `http://localhost:8001/mcp/sse`
+
 ## Context System
 
-Every workspace has an `.agent/` folder containing architecture docs, rules, and instructions.
-**Always read `.agent/index.md` first** when working in any workspace.
-
-Key files:
+Every workspace has an `.agent/` folder. **Always read `.agent/index.md` first**.
 
 - `.agent/index.md` — workspace identity and purpose
-- `.agent/manifest.yaml` — inheritance and exports
 - `.agent/rules/` — coding standards and constraints
-- `.agent/knowledge/architecture/` — layered architecture docs (in FFS1)
+- `.agent/knowledge/architecture/` — layered architecture docs (FFS1)
 
 ## Workspace Map
 
-```
-FFS0_Factory/                  Python agent-factory package (UV, pyproject.toml)
-├── models/                    Pydantic models (v3, active)
-├── sdk/                       SDK components
+```text
+FFS0_Factory/                  Python agent-factory (UV, pyproject.toml)
+├── sdk/
+│   ├── seeder/                .agent/ filesystem → DataServer node sync
+│   └── tools/collider_tools/  Atomic tool implementations (importlib targets)
 └── workspaces/
-    ├── FFS1_ColliderDataSystems/       Schemas, governance, orchestration
-    │   ├── FFS2_...ChromeExtension/    4 FastAPI services + Chrome ext (Plasmo)
-    │   │   ├── ColliderDataServer/         ← :8000 REST + SSE + OpenClaw
+    ├── FFS1_ColliderDataSystems/
+    │   ├── FFS2_...ChromeExtension/
+    │   │   ├── ColliderDataServer/         ← :8000 REST + SSE + NanoClaw
     │   │   ├── ColliderGraphToolServer/    ← :8001 WebSocket + gRPC + MCP
     │   │   ├── ColliderVectorDbServer/     ← :8002 ChromaDB
-    │   │   └── ColliderAgentRunner/        ← :8004 pydantic-ai, ContextSet
-    │   └── FFS3_...FrontendServer/     Nx monorepo (Vite 7 + React 19)
-    │       ├── apps/ffs4              Sidepanel appnode
-    │       ├── apps/ffs5              PiP appnode
-    │       ├── apps/ffs6              IDE viewer appnode (default)
-    │       └── libs/shared-ui         Shared components + XYFlow
-    └── maassen_hochrath/               IADORE personal AI workspace (Ollama)
+    │   │   ├── ColliderAgentRunner/        ← :8004 Gemini agent (default provider)
+    │   │   └── NanoClawBridge/skills/       ← NanoClaw skill (gRPC tools)
+    │   └── FFS3_...FrontendServer/         Nx + Vite 7 + React 19 appnodes
+    └── maassen_hochrath/                   IADORE personal workspace (Ollama)
 ```
 
 ## Tech Stack
 
-**Python** (FFS0, FFS1, FFS2): Python 3.12+, UV, FastAPI, Pydantic v2, SQLAlchemy async,
-aiosqlite, ChromaDB, pydantic-ai, Ruff, Mypy strict, Pytest
+**Python**: Python 3.12+, UV, FastAPI, Pydantic v2, SQLAlchemy async, aiosqlite, ChromaDB,
+pydantic-ai, Ruff, Mypy strict, Pytest
 
-**TypeScript** (FFS3): Nx, Vite 7, React 19, TS 5+, XYFlow, Zustand, React Router,
-CSS Modules, ESLint, Vitest
+**TypeScript**: Nx, Vite 7, React 19, TS 5+, XYFlow, Zustand, React Router, CSS Modules
 
-**Chrome Extension** (FFS2): Plasmo, Manifest V3, React + TypeScript
+**Chrome Extension**: Plasmo MV3, React + TypeScript, Zustand appStore
 
 ## Servers
 
-- ColliderDataServer — port 8000 (REST + SSE + OpenClaw bootstrap)
-- ColliderGraphToolServer — port 8001 (WebSocket + gRPC + MCP/SSE)
-  - MCP endpoint: `GET /mcp/sse`
-- ColliderVectorDbServer — port 8002 (ChromaDB semantic search)
-- **ColliderAgentRunner — port 8004** (pydantic-ai, ContextSet sessions, claude-sonnet-4-6)
-  - Secrets: `D:\FFS0_Factory\secrets\api_keys.env`
-- FFS3 Frontend — port 4200 (ffs6 default), 4201 (ffs4), 4202 (ffs5)
+| Service                 | Port         | Role                                                       |
+| ----------------------- | ------------ | ---------------------------------------------------------- |
+| ColliderDataServer      | 8000         | REST + SSE + Agent bootstrap (SQLite)                      |
+| ColliderGraphToolServer | 8001 / 50052 | Tool registry + gRPC execution + **MCP/SSE**               |
+| ColliderVectorDbServer  | 8002         | ChromaDB semantic search (gRPC)                            |
+| **ColliderAgentRunner** | **8004**     | pydantic-ai, **Gemini 2.5 Flash**, ContextSet + Root Agent |
+| **NanoClawBridge**      | **18789**    | **WebSocket agent chat**                                   |
+| ffs6 Frontend           | 4200         | IDE viewer appnode (default)                               |
 
-## MVP — OpenClaw Agent
+## Active LLM (Gemini)
 
-The Chrome extension sidepanel (**WorkspaceBrowser**) lets you:
+```bash
+# secrets/api_keys.env:
+COLLIDER_AGENT_PROVIDER=gemini
+GEMINI_API_KEY=AIzaSy...
+# Optional: override model
+# COLLIDER_AGENT_MODEL=gemini-2.5-pro
 
-1. Pick a role (superadmin / collider_admin / app_admin / app_user)
-2. Select workspace nodes from the tree (multi-select)
-3. Describe a task to discover tools via vector search
-4. Compose a ContextSet → pydantic-ai session → streaming LLM chat
+# Alternative — Claude on Vertex AI (ADC, GCP billing):
+# COLLIDER_AGENT_PROVIDER=google-vertex
+# VERTEX_PROJECT_ID=mailmind-ai-djbuw
+# VERTEX_REGION=us-east5
+```
 
-Data flow: `POST :8004/agent/session` (role + node_ids + vector_query) → session_id → `GET :8004/agent/chat?session_id=...` → SSE stream.
+## Agent Bootstrap
+
+`GET :8000/api/v1/agent/bootstrap/{node_id}?depth=N` returns:
+
+```json
+{
+  "agents_md": "# Agent identity...",
+  "soul_md":   "# Rules / guardrails...",
+  "tools_md":  "# Knowledge / reference...",
+  "skills":    [{"name": "...", "markdown_body": "..."}],
+  "tool_schemas": [{"function": {"name": "create_node", ...}}]
+}
+```
+
+AgentRunner merges this into a pydantic-ai system prompt (leaf-wins strategy for tools/skills).
+
+## ContextSet — Session Agent
+
+```json
+POST :8004/agent/session
+{
+  "role": "superadmin",
+  "app_id": "c57ab23a-4a57-4b28-a34c-9700320565ea",
+  "node_ids": ["9848b323-..."],
+  "vector_query": "code generation tools",
+  "inherit_ancestors": true
+}
+```
+
+Then NanoClawBridge handles chat via WebSocket at `ws://127.0.0.1:18789?token=...`
+(diagnostic fallback: `GET :8004/agent/chat?session_id=...&message=...` → SSE stream).
+
+## Root Agent
+
+```json
+POST :8004/agent/root/session
+{"app_id": "c57ab23a-4a57-4b28-a34c-9700320565ea"}
+```
+
+Returns `{"session_id":"...","preview":{"node_count":1,"tool_count":15,"role":"superadmin"}}`.
+24h TTL. Has built-in `spawn_subagent` tool for orchestration.
 
 ## Collider MCP Tools
 
-The GraphToolServer exposes all registered tools via MCP/SSE at:
-
-```
+```bash
+# 15 tools exposed at:
 http://localhost:8001/mcp/sse
+
+# Groups:
+# nodes:       create_node, update_node, get_node, list_nodes, delete_node
+# apps:        create_app, list_apps, get_app
+# permissions: grant_permission, assign_role, list_access_requests, approve_request
+# nanoclaw:    bootstrap_node, discover_skills, list_skills
+# graph:       discover_tools, register_tool
 ```
 
-Any MCP-compatible client can connect and invoke registered tools natively.
+## SDK Seeder
+
+```bash
+uv run python -m sdk.seeder.cli --root D:/FFS0_Factory --app-id <uuid>
+# Syncs .agent/ hierarchy → DataServer nodes + registers tools in GraphToolServer
+```
+
+## App 2XZ (primary test app)
+
+- ID: `c57ab23a-4a57-4b28-a34c-9700320565ea`
+- Root node: `9848b323-5e65-4179-a1d6-5b99be9f8b87`
+- Creds: Sam / Sam (superadmin)
+- Full test plan: `TESTING.md`
 
 ## Rules
 

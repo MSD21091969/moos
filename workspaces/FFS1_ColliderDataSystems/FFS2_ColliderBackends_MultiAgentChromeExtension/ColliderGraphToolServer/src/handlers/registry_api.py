@@ -10,10 +10,9 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
-from src.schemas.registry import GraphStepEntry, SubgraphManifest, ToolQuery
-
 # Registry instance is injected at app startup (see main.py)
 from src.core.tool_registry import ToolRegistry
+from src.schemas.registry import GraphStepEntry, SubgraphManifest, ToolQuery
 
 router = APIRouter(prefix="/api/v1/registry", tags=["registry"])
 
@@ -123,6 +122,30 @@ async def unregister_workflow(workflow_name: str):
             status_code=404, detail=f"Workflow '{workflow_name}' not found"
         )
     return {"workflow_name": workflow_name, "status": "unregistered"}
+
+
+# ------------------------------------------------------------------
+# Tool execution
+# ------------------------------------------------------------------
+
+
+@router.post("/tools/{tool_name}/execute")
+async def execute_tool(tool_name: str, inputs: dict = {}):
+    """Execute a registered tool by name with given inputs."""
+    from src.core.execution import ToolExecutionError, ToolRunner
+
+    registry = _get_registry()
+    entry = registry.get_tool(tool_name)
+    if not entry:
+        raise HTTPException(status_code=404, detail=f"Tool '{tool_name}' not found")
+    try:
+        result = await ToolRunner.execute(entry, inputs)
+        return {
+            "success": True,
+            "result": result if isinstance(result, dict) else {"output": result},
+        }
+    except ToolExecutionError as exc:
+        return {"success": False, "error_message": str(exc)}
 
 
 # ------------------------------------------------------------------

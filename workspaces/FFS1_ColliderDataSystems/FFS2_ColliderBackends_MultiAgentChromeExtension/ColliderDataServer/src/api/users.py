@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.auth import require_collider_admin, require_superadmin
+from src.core.auth import require_collider_admin, require_superadmin, get_current_user
 from src.core.database import get_db
 from src.db.models import User
 from src.schemas.users import UserCreate, UserResponse, UserUpdate
@@ -19,6 +19,11 @@ async def list_users(
 ):
     result = await db.execute(select(User).order_by(User.created_at))
     return result.scalars().all()
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
 
 
 @router.get("/{user_id}", response_model=UserResponse)

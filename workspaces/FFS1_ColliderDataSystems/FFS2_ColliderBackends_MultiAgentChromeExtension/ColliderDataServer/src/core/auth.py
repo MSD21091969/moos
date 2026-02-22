@@ -89,8 +89,8 @@ async def require_system_role(
         "app_user": 1,
     }
     # Normalize to string
-    current_role = str(current_user.system_role)
-    required_role_str = str(required_role)
+    current_role = getattr(current_user.system_role, "value", str(current_user.system_role)).lower()
+    required_role_str = getattr(required_role, "value", str(required_role)).lower()
     if role_hierarchy.get(current_role, 0) < role_hierarchy.get(required_role_str, 999):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

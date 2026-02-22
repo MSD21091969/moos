@@ -6,7 +6,7 @@
 
 | Service                 | Port  | Stack                          | Storage            | Role                                            |
 | ----------------------- | ----- | ------------------------------ | ------------------ | ----------------------------------------------- |
-| ColliderDataServer      | :8000 | FastAPI + SQLAlchemy async     | SQLite (aiosqlite) | Primary API, auth, SSE, WebRTC, OpenClaw        |
+| ColliderDataServer      | :8000 | FastAPI + SQLAlchemy async     | SQLite (aiosqlite) | Primary API, auth, SSE, WebRTC, agent bootstrap |
 | ColliderGraphToolServer | :8001 | FastAPI + WebSocket + gRPC MCP | —                  | Tool registry, workflow execution, MCP server   |
 | ColliderVectorDbServer  | :8002 | FastAPI + ChromaDB             | ChromaDB           | Semantic search + embeddings                    |
 | ColliderAgentRunner     | :8004 | FastAPI + pydantic-ai          | —                  | ContextSet sessions, LLM streaming (claude-s46) |
@@ -20,7 +20,7 @@
 
 ### Source Structure
 
-```
+```text
 ColliderDataServer/
 ├── src/
 │   ├── main.py                ← FastAPI app, CORS, lifespan
@@ -33,19 +33,28 @@ ColliderDataServer/
 │   │   ├── app_permissions.py ← Request/approve/reject app access
 │   │   ├── permissions.py     ← Per-app permission checks
 │   │   ├── context.py         ← Context hydration endpoints
+│   │   ├── agent_bootstrap.py  ← Agent bootstrap endpoint
+│   │   ├── execution.py       ← Tool/workflow execution proxy
+│   │   ├── templates.py       ← Node templates
 │   │   ├── sse.py             ← Server-Sent Events stream
 │   │   ├── rtc.py             ← WebRTC signaling WebSocket
 │   │   └── health.py          ← Health check endpoint
 │   ├── core/
 │   │   ├── auth.py            ← JWT utilities
 │   │   ├── config.py          ← pydantic-settings
-│   │   └── database.py        ← SQLAlchemy async engine
+│   │   ├── database.py        ← SQLAlchemy async engine
+│   │   ├── agent_bootstrap.py  ← Bootstrap render/merge logic
+│   │   ├── grpc_client.py     ← gRPC client to GraphToolServer
+│   │   ├── boundary.py        ← Context boundary helpers
+│   │   └── templates.py       ← Template logic
 │   ├── db/
 │   │   └── models.py          ← SQLAlchemy models
 │   └── schemas/
 │       ├── users.py           ← Pydantic request/response schemas
 │       ├── apps.py            ← Application schemas
-│       └── nodes.py           ← Node schemas
+│       ├── nodes.py           ← Node schemas
+│       ├── agent_bootstrap.py  ← AgentBootstrap, SkillEntry, ToolSchema
+│       └── templates.py       ← Template DTOs
 └── requirements.txt
 ```
 
@@ -64,12 +73,15 @@ ColliderDataServer/
 | app_permissions | `api.app_permissions` | Request/approve/reject app access                           |
 | permissions     | `api.permissions`     | Per-app permission checks                                   |
 | rtc             | `api.rtc`             | `WS /ws/rtc/` — WebRTC signaling                            |
+| agent_bootstrap | `api.agent_bootstrap` | `GET /api/v1/agent/bootstrap/{node_id}` — agent bootstrap   |
+| execution       | `api.execution`       | `POST /api/v1/execution/tool/{name}` — tool/workflow proxy  |
+| templates       | `api.templates`       | `GET /api/v1/templates` — node templates                    |
 
 ### Database Models
 
 #### User
 
-```
+```text
 users
 ├── id            (UUID, PK)
 ├── username      (unique, indexed)
@@ -82,7 +94,7 @@ users
 
 #### Application
 
-```
+```text
 applications
 ├── id            (UUID, PK)
 ├── app_id        (unique, indexed)
@@ -98,7 +110,7 @@ The `config` JSON carries the application's permitted backend API set (the "doma
 
 #### Node
 
-```
+```text
 nodes
 ├── id              (UUID, PK)
 ├── application_id  (FK → applications, CASCADE)
@@ -116,7 +128,7 @@ Nodes form a tree via `parent_id`. Each node's `container` JSON is a **NodeConta
 
 #### AppPermission
 
-```
+```text
 app_permissions
 ├── id              (UUID, PK)
 ├── user_id         (FK → users, CASCADE)
@@ -127,7 +139,7 @@ app_permissions
 
 #### AppAccessRequest
 
-```
+```text
 app_access_requests
 ├── id              (UUID, PK)
 ├── user_id         (FK → users, CASCADE)
@@ -139,7 +151,7 @@ app_access_requests
 
 ### Relationships
 
-```
+```text
 User (system_role) ──1:N──► Application (owner_id) ──1:N──► Node
   │                                │                          │
   └──1:N──► AppPermission ◄──N:1───┘                          │
@@ -163,7 +175,7 @@ User (system_role) ──1:N──► Application (owner_id) ──1:N──► 
 
 WebSocket at `/ws/rtc/` for P2P signaling:
 
-```
+```text
 Client → Server: { type: "join", userId, roomId }
 Client → Server: { type: "offer", targetUserId, sdp }
 Client → Server: { type: "answer", targetUserId, sdp }
@@ -184,12 +196,12 @@ allow_headers=["*"]
 ### Authentication
 
 Current: Username/password + JWT (`POST /api/v1/auth/login`).
-Planned: Firebase Auth (Google Sign-In → Firebase ID Token → exchange for DataServer JWT).
+Per-role credentials for AgentRunner stored in `secrets/api_keys.env`.
 
 ### How Agent Controls DataServer
 
-```
-Agent (LangGraph.js in SW) → REST call (create/modify/delete node)
+```text
+Agent (NanoClaw / Chrome Extension) → REST call (create/modify/delete node)
          → DataServer persists to SQLite
          → DataServer emits SSE event (node_modified)
          → Extension SW receives SSE → updates cache
@@ -210,7 +222,7 @@ Agent (LangGraph.js in SW) → REST call (create/modify/delete node)
 | WebSocket | `/ws/workflow`           | Execute multi-step agent workflows (streamed)     |
 | WebSocket | `/ws/graph`              | Graph operations (create/modify nodes)            |
 | REST      | `/api/v1/registry/tools` | Register / list / delete tools                    |
-| gRPC      | `:50051`                 | `ExecuteSubgraph`, `ExecuteTool`, `DiscoverTools` |
+| gRPC      | `:50052`                 | `ExecuteSubgraph`, `ExecuteTool`, `DiscoverTools` |
 | MCP/SSE   | `/mcp/sse`               | SSE stream — AI client connects here              |
 | MCP/SSE   | `/mcp/messages/`         | JSON-RPC POST body endpoint                       |
 | REST      | `/health`                | Health + registry stats                           |
@@ -241,7 +253,7 @@ so tools registered after server start appear immediately.
 
 ### Workflow Execution Flow
 
-```
+```text
 Agent submits workflow via WebSocket / gRPC
     │
     ▼
@@ -265,9 +277,16 @@ When a workflow step has `can_spawn: true`, the GraphToolServer can create sub-n
 ## ColliderVectorDbServer (:8002)
 
 **Path**: `ColliderVectorDbServer/`
-**Stack**: FastAPI + ChromaDB
+**Stack**: gRPC + ChromaDB
 
-### REST Endpoints
+### gRPC Service
+
+| RPC           | Method | Purpose                    |
+| ------------- | ------ | -------------------------- |
+| `IndexTool`   | Unary  | Index tool into ChromaDB   |
+| `SearchTools` | Unary  | Semantic similarity search |
+
+Also exposes REST fallback endpoints:
 
 | Endpoint         | Method | Purpose                       |
 | ---------------- | ------ | ----------------------------- |
@@ -283,17 +302,18 @@ Documents are indexed from NodeContainer `knowledge` and `tools` fields. Used by
 
 **Path**: `ColliderAgentRunner/`
 **Stack**: FastAPI + pydantic-ai + httpx
-**Model**: `claude-sonnet-4-6` via Anthropic SDK
+**Model**: configurable via `COLLIDER_AGENT_PROVIDER` — default `gemini-2.5-flash` (Gemini) or `claude-sonnet-4-6` (Anthropic/Vertex)
 **Config**: `D:/FFS0_Factory/secrets/api_keys.env`
 
 ### AgentRunner API
 
-| Endpoint          | Method | Purpose                                                |
-| ----------------- | ------ | ------------------------------------------------------ |
-| `/health`         | GET    | Liveness probe                                         |
-| `/agent/session`  | POST   | Compose ContextSet → cache session → return session_id |
-| `/agent/chat`     | GET    | SSE stream: LLM response (session_id or node_id)       |
-| `/tools/discover` | GET    | Proxy to GraphToolServer tool discovery                |
+| Endpoint              | Method | Purpose                                                |
+| --------------------- | ------ | ------------------------------------------------------ |
+| `/health`             | GET    | Liveness probe                                         |
+| `/agent/session`      | POST   | Compose ContextSet → cache session → return session_id |
+| `/agent/root/session` | POST   | Auto-compose from app root_node_id → root orchestrator |
+| `/agent/chat`         | GET    | SSE stream: LLM response (works for all session types) |
+| `/tools/discover`     | GET    | Proxy to GraphToolServer tool discovery                |
 
 ### ContextSet (`POST /agent/session`)
 
@@ -305,21 +325,44 @@ class ContextSet(BaseModel):
     vector_query: str | None = None    # semantic tool discovery
     visibility_filter: list[Literal["local", "group", "global"]] = ["global", "group"]
     depth: int | None = None           # bootstrap depth per node (None = full subtree)
+    inherit_ancestors: bool = False    # prepend ancestor contexts root-first
 ```
 
 Compose flow:
 
 1. `get_token_for_role(ctx.role)` — per-role JWT cache, falls back to default credentials
-2. `get_bootstrap(node_id, token, depth)` for each `node_id` (OpenClaw endpoint)
-3. Merge: agents_md/soul_md/tools_md concatenated with node-path headers; skills + tool_schemas by name dict (leaf-wins: later node_id wins)
-4. If `vector_query`: `POST /api/v1/registry/tools/discover` on GraphToolServer → extend tool map (add only, don't override bootstrap tools)
-5. Build system prompt → `SessionStore.create()` → return `session_id`
+2. If `inherit_ancestors`: fetch ancestor chain via `GET /api/v1/apps/{app_id}/nodes/{id}/ancestors`, bootstrap each (depth=0) root-first
+3. `get_bootstrap(node_id, token, depth)` for each `node_id` (agent bootstrap endpoint)
+4. Merge: agents_md/soul_md/tools_md concatenated with node-path headers; skills + tool_schemas by name dict (leaf-wins: later node_id wins)
+5. If `vector_query`: `POST /api/v1/registry/tools/discover` on GraphToolServer → extend tool map (add only, don't override bootstrap tools)
+6. Build system prompt → `SessionStore.create()` → return `session_id`
+
+### Root Agent (`POST /agent/root/session`)
+
+Auto-composes the full application context:
+
+1. Fetches `Application.root_node_id` from DataServer
+2. Calls `compose_context_set()` with `role="superadmin"`, full subtree depth
+3. Injects a built-in `spawn_subagent` tool — delegates sub-tasks to child-node context agents
+4. Caches with 24h TTL (vs 4h for regular sessions)
+
+### Multi-Provider Model Selection
+
+`_build_model()` in `runner.py` selects the LLM based on `COLLIDER_AGENT_PROVIDER`:
+
+| Provider        | Env var             | Default model       |
+| --------------- | ------------------- | ------------------- |
+| `gemini`        | `GEMINI_API_KEY`    | `gemini-2.5-flash`  |
+| `anthropic`     | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
+| `google-vertex` | ADC (gcloud)        | `claude-sonnet-4-6` |
+
+Override with `COLLIDER_AGENT_MODEL`. Uses `COLLIDER_AGENT_*` prefix to avoid collision with the FFS2 shared `AGENT_MODEL` env var.
 
 ### Session Cache
 
 ```python
 class SessionStore:
-    """In-memory: session_id → {system_prompt, tool_schemas, created_at}. TTL: 4h."""
+    """In-memory: session_id → {system_prompt, tool_schemas, created_at}. TTL: 4h (24h for root)."""
 ```
 
 ### Per-Role Auth
@@ -337,21 +380,39 @@ Each role maps to optional env credentials in `secrets/api_keys.env`. Falls back
 
 ### AgentRunner Source Structure
 
-```
+```text
 ColliderAgentRunner/
 └── src/
     ├── main.py                  ← FastAPI app + routes
+    ├── api/
+    │   └── root.py              ← POST /agent/root/session (root orchestrator)
     ├── schemas/
     │   └── context_set.py       ← ContextSet, SessionPreview, SessionResponse
     ├── core/
-    │   ├── config.py            ← Settings (pydantic-settings, reads api_keys.env)
+    │   ├── config.py            ← Settings (COLLIDER_AGENT_PROVIDER, COLLIDER_AGENT_MODEL, ...)
     │   ├── auth_client.py       ← Per-role JWT cache + login
-    │   ├── collider_client.py   ← GET /openclaw/bootstrap, POST /execution/tool
+    │   ├── collider_client.py   ← GET /agent/bootstrap, GET ancestors, POST /execution/tool
     │   ├── graph_tool_client.py ← POST /registry/tools/discover (vector proxy)
-    │   └── session_store.py     ← In-memory session cache (4h TTL)
+    │   └── session_store.py     ← In-memory session cache (4h / 24h TTL)
     └── agent/
-        ├── runner.py            ← compose_context_set(), run_session_stream()
+        ├── runner.py            ← _build_model(), compose_context_set(), run_session_stream()
         └── tools.py             ← build_tools() → pydantic-ai Tool wrappers
+```
+
+### SDK Tool Pipeline
+
+Tools registered in `NodeContainer.tools` flow through:
+
+```text
+.agent/tools/*.json  →  sdk/seeder (agent_walker reads, node_upserter registers)
+    ↓
+ColliderDataServer (NodeContainer stored in DB)
+    ↓
+ColliderGraphToolServer /api/v1/registry/tools  (in-memory ToolRegistry)
+    ↓
+ToolRunner.execute() → importlib.import_module(code_ref) → actual Python function
+    ↑
+sdk/tools/collider_tools/ (nodes.py, apps.py, permissions.py, agent_bootstrap.py, graph.py)
 ```
 
 ---
@@ -390,7 +451,7 @@ Secrets stored in user's ADMIN container (`users.container.secrets` JSON). Injec
 
 ### Context Security Layers
 
-```
+```text
 Layer 3: ADMIN Context     ← Secrets, global permissions (user.container)
 Layer 2: APP Context       ← App-specific rules, API config (application.config)
 Layer 1: NODE Context      ← Node-specific tools, instructions (node.container)

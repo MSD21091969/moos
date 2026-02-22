@@ -14,7 +14,7 @@ async def get_bootstrap(
     token: str,
     depth: int | None = None,
 ) -> dict[str, Any]:
-    """Fetch the OpenClaw bootstrap context for a node.
+    """Fetch the agent bootstrap context for a node.
 
     Args:
         node_id: The Collider node UUID to bootstrap from.
@@ -23,7 +23,7 @@ async def get_bootstrap(
             ``None`` means full subtree (default).
 
     Returns:
-        OpenClawBootstrap JSON dict (agents_md, soul_md, tools_md,
+        AgentBootstrap JSON dict (agents_md, soul_md, tools_md,
         skills, tool_schemas, session_context, …).
 
     Raises:
@@ -35,9 +35,60 @@ async def get_bootstrap(
 
     async with httpx.AsyncClient() as client:
         resp = await client.get(
-            f"{settings.data_server_url}/api/v1/openclaw/bootstrap/{node_id}",
+            f"{settings.data_server_url}/api/v1/agent/bootstrap/{node_id}",
             headers={"Authorization": f"Bearer {token}"},
             params=params,
+            timeout=15.0,
+        )
+        resp.raise_for_status()
+        return resp.json()  # type: ignore[return-value]
+
+
+async def get_node_ancestors(
+    app_id: str,
+    node_id: str,
+    token: str,
+) -> list[dict[str, Any]]:
+    """Return ancestor nodes of a node in root-to-leaf order.
+
+    Calls ``GET /api/v1/apps/{app_id}/nodes/{node_id}/ancestors``.
+
+    Args:
+        app_id: The Collider application UUID.
+        node_id: The target node UUID whose ancestors to fetch.
+        token: Valid Bearer JWT.
+
+    Returns:
+        List of NodeResponse dicts, sorted root-first (shortest path first).
+        Returns an empty list if the node is a root or the endpoint fails.
+    """
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(
+            f"{settings.data_server_url}/api/v1/apps/{app_id}/nodes/{node_id}/ancestors",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=15.0,
+        )
+        resp.raise_for_status()
+        return resp.json()  # type: ignore[return-value]
+
+
+async def get_app(app_id: str, token: str) -> dict[str, Any]:
+    """Fetch application details including root_node_id.
+
+    Args:
+        app_id: The Collider application UUID.
+        token: Valid Bearer JWT.
+
+    Returns:
+        ApplicationResponse JSON dict (id, display_name, root_node_id, …).
+
+    Raises:
+        httpx.HTTPStatusError: On non-2xx response.
+    """
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(
+            f"{settings.data_server_url}/api/v1/apps/{app_id}",
+            headers={"Authorization": f"Bearer {token}"},
             timeout=15.0,
         )
         resp.raise_for_status()

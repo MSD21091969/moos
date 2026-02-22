@@ -119,17 +119,21 @@ export default function WorkspaceBrowser() {
     vectorQuery,
     discoveredTools,
     sessionId,
+    nanoClawWsUrl,
     composerOpen,
+    inheritAncestors,
     setContextRole,
     setDiscoveredTools,
     setSessionId,
+    setNanoClawWsUrl,
     setComposerOpen,
+    setInheritAncestors,
   } = useAppStore();
 
   const [composing, setComposing] = useState(false);
   const [composeError, setComposeError] = useState<string | null>(null);
 
-  const selectedApp = applications.find((a) => a.app_id === selectedAppId);
+  const selectedApp = applications.find((a) => a.id === selectedAppId);
 
   async function handleCompose() {
     if (!selectedAppId || selectedNodeIds.length === 0) return;
@@ -145,6 +149,7 @@ export default function WorkspaceBrowser() {
           node_ids: selectedNodeIds,
           vector_query: vectorQuery.trim() || null,
           visibility_filter: ["global", "group"],
+          inherit_ancestors: inheritAncestors,
         }),
       });
       if (!resp.ok) {
@@ -154,6 +159,7 @@ export default function WorkspaceBrowser() {
       }
       const data = (await resp.json()) as SessionResponse;
       setSessionId(data.session_id);
+      setNanoClawWsUrl(data.nanoclaw_ws_url ?? null);
       setComposerOpen(false);
     } catch {
       setComposeError("Agent Runner unavailable — is it running on :8004?");
@@ -218,6 +224,17 @@ export default function WorkspaceBrowser() {
               )}
             </div>
 
+            {/* Ancestor context toggle */}
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={inheritAncestors}
+                onChange={(e) => setInheritAncestors(e.target.checked)}
+                className="accent-blue-500"
+              />
+              <span className="text-xs text-gray-400">Include parent context</span>
+            </label>
+
             {/* Vector search */}
             <div>
               <label className="block text-xs text-gray-500 mb-1">Discover tools</label>
@@ -247,8 +264,8 @@ export default function WorkspaceBrowser() {
               {composing
                 ? "Composing…"
                 : sessionId
-                ? "Recompose Session"
-                : `Compose & Start Session →`}
+                  ? "Recompose Session"
+                  : `Compose & Start Session →`}
             </button>
             {!canCompose && !composing && (
               <p className="text-xs text-gray-600 text-center">
@@ -261,7 +278,7 @@ export default function WorkspaceBrowser() {
 
       {/* Chat area */}
       <div className="flex-1 overflow-hidden">
-        <AgentSeat sessionId={sessionId} />
+        <AgentSeat sessionId={sessionId} nanoClawWsUrl={nanoClawWsUrl} />
       </div>
     </div>
   );

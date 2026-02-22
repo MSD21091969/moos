@@ -81,7 +81,7 @@ class ContextManager {
    */
   getActiveWorkspaceType(): string {
     const activeApp = this.context.applications.find(
-      (app) => app.app_id === this.context.user?.active_application
+      (app) => app.id === this.context.user?.active_application
     );
     if (!activeApp) return "SIDEPANEL";
 

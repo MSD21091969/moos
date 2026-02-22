@@ -1,22 +1,52 @@
 {
   "files.associations": {
     "**/.agent/**/*.md": "markdown",
-    "**/.agent/**/*.yaml": "yaml"
+    "**/.agent/**/*.yaml": "yaml",
+    "**/TESTING.md": "markdown",
+    "**/CLAUDE.md": "markdown",
+    "**/GEMINI.md": "markdown"
   },
   "search.exclude": {
     "**/.venv": true,
     "**/__pycache__": true,
     "**/*.egg-info": true,
     "**/node_modules": true,
-    "**/.nx": true
+    "**/.nx": true,
+    "**/build": true,
+    "**/.plasmo": true
   },
   "files.watcherExclude": {
     "**/.venv/**": true,
     "**/__pycache__/**": true,
     "**/node_modules/**": true,
-    "**/.nx/**": true
+    "**/.nx/**": true,
+    "**/.plasmo/**": true
   },
   "github.copilot.enable": {
     "*": true
+  },
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "file": ".github/copilot-instructions.md"
+    }
+  ],
+  "github.copilot.chat.reviewSelection.instructions": [
+    {
+      "text": "Check for: missing Google docstrings, non-Ruff-compliant style, missing type annotations, any use of PostgreSQL (use SQLite/aiosqlite), any use of npm/yarn (use pnpm for FFS3), hardcoded secrets, non-async DB calls in FastAPI routes."
+    }
+  ],
+  "python.defaultInterpreterPath": "${workspaceFolder:FFS2_Backends+ChromeExt}/.venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder:FFS0_Factory}/sdk"
+  ],
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
   }
 }

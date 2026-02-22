@@ -13,17 +13,33 @@ import { PermissionGrant } from '../views/PermissionGrant';
 import { NodeDetails } from '../views/NodeDetails';
 
 function Layout() {
-  const [nodes, setNodes] = useState<any[]>([]); // Array for TreeView
+  const [nodes, setNodes] = useState<any[]>([]);
+  const [apps, setApps] = useState<any[]>([]);
   const [app, setApp] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchTree = async (appId: string) => {
+    const token = localStorage.getItem('auth_token');
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const treeRes = await fetch(`/api/v1/apps/${appId}/nodes/tree`, { headers });
+    setNodes(await treeRes.json());
+  };
+
+  const handleAppChange = async (appId: string) => {
+    const selected = apps.find((a) => a.id === appId);
+    if (!selected) return;
+    setApp(selected);
+    setNodes([]);
+    await fetchTree(selected.id);
+  };
+
   useEffect(() => {
-    // Login and fetch initial data
     const init = async () => {
       try {
-        // 1. Login (mock)
+        // 1. Login
         const loginRes = await fetch('/api/v1/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -31,7 +47,6 @@ function Layout() {
         });
         if (!loginRes.ok) throw new Error('Login failed');
         const loginData = await loginRes.json();
-        // Store token
         if (loginData && loginData.access_token) {
           localStorage.setItem('auth_token', loginData.access_token);
         }
@@ -49,15 +64,18 @@ function Layout() {
 
         // 3. Get Apps
         const appsRes = await fetch('/api/v1/apps/', { headers });
-        const apps = await appsRes.json();
+        const appsList = await appsRes.json();
+        setApps(appsList);
 
-        if (apps && apps.length > 0) {
-          const firstApp = apps[0];
-          setApp(firstApp);
+        if (appsList && appsList.length > 0) {
+          // Prefer app with root_node_id (seeded app), else first
+          const defaultApp =
+            appsList.find((a: any) => a.root_node_id) || appsList[0];
+          setApp(defaultApp);
 
           // 4. Get Node Tree for App
           const treeRes = await fetch(
-            `/api/v1/apps/${firstApp.id}/nodes/tree`,
+            `/api/v1/apps/${defaultApp.id}/nodes/tree`,
             { headers },
           );
           setNodes(await treeRes.json());
@@ -99,11 +117,32 @@ function Layout() {
           FFS6 Viewer
         </div>
 
-        {app && (
+        {apps.length > 0 && (
           <div
             style={{ marginBottom: '10px', fontSize: '12px', color: '#6b7280' }}
           >
-            App: <strong>{app.display_name}</strong>
+            <label htmlFor="app-select">App: </label>
+            <select
+              id="app-select"
+              value={app?.id || ''}
+              onChange={(e) => handleAppChange(e.target.value)}
+              style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                padding: '2px 4px',
+                backgroundColor: '#fff',
+                cursor: 'pointer',
+                maxWidth: '200px',
+              }}
+            >
+              {apps.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.display_name || a.id}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 

@@ -13,6 +13,7 @@ class ApplicationCreate(BaseModel):
 class ApplicationUpdate(BaseModel):
     display_name: str | None = None
     config: dict | None = None
+    root_node_id: str | None = None
 
 
 class ApplicationResponse(BaseModel):

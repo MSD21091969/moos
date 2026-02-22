@@ -75,4 +75,4 @@ Architecture docs live in FFS1 (the IDE workspace):
 
 ---
 
-_v2.0.0 — 2026-02-07_
+_v3.0.0 — 2026-02-22_

@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import type { Application, AppNodeTree, ContextRole, DiscoveredTool } from "~/types";
 
+interface SessionPreview {
+  node_count: number;
+  skill_count: number;
+  tool_count: number;
+  role: string;
+  vector_matches: number;
+}
+
 interface AppState {
   // Existing tree/app state
   applications: Application[];
@@ -16,7 +24,13 @@ interface AppState {
   vectorQuery: string;
   discoveredTools: DiscoveredTool[];
   sessionId: string | null;
+  nanoClawWsUrl: string | null;  // NanoClawBridge WebSocket URL for direct chat
   composerOpen: boolean;
+  inheritAncestors: boolean;
+
+  // Root agent session state
+  rootSessionId: string | null;
+  rootSessionPreview: SessionPreview | null;
 
   // Existing actions
   setApplications: (apps: Application[]) => void;
@@ -32,7 +46,13 @@ interface AppState {
   setVectorQuery: (q: string) => void;
   setDiscoveredTools: (tools: DiscoveredTool[]) => void;
   setSessionId: (id: string | null) => void;
+  setNanoClawWsUrl: (url: string | null) => void;
   setComposerOpen: (open: boolean) => void;
+  setInheritAncestors: (inherit: boolean) => void;
+
+  // Root agent actions
+  setRootSessionId: (id: string | null) => void;
+  setRootSessionPreview: (preview: SessionPreview | null) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -50,7 +70,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   vectorQuery: "",
   discoveredTools: [],
   sessionId: null,
+  nanoClawWsUrl: null,
   composerOpen: true,
+  inheritAncestors: false,
+
+  // Root agent defaults
+  rootSessionId: null,
+  rootSessionPreview: null,
 
   // Existing actions
   setApplications: (applications) => set({ applications }),
@@ -61,6 +87,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       tree: [],
       selectedNodeIds: [],
       sessionId: null,
+      nanoClawWsUrl: null,
+      rootSessionId: null,
+      rootSessionPreview: null,
     }),
   selectNode: (selectedNodePath) => set({ selectedNodePath }),
   setTree: (tree) => set({ tree }),
@@ -80,5 +109,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   setVectorQuery: (vectorQuery) => set({ vectorQuery }),
   setDiscoveredTools: (discoveredTools) => set({ discoveredTools }),
   setSessionId: (sessionId) => set({ sessionId }),
+  setNanoClawWsUrl: (nanoClawWsUrl) => set({ nanoClawWsUrl }),
   setComposerOpen: (composerOpen) => set({ composerOpen }),
+  setInheritAncestors: (inheritAncestors) => set({ inheritAncestors }),
+
+  // Root agent actions
+  setRootSessionId: (rootSessionId) => set({ rootSessionId }),
+  setRootSessionPreview: (rootSessionPreview) => set({ rootSessionPreview }),
 }));

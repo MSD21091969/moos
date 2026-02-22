@@ -1,19 +1,21 @@
 # Communication Protocols
 
-> All 8 protocols used across the Collider system.
+> All 10 protocols used across the Collider system.
 
 ## Protocol Matrix
 
-| #   | Protocol               | Transport          | Direction               | Used Between                                              |
-| --- | ---------------------- | ------------------ | ----------------------- | --------------------------------------------------------- |
-| 1   | **REST**               | HTTP               | Request/Response        | Extension ↔ DataServer, Extension ↔ VectorDbServer        |
-| 2   | **SSE**                | HTTP (long-lived)  | Server → Client         | DataServer → Extension SW                                 |
-| 3   | **WebSocket**          | WS                 | Bidirectional           | Extension ↔ GraphToolServer, Extension ↔ DataServer (RTC) |
-| 4   | **WebRTC**             | P2P (STUN/TURN)    | Peer-to-Peer            | Browser ↔ Browser (via ffs5 PiP)                          |
-| 5   | **Native Messaging**   | stdio              | Extension ↔ Host        | Extension SW ↔ Native Host binary                         |
-| 6   | **gRPC**               | HTTP/2             | Bidirectional streaming | DataServer ↔ GraphToolServer (tool execution, discovery)  |
-| 7   | **MCP/SSE**            | HTTP (SSE + POST)  | AI Client ↔ Server      | Claude Code / Copilot / Cursor ↔ GraphToolServer          |
-| 8   | **Internal Messaging** | `chrome.runtime.*` | Intra-extension         | SW ↔ Sidepanel ↔ Content Scripts                          |
+| #   | Protocol               | Transport          | Direction               | Used Between                                                      |
+| --- | ---------------------- | ------------------ | ----------------------- | ----------------------------------------------------------------- |
+| 1   | **REST**               | HTTP               | Request/Response        | Extension ↔ DataServer, Extension ↔ VectorDbServer                |
+| 2   | **SSE**                | HTTP (long-lived)  | Server → Client         | DataServer → Extension SW                                         |
+| 3   | **WebSocket**          | WS                 | Bidirectional           | Extension ↔ GraphToolServer, Extension ↔ DataServer (RTC)         |
+| 4   | **WebRTC**             | P2P (STUN/TURN)    | Peer-to-Peer            | Browser ↔ Browser (via ffs5 PiP)                                  |
+| 5   | **Native Messaging**   | stdio              | Extension ↔ Host        | Extension SW ↔ Native Host binary                                 |
+| 6   | **gRPC**               | HTTP/2             | Bidirectional streaming | DataServer ↔ GraphToolServer, VectorDbServer (live :50052, :8002) |
+| 7   | **MCP/SSE**            | HTTP (SSE + POST)  | AI Client ↔ Server      | Claude Code / Copilot / Cursor ↔ GraphToolServer                  |
+| 8   | **Internal Messaging** | `chrome.runtime.*` | Intra-extension         | SW ↔ Sidepanel ↔ Content Scripts                                  |
+| 9   | **WebSocket**          | WS                 | Bidirectional streaming | AgentSeat ↔ NanoClawBridge (:18789)                               |
+| 10  | **AgentRunner REST**   | HTTP               | Request/Response        | Extension ↔ ColliderAgentRunner (:8004)                           |
 
 ---
 
@@ -34,18 +36,22 @@ Authorization: Bearer <JWT>
 
 ### Key Endpoints (DataServer)
 
-| Method | Path                     | Purpose                           |
-| ------ | ------------------------ | --------------------------------- |
-| POST   | `/auth/login`            | Login → JWT                       |
-| POST   | `/auth/verify`           | Verify JWT                        |
-| GET    | `/apps`                  | List user's applications          |
-| POST   | `/apps`                  | Create application                |
-| GET    | `/nodes?app_id=...`      | Get node tree                     |
-| POST   | `/nodes`                 | Create node                       |
-| PUT    | `/nodes/:id`             | Update node (container, metadata) |
-| DELETE | `/nodes/:id`             | Delete node + subtree             |
-| GET    | `/context/:app_id/:path` | Hydrated context for node         |
-| GET    | `/health`                | Health check                      |
+| Method | Path                        | Purpose                           |
+| ------ | --------------------------- | --------------------------------- |
+| POST   | `/auth/login`               | Login → JWT                       |
+| POST   | `/auth/verify`              | Verify JWT                        |
+| GET    | `/apps`                     | List user's applications          |
+| POST   | `/apps`                     | Create application                |
+| GET    | `/nodes?app_id=...`         | Get node tree                     |
+| POST   | `/nodes`                    | Create node                       |
+| PUT    | `/nodes/:id`                | Update node (container, metadata) |
+| DELETE | `/nodes/:id`                | Delete node + subtree             |
+| GET    | `/context/:app_id/:path`    | Hydrated context for node         |
+| GET    | `/health`                   | Health check                      |
+| GET    | `/agent/bootstrap/:id`      | NanoClaw bootstrap for node       |
+| POST   | `/execution/tool/:name`     | Execute tool via GraphToolServer  |
+| POST   | `/execution/workflow/:name` | Execute workflow                  |
+| GET    | `/templates`                | List node templates               |
 
 ### Key Endpoints (VectorDbServer)
 
@@ -286,14 +292,41 @@ Extension SW ◄────────────────── JSON resp
 
 ---
 
-## 6. gRPC (Planned)
+## 6. gRPC
 
-Planned for inter-service communication between backend servers:
+Live inter-service communication on dedicated ports.
 
-- DataServer ↔ GraphToolServer (workflow results → node creation)
-- DataServer ↔ VectorDbServer (auto-indexing on node create)
+### GraphToolServer (:50052)
 
-Currently these use REST, but gRPC will replace for performance.
+```protobuf
+service ColliderGraph {
+  rpc ExecuteTool (ToolRequest) returns (ToolResponse);
+  rpc ExecuteSubgraph (SubgraphRequest) returns (SubgraphResponse);
+  rpc DiscoverTools (DiscoverRequest) returns (DiscoverResponse);
+}
+```
+
+**Used by**: DataServer (`core/grpc_client.py`) and AgentRunner (`core/graph_tool_client.py`)
+invoke tool execution. NanoClaw agents call tools through this path.
+
+### VectorDbServer (:8002 gRPC)
+
+```protobuf
+service ColliderVectorDb {
+  rpc IndexTool (IndexRequest) returns (IndexResponse);
+  rpc SearchTools (SearchRequest) returns (SearchResponse);
+}
+```
+
+**Used by**: GraphToolServer (`core/vector_client.py`) for semantic tool discovery.
+
+### Proto definitions
+
+Located in `proto/`:
+- `collider_graph.proto` — tool + subgraph execution
+- `collider_data.proto` — data sync, schema registration
+- `collider_vectordb.proto` — index + search
+- Generated stubs: `*_pb2.py`, `*_pb2_grpc.py`
 
 ---
 
@@ -337,6 +370,103 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true; // async response
   }
 });
+```
+
+---
+
+## 9. WebSocket (NanoClawBridge)
+
+### Endpoint
+
+```
+WS ws://127.0.0.1:18789?token=<session_token>
+```
+
+The NanoClawBridge is the agent execution runtime. Chrome Extension's `AgentSeat` component
+connects via `nanoclaw-rpc.ts` to stream agent interactions.
+
+### Protocol
+
+JSON-RPC 2.0 over WebSocket with server-sent streaming events.
+
+**Client → Server (request):**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "agent.request",
+  "params": { "message": "List all nodes in the x1z app" },
+  "id": 1
+}
+```
+
+**Server → Client (streaming events):**
+
+| Event            | Content                        |
+| ---------------- | ------------------------------ |
+| `text_delta`     | Incremental LLM text           |
+| `tool_use_start` | Tool invocation (name, params) |
+| `tool_result`    | Tool execution result          |
+| `thinking`       | Agent reasoning (if enabled)   |
+| `message_end`    | End of agent turn              |
+
+### Session Lifecycle
+
+1. WorkspaceBrowser composes a session via AgentRunner → gets `nanoclaw_ws_url`
+2. AgentSeat opens WebSocket to the URL (includes session token)
+3. Gateway reads workspace files from `~/.nanoclaw/workspaces/collider/`
+4. Agent runs with composed context (CLAUDE.md + .mcp.json, skills/)
+5. User sends messages → agent streams responses
+6. Session expires after TTL (4h compose, 24h root)
+
+---
+
+## 10. AgentRunner REST
+
+### Base URL
+
+```
+http://localhost:8004
+```
+
+The ColliderAgentRunner is the context composer. It builds ContextSet sessions by
+bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
+
+### Key Endpoints
+
+| Method | Path                  | Purpose                                  |
+| ------ | --------------------- | ---------------------------------------- |
+| POST   | `/agent/session`      | Create ContextSet session (compose)      |
+| POST   | `/agent/root/session` | Create root agent session (full subtree) |
+| POST   | `/agent/chat`         | Direct chat (non-NanoClaw, diagnostic)   |
+| GET    | `/tools/discover`     | Discover available tools from registry   |
+| GET    | `/health`             | Health check                             |
+
+### Session Request (Compose)
+
+```json
+{
+  "role": "collider_admin",
+  "app_id": "x1z",
+  "node_ids": ["abc123", "def456"],
+  "vector_query": "graph tools",
+  "inherit_ancestors": true
+}
+```
+
+### Session Response
+
+```json
+{
+  "session_id": "sess_...",
+  "preview": {
+    "node_count": 3,
+    "skill_count": 1,
+    "tool_count": 15,
+    "system_prompt_chars": 4200
+  },
+  "nanoclaw_ws_url": "ws://127.0.0.1:18789?token=..."
+}
 ```
 
 ---
@@ -406,4 +536,40 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 5. SW → DataServer: POST/PUT /nodes (create/update nodes with container data)
 6. DataServer → SSE: node_modified events
 7. Sidepanel refreshes → workspace is now synced
+```
+
+### Flow 6: NanoClaw ContextSet Session
+
+```
+1. User opens sidepanel → WorkspaceBrowser (Compose tab)
+2. User selects role, picks nodes, optionally enters vector query
+3. User clicks Compose
+4. Sidepanel → POST :8004/agent/session { role, app_id, node_ids, vector_query }
+5. AgentRunner:
+   a. Authenticates as role via DataServer
+   b. GET :8000/api/v1/agent/bootstrap/{id} for each node
+   c. Merges contexts (leaf-wins) → ContextSet
+   d. Optional: vector search for additional tools
+   e. Writes workspace files → ~/.nanoclaw/workspaces/collider/
+   f. Returns { session_id, preview, nanoclaw_ws_url }
+6. User switches to AgentSeat (Chat tab)
+7. AgentSeat connects ws://127.0.0.1:18789?token=... via nanoclaw-rpc.ts
+8. User sends message → JSON-RPC agent.request
+9. NanoClawBridge reads workspace files, runs agent
+10. Agent streams response through WebSocket
+11. Tool calls: Agent → gRPC :50052 → GraphToolServer → ToolRunner → result
+```
+
+### Flow 7: Root Agent Session
+
+```
+1. User opens RootAgentPanel tab
+2. Panel → POST :8004/agent/root/session { app_id }
+3. AgentRunner fetches Application.root_node_id
+4. Bootstraps full subtree (all descendants)
+5. Writes to ~/.nanoclaw/workspaces/collider-root/
+6. Returns { session_id, nanoclaw_ws_url }
+7. Panel connects WebSocket, begins chat
+8. 15 Collider tools + NanoClaw built-ins available
+9. 24h session TTL
 ```

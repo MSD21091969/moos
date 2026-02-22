@@ -127,6 +127,48 @@ async def update_node(
     return node
 
 
+@router.get("/{node_id}/ancestors", response_model=list[NodeResponse])
+async def get_node_ancestors(
+    id: str,
+    node_id: str,
+    db: AsyncSession = Depends(get_db),
+    _current_user: User = Depends(get_current_user),
+):
+    """Return all ancestor nodes of a given node in root-to-leaf order.
+
+    Ancestors are derived from the node's ``path`` field: for a node at
+    ``factory/ffs1/ffs2`` the ancestors are the nodes whose paths are
+    ``factory`` and ``factory/ffs1`` (within the same application).
+
+    Returns an empty list if the node is already a root node.
+    """
+    app = await _get_application(id, db)
+    result = await db.execute(
+        select(Node).where(Node.id == node_id, Node.application_id == app.id)
+    )
+    node = result.scalar_one_or_none()
+    if node is None:
+        raise HTTPException(status_code=404, detail="Node not found")
+
+    # Split the path into ancestor path segments
+    segments = node.path.split("/")
+    if len(segments) <= 1:
+        return []  # Root node — no ancestors
+
+    ancestor_paths = ["/".join(segments[:i]) for i in range(1, len(segments))]
+
+    result = await db.execute(
+        select(Node).where(
+            Node.application_id == app.id,
+            Node.path.in_(ancestor_paths),
+        )
+    )
+    ancestors = result.scalars().all()
+
+    # Sort in root-to-leaf order (shortest path first)
+    return sorted(ancestors, key=lambda n: len(n.path.split("/")))
+
+
 @router.delete("/{node_id}", status_code=204)
 async def delete_node(
     id: str,

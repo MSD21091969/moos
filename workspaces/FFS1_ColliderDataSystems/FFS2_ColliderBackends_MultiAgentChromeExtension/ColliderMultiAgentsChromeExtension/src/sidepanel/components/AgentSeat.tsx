@@ -1,46 +1,71 @@
-import React, { useEffect, useRef, useState } from "react";
-
-const AGENT_RUNNER_URL = "http://localhost:8004";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { AgentEvent, NanoClawRpcClient } from "../lib/nanoclaw-rpc";
 
 interface Message {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "tool";
   content: string;
   streaming?: boolean;
+  toolName?: string;
 }
 
 interface AgentSeatProps {
   sessionId: string | null;
+  nanoClawWsUrl: string | null;
 }
 
-export default function AgentSeat({ sessionId }: AgentSeatProps) {
+export default function AgentSeat({ sessionId, nanoClawWsUrl }: AgentSeatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const esRef = useRef<EventSource | null>(null);
+  const clientRef = useRef<NanoClawRpcClient | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Reset messages when session changes
+  // Reset on session change
   useEffect(() => {
     setMessages([]);
     setInput("");
     setBusy(false);
-    esRef.current?.close();
+    clientRef.current?.close();
+    clientRef.current = null;
   }, [sessionId]);
 
-  // Clean up open SSE connection on unmount
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      esRef.current?.close();
+      clientRef.current?.close();
     };
+  }, []);
+
+  const appendToLastAssistant = useCallback((chunk: string) => {
+    setMessages((prev) => {
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+      if (last?.role === "assistant") {
+        updated[updated.length - 1] = { ...last, content: last.content + chunk };
+      }
+      return updated;
+    });
+  }, []);
+
+  const finishLastAssistant = useCallback(() => {
+    setMessages((prev) => {
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+      if (last?.role === "assistant") {
+        updated[updated.length - 1] = { ...last, streaming: false };
+      }
+      return updated;
+    });
+    setBusy(false);
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!input.trim() || busy || !sessionId) return;
+    if (!input.trim() || busy || !sessionId || !nanoClawWsUrl) return;
 
     const userMsg = input.trim();
     setInput("");
@@ -52,63 +77,73 @@ export default function AgentSeat({ sessionId }: AgentSeatProps) {
       { role: "assistant", content: "", streaming: true },
     ]);
 
-    const params = new URLSearchParams({ session_id: sessionId, message: userMsg });
-    const es = new EventSource(`${AGENT_RUNNER_URL}/agent/chat?${params}`);
-    esRef.current = es;
+    try {
+      // Connect (or reuse) the RPC client
+      if (!clientRef.current || clientRef.current.state !== "connected") {
+        clientRef.current?.close();
+        const client = new NanoClawRpcClient(nanoClawWsUrl);
+        clientRef.current = client;
 
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data) as {
-          type: "delta" | "done" | "error";
-          text?: string;
-          message?: string;
-        };
+        client.onAgentEvent((event: AgentEvent) => {
+          switch (event.kind) {
+            case "text_delta":
+              appendToLastAssistant(event.text);
+              break;
 
-        if (data.type === "delta" && data.text) {
-          setMessages((prev) => {
-            const updated = [...prev];
-            const last = updated[updated.length - 1];
-            if (last?.role === "assistant") {
-              updated[updated.length - 1] = {
-                ...last,
-                content: last.content + data.text,
-              };
-            }
-            return updated;
-          });
-        } else if (data.type === "done") {
-          setMessages((prev) => {
-            const updated = [...prev];
-            const last = updated[updated.length - 1];
-            if (last?.role === "assistant") {
-              updated[updated.length - 1] = { ...last, streaming: false };
-            }
-            return updated;
-          });
-          es.close();
-          setBusy(false);
-        } else if (data.type === "error") {
-          setMessages((prev) => {
-            const updated = [...prev];
-            const last = updated[updated.length - 1];
-            if (last?.role === "assistant") {
-              updated[updated.length - 1] = {
-                ...last,
-                content: `[Error: ${data.message ?? "Unknown error"}]`,
-                streaming: false,
-              };
-            }
-            return updated;
-          });
-          es.close();
-          setBusy(false);
-        }
-      } catch {
-        // Ignore parse errors on keepalive / empty events
+            case "tool_use_start":
+              setMessages((prev) => [
+                ...prev,
+                {
+                  role: "tool" as const,
+                  content: `Calling ${event.name}...`,
+                  toolName: event.name,
+                },
+              ]);
+              break;
+
+            case "tool_result":
+              setMessages((prev) => {
+                const updated = [...prev];
+                const toolIdx = updated.findLastIndex(
+                  (m) => m.role === "tool" && m.toolName === event.name,
+                );
+                if (toolIdx >= 0) {
+                  updated[toolIdx] = {
+                    ...updated[toolIdx],
+                    content: `${event.name}: ${event.result.slice(0, 200)}`,
+                  };
+                }
+                return updated;
+              });
+              break;
+
+            case "message_end":
+              finishLastAssistant();
+              break;
+
+            case "error":
+              setMessages((prev) => {
+                const updated = [...prev];
+                const last = updated[updated.length - 1];
+                if (last?.role === "assistant") {
+                  updated[updated.length - 1] = {
+                    ...last,
+                    content: `[Error: ${event.message}]`,
+                    streaming: false,
+                  };
+                }
+                return updated;
+              });
+              setBusy(false);
+              break;
+          }
+        });
+
+        await client.connect();
       }
-    };
 
-    es.onerror = () => {
+      await clientRef.current.agentRequest(userMsg);
+    } catch (err) {
       setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
@@ -116,15 +151,15 @@ export default function AgentSeat({ sessionId }: AgentSeatProps) {
           updated[updated.length - 1] = {
             ...last,
             content:
-              last.content || "[Agent Runner unavailable — is it running on :8004?]",
+              last.content ||
+              `[NanoClawBridge unavailable — ${err instanceof Error ? err.message : "connection failed"}]`,
             streaming: false,
           };
         }
         return updated;
       });
-      es.close();
       setBusy(false);
-    };
+    }
   }
 
   if (!sessionId) {
@@ -135,14 +170,20 @@ export default function AgentSeat({ sessionId }: AgentSeatProps) {
     );
   }
 
+  if (!nanoClawWsUrl) {
+    return (
+      <div className="flex items-center justify-center h-full text-sm text-gray-500 px-4 text-center">
+        No NanoClawBridge configured. Set NANOCLAW_BRIDGE_URL on AgentRunner.
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
-      {/* Session indicator */}
       <div className="px-3 py-1 text-xs text-gray-500 border-b border-gray-700 truncate">
         Session: <span className="text-green-400">{sessionId.slice(0, 8)}…</span>
       </div>
 
-      {/* Message list */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-3">
         {messages.length === 0 && (
           <p className="text-xs text-gray-600 mt-4 text-center">
@@ -152,11 +193,12 @@ export default function AgentSeat({ sessionId }: AgentSeatProps) {
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`text-xs rounded px-3 py-2 whitespace-pre-wrap leading-relaxed ${
-              msg.role === "user"
+            className={`text-xs rounded px-3 py-2 whitespace-pre-wrap leading-relaxed ${msg.role === "user"
                 ? "bg-gray-700 text-gray-100 ml-6"
-                : "bg-gray-800 text-gray-200 mr-6"
-            }`}
+                : msg.role === "tool"
+                  ? "bg-gray-900 text-yellow-400 mx-6 font-mono"
+                  : "bg-gray-800 text-gray-200 mr-6"
+              }`}
           >
             {msg.content}
             {msg.streaming && (
@@ -167,11 +209,7 @@ export default function AgentSeat({ sessionId }: AgentSeatProps) {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex gap-1 px-3 py-2 border-t border-gray-700"
-      >
+      <form onSubmit={handleSubmit} className="flex gap-1 px-3 py-2 border-t border-gray-700">
         <input
           type="text"
           value={input}

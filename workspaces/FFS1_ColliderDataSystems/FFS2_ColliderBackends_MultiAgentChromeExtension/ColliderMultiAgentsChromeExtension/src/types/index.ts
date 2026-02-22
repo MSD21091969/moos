@@ -11,7 +11,6 @@ export interface NodeContainer {
 
 export interface Application {
   id: string;
-  app_id: string;
   owner_id: string | null;
   display_name: string | null;
   config: Record<string, unknown>;
@@ -97,6 +96,7 @@ export interface SessionPreview {
 export interface SessionResponse {
   session_id: string;
   preview: SessionPreview;
+  nanoclaw_ws_url?: string | null;  // Direct WebSocket URL for NanoClawBridge chat
 }
 
 export type ColliderMessageType =

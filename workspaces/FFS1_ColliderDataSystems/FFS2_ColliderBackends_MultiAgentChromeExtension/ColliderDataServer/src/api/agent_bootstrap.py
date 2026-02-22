@@ -1,14 +1,14 @@
-"""OpenClaw integration endpoints.
+"""Agent bootstrap endpoints.
 
-These endpoints allow an OpenClaw agent workspace to bootstrap its context,
+These endpoints allow a NanoClaw agent workspace to bootstrap its context,
 identity, and skills from a Collider NodeContainer.
 
 Flow:
-1. OpenClaw calls ``GET /api/v1/openclaw/bootstrap/{node_id}`` with a JWT.
-2. The response contains AGENTS.md, SOUL.md, TOOLS.md content + skill entries
+1. AgentRunner calls ``GET /api/v1/agent/bootstrap/{node_id}`` with a JWT.
+2. The response contains agents_md, soul_md, tools_md content + skill entries
    + OpenAI-compatible tool schemas.
-3. ``bootstrap.sh`` writes these to the OpenClaw workspace directory so the
-   agent picks them up at the next session start.
+3. The workspace writer merges these into CLAUDE.md + Agent Skills SKILL.md
+   files in the NanoClaw workspace directory.
 
 Subtree aggregation:
 By default the bootstrap walks the full descendant tree and merges skills and
@@ -27,12 +27,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.auth import get_current_user
 from src.core.boundary import enforce_node_boundary
 from src.core.database import get_db
-from src.core.openclaw import render_bootstrap
+from src.core.agent_bootstrap import render_bootstrap
 from src.db.models import Node, User
 from src.schemas.nodes import NodeContainer
-from src.schemas.openclaw import OpenClawBootstrap, OpenClawSkillEntry
+from src.schemas.agent_bootstrap import AgentBootstrap, AgentSkillEntry
 
-router = APIRouter(prefix="/api/v1/openclaw", tags=["openclaw"])
+router = APIRouter(prefix="/api/v1/agent", tags=["agent"])
 
 
 # ---------------------------------------------------------------------------
@@ -60,9 +60,6 @@ async def _load_descendants(
     if depth == 0:
         return []
 
-    # Load all nodes in the same application in one query, then build the
-    # subtree in Python.  This avoids recursive SQL and is fast enough at
-    # current MVP scale (typical applications have ≤ hundreds of nodes).
     result = await db.execute(
         select(Node).where(
             Node.application_id == root.application_id,
@@ -97,8 +94,8 @@ async def _load_descendants(
 # ---------------------------------------------------------------------------
 
 
-@router.get("/bootstrap/{node_id}", response_model=OpenClawBootstrap)
-async def get_openclaw_bootstrap(
+@router.get("/bootstrap/{node_id}", response_model=AgentBootstrap)
+async def get_agent_bootstrap(
     node_id: str,
     depth: int | None = Query(
         None,
@@ -111,8 +108,8 @@ async def get_openclaw_bootstrap(
     ),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> OpenClawBootstrap:
-    """Render a NodeContainer as an OpenClaw-compatible workspace bootstrap.
+) -> AgentBootstrap:
+    """Render a NodeContainer as an agent-compatible workspace bootstrap.
 
     Returns the node's instructions, rules, and knowledge as Markdown strings
     (``agents_md``, ``soul_md``, ``tools_md``), along with typed skill entries
@@ -123,7 +120,7 @@ async def get_openclaw_bootstrap(
     definition wins).  Use ``?depth=0`` to disable subtree aggregation.
 
     The ``execute_workflow_schema`` and ``execute_tool_schema`` fields provide
-    pre-built function schemas so the OpenClaw agent can trigger Collider
+    pre-built function schemas so the agent can trigger Collider
     workflows or individual tools via:
     - ``POST /execution/workflow/{workflow_name}``
     - ``POST /execution/tool/{tool_name}``
@@ -139,17 +136,17 @@ async def get_openclaw_bootstrap(
     return render_bootstrap(node, current_user, descendants=descendants)
 
 
-@router.get("/skills", response_model=list[OpenClawSkillEntry])
-async def list_openclaw_skills(
+@router.get("/skills", response_model=list[AgentSkillEntry])
+async def list_agent_skills(
     node_id: str | None = Query(None, description="Filter to a specific node's skills"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> list[OpenClawSkillEntry]:
+) -> list[AgentSkillEntry]:
     """List all skills visible to this user, optionally scoped to a node.
 
     Queries nodes whose container carries non-empty ``skills`` arrays and
-    returns them flattened as OpenClaw skill entries.  Useful for OpenClaw's
-    skill discovery panel or a ClawHub-style registry.
+    returns them flattened as Agent Skills entries.  Useful for skill
+    discovery or a registry interface.
     """
     stmt = select(Node)
     if node_id:
@@ -158,7 +155,7 @@ async def list_openclaw_skills(
     result = await db.execute(stmt)
     nodes = result.scalars().all()
 
-    entries: list[OpenClawSkillEntry] = []
+    entries: list[AgentSkillEntry] = []
     for node in nodes:
         try:
             container = NodeContainer.model_validate(node.container)
@@ -166,7 +163,7 @@ async def list_openclaw_skills(
             continue
         for skill in container.skills:
             entries.append(
-                OpenClawSkillEntry(
+                AgentSkillEntry(
                     name=skill.name,
                     description=skill.description,
                     emoji=skill.emoji,

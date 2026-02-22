@@ -2,6 +2,128 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Start ColliderDataServer (:8000)",
+            "type": "shell",
+            "command": "uv run uvicorn src.main:app --reload --port 8000",
+            "options": {
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderDataServer"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": { "group": "servers", "panel": "dedicated" }
+        },
+        {
+            "label": "Start ColliderGraphToolServer (:8001)",
+            "type": "shell",
+            "command": "uv run uvicorn src.main:app --reload --port 8001",
+            "options": {
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderGraphToolServer"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": { "group": "servers", "panel": "dedicated" }
+        },
+        {
+            "label": "Start ColliderVectorDbServer (:8002)",
+            "type": "shell",
+            "command": "uv run python -m src.main",
+            "options": {
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderVectorDbServer"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": { "group": "servers", "panel": "dedicated" }
+        },
+        {
+            "label": "Start ColliderAgentRunner (:8004)",
+            "type": "shell",
+            "command": "uv run uvicorn src.main:app --reload --port 8004",
+            "options": {
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderAgentRunner"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": "none",
+            "presentation": { "group": "servers", "panel": "dedicated" }
+        },
+        {
+            "label": "Start All Collider Backends",
+            "dependsOn": [
+                "Start ColliderDataServer (:8000)",
+                "Start ColliderGraphToolServer (:8001)",
+                "Start ColliderVectorDbServer (:8002)",
+                "Start ColliderAgentRunner (:8004)"
+            ],
+            "dependsOrder": "parallel",
+            "problemMatcher": [],
+            "group": "none"
+        },
+        {
+            "label": "SDK: Seed DB from .agent/ (App 2XZ)",
+            "type": "shell",
+            "command": "uv run python -m sdk.seeder.cli --root D:/FFS0_Factory --app-id c57ab23a-4a57-4b28-a34c-9700320565ea",
+            "options": {
+                "cwd": "${workspaceFolder:FFS0_Factory}"
+            },
+            "problemMatcher": [],
+            "group": "none"
+        },
+        {
+            "label": "SDK: Seed DB (custom app-id)",
+            "type": "shell",
+            "command": "uv run python -m sdk.seeder.cli --root D:/FFS0_Factory --app-id ${input:appId}",
+            "options": {
+                "cwd": "${workspaceFolder:FFS0_Factory}"
+            },
+            "problemMatcher": [],
+            "group": "none"
+        },
+        {
+            "label": "Plasmo Dev (Chrome Extension)",
+            "type": "shell",
+            "command": "pnpm plasmo dev",
+            "options": {
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderMultiAgentsChromeExtension"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Plasmo Build (Chrome Extension)",
+            "type": "shell",
+            "command": "pnpm plasmo build",
+            "options": {
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderMultiAgentsChromeExtension"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Frontend: Serve ffs6 (IDE viewer, :4200)",
+            "type": "shell",
+            "command": "pnpm nx serve ffs6",
+            "options": {
+                "cwd": "${workspaceFolder:FFS3_Frontend}"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Frontend: Serve ffs4 (sidepanel, :4201)",
+            "type": "shell",
+            "command": "pnpm nx serve ffs4",
+            "options": {
+                "cwd": "${workspaceFolder:FFS3_Frontend}"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
             "label": "UV Sync (FFS0 - agent-factory)",
             "type": "shell",
             "command": "uv sync",
@@ -12,53 +134,13 @@
             "problemMatcher": []
         },
         {
-            "label": "UV Sync (FFS1 - ColliderDataSystems)",
+            "label": "UV Sync (AgentRunner)",
             "type": "shell",
             "command": "uv sync",
             "options": {
-                "cwd": "${workspaceFolder:FFS1_ColliderDataSystems}"
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderAgentRunner"
             },
             "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "pnpm Install (Frontend)",
-            "type": "shell",
-            "command": "pnpm install",
-            "options": {
-                "cwd": "${workspaceFolder:FFS3_Frontend}/collider-frontend"
-            },
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "Nx Dev Portal (Frontend)",
-            "type": "shell",
-            "command": "pnpm nx dev portal",
-            "options": {
-                "cwd": "${workspaceFolder:FFS3_Frontend}/collider-frontend"
-            },
-            "isBackground": true,
-            "problemMatcher": []
-        },
-        {
-            "label": "Nx Build Portal (Frontend)",
-            "type": "shell",
-            "command": "pnpm nx build portal",
-            "options": {
-                "cwd": "${workspaceFolder:FFS3_Frontend}/collider-frontend"
-            },
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "Nx Test Portal (Frontend)",
-            "type": "shell",
-            "command": "pnpm nx test portal",
-            "options": {
-                "cwd": "${workspaceFolder:FFS3_Frontend}/collider-frontend"
-            },
-            "group": "test",
             "problemMatcher": []
         },
         {
@@ -75,64 +157,40 @@
             "problemMatcher": []
         },
         {
-            "label": "Pytest (FFS1)",
+            "label": "Pytest (AgentRunner)",
             "type": "shell",
             "command": "uv run pytest -v",
             "options": {
-                "cwd": "${workspaceFolder:FFS1_ColliderDataSystems}"
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderAgentRunner"
             },
             "group": "test",
             "problemMatcher": []
         },
         {
-            "label": "Start ColliderDataServer (port 8000)",
+            "label": "Recompile Protobuf stubs",
             "type": "shell",
-            "command": "uv run uvicorn src.main:app --reload --port 8000",
+            "command": "uv run python -m proto.compile_protos",
             "options": {
                 "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderDataServer"
             },
-            "isBackground": true,
             "problemMatcher": []
         },
         {
-            "label": "Start ColliderGraphToolServer (port 8001)",
+            "label": "Check AgentRunner provider config",
             "type": "shell",
-            "command": "uv run uvicorn src.main:app --reload --port 8001",
+            "command": "uv run python -c \"from src.core.config import settings; print('provider:', settings.collider_agent_provider); print('model:', settings.effective_agent_model)\"",
             "options": {
-                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderGraphToolServer"
+                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderAgentRunner"
             },
-            "isBackground": true,
             "problemMatcher": []
-        },
+        }
+    ],
+    "inputs": [
         {
-            "label": "Start ColliderVectorDbServer (port 8002)",
-            "type": "shell",
-            "command": "uv run uvicorn src.main:app --reload --port 8002",
-            "options": {
-                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderVectorDbServer"
-            },
-            "isBackground": true,
-            "problemMatcher": []
-        },
-        {
-            "label": "Plasmo Dev (Chrome Extension)",
-            "type": "shell",
-            "command": "pnpm plasmo dev",
-            "options": {
-                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderMultiAgentsChromeExtension"
-            },
-            "isBackground": true,
-            "problemMatcher": []
-        },
-        {
-            "label": "Plasmo Build (Chrome Extension)",
-            "type": "shell",
-            "command": "pnpm plasmo build",
-            "options": {
-                "cwd": "${workspaceFolder:FFS2_Backends+ChromeExt}/ColliderMultiAgentsChromeExtension"
-            },
-            "group": "build",
-            "problemMatcher": []
+            "id": "appId",
+            "type": "promptString",
+            "description": "Application UUID for seeder",
+            "default": "c57ab23a-4a57-4b28-a34c-9700320565ea"
         }
     ]
 }
