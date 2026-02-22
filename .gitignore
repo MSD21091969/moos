@@ -11,6 +11,7 @@ wheels/
 
 # Local DB
 *.db
+vector_data/
 
 # Environment files (secrets)
 .env
@@ -38,6 +39,11 @@ package-lock.json
 *.log
 *.tmp
 git_status_full.txt
+tmpclaude-*-cwd
+nul
+
+# Claude Code session state
+.claude/
 
 # IDE / Editor
 .idea/
