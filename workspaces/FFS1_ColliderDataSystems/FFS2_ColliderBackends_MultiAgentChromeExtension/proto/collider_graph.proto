@@ -134,3 +134,138 @@ message SubgraphProgress {
   string status = 5;              // "running" | "completed" | "failed"
   bytes partial_result_json = 6;
 }
+
+// ===========================================================================
+// ColliderContext — gRPC service for agent context delivery
+//
+// Replaces filesystem-based context injection (CLAUDE.md, SKILL.md, .mcp.json)
+// with programmatic gRPC streaming from AgentRunner to NanoClawBridge.
+// ===========================================================================
+
+service ColliderContext {
+  // Initial context delivery: stream full composed context as typed chunks
+  rpc StreamContext (ContextRequest) returns (stream ContextChunk);
+
+  // Live delta subscription: receive NodeContainer mutations mid-session
+  rpc SubscribeContextDeltas (DeltaSubscription) returns (stream ContextDelta);
+
+  // One-shot bootstrap: get full composed context as single response
+  rpc GetBootstrap (ContextRequest) returns (BootstrapResponse);
+}
+
+// ---------------------------------------------------------------------------
+// Context Request
+// ---------------------------------------------------------------------------
+
+message ContextRequest {
+  string session_id = 1;
+  repeated string node_ids = 2;     // Node IDs to compose
+  string role = 3;                  // User role for permission filtering
+  string app_id = 4;               // Application context
+  bool inherit_ancestors = 5;       // Walk up the tree for inherited context
+}
+
+// ---------------------------------------------------------------------------
+// Context Chunks — streamed from AgentRunner
+// ---------------------------------------------------------------------------
+
+message ContextChunk {
+  string chunk_id = 1;
+  int32 sequence = 2;
+
+  oneof payload {
+    SystemPromptChunk system_prompt = 10;
+    SkillChunk skill = 11;
+    ToolSchemaChunk tool_schema = 12;
+    McpConfigChunk mcp_config = 13;
+    SessionMetaChunk session_meta = 14;
+  }
+}
+
+message SystemPromptChunk {
+  string section = 1;              // "agents_md" | "soul_md" | "tools_md"
+  string content = 2;
+}
+
+message SkillChunk {
+  string name = 1;
+  string description = 2;
+  string emoji = 3;
+  string markdown_body = 4;
+  string tool_ref = 5;
+  bool user_invocable = 6;
+  bool model_invocable = 7;
+  string invocation_policy = 8;    // "auto" | "confirm" | "disabled"
+  repeated string requires_bins = 9;
+  repeated string requires_env = 10;
+}
+
+message ToolSchemaChunk {
+  string name = 1;
+  string description = 2;
+  bytes parameters_json = 3;       // JSON Schema for tool parameters
+}
+
+message McpConfigChunk {
+  string name = 1;
+  string transport_type = 2;       // "sse" | "stdio"
+  string url = 3;
+  string command = 4;
+  repeated string args = 5;
+}
+
+message SessionMetaChunk {
+  string role = 1;
+  string app_id = 2;
+  repeated string composed_nodes = 3;
+  string username = 4;
+}
+
+// ---------------------------------------------------------------------------
+// Context Deltas — live updates pushed mid-session
+// ---------------------------------------------------------------------------
+
+message DeltaSubscription {
+  string session_id = 1;
+  repeated string node_ids = 2;    // Nodes to watch for changes
+}
+
+message ContextDelta {
+  string delta_id = 1;
+  string timestamp = 2;
+  string operation = 3;            // "add" | "update" | "remove" | "replace"
+
+  oneof payload {
+    SystemPromptDelta system_prompt_delta = 10;
+    SkillDelta skill_delta = 11;
+    ToolSchemaDelta tool_schema_delta = 12;
+  }
+}
+
+message SystemPromptDelta {
+  string section = 1;
+  string content = 2;
+}
+
+message SkillDelta {
+  SkillChunk skill = 1;
+}
+
+message ToolSchemaDelta {
+  ToolSchemaChunk tool_schema = 1;
+}
+
+// ---------------------------------------------------------------------------
+// Bootstrap — single-shot full context response
+// ---------------------------------------------------------------------------
+
+message BootstrapResponse {
+  string session_id = 1;
+  string agents_md = 2;
+  string soul_md = 3;
+  string tools_md = 4;
+  repeated SkillChunk skills = 5;
+  repeated ToolSchemaChunk tool_schemas = 6;
+  repeated McpConfigChunk mcp_servers = 7;
+  SessionMetaChunk session_meta = 8;
+}

@@ -5,7 +5,7 @@ import warnings
 
 from . import collider_graph_pb2 as collider__graph__pb2
 
-GRPC_GENERATED_VERSION = '1.78.0'
+GRPC_GENERATED_VERSION = '1.78.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -328,6 +328,188 @@ class ColliderGraph(object):
             '/collider.graph.ColliderGraph/ExecuteTool',
             collider__graph__pb2.ToolExecutionRequest.SerializeToString,
             collider__graph__pb2.ToolExecutionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class ColliderContextStub(object):
+    """===========================================================================
+    ColliderContext — gRPC service for agent context delivery
+
+    Replaces filesystem-based context injection (CLAUDE.md, SKILL.md, .mcp.json)
+    with programmatic gRPC streaming from AgentRunner to NanoClawBridge.
+    ===========================================================================
+
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.StreamContext = channel.unary_stream(
+                '/collider.graph.ColliderContext/StreamContext',
+                request_serializer=collider__graph__pb2.ContextRequest.SerializeToString,
+                response_deserializer=collider__graph__pb2.ContextChunk.FromString,
+                _registered_method=True)
+        self.SubscribeContextDeltas = channel.unary_stream(
+                '/collider.graph.ColliderContext/SubscribeContextDeltas',
+                request_serializer=collider__graph__pb2.DeltaSubscription.SerializeToString,
+                response_deserializer=collider__graph__pb2.ContextDelta.FromString,
+                _registered_method=True)
+        self.GetBootstrap = channel.unary_unary(
+                '/collider.graph.ColliderContext/GetBootstrap',
+                request_serializer=collider__graph__pb2.ContextRequest.SerializeToString,
+                response_deserializer=collider__graph__pb2.BootstrapResponse.FromString,
+                _registered_method=True)
+
+
+class ColliderContextServicer(object):
+    """===========================================================================
+    ColliderContext — gRPC service for agent context delivery
+
+    Replaces filesystem-based context injection (CLAUDE.md, SKILL.md, .mcp.json)
+    with programmatic gRPC streaming from AgentRunner to NanoClawBridge.
+    ===========================================================================
+
+    """
+
+    def StreamContext(self, request, context):
+        """Initial context delivery: stream full composed context as typed chunks
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SubscribeContextDeltas(self, request, context):
+        """Live delta subscription: receive NodeContainer mutations mid-session
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetBootstrap(self, request, context):
+        """One-shot bootstrap: get full composed context as single response
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_ColliderContextServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'StreamContext': grpc.unary_stream_rpc_method_handler(
+                    servicer.StreamContext,
+                    request_deserializer=collider__graph__pb2.ContextRequest.FromString,
+                    response_serializer=collider__graph__pb2.ContextChunk.SerializeToString,
+            ),
+            'SubscribeContextDeltas': grpc.unary_stream_rpc_method_handler(
+                    servicer.SubscribeContextDeltas,
+                    request_deserializer=collider__graph__pb2.DeltaSubscription.FromString,
+                    response_serializer=collider__graph__pb2.ContextDelta.SerializeToString,
+            ),
+            'GetBootstrap': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetBootstrap,
+                    request_deserializer=collider__graph__pb2.ContextRequest.FromString,
+                    response_serializer=collider__graph__pb2.BootstrapResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'collider.graph.ColliderContext', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('collider.graph.ColliderContext', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class ColliderContext(object):
+    """===========================================================================
+    ColliderContext — gRPC service for agent context delivery
+
+    Replaces filesystem-based context injection (CLAUDE.md, SKILL.md, .mcp.json)
+    with programmatic gRPC streaming from AgentRunner to NanoClawBridge.
+    ===========================================================================
+
+    """
+
+    @staticmethod
+    def StreamContext(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/collider.graph.ColliderContext/StreamContext',
+            collider__graph__pb2.ContextRequest.SerializeToString,
+            collider__graph__pb2.ContextChunk.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SubscribeContextDeltas(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/collider.graph.ColliderContext/SubscribeContextDeltas',
+            collider__graph__pb2.DeltaSubscription.SerializeToString,
+            collider__graph__pb2.ContextDelta.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetBootstrap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/collider.graph.ColliderContext/GetBootstrap',
+            collider__graph__pb2.ContextRequest.SerializeToString,
+            collider__graph__pb2.BootstrapResponse.FromString,
             options,
             channel_credentials,
             insecure,

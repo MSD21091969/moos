@@ -13,6 +13,7 @@ Exposes:
 from __future__ import annotations
 
 import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
@@ -29,6 +30,24 @@ from src.schemas.context_set import ContextSet, SessionResponse
 logging.basicConfig(level=logging.DEBUG if settings.debug else logging.INFO)
 logger = logging.getLogger("collider.agent_runner")
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup/shutdown for background services (gRPC context server)."""
+    grpc_server = None
+    if settings.grpc_context_enabled:
+        from src.grpc.context_service import serve_grpc
+
+        grpc_server = await serve_grpc(settings.grpc_port)
+        logger.info(
+            "gRPC ColliderContext server started on port %d", settings.grpc_port
+        )
+    yield
+    if grpc_server:
+        await grpc_server.stop(grace=5)
+        logger.info("gRPC ColliderContext server stopped")
+
+
 app = FastAPI(
     title="ColliderAgentRunner",
     description=(
@@ -36,6 +55,7 @@ app = FastAPI(
         "NanoClaw workspace sessions. Chat is handled by NanoClawBridge directly."
     ),
     version="0.3.0",
+    lifespan=lifespan,
 )
 
 # CORS: allow the Chrome extension sidepanel and local dev servers to connect
@@ -79,24 +99,28 @@ async def create_session(ctx: ContextSet) -> SessionResponse:
     session_id = session_store.create(composed.system_prompt, composed.tool_schemas)
 
     # Write NanoClaw workspace files (CLAUDE.md, .mcp.json, skills/)
-    static_skills = (
-        Path(settings.nanoclaw_static_skills_dir)
-        if settings.nanoclaw_static_skills_dir
-        else None
-    )
-    try:
-        await write_workspace(
-            workspace_dir=Path(settings.nanoclaw_workspace_dir),
-            agents_md=composed.agents_md,
-            soul_md=composed.soul_md,
-            tools_md=composed.tools_md,
-            tool_schemas=composed.tool_schemas,
-            skills=composed.skills,
-            session_meta={**composed.session_meta, "session_id": session_id},
-            static_skills_dir=static_skills,
+    # Skipped when gRPC context delivery is active (files not needed)
+    if settings.write_workspace_files:
+        static_skills = (
+            Path(settings.nanoclaw_static_skills_dir)
+            if settings.nanoclaw_static_skills_dir
+            else None
         )
-    except Exception:
-        logger.exception("Failed to write NanoClaw workspace (non-fatal)")
+        try:
+            await write_workspace(
+                workspace_dir=Path(settings.nanoclaw_workspace_dir),
+                agents_md=composed.agents_md,
+                soul_md=composed.soul_md,
+                tools_md=composed.tools_md,
+                tool_schemas=composed.tool_schemas,
+                skills=composed.skills,
+                session_meta={**composed.session_meta, "session_id": session_id},
+                static_skills_dir=static_skills,
+            )
+        except Exception:
+            logger.exception("Failed to write NanoClaw workspace (non-fatal)")
+    else:
+        logger.info("Workspace file writes skipped (write_workspace_files=False)")
 
     # Build WebSocket URL with auth token
     ws_url = settings.nanoclaw_bridge_url

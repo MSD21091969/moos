@@ -52,14 +52,15 @@ CSS Modules, ESLint, Vitest
 
 ## Servers
 
-| Service                 | Port      | Role                                           |
-| ----------------------- | --------- | ---------------------------------------------- |
-| ColliderDataServer      | 8000      | REST + SSE + agent bootstrap, async SQLite     |
-| ColliderGraphToolServer | 8001      | WebSocket + gRPC + **MCP/SSE** — tool registry |
-| ColliderVectorDbServer  | 8002      | ChromaDB semantic search                       |
-| **ColliderAgentRunner** | **8004**  | Context composer → workspace files             |
-| **NanoClawBridge**      | **18789** | Claude Code WebSocket agent chat               |
-| ffs6 Frontend           | 4200      | IDE viewer appnode (default)                   |
+| Service                 | Port             | Role                                           |
+| ----------------------- | ---------------- | ---------------------------------------------- |
+| ColliderDataServer      | 8000             | REST + SSE + agent bootstrap, async SQLite     |
+| ColliderGraphToolServer | 8001             | WebSocket + gRPC + **MCP/SSE** — tool registry |
+| ColliderVectorDbServer  | 8002             | ChromaDB semantic search                       |
+| **ColliderAgentRunner** | **8004 / 50051** | Context composer + **gRPC context streaming**  |
+| **NanoClawBridge**      | **18789**        | **Anthropic SDK** agent sessions + teams       |
+| ffs4 Sidepanel          | 4201             | XYFlow graph workspace browser + agent chat    |
+| ffs6 Frontend           | 4200             | IDE viewer appnode (default)                   |
 
 MCP endpoint — connect with:
 
@@ -83,11 +84,22 @@ Secrets: `D:\FFS0_Factory\secrets\api_keys.env`
 
 ## Chrome Extension — Three Sidepanel Tabs
 
-1. **WorkspaceBrowser (Compose)** — role + node multi-select + vector query → `POST :8004/agent/session`
-2. **AgentSeat (Chat)** — JSON-RPC WebSocket → NanoClawBridge (`:18789`)
+1. **Tree (Browse)** — app selector + node tree + context composer
+2. **Agent (Nano)** — FFS4 iframe (`localhost:4201`) with XYFlow graph + agent chat
 3. **Root Agent** — auto-composes from `Application.root_node_id` → `POST :8004/agent/root/session`
-   - 15 Collider tools + NanoClaw built-ins (file, exec, browser)
-   - Workspace files at `~/.nanoclaw/workspaces/collider-root/`
+
+## Context Delivery (Dual Mode)
+
+**Mode 1 — Filesystem (Legacy):** `USE_SDK_AGENT=false`
+AgentRunner composes → workspace_writer writes CLAUDE.md + .mcp.json + skills/*.SKILL.md → CLI reads files.
+
+**Mode 2 — SDK + gRPC (Current):** `USE_SDK_AGENT=true`, `USE_GRPC_CONTEXT=true`
+NanoClawBridge requests gRPC GetBootstrap(:50051) → skills as JSON → Anthropic SDK session → SSE deltas for live updates.
+
+```env
+USE_SDK_AGENT=true  USE_GRPC_CONTEXT=true  GRPC_CONTEXT_ADDRESS=localhost:50051
+GRPC_CONTEXT_ENABLED=true  GRPC_PORT=50051  WRITE_WORKSPACE_FILES=false
+```
 
 ## SDK Tool Pipeline
 

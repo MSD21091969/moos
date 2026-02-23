@@ -1,7 +1,11 @@
 {
   "version": "6.0",
   "nxVersion": "22.5.1",
-  "pathMappings": {},
+  "pathMappings": {
+    "@collider/shared-ui": [
+      "libs/shared-ui/src/index.ts"
+    ]
+  },
   "nxJsonPlugins": [
     {
       "name": "@nx/vite/plugin",
@@ -22,39 +26,23 @@
     "nonProjectFiles": [
       {
         "file": ".agent/index.md",
-        "hash": "6389760073016030701"
+        "hash": "8651101150728587640"
       },
       {
         "file": ".agent/instructions/frontend_patterns.md",
-        "hash": "7451800375314925485"
+        "hash": "14863904471898656429"
       },
       {
         "file": ".agent/knowledge/codebase.md",
-        "hash": "4522035074261717742"
-      },
-      {
-        "file": ".agent/knowledge/templates/README.md",
-        "hash": "14547632297975577801"
-      },
-      {
-        "file": ".agent/knowledge/templates/codebase_template.md",
-        "hash": "8790967732475251945"
-      },
-      {
-        "file": ".agent/knowledge/templates/index_template.md",
-        "hash": "14621511079303469349"
-      },
-      {
-        "file": ".agent/knowledge/templates/instructions_template.md",
-        "hash": "15068204075329493720"
+        "hash": "7581207560077697187"
       },
       {
         "file": ".agent/manifest.yaml",
-        "hash": "13911988122183498907"
+        "hash": "4800239585566723125"
       },
       {
         "file": ".agent/rules/frontend_standards.md",
-        "hash": "7207965107276206639"
+        "hash": "9965884470961225300"
       },
       {
         "file": ".agent/skills/_index.md",
@@ -63,6 +51,10 @@
       {
         "file": ".agent/tools/_index.md",
         "hash": "4412692926252284999"
+      },
+      {
+        "file": ".agent/workflows/dev-frontend.md",
+        "hash": "10692754005291953567"
       },
       {
         "file": ".gitignore",
@@ -81,8 +73,44 @@
         "hash": "13377419431693519786"
       },
       {
-        "file": "apps/tmpclaude-df58-cwd",
-        "hash": "17926786427394780788"
+        "file": ".vscode/settings.json",
+        "hash": "2559019736230183372"
+      },
+      {
+        "file": "CLAUDE.md",
+        "hash": "8287376524253266008"
+      },
+      {
+        "file": "GEMINI.md",
+        "hash": "16541648642162778987"
+      },
+      {
+        "file": "libs/shared-ui/src/components/AccessRequestCard.tsx",
+        "hash": "6205419831610873669"
+      },
+      {
+        "file": "libs/shared-ui/src/components/Button.tsx",
+        "hash": "5975789490815840690"
+      },
+      {
+        "file": "libs/shared-ui/src/components/Card.tsx",
+        "hash": "17578840431477507182"
+      },
+      {
+        "file": "libs/shared-ui/src/components/TreeView.tsx",
+        "hash": "2376979488095452992"
+      },
+      {
+        "file": "libs/shared-ui/src/components/UserRoleBadge.tsx",
+        "hash": "4616048182079704491"
+      },
+      {
+        "file": "libs/shared-ui/src/index.ts",
+        "hash": "16390690973186480259"
+      },
+      {
+        "file": "libs/shared-ui/src/utils/theme.ts",
+        "hash": "15249647201457843985"
       },
       {
         "file": "nx.json",
@@ -90,96 +118,14 @@
       },
       {
         "file": "package.json",
-        "hash": "3966426373300285709"
-      },
-      {
-        "file": "tmpclaude-247e-cwd",
-        "hash": "9719588008213437715"
-      },
-      {
-        "file": "tmpclaude-4f45-cwd",
-        "hash": "9719588008213437715"
-      },
-      {
-        "file": "tmpclaude-77da-cwd",
-        "hash": "9719588008213437715"
-      },
-      {
-        "file": "tmpclaude-7ba9-cwd",
-        "hash": "9719588008213437715"
-      },
-      {
-        "file": "tmpclaude-af4b-cwd",
-        "hash": "9719588008213437715"
-      },
-      {
-        "file": "tmpclaude-d3be-cwd",
-        "hash": "9719588008213437715"
-      },
-      {
-        "file": "tmpclaude-dde3-cwd",
-        "hash": "9719588008213437715"
-      },
-      {
-        "file": "tmpclaude-e36f-cwd",
-        "hash": "9719588008213437715"
+        "hash": "9783688175101475956"
       },
       {
         "file": "tsconfig.base.json",
-        "hash": "16936441711144470533"
+        "hash": "17819768887782999970"
       }
     ],
     "projectFileMap": {
-      "ffs6": [
-        {
-          "file": "apps/ffs6/index.html",
-          "hash": "5936503477293976787"
-        },
-        {
-          "file": "apps/ffs6/project.json",
-          "hash": "1634966319074092055"
-        },
-        {
-          "file": "apps/ffs6/public/favicon.ico",
-          "hash": "9303420814833116677"
-        },
-        {
-          "file": "apps/ffs6/src/app/app.module.css",
-          "hash": "8887387885984320532"
-        },
-        {
-          "file": "apps/ffs6/src/app/app.tsx",
-          "hash": "6585501408781948957"
-        },
-        {
-          "file": "apps/ffs6/src/app/nx-welcome.tsx",
-          "hash": "2348102959109701629"
-        },
-        {
-          "file": "apps/ffs6/src/assets/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "apps/ffs6/src/main.tsx",
-          "hash": "11332670511827407186"
-        },
-        {
-          "file": "apps/ffs6/src/styles.css",
-          "hash": "5195668842064076916"
-        },
-        {
-          "file": "apps/ffs6/tsconfig.app.json",
-          "hash": "7232119452847825095"
-        },
-        {
-          "file": "apps/ffs6/tsconfig.json",
-          "hash": "2843773793157498944"
-        },
-        {
-          "file": "apps/ffs6/vite.config.mts",
-          "hash": "728088154635619421"
-        }
-      ],
       "ffs5": [
         {
           "file": "apps/ffs5/index.html",
@@ -249,7 +195,7 @@
         },
         {
           "file": "apps/ffs4/src/app/app.tsx",
-          "hash": "6333122689443337431"
+          "hash": "7569390486738424570"
         },
         {
           "file": "apps/ffs4/src/app/nx-welcome.tsx",
@@ -260,8 +206,44 @@
           "hash": "3244421341483603138"
         },
         {
+          "file": "apps/ffs4/src/components/agent/AgentChat.tsx",
+          "hash": "2439240347079384904"
+        },
+        {
+          "file": "apps/ffs4/src/components/graph/NodeCard.tsx",
+          "hash": "6711955943009472062"
+        },
+        {
+          "file": "apps/ffs4/src/components/graph/WorkspaceGraph.tsx",
+          "hash": "13492334382456968388"
+        },
+        {
+          "file": "apps/ffs4/src/hooks/useGraphData.ts",
+          "hash": "13008125164807672806"
+        },
+        {
+          "file": "apps/ffs4/src/lib/api.ts",
+          "hash": "13504815475731479031"
+        },
+        {
+          "file": "apps/ffs4/src/lib/nanoclaw-client.ts",
+          "hash": "17581584528890091655"
+        },
+        {
           "file": "apps/ffs4/src/main.tsx",
           "hash": "561879556058763919"
+        },
+        {
+          "file": "apps/ffs4/src/stores/contextStore.ts",
+          "hash": "2649498627724479147"
+        },
+        {
+          "file": "apps/ffs4/src/stores/graphStore.ts",
+          "hash": "9647130109557101293"
+        },
+        {
+          "file": "apps/ffs4/src/stores/sessionStore.ts",
+          "hash": "11904975629735407824"
         },
         {
           "file": "apps/ffs4/src/styles.css",
@@ -277,7 +259,73 @@
         },
         {
           "file": "apps/ffs4/vite.config.mts",
-          "hash": "3327525406279228258"
+          "hash": "8447048079007093483"
+        }
+      ],
+      "ffs6": [
+        {
+          "file": "apps/ffs6/index.html",
+          "hash": "5936503477293976787"
+        },
+        {
+          "file": "apps/ffs6/project.json",
+          "hash": "1634966319074092055"
+        },
+        {
+          "file": "apps/ffs6/public/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "apps/ffs6/src/app/app.module.css",
+          "hash": "8887387885984320532"
+        },
+        {
+          "file": "apps/ffs6/src/app/app.tsx",
+          "hash": "7305214722616263571"
+        },
+        {
+          "file": "apps/ffs6/src/app/nx-welcome.tsx",
+          "hash": "2348102959109701629"
+        },
+        {
+          "file": "apps/ffs6/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/ffs6/src/main.tsx",
+          "hash": "14274457375754152060"
+        },
+        {
+          "file": "apps/ffs6/src/styles.css",
+          "hash": "5195668842064076916"
+        },
+        {
+          "file": "apps/ffs6/src/views/AdminDashboard.tsx",
+          "hash": "13368217235051016289"
+        },
+        {
+          "file": "apps/ffs6/src/views/NodeDetails.tsx",
+          "hash": "932349118972198776"
+        },
+        {
+          "file": "apps/ffs6/src/views/PermissionGrant.tsx",
+          "hash": "2589031439297674266"
+        },
+        {
+          "file": "apps/ffs6/src/views/RoleAssignment.tsx",
+          "hash": "15101857505828026569"
+        },
+        {
+          "file": "apps/ffs6/tsconfig.app.json",
+          "hash": "7232119452847825095"
+        },
+        {
+          "file": "apps/ffs6/tsconfig.json",
+          "hash": "2843773793157498944"
+        },
+        {
+          "file": "apps/ffs6/vite.config.mts",
+          "hash": "13743690691167345799"
         }
       ]
     }

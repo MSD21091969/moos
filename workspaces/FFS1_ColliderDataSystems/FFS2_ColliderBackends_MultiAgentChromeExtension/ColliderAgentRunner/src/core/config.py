@@ -72,6 +72,13 @@ class Settings(BaseSettings):
     port: int = 8004
     debug: bool = False
 
+    # gRPC context streaming
+    grpc_port: int = 50051
+    grpc_context_enabled: bool = False
+
+    # When gRPC context is active, skip writing workspace files to disk
+    write_workspace_files: bool = True
+
     @property
     def effective_agent_model(self) -> str:
         """Return the resolved model name, applying per-provider defaults."""

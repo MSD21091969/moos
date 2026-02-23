@@ -12,6 +12,7 @@ dependencies = [
     "httpx>=0.28.0",
     "sse-starlette>=2.0.0",
     "python-dotenv>=1.0.0",
+    "grpcio>=1.60.0",
 ]
 
 [tool.uv]

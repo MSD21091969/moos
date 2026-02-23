@@ -59,8 +59,9 @@ FFS0_Factory/
 | ColliderDataServer | 8000 | FastAPI + SQLAlchemy + aiosqlite | Auth, node CRUD, SSE, NanoClaw |
 | ColliderGraphToolServer | 8001 | FastAPI + gRPC + MCP/SSE | Tool registry, execution, MCP server |
 | ColliderVectorDbServer | 8002 | FastAPI + ChromaDB | Semantic search + embeddings |
-| **ColliderAgentRunner** | **8004** | **FastAPI** | **Context composer → workspace files** |
-| **NanoClawBridge** | **18789** | **Node.js + WebSocket** | **WebSocket agent chat** |
+| **ColliderAgentRunner** | **8004 / 50051** | **FastAPI + gRPC** | **Context composer, gRPC streaming** |
+| **NanoClawBridge** | **18789** | **Node.js + Anthropic SDK + WS** | **SDK agent sessions, teams** |
+| ffs4 (sidepanel) | 4201 | Nx + Vite 7 + React 19 + XYFlow | Graph workspace browser + agent chat |
 | ffs6 (IDE viewer) | 4200 | Nx + Vite 7 + React 19 | Default frontend appnode |
 
 **Secrets**: `D:\FFS0_Factory\secrets\api_keys.env`
@@ -196,18 +197,26 @@ GraphToolServer is the MCP server. All `group`/`global` visibility tools are exp
 
 ## Data Flow
 
-### ContextSet (session-based)
+### Context Delivery (Dual Mode)
 
+**Mode 1 — Filesystem (Legacy, `USE_SDK_AGENT=false`):**
 ```text
-Chrome ext WorkspaceBrowser
-  → POST :8004/agent/session (role, node_ids, vector_query, inherit_ancestors)
-  → AgentRunner: bootstrap nodes (+ ancestors) via DataServer NanoClaw
-  → merge contexts, vector-augment tools
-  → write workspace files → ~/.nanoclaw/workspaces/collider/
-  → return session_id + nanoclaw_ws_url (ws://127.0.0.1:18789?token=...)
-  → Chrome ext connects WebSocket → NanoClawBridge
-  → NanoClawBridge reads workspace files, builds agent, handles chat
+Chrome ext / FFS4
+  → POST :8004/agent/session (role, node_ids, vector_query)
+  → AgentRunner: bootstrap + merge + write CLAUDE.md + .mcp.json + skills/*.SKILL.md
+  → NanoClawBridge spawns Claude CLI with workspace context
 ```
+
+**Mode 2 — SDK + gRPC (Current, `USE_SDK_AGENT=true`, `USE_GRPC_CONTEXT=true`):**
+```text
+Chrome ext / FFS4
+  → POST :8004/agent/session (role, node_ids, vector_query)
+  → NanoClawBridge: gRPC GetBootstrap(:50051) → ContextChunks
+  → Creates Anthropic SDK session → skills as JSON, tools via MCP SSE
+  → SSE delta subscription for live context hot-reload
+```
+
+**Agent Teams:** Select multiple nodes → each node becomes a teammate with isolated context. Leader gets merged context. Communication via mailbox.
 
 ### Tool execution
 

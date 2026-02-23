@@ -14,10 +14,18 @@ import {
   type RunningProcess,
   type RunOptions,
 } from "./container-runner.js";
+import { AnthropicAgent } from "./sdk/anthropic-agent.js";
+import { ContextGrpcClient } from "./grpc/context-client.js";
+import { ContextSubscriber } from "./sse/context-subscriber.js";
+import type { ComposedContext } from "./sdk/types.js";
 import type { AgentEvent } from "./event-parser.js";
 import pino from "pino";
 
 const log = pino({ name: "session-manager" });
+
+const USE_SDK_AGENT = process.env.USE_SDK_AGENT === "true";
+const USE_GRPC_CONTEXT = process.env.USE_GRPC_CONTEXT === "true";
+const GRPC_CONTEXT_ADDRESS = process.env.GRPC_CONTEXT_ADDRESS ?? "localhost:50051";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -30,6 +38,8 @@ export interface SessionConfig {
   model?: string;
   label?: string;
   idleTimeoutMs?: number;
+  /** When USE_SDK_AGENT=true, context is delivered as JSON instead of files. */
+  composedContext?: ComposedContext;
 }
 
 interface ActiveSession {
@@ -48,9 +58,20 @@ export class SessionManager {
   private db!: SessionDb;
   private active = new Map<string, ActiveSession>();
   private defaultIdleTimeoutMs: number;
+  private sdkAgent: AnthropicAgent | null = null;
+  private grpcClient: ContextGrpcClient | null = null;
+  private contextSubscribers = new Map<string, ContextSubscriber>();
 
   private constructor(idleTimeoutMinutes: number) {
     this.defaultIdleTimeoutMs = idleTimeoutMinutes * 60_000;
+    if (USE_SDK_AGENT) {
+      this.sdkAgent = new AnthropicAgent();
+      log.info("SDK agent mode enabled");
+    }
+    if (USE_GRPC_CONTEXT) {
+      this.grpcClient = new ContextGrpcClient(GRPC_CONTEXT_ADDRESS);
+      log.info({ address: GRPC_CONTEXT_ADDRESS }, "gRPC context client enabled");
+    }
   }
 
   static async create(opts?: { dbPath?: string; idleTimeoutMinutes?: number }): Promise<SessionManager> {
@@ -91,9 +112,132 @@ export class SessionManager {
 
   /**
    * Send a message to a session, spawning Claude Code if needed.
+   * Routes to SDK agent or CLI based on USE_SDK_AGENT flag.
    * Returns a function to unsubscribe from events.
    */
   sendMessage(
+    sessionKey: string,
+    message: string,
+    config: SessionConfig,
+    onEvent: (event: AgentEvent) => void,
+  ): () => void {
+    if (USE_SDK_AGENT && this.sdkAgent && (config.composedContext || USE_GRPC_CONTEXT)) {
+      return this.sendMessageSdk(sessionKey, message, config, onEvent);
+    }
+    return this.sendMessageCli(sessionKey, message, config, onEvent);
+  }
+
+  // -----------------------------------------------------------------------
+  // SDK agent path (USE_SDK_AGENT=true)
+  // -----------------------------------------------------------------------
+
+  private sendMessageSdk(
+    sessionKey: string,
+    message: string,
+    config: SessionConfig,
+    onEvent: (event: AgentEvent) => void,
+  ): () => void {
+    const row = this.getOrCreate(sessionKey, config);
+    let session = this.active.get(sessionKey);
+
+    if (!session) {
+      session = {
+        row,
+        process: null,
+        config,
+        idleTimer: null,
+        eventListeners: new Set(),
+      };
+      this.active.set(sessionKey, session);
+    }
+
+    session.eventListeners.add(onEvent);
+    this.clearIdleTimer(session);
+    this.db.update(sessionKey, { status: "active" });
+
+    // Run the SDK agentic loop asynchronously
+    const agent = this.sdkAgent!;
+    const grpcClient = this.grpcClient;
+    const broadcast = (event: AgentEvent) => {
+      for (const listener of session!.eventListeners) {
+        listener(event);
+      }
+    };
+
+    (async () => {
+      try {
+        // Fetch context via gRPC if not provided directly
+        let context = config.composedContext;
+        if (!context && grpcClient) {
+          try {
+            context = await grpcClient.getBootstrap({
+              sessionId: sessionKey,
+              nodeIds: [],
+              role: "app_user",
+              appId: "",
+            });
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            broadcast({ kind: "error", message: `gRPC context fetch failed: ${msg}` });
+            broadcast({ kind: "message_end" });
+            return;
+          }
+        }
+        if (!context) {
+          broadcast({ kind: "error", message: "No context available (neither direct nor via gRPC)" });
+          broadcast({ kind: "message_end" });
+          return;
+        }
+
+        // Create SDK session if this is the first message
+        if (!session!.process && !agent.getHistory(sessionKey).length) {
+          agent.createSession({
+            sessionId: sessionKey,
+            context,
+            model: config.model ?? undefined,
+          });
+
+          // Start SSE delta subscription for live context updates
+          if (USE_GRPC_CONTEXT && context.session_meta?.composed_nodes?.length) {
+            const subscriber = new ContextSubscriber({
+              sessionId: sessionKey,
+              nodeIds: context.session_meta.composed_nodes,
+              onDelta: (delta) => {
+                this.injectContext(sessionKey, delta);
+              },
+            });
+            this.contextSubscribers.set(sessionKey, subscriber);
+            subscriber.start().catch((err: unknown) => {
+              log.warn({ err }, "SSE context subscription failed");
+            });
+          }
+        }
+
+        for await (const event of agent.sendMessage(sessionKey, message)) {
+          broadcast(event);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        broadcast({ kind: "error", message: msg });
+        broadcast({ kind: "message_end" });
+      } finally {
+        this.db.update(sessionKey, { status: "idle" });
+        if (session) {
+          this.startIdleTimer(session);
+        }
+      }
+    })();
+
+    return () => {
+      session?.eventListeners.delete(onEvent);
+    };
+  }
+
+  // -----------------------------------------------------------------------
+  // CLI path (USE_SDK_AGENT=false) — original implementation
+  // -----------------------------------------------------------------------
+
+  private sendMessageCli(
     sessionKey: string,
     message: string,
     config: SessionConfig,
@@ -200,7 +344,30 @@ export class SessionManager {
       }
       this.active.delete(sessionKey);
     }
+    // Terminate SDK session if active
+    if (this.sdkAgent) {
+      try { this.sdkAgent.terminateSession(sessionKey); } catch { /* noop */ }
+    }
+    // Stop context subscriber for this session
+    const subscriber = this.contextSubscribers.get(sessionKey);
+    if (subscriber) {
+      subscriber.stop();
+      this.contextSubscribers.delete(sessionKey);
+    }
     this.db.delete(sessionKey);
+  }
+
+  /**
+   * Inject a context delta into an active SDK session.
+   * No-op when running in CLI mode.
+   */
+  injectContext(
+    sessionKey: string,
+    delta: import("./sdk/types.js").ContextDelta,
+  ): void {
+    if (!this.sdkAgent) return;
+    this.sdkAgent.injectContext(sessionKey, delta);
+    log.info({ sessionKey, deltaType: delta.type }, "Context delta injected");
   }
 
   /**
@@ -212,9 +379,20 @@ export class SessionManager {
       if (session.process) {
         killProcess(session.process);
       }
+      if (this.sdkAgent) {
+        try { this.sdkAgent.terminateSession(key); } catch { /* noop */ }
+      }
       this.active.delete(key);
     }
     this.db.close();
+    // Close gRPC client and all context subscribers
+    if (this.grpcClient) {
+      this.grpcClient.close();
+    }
+    for (const sub of this.contextSubscribers.values()) {
+      sub.stop();
+    }
+    this.contextSubscribers.clear();
   }
 
   // -----------------------------------------------------------------------

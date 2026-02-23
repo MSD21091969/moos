@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppStore } from "./stores/appStore";
 import { AppTree } from "./components/AppTree";
 import WorkspaceBrowser from "./components/WorkspaceBrowser";
 import RootAgentPanel from "./components/RootAgentPanel";
+import { startIframeBridge } from "./lib/iframe-bridge";
 import type { Application, AppNodeTree, ColliderMessage } from "~/types";
 import "~/style.css";
 
@@ -25,6 +26,15 @@ function SidePanel() {
   } = useAppStore();
 
   const [viewMode, setViewMode] = useState<ViewMode>("tree");
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Start iframe bridge when agent view is active
+  useEffect(() => {
+    if (viewMode === "agent") {
+      const cleanup = startIframeBridge(iframeRef);
+      return cleanup;
+    }
+  }, [viewMode]);
 
   useEffect(() => {
     loadApps();
@@ -153,7 +163,13 @@ function SidePanel() {
         ) : viewMode === "root" ? (
           <RootAgentPanel />
         ) : (
-          <WorkspaceBrowser />
+          /* Agent view — FFS4 sidepanel app via iframe */
+          <iframe
+            ref={iframeRef}
+            src="http://localhost:4201"
+            style={{ width: "100%", height: "100%", border: "none" }}
+            allow="clipboard-read; clipboard-write"
+          />
         )}
       </div>
     </div>
