@@ -3,6 +3,45 @@
     "collider-tools": {
       "type": "sse",
       "url": "http://localhost:8001/mcp/sse"
+    },
+    "filesystem-workspace": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "D:/FFS0_Factory",
+        "D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems",
+        "D:/FFS0_Factory/workspaces/maassen_hochrath"
+      ]
+    },
+    "git-root": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git",
+        "--repository",
+        "D:/FFS0_Factory"
+      ]
+    },
+    "sqlite-collider": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "--db",
+        "D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/collider.db"
+      ]
+    },
+    "http-fetch": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ]
     }
   }
 }

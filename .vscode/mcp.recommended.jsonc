@@ -1,0 +1,46 @@
+{
+    // Recommended minimal MCP stack for Collider (2026-02-23)
+    // Activation strategy:
+    // 1) Keep only collider-tools enabled first.
+    // 2) Enable one additional server at a time.
+    // 3) Verify behavior before enabling the next one.
+    "servers": {
+        "collider-tools": {
+            "type": "sse",
+            "url": "http://localhost:8001/mcp/sse"
+        }
+        // ------------------------------
+        // Enable next servers gradually
+        // ------------------------------
+        // "filesystem-workspace": {
+        //   "type": "stdio",
+        //   "command": "npx",
+        //   "args": [
+        //     "-y",
+        //     "@modelcontextprotocol/server-filesystem",
+        //     "D:/FFS0_Factory",
+        //     "D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems",
+        //     "D:/FFS0_Factory/workspaces/maassen_hochrath"
+        //   ]
+        // },
+        // "git-root": {
+        //   "type": "stdio",
+        //   "command": "npx",
+        //   "args": ["-y", "@modelcontextprotocol/server-git", "--repository", "D:/FFS0_Factory"]
+        // },
+        // "sqlite-collider": {
+        //   "type": "stdio",
+        //   "command": "npx",
+        //   "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db", "D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/collider.db"]
+        // },
+        // "http-fetch": {
+        //   "type": "stdio",
+        //   "command": "npx",
+        //   "args": ["-y", "@modelcontextprotocol/server-fetch"]
+        // },
+        // Future custom MCP servers (recommended):
+        // - collider-graph-introspection (effective ContextSet / ancestry / leaf-wins resolution)
+        // - collider-registry-diagnostics (tool schema provenance + drift checks)
+        // - collider-session-observability (team mailbox, stuck tasks, runtime health)
+    }
+}
