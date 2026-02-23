@@ -73,6 +73,22 @@ class SkillInvocationPolicy(BaseModel):
     model_invocable: bool = True
 
 
+class SkillKind(str, Enum):
+    """Classification of a skill's execution mechanism."""
+
+    PRIMITIVE = "primitive"
+    COMPOSITE = "composite"
+    META = "meta"
+
+
+class SkillScope(str, Enum):
+    """Visibility and applicability of the skill."""
+
+    NODE = "node"
+    APP = "app"
+    GLOBAL = "global"
+
+
 class SkillDefinition(BaseModel):
     """An agent-compatible skill entry backed by a Collider ToolDefinition.
 
@@ -85,6 +101,17 @@ class SkillDefinition(BaseModel):
     name: str
     description: str = ""
     emoji: str = ""
+    
+    # --- Graph-Aware Metadata ---
+    kind: SkillKind = SkillKind.PRIMITIVE
+    scope: SkillScope = SkillScope.NODE
+    source_node_path: str | None = None
+    inputs: list[dict] = []
+    outputs: list[dict] = []
+    depends_on: list[str] = []
+    child_skills: list[str] = []
+
+    # --- Execution Context ---
     tool_ref: str | None = None  # References ToolDefinition.name in same container
     requires_bins: list[str] = []  # CLI binaries needed, e.g. ["gh", "curl"]
     requires_env: list[str] = []  # Env vars needed, e.g. ["GITHUB_TOKEN"]
