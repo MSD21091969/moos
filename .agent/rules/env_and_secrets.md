@@ -31,7 +31,7 @@
 ## Key Environment Variables
 
 | Variable | Location | Purpose |
-|----------|----------|---------|
+| ---------- | ---------- | --------- |
 | `GEMINI_API_KEY` | `secrets/api_keys.env` | Google AI Studio API |
 | `GOOGLE_APPLICATION_CREDENTIALS` | `secrets/api_keys.env` | GCP service account path |
 | `COLLIDER_DATABASE_URL` | `FFS2/.env` | SQLite/Postgres connection |

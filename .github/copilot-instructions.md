@@ -3,12 +3,14 @@
 ## Project Overview
 
 Monorepo at `D:\FFS0_Factory` for the **Collider** multi-agent AI workspace platform — an
-"Antigravity" code-assist system that combines a Chrome extension sidepanel, four Python FastAPI
-services, and a React frontend. The active LLM provider is **Gemini 2.5 Flash**.
+"Antigravity" code-assist system that combines a Chrome extension sidepanel,
+four Python FastAPI services, and a React frontend. The active LLM provider is
+**Gemini 2.5 Flash**.
 
 Each workspace node carries a `NodeContainer` JSON — tools, instructions, rules, skills, and
-workflows that define what an AI agent can do in that context. The **Root Agent** has 15 live
-Collider tools and DOM capabilities via Chrome extension content scripts.
+workflows that define what an AI agent can do in that context. The **Root
+Agent** has 15 live Collider tools and DOM capabilities via Chrome extension
+content scripts.
 
 Full architecture: `.agent/knowledge/architecture/` in `FFS1_ColliderDataSystems/`.
 
@@ -138,8 +140,8 @@ Every node in the DB carries a `NodeContainer` JSON:
 ### Agent Bootstrap
 
 `GET /api/v1/agent/bootstrap/{node_id}?depth=N` returns the aggregated context
-(agents_md, soul_md, tools_md, skills, tool_schemas) for a node and all its descendants.
-Leaf entries win on name collision.
+(agents_md, soul_md, tools_md, skills, tool_schemas) for a node and all its
+descendants. Leaf entries win on name collision.
 
 ### ContextSet (session agent)
 
@@ -155,14 +157,16 @@ POST :8004/agent/session
 }
 ```
 
-AgentRunner bootstraps each node, optionally prepends ancestor contexts (root-first), merges
-(leaf-wins), augments with vector-discovered tools, writes workspace files to
+AgentRunner bootstraps each node, optionally prepends ancestor contexts (root-
+first), merges (leaf-wins), augments with vector-discovered tools, writes
+workspace files to
 `~/.nanoclaw/workspaces/collider/`, and returns `session_id` + `nanoclaw_ws_url`.
 Chat is handled by **NanoClawBridge** (WebSocket at `:18789`).
 
 ### Root Agent
 
 `POST :8004/agent/root/session` — auto-composes from `Application.root_node_id`:
+
 - Authenticates as `superadmin`
 - Full subtree depth, writes to `~/.nanoclaw/workspaces/collider-root/`
 - 15 Collider tools + Claude Code built-ins (file, exec, browser)
@@ -200,6 +204,7 @@ GraphToolServer is the MCP server. All `group`/`global` visibility tools are exp
 ### Context Delivery (Dual Mode)
 
 **Mode 1 — Filesystem (Legacy, `USE_SDK_AGENT=false`):**
+
 ```text
 Chrome ext / FFS4
   → POST :8004/agent/session (role, node_ids, vector_query)
@@ -208,6 +213,7 @@ Chrome ext / FFS4
 ```
 
 **Mode 2 — SDK + gRPC (Current, `USE_SDK_AGENT=true`, `USE_GRPC_CONTEXT=true`):**
+
 ```text
 Chrome ext / FFS4
   → POST :8004/agent/session (role, node_ids, vector_query)

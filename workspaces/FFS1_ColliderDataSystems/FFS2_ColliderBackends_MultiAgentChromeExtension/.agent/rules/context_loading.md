@@ -1,6 +1,7 @@
 ---
-description: How agent context is layered — App0 base layer, active tab appnode additive layer, domain-specific loading (FILESYST/CLOUD/ADMIN)
-activation: model_decision
+description: How agent context is layered — App0 base layer, active tab appnode
+additive layer, domain-specific loading (FILESYST/CLOUD/ADMIN) activation:
+model_decision
 ---
 
 # Context Loading Rules
@@ -20,11 +21,11 @@ activation: model_decision
 
 ## Domain-Specific Loading
 
-| Domain   | Source            | Method           |
+| Domain | Source | Method |
 | -------- | ----------------- | ---------------- |
-| FILESYST | .agent/ folders   | Native Messaging |
-| CLOUD    | nodecontainer     | Data Server API  |
-| ADMIN    | account container | Data Server API  |
+| FILESYST | .agent/ folders | Native Messaging |
+| CLOUD | nodecontainer | Data Server API |
+| ADMIN | account container | Data Server API |
 
 ## Cache Strategy
 

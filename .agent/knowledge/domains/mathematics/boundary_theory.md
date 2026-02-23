@@ -10,7 +10,7 @@ Three independent methods MUST agree:
 
 ### 1. Operad Algebra
 
-```
+```text
 Boundary = All Inputs - Wired Inputs
 ```
 
@@ -18,7 +18,7 @@ Unsatisfied "needs" of internal nodes.
 
 ### 2. Set Theory (with promotion)
 
-```
+```text
 Inputs  = ∪(node.inputs) - internal_wires.targets
 Outputs = ∪(node.outputs) - internal_wires.sources
 ```

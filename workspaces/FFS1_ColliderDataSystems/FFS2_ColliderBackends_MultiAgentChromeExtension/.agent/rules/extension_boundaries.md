@@ -1,6 +1,6 @@
 ---
-description: Hard security and communication constraints for the Chrome Extension — RBAC scope, sandboxing, allowed protocols
-activation: always
+description: Hard security and communication constraints for the Chrome
+Extension — RBAC scope, sandboxing, allowed protocols activation: always
 ---
 
 # Extension Boundaries

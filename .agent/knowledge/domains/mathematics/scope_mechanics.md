@@ -41,7 +41,7 @@ nodes = [N(R=0), N(R=1), N(R=1), N(R=2)]
 
 Flat structure → Adjacency matrix:
 
-```
+```text
      N0  N1  N2  N3
 N0 [ 0   1   1   0 ]
 N1 [ 0   0   0   1 ]

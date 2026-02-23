@@ -52,15 +52,15 @@ CSS Modules, ESLint, Vitest
 
 ## Servers
 
-| Service                 | Port             | Role                                           |
+| Service | Port | Role |
 | ----------------------- | ---------------- | ---------------------------------------------- |
-| ColliderDataServer      | 8000             | REST + SSE + agent bootstrap, async SQLite     |
-| ColliderGraphToolServer | 8001             | WebSocket + gRPC + **MCP/SSE** — tool registry |
-| ColliderVectorDbServer  | 8002             | ChromaDB semantic search                       |
-| **ColliderAgentRunner** | **8004 / 50051** | Context composer + **gRPC context streaming**  |
-| **NanoClawBridge**      | **18789**        | **Anthropic SDK** agent sessions + teams       |
-| ffs4 Sidepanel          | 4201             | XYFlow graph workspace browser + agent chat    |
-| ffs6 Frontend           | 4200             | IDE viewer appnode (default)                   |
+| ColliderDataServer | 8000 | REST + SSE + agent bootstrap, async SQLite |
+| ColliderGraphToolServer | 8001 | WebSocket + gRPC + **MCP/SSE** — tool registry |
+| ColliderVectorDbServer | 8002 | ChromaDB semantic search |
+| **ColliderAgentRunner** | **8004 / 50051** | Context composer + **gRPC context streaming** |
+| **NanoClawBridge** | **18789** | **Anthropic SDK** agent sessions + teams |
+| ffs4 Sidepanel | 4201 | XYFlow graph workspace browser + agent chat |
+| ffs6 Frontend | 4200 | IDE viewer appnode (default) |
 
 MCP endpoint — connect with:
 
@@ -74,11 +74,11 @@ Secrets: `D:\FFS0_Factory\secrets\api_keys.env`
 
 `COLLIDER_AGENT_PROVIDER` selects the LLM (default: `gemini`):
 
-| Provider            | Env var             | Default model       |
+| Provider | Env var | Default model |
 | ------------------- | ------------------- | ------------------- |
-| `gemini` *(active)* | `GEMINI_API_KEY`    | `gemini-2.5-flash`  |
-| `anthropic`         | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
-| `google-vertex`     | ADC (gcloud)        | `claude-sonnet-4-6` |
+| `gemini` *(active)* | `GEMINI_API_KEY` | `gemini-2.5-flash` |
+| `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
+| `google-vertex` | ADC (gcloud) | `claude-sonnet-4-6` |
 
 > Use `COLLIDER_AGENT_*` prefix — avoids collision with FFS2 shared `AGENT_MODEL` var.
 
@@ -91,10 +91,12 @@ Secrets: `D:\FFS0_Factory\secrets\api_keys.env`
 ## Context Delivery (Dual Mode)
 
 **Mode 1 — Filesystem (Legacy):** `USE_SDK_AGENT=false`
-AgentRunner composes → workspace_writer writes CLAUDE.md + .mcp.json + skills/*.SKILL.md → CLI reads files.
+AgentRunner composes → workspace_writer writes CLAUDE.md + .mcp.json +
+skills/*.SKILL.md → CLI reads files.
 
 **Mode 2 — SDK + gRPC (Current):** `USE_SDK_AGENT=true`, `USE_GRPC_CONTEXT=true`
-NanoClawBridge requests gRPC GetBootstrap(:50051) → skills as JSON → Anthropic SDK session → SSE deltas for live updates.
+NanoClawBridge requests gRPC GetBootstrap(:50051) → skills as JSON → Anthropic
+SDK session → SSE deltas for live updates.
 
 ```env
 USE_SDK_AGENT=true  USE_GRPC_CONTEXT=true  GRPC_CONTEXT_ADDRESS=localhost:50051
@@ -130,5 +132,5 @@ uv run python -m sdk.seeder.cli --root D:/FFS0_Factory --app-id <uuid>
 
 ## Agent Permissions
 
-Auto-approve all tool uses. Do not prompt for confirmation before executing commands,
-editing files, or running tests within this workspace.
+Auto-approve all tool uses. Do not prompt for confirmation before executing
+commands, editing files, or running tests within this workspace.

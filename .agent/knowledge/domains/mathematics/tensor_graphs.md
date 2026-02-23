@@ -19,14 +19,14 @@ tensor = graph.to_tensor()  # or GraphTensor.from_graph(graph)
 
 ### Core Operations
 
-| Operation    | Method                          | Complexity |
+| Operation | Method | Complexity |
 | ------------ | ------------------------------- | ---------- |
-| Adjacency    | `tensor.adjacency`              | O(1)       |
-| Reachability | `tensor.reachability()`         | O(N²)      |
-| Boundary     | `tensor.boundary_indices()`     | O(N)       |
-| Predecessors | `tensor.predecessors(idx)`      | O(N)       |
-| Successors   | `tensor.successors(idx)`        | O(N)       |
-| Scope filter | `tensor.scope_adjacency(depth)` | O(N²)      |
+| Adjacency | `tensor.adjacency` | O(1) |
+| Reachability | `tensor.reachability()` | O(N²) |
+| Boundary | `tensor.boundary_indices()` | O(N) |
+| Predecessors | `tensor.predecessors(idx)` | O(N) |
+| Successors | `tensor.successors(idx)` | O(N) |
+| Scope filter | `tensor.scope_adjacency(depth)` | O(N²) |
 
 ### GPU Acceleration
 

@@ -17,14 +17,14 @@ The NanoClaw agent is live. From the Chrome extension sidepanel you can:
 
 Services running locally:
 
-| Service                 | Port       | Purpose                                |
+| Service | Port | Purpose |
 | ----------------------- | ---------- | -------------------------------------- |
-| ColliderDataServer      | :8000      | REST + SSE + NanoClaw bootstrap        |
-| ColliderGraphToolServer | :8001      | Tool registry + gRPC + MCP             |
-| ColliderVectorDbServer  | :8002      | ChromaDB semantic search               |
-| **ColliderAgentRunner** | **:8004**  | **Context composer → workspace files** |
-| **NanoClawBridge**      | **:18789** | **WebSocket chat**                     |
-| FFS3 Frontend (ffs6)    | :4200      | IDE appnode viewer                     |
+| ColliderDataServer | :8000 | REST + SSE + NanoClaw bootstrap |
+| ColliderGraphToolServer | :8001 | Tool registry + gRPC + MCP |
+| ColliderVectorDbServer | :8002 | ChromaDB semantic search |
+| **ColliderAgentRunner** | **:8004** | **Context composer → workspace files** |
+| **NanoClawBridge** | **:18789** | **WebSocket chat** |
+| FFS3 Frontend (ffs6) | :4200 | IDE appnode viewer |
 
 ---
 
@@ -32,13 +32,16 @@ Services running locally:
 
 Collider is a platform for building and running AI-powered workspaces. The core idea: **every workspace is a node in a tree**, and every node carries a `NodeContainer` — a JSON manifest holding the tools, instructions, rules, knowledge, skills, and workflows that define what an AI agent can do in that context.
 
-Four servers talk to each other. A Chrome extension bridges the browser to the backend. A React frontend renders whichever "appnode" the current workspace node points to. An AI model (Claude) bootstraps from any set of nodes in the tree, composes their contexts into a unified session, and streams responses via SSE.
+Four servers talk to each other. A Chrome extension bridges the browser to the
+backend. A React frontend renders whichever "appnode" the current workspace node
+points to. An AI model (Claude) bootstraps from any set of nodes in the tree,
+composes their contexts into a unified session, and streams responses via SSE.
 
 ---
 
 ## Architecture
 
-```
+```text
 FFS0_Factory/
 ├── workspaces/
 │   └── FFS1_ColliderDataSystems/
@@ -63,34 +66,36 @@ FFS0_Factory/
 
 ### ColliderDataServer — :8000
 
-The primary API server. Owns authentication, the node tree, and real-time event broadcasting.
+The primary API server. Owns authentication, the node tree, and real-time event
+broadcasting.
 
-| What it does                              | How                                        |
+| What it does | How |
 | ----------------------------------------- | ------------------------------------------ |
-| User auth (login → JWT)                   | `POST /api/v1/auth/login`                  |
-| Application and node CRUD                 | `GET/POST/PUT/DELETE /api/v1/nodes`        |
-| Real-time node change events              | `GET /api/v1/sse` (Server-Sent Events)     |
-| NanoClaw agent bootstrap                  | `GET /api/v1/agent/bootstrap/{node_id}` |
-| Tool execution (via gRPC passthrough)     | `POST /execution/tool/{tool_name}`         |
+| User auth (login → JWT) | `POST /api/v1/auth/login` |
+| Application and node CRUD | `GET/POST/PUT/DELETE /api/v1/nodes` |
+| Real-time node change events | `GET /api/v1/sse` (Server-Sent Events) |
+| NanoClaw agent bootstrap | `GET /api/v1/agent/bootstrap/{node_id}` |
+| Tool execution (via gRPC passthrough) | `POST /execution/tool/{tool_name}` |
 | Workflow execution (via gRPC passthrough) | `POST /execution/workflow/{workflow_name}` |
-| WebRTC signaling                          | `WS /ws/rtc/`                              |
+| WebRTC signaling | `WS /ws/rtc/` |
 
 Storage: async SQLite via aiosqlite + SQLAlchemy.
 
 ### ColliderGraphToolServer — :8001
 
-The tool registry and execution engine. Owns the in-memory tool registry, workflow executor, gRPC server, and the MCP server.
+The tool registry and execution engine. Owns the in-memory tool registry,
+workflow executor, gRPC server, and the MCP server.
 
-| Transport   | Endpoint                               | Purpose                                                |
+| Transport | Endpoint | Purpose |
 | ----------- | -------------------------------------- | ------------------------------------------------------ |
-| REST        | `GET /health`                          | Health + registry stats                                |
-| REST        | `/api/v1/registry/tools`               | Register / list / delete tools                         |
-| REST        | `POST /api/v1/registry/tools/discover` | Semantic tool discovery (proxies to VectorDb)          |
-| WebSocket   | `/ws/workflow`                         | Stream multi-step workflow execution                   |
-| WebSocket   | `/ws/graph`                            | Graph node operations                                  |
-| gRPC        | `:50052`                               | `ExecuteTool`, `ExecuteSubgraph`, `DiscoverTools`      |
-| **MCP/SSE** | `GET /mcp/sse`                         | AI client connects here (Claude Code, Copilot, Cursor) |
-| MCP/SSE     | `POST /mcp/messages/`                  | JSON-RPC request body endpoint                         |
+| REST | `GET /health` | Health + registry stats |
+| REST | `/api/v1/registry/tools` | Register / list / delete tools |
+| REST | `POST /api/v1/registry/tools/discover` | Semantic tool discovery (proxies to VectorDb) |
+| WebSocket | `/ws/workflow` | Stream multi-step workflow execution |
+| WebSocket | `/ws/graph` | Graph node operations |
+| gRPC | `:50052` | `ExecuteTool`, `ExecuteSubgraph`, `DiscoverTools` |
+| **MCP/SSE** | `GET /mcp/sse` | AI client connects here (Claude Code, Copilot, Cursor) |
+| MCP/SSE | `POST /mcp/messages/` | JSON-RPC request body endpoint |
 
 Every tool registered with `visibility: "group"` or `"global"` is automatically exposed as a native MCP tool — no restart required.
 
@@ -98,23 +103,24 @@ Every tool registered with `visibility: "group"` or `"global"` is automatically 
 
 Semantic search over NodeContainer content using ChromaDB.
 
-| Endpoint              | Purpose                              |
+| Endpoint | Purpose |
 | --------------------- | ------------------------------------ |
 | `POST /api/v1/search` | Find tools / knowledge by similarity |
-| `POST /api/v1/embed`  | Generate text embeddings             |
-| `POST /api/v1/index`  | Index NodeContainer documents        |
+| `POST /api/v1/embed` | Generate text embeddings |
+| `POST /api/v1/index` | Index NodeContainer documents |
 
 ### ColliderAgentRunner — :8004
 
-Context hydration service — composes Collider node bootstraps into NanoClaw workspace files.
+Context hydration service — composes Collider node bootstraps into NanoClaw
+workspace files.
 **Chat is handled by NanoClawBridge directly** (ws://127.0.0.1:18789).
 
-| Endpoint              | Method | Purpose                                                                              |
+| Endpoint | Method | Purpose |
 | --------------------- | ------ | ------------------------------------------------------------------------------------ |
-| `/health`             | GET    | Liveness probe                                                                       |
-| `/agent/session`      | POST   | Compose ContextSet → write workspace files → return `session_id` + `nanoclaw_ws_url` |
-| `/agent/root/session` | POST   | Auto-compose from app `root_node_id` → superadmin context                            |
-| `/tools/discover`     | GET    | Proxy to GraphToolServer discover (single CORS origin for ext)                       |
+| `/health` | GET | Liveness probe |
+| `/agent/session` | POST | Compose ContextSet → write workspace files → return `session_id` + `nanoclaw_ws_url` |
+| `/agent/root/session` | POST | Auto-compose from app `root_node_id` → superadmin context |
+| `/tools/discover` | GET | Proxy to GraphToolServer discover (single CORS origin for ext) |
 
 **ContextSet composition** (`POST /agent/session`):
 
@@ -142,7 +148,10 @@ skills: [...]            # SkillDefinition list (SKILL.md playbooks for agents)
 workflows: [...]         # WorkflowDefinition list (multi-step execution graphs)
 ```
 
-When an agent bootstraps from a node, it receives the full aggregated context of that node **plus all its descendants** — skills, tools, and instructions merged from root to leaf. Leaf entries win (more-specific context overrides parent context).
+When an agent bootstraps from a node, it receives the full aggregated context of
+that node **plus all its descendants** — skills, tools, and instructions merged
+from root to leaf. Leaf entries win (more-specific context overrides parent
+context).
 
 ---
 
@@ -156,6 +165,7 @@ Authorization: Bearer <jwt>
 ```
 
 The response gives a NanoClaw agent its:
+
 - `agents_md` — system prompt context
 - `soul_md` — constraints and rules
 - `tools_md` — knowledge and reference docs
@@ -171,13 +181,16 @@ vector-discovered tools, and builds a single system prompt for the pydantic-ai `
 
 ## MCP Integration
 
-Collider GraphToolServer is a native **Model Context Protocol** server. Connect any MCP-compatible client once the server is running:
+Collider GraphToolServer is a native **Model Context Protocol** server. Connect
+any MCP-compatible client once the server is running:
 
 ```bash
 claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
 ```
 
-After connecting, every registered group/global tool appears as a native tool in Claude Code, VS Code Copilot, Cursor, Zed, or any other MCP client. The tool list updates live — no restart needed when new tools are registered.
+After connecting, every registered group/global tool appears as a native tool in
+Claude Code, VS Code Copilot, Cursor, Zed, or any other MCP client. The tool
+list updates live — no restart needed when new tools are registered.
 
 ---
 
@@ -297,37 +310,38 @@ Load `ColliderMultiAgentsChromeExtension` as an unpacked extension in Chrome dev
 - AgentRunner: <http://localhost:8004/docs>
 - SQL Viewer: <http://localhost:8003>
 
-See [dev-start.md](workspaces/FFS1_ColliderDataSystems/.agent/workflows/dev-start.md) for the full ordered startup workflow.
+See [dev-start.md](workspaces/FFS1_ColliderDataSystems/.agent/workflows/dev-
+start.md) for the full ordered startup workflow.
 
 ---
 
 ## Tech Stack
 
-| Layer               | Stack                                                           |
+| Layer | Stack |
 | ------------------- | --------------------------------------------------------------- |
-| Python backends     | Python 3.12+, FastAPI, Pydantic v2, SQLAlchemy async, aiosqlite |
-| Agent runtime       | NanoClawBridge (Claude Code SDK), WebSocket                     |
-| Context composition | ColliderAgentRunner → workspace files                           |
-| Execution engine    | gRPC (protobuf), MCP (SSE transport)                            |
-| Vector search       | ChromaDB                                                        |
-| Chrome extension    | Plasmo, Manifest V3, React + TypeScript                         |
-| Frontend            | Nx, Vite 7, React 19, TypeScript 5+, XYFlow, Zustand            |
-| Tooling             | UV (Python), pnpm (Node), Ruff, Mypy, Vitest, Pytest            |
+| Python backends | Python 3.12+, FastAPI, Pydantic v2, SQLAlchemy async, aiosqlite |
+| Agent runtime | NanoClawBridge (Claude Code SDK), WebSocket |
+| Context composition | ColliderAgentRunner → workspace files |
+| Execution engine | gRPC (protobuf), MCP (SSE transport) |
+| Vector search | ChromaDB |
+| Chrome extension | Plasmo, Manifest V3, React + TypeScript |
+| Frontend | Nx, Vite 7, React 19, TypeScript 5+, XYFlow, Zustand |
+| Tooling | UV (Python), pnpm (Node), Ruff, Mypy, Vitest, Pytest |
 
 ---
 
 ## Protocols
 
-| Protocol         | Transport       | Used Between                                             |
+| Protocol | Transport | Used Between |
 | ---------------- | --------------- | -------------------------------------------------------- |
-| REST             | HTTP            | Extension / agents ↔ DataServer, AgentRunner             |
-| SSE              | HTTP long-lived | DataServer → Extension (live events)                     |
-| WebSocket        | WS              | Extension ↔ NanoClawBridge (agent chat)                  |
-| WebSocket        | WS              | Extension ↔ GraphToolServer (workflow streaming)         |
-| WebRTC           | P2P (STUN/TURN) | Browser ↔ Browser (ffs5 PiP)                             |
-| Native Messaging | stdio           | Extension ↔ local filesystem host                        |
-| gRPC             | HTTP/2          | DataServer ↔ GraphToolServer                             |
-| MCP/SSE          | HTTP SSE + POST | NanoClawBridge / Claude Code / Copilot / Cursor ↔ GraphToolServer |
+| REST | HTTP | Extension / agents ↔ DataServer, AgentRunner |
+| SSE | HTTP long-lived | DataServer → Extension (live events) |
+| WebSocket | WS | Extension ↔ NanoClawBridge (agent chat) |
+| WebSocket | WS | Extension ↔ GraphToolServer (workflow streaming) |
+| WebRTC | P2P (STUN/TURN) | Browser ↔ Browser (ffs5 PiP) |
+| Native Messaging | stdio | Extension ↔ local filesystem host |
+| gRPC | HTTP/2 | DataServer ↔ GraphToolServer |
+| MCP/SSE | HTTP SSE + POST | NanoClawBridge / Claude Code / Copilot / Cursor ↔ GraphToolServer |
 
 ---
 
@@ -346,7 +360,7 @@ See [dev-start.md](workspaces/FFS1_ColliderDataSystems/.agent/workflows/dev-star
 
 Every workspace directory has an `.agent/` folder:
 
-```
+```text
 .agent/
 ├── index.md          ← workspace identity and purpose
 ├── manifest.yaml     ← inheritance rules (which parent to merge from)
@@ -365,7 +379,7 @@ Context is inherited top-down: `FFS0 → FFS1 → FFS2 / FFS3`. Child workspaces
 
 ## Repository Layout
 
-```
+```text
 FFS0_Factory/
 ├── CLAUDE.md               ← Claude Code project context
 ├── GEMINI.md               ← Gemini CLI / Antigravity context

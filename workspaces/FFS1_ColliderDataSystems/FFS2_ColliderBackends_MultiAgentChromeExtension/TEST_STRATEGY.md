@@ -8,6 +8,7 @@
 **Run:** `cd ColliderAgentRunner && uv run pytest tests/grpc/ -v`
 
 Covers:
+
 - `_skill_to_chunk()` — SkillDefinition dict → SkillChunk protobuf conversion
 - `_tool_schema_to_chunk()` — Tool schema dict → ToolSchemaChunk conversion
 - `_session_meta_to_chunk()` — Session meta dict → SessionMetaChunk conversion
@@ -21,6 +22,7 @@ Covers:
 **Run:** `cd NanoClawBridge && npx vitest run`
 
 Covers:
+
 - `buildSystemPrompt()` — includes all context sections, skills, session meta; handles empty context
 - `applyDeltaToContext()` — skill add/update/remove, system prompt delta, full replace, immutability
 - `ToolExecutor` — schema storage, Anthropic-compatible tool generation, execution routing
@@ -215,6 +217,7 @@ markers = [
 ```
 
 Run by tier:
+
 ```bash
 uv run pytest -m unit          # Fast, CI-safe
 uv run pytest -m integration   # Needs services running
@@ -235,15 +238,15 @@ export default {
 
 ### Coverage Targets
 
-| Module               | Target | Current           |
+| Module | Target | Current |
 | -------------------- | ------ | ----------------- |
-| prompt-builder.ts    | 90%    | test exists       |
-| tool-executor.ts     | 85%    | test exists       |
-| team-manager.ts      | 85%    | needs test        |
-| anthropic-agent.ts   | 70%    | needs mock SDK    |
-| context-client.ts    | 75%    | needs integration |
-| context_service.py   | 85%    | test exists       |
-| workspace_manager.py | 80%    | needs test        |
+| prompt-builder.ts | 90% | test exists |
+| tool-executor.ts | 85% | test exists |
+| team-manager.ts | 85% | needs test |
+| anthropic-agent.ts | 70% | needs mock SDK |
+| context-client.ts | 75% | needs integration |
+| context_service.py | 85% | test exists |
+| workspace_manager.py | 80% | needs test |
 
 ### CI Pipeline (Recommended)
 

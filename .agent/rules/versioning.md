@@ -6,7 +6,7 @@
 
 ## Proposed Structure
 
-```
+```text
 D:\FFS0_Factory\
 ├── models/              ← NEW (clean v3)
 ├── sdk/                 ← NEW (clean)
@@ -43,14 +43,14 @@ D:\FFS0_Factory\
 
 ## Version Naming
 
-| Version       | Location               | Status             |
+| Version | Location | Status |
 | ------------- | ---------------------- | ------------------ |
-| v2 (legacy)   | `_legacy/models_v2/`   | Archived reference |
-| v3 (new)      | `models/`              | Active development |
-| FFS2 MVP      | `_legacy/ffs2_mvp/`    | Archived reference |
-| FFS3 MVP      | `_legacy/ffs3_mvp/`    | Archived reference |
-| FFS2 v2 (new) | FFS2 service dirs      | Clean rebuild      |
-| FFS3 v2 (new) | FFS3 collider-frontend | Clean rebuild      |
+| v2 (legacy) | `_legacy/models_v2/` | Archived reference |
+| v3 (new) | `models/` | Active development |
+| FFS2 MVP | `_legacy/ffs2_mvp/` | Archived reference |
+| FFS3 MVP | `_legacy/ffs3_mvp/` | Archived reference |
+| FFS2 v2 (new) | FFS2 service dirs | Clean rebuild |
+| FFS3 v2 (new) | FFS3 collider-frontend | Clean rebuild |
 
 ---
 

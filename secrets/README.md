@@ -2,7 +2,7 @@
 
 This directory contains sensitive credentials. **Never commit actual secrets.**
 
-## Files (create locally):
+## Files (create locally)
 
 ### `api_keys.env`
 
@@ -20,7 +20,8 @@ ANTHROPIC_API_KEY=sk-ant-...
 ### `gmail_credentials.json`
 
 Google OAuth2 client credentials for Gmail API access.
-Download from Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client IDs.
+Download from Google Cloud Console → APIs & Services → Credentials → OAuth 2.0
+Client IDs.
 
 ### `gmail_token.json`
 

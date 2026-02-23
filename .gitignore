@@ -28,6 +28,12 @@ mailmind-ai-djbuw-*.json
 node_modules/
 package-lock.json
 
+# Nx runtime artifacts
+.nx/
+**/.nx/
+**/.nx/workspace-data/
+**/.nx/workspace-data/**
+
 # Plasmo build artifacts (Chrome extension framework)
 .plasmo/
 

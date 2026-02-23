@@ -8,7 +8,9 @@
 
 1. A root node is created with a **NodeContainer** carrying workspace context (tools, instructions, rules, knowledge, skills, workflows, configs)
 2. The node's `metadata_.frontend_app` field points to the correct frontend code (`ffs4`, `ffs5`, or `ffs6`)
-3. The application's `config` JSON carries a **"domain" config** — a label for the set of permitted backend APIs (e.g. FILESYST = native messaging + sync APIs, CLOUD = REST + SSE, ADMIN = user management APIs)
+3. The application's `config` JSON carries a **"domain" config** — a label
+  for the set of permitted backend APIs (e.g. FILESYST = native messaging +
+  sync APIs, CLOUD = REST + SSE, ADMIN = user management APIs)
 
 This is NOT an abstract concept — the node-container literally IS the workspace's `.agent/` directory, serialized into the database.
 
@@ -16,7 +18,7 @@ This is NOT an abstract concept — the node-container literally IS the workspac
 
 ## Nx Workspace Structure
 
-```
+```text
 FFS3_ColliderApplicationsFrontendServer/   ← Nx workspace root
 ├── apps/
 │   ├── ffs4/       ← Sidepanel appnode       (port 4201)
@@ -31,7 +33,7 @@ FFS3_ColliderApplicationsFrontendServer/   ← Nx workspace root
 
 ### Each App Structure
 
-```
+```text
 apps/ffs6/
 ├── src/
 │   ├── app/
@@ -53,17 +55,18 @@ apps/ffs6/
 
 ## Appnodes
 
-| App    | Name               | Purpose                                                          | Default Port |
+| App | Name | Purpose | Default Port |
 | ------ | ------------------ | ---------------------------------------------------------------- | ------------ |
-| `ffs4` | Sidepanel Appnode  | Agent seat, app tree browser, workspace navigator                | 4201         |
-| `ffs5` | PiP Appnode        | Picture-in-Picture communication window (WebRTC P2P)             | 4202         |
-| `ffs6` | IDE Viewer Appnode | Renders the selected workspace node's view — **default project** | 4200         |
+| `ffs4` | Sidepanel Appnode | Agent seat, app tree browser, workspace navigator | 4201 |
+| `ffs5` | PiP Appnode | Picture-in-Picture communication window (WebRTC P2P) | 4202 |
+| `ffs6` | IDE Viewer Appnode | Renders the selected workspace node's view — **default project** | 4200 |
 
-Each appnode is a standalone Vite + React 19 app that receives workspace context from the extension and renders the appropriate view.
+Each appnode is a standalone Vite + React 19 app that receives workspace context
+from the extension and renders the appropriate view.
 
 ### How Appnodes Are Selected
 
-```
+```text
 1. User selects a node in the sidepanel
 2. Extension reads node.metadata_.frontend_app
 3. Extension routes to the correct appnode:
@@ -133,15 +136,18 @@ Contents:
 
 When an application is created, its `config.domain` field picks from:
 
-| Config Label | Permitted APIs                               | Use Case             |
+| Config Label | Permitted APIs | Use Case |
 | ------------ | -------------------------------------------- | -------------------- |
-| `FILESYST`   | Native Messaging, sync APIs, file operations | Local workspace apps |
-| `CLOUD`      | REST API, SSE, WebSocket workflows           | Cloud-hosted apps    |
-| `ADMIN`      | User management, role assignment, secrets    | System management    |
+| `FILESYST` | Native Messaging, sync APIs, file operations | Local workspace apps |
+| `CLOUD` | REST API, SSE, WebSocket workflows | Cloud-hosted apps |
+| `ADMIN` | User management, role assignment, secrets | System management |
 
-The node-container carries this config. The frontend reads it to know which API clients to initialize and which tools the agent can use.
+The node-container carries this config. The frontend reads it to know which API
+clients to initialize and which tools the agent can use.
 
-**This is a frontend developer concern**, not a top-level architecture decision. The extension reads the domain config from the node and initializes the appropriate tools.
+**This is a frontend developer concern**, not a top-level architecture
+decision. The extension reads the domain config from the node and initializes
+the appropriate tools.
 
 ---
 
@@ -151,7 +157,7 @@ The system maintains two parallel graph structures:
 
 ### Graph 1: Container-Nodes (Database)
 
-```
+```text
 Application (root)
 ├── workspace-node-a (NodeContainer: tools, instructions, rules)
 │   ├── sub-node-a1
@@ -164,7 +170,7 @@ Stored in `nodes` table. Agent creates/modifies these via DataServer REST. Each 
 
 ### Graph 2: View-Components (Frontend)
 
-```
+```text
 AppShell
 ├── NodeGraph (XYFlow — visual representation of Graph 1)
 ├── NodeViewer (renders selected node's content)

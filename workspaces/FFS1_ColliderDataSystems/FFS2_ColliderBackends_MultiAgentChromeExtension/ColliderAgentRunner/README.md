@@ -9,7 +9,8 @@
 
 ## What It Does
 
-The AgentRunner bridges the Chrome extension to NanoClaw by composing Collider context:
+The AgentRunner bridges the Chrome extension to NanoClaw by composing Collider
+context:
 
 ### Session Agent (WorkspaceBrowser tab)
 
@@ -86,7 +87,8 @@ Verify: <http://localhost:8004/health>
 
 ### 3 — Prerequisites
 
-ColliderDataServer (:8000) and ColliderGraphToolServer (:8001) must be running first.
+ColliderDataServer (:8000) and ColliderGraphToolServer (:8001) must be running
+first.
 
 ---
 
@@ -123,7 +125,7 @@ Override the model with `COLLIDER_AGENT_MODEL=gemini-2.5-pro`.
 
 ## Source Layout
 
-```
+```text
 src/
 ├── main.py                  ← FastAPI app + session endpoints
 ├── api/
@@ -154,16 +156,16 @@ All settings via `pydantic-settings` — env file priority (highest first):
 
 Key settings:
 
-| Env var                       | Default                                | Description                                |
-| ----------------------------- | -------------------------------------- | ------------------------------------------ |
-| `COLLIDER_AGENT_PROVIDER`     | `anthropic`                            | `gemini` \| `anthropic` \| `google-vertex` |
-| `COLLIDER_AGENT_MODEL`        | *(per-provider)*                       | Override model name                        |
-| `VERTEX_PROJECT_ID`           | —                                      | GCP project for Vertex AI                  |
-| `VERTEX_REGION`               | `us-east5`                             | Vertex AI region                           |
-| `DATA_SERVER_URL`             | `http://localhost:8000`                | ColliderDataServer base URL                |
-| `GRAPH_TOOL_URL`              | `http://localhost:8001`                | ColliderGraphToolServer base URL           |
-| `NANOCLAW_BRIDGE_URL`         | `ws://127.0.0.1:18789`                 | NanoClawBridge WebSocket URL               |
-| `NANOCLAW_BRIDGE_TOKEN`       | `collider-dev-token-2026`              | Auth token for NanoClawBridge              |
-| `NANOCLAW_WORKSPACE_DIR`      | `~/.nanoclaw/workspaces/collider`      | Session workspace path                     |
-| `NANOCLAW_ROOT_WORKSPACE_DIR` | `~/.nanoclaw/workspaces/collider-root` | Root agent workspace path                  |
-| `PORT`                        | `8004`                                 | Server port                                |
+| Env var                       | Default                                | Description                                       |
+| ----------------------------- | -------------------------------------- | ------------------------------------------------- |
+| `COLLIDER_AGENT_PROVIDER`     | `anthropic`                            | Supported: `gemini`, `anthropic`, `google-vertex` |
+| `COLLIDER_AGENT_MODEL`        | *(per-provider)*                       | Override model name                               |
+| `VERTEX_PROJECT_ID`           | —                                      | GCP project for Vertex AI                         |
+| `VERTEX_REGION`               | `us-east5`                             | Vertex AI region                                  |
+| `DATA_SERVER_URL`             | `http://localhost:8000`                | ColliderDataServer base URL                       |
+| `GRAPH_TOOL_URL`              | `http://localhost:8001`                | ColliderGraphToolServer base URL                  |
+| `NANOCLAW_BRIDGE_URL`         | `ws://127.0.0.1:18789`                 | NanoClawBridge WebSocket URL                      |
+| `NANOCLAW_BRIDGE_TOKEN`       | `collider-dev-token-2026`              | Auth token for NanoClawBridge                     |
+| `NANOCLAW_WORKSPACE_DIR`      | `~/.nanoclaw/workspaces/collider`      | Session workspace path                            |
+| `NANOCLAW_ROOT_WORKSPACE_DIR` | `~/.nanoclaw/workspaces/collider-root` | Root agent workspace path                         |
+| `PORT`                        | `8004`                                 | Server port                                       |

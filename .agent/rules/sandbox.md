@@ -6,22 +6,22 @@
 
 ## Allowed Paths
 
-| Path                          | Purpose            |
+| Path | Purpose |
 | ----------------------------- | ------------------ |
-| `D:\FFS0_Factory\`            | Factory root       |
-| `D:\FFS0_Factory\.agent\`     | Root agent context |
-| `D:\FFS0_Factory\workspaces\` | Child workspaces   |
-| `D:\FFS0_Factory\models\`     | Pydantic models    |
-| `D:\FFS0_Factory\sdk\`        | SDK components     |
-| `D:\FFS0_Factory\secrets\`    | API keys (gitignored) |
+| `D:\FFS0_Factory\` | Factory root |
+| `D:\FFS0_Factory\.agent\` | Root agent context |
+| `D:\FFS0_Factory\workspaces\` | Child workspaces |
+| `D:\FFS0_Factory\models\` | Pydantic models |
+| `D:\FFS0_Factory\sdk\` | SDK components |
+| `D:\FFS0_Factory\secrets\` | API keys (gitignored) |
 
 ## Denied Paths
 
-| Path                | Reason                      |
+| Path | Reason |
 | ------------------- | --------------------------- |
-| `C:\Windows\`       | System files                |
-| `C:\Program Files\` | Installed software          |
-| `%USERPROFILE%\`    | User home (except explicit) |
+| `C:\Windows\` | System files |
+| `C:\Program Files\` | Installed software |
+| `%USERPROFILE%\` | User home (except explicit) |
 
 ---
 

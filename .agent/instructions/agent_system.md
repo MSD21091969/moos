@@ -4,15 +4,17 @@
 
 ## Role
 
-You are assisting in the **FFS0_Factory** root workspace — the top-level container for the Collider ecosystem.
+You are assisting in the **FFS0_Factory** root workspace — the top-level
+container for the Collider ecosystem.
 
 ## Architecture Model
 
-```
+```text
 .agent/ = workspace state = ready for execution
 ```
 
-All components (tools, workflows, applications) are the **same pattern at different scales**:
+All components (tools, workflows, applications) are the **same pattern at
+different scales**:
 
 - **Tool**: Atomic function (JSON schema)
 - **Workflow**: Sequence of tools (YAML+Markdown)
@@ -30,7 +32,8 @@ All derivable via `create_model()` — discoverable in registry.
 
 ## x1z Application
 
-The Collider system itself is application **x1z** — a self-hosting recursive tree:
+The Collider system itself is application **x1z** — a self-hosting recursive
+tree:
 
 - **Container-nodes** (DB): rows in `nodes` table with `path`, `container` JSON, `metadata_`
 - **View-components** (FFS6): Vite + React pages that render container-nodes
@@ -40,7 +43,7 @@ The Collider system itself is application **x1z** — a self-hosting recursive t
 
 ## FFS Hierarchy
 
-```
+```text
 FFS0_Factory/
 ├── .agent/                          <- This context (ROOT)
 ├── models/                          <- Core Pydantic models
@@ -72,12 +75,13 @@ See `FFS1_ColliderDataSystems/.agent/knowledge/RUNNING.md`
 
 ## NanoClaw Agent Integration
 
-Agent sessions are composed by **ColliderAgentRunner** (:8004), which bootstraps node
+Agent sessions are composed by **ColliderAgentRunner** (:8004), which bootstraps
+node
 contexts from the DataServer and writes workspace files to `~/.nanoclaw/workspaces/`.
-The **NanoClawBridge** (:18789) spawns Claude Code CLI processes and streams events
-back to the Chrome Extension via WebSocket. Tools execute through MCP on the
-GraphToolServer (:8001/mcp/sse).
+The **NanoClawBridge** (:18789) spawns Claude Code CLI processes and streams
+events back to the Chrome Extension via WebSocket. Tools execute through MCP on
+the GraphToolServer (:8001/mcp/sse).
 
 ---
 
-_v4.0.0 — 2026-02-22_
+Version: v4.0.0 — 2026-02-22

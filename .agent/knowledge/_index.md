@@ -4,7 +4,7 @@
 
 ## Structure
 
-```
+```text
 knowledge/
 ├── domains/          # WHAT you know (technical depth)
 │   ├── mathematics/  # Category theory, tensors, boundary theory

@@ -8,7 +8,7 @@
 
 ## Hierarchy
 
-```
+```text
 FFS0_Factory                     (Root)
   └── FFS1_ColliderDataSystems   (IDE Context - Parent)
         └── FFS2_ColliderBackends (This Workspace - Backend/Extension)
@@ -68,7 +68,7 @@ Specific context for:
 
 ## Component Folders
 
-```
+```text
 ColliderDataServer/              # REST/SSE/NanoClaw API server (:8000)
 ColliderGraphToolServer/         # Tool registry + MCP server (:8001)
 ColliderVectorDbServer/          # ChromaDB semantic search (:8002)

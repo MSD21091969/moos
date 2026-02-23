@@ -1,5 +1,6 @@
 ---
-description: Sync local filesystem workspace data to ColliderDataServer via Native Messaging
+description: Sync local filesystem workspace data to ColliderDataServer via
+Native Messaging
 ---
 
 # Sync: Filesystem to DataServer

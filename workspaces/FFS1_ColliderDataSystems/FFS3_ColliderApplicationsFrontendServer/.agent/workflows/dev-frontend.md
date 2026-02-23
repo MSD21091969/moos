@@ -1,5 +1,6 @@
 ---
-description: Run the FFS3 Nx frontend dev server — serves ffs6 (IDE viewer) by default on port 4200
+description: Run the FFS3 Nx frontend dev server — serves ffs6 (IDE viewer) by
+default on port 4200
 ---
 
 # Dev: Frontend (FFS3)
@@ -29,6 +30,7 @@ Starts the Nx dev server for the FFS3 monorepo.
    ```
 
 4. To run all apps simultaneously:
+
    ```powershell
    pnpm nx run-many --target=serve --projects=ffs4,ffs5,ffs6 --parallel
    ```

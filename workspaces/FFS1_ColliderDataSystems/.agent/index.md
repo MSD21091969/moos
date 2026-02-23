@@ -4,13 +4,13 @@
 
 ## Location
 
-```
+```text
 D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\.agent\
 ```
 
 ## Hierarchy
 
-```
+```text
 FFS0_Factory\.agent\              ← Root (includes: [])
     └── exports to ↓
 FFS1_ColliderDataSystems\.agent\  ← This workspace (IDE context)
@@ -28,7 +28,7 @@ FFS2, FFS3...                     ← Child code projects
 
 ## Folder Structure
 
-```
+```text
 .agent/
 ├── manifest.yaml          ← Inheritance config
 ├── index.md               ← You are here

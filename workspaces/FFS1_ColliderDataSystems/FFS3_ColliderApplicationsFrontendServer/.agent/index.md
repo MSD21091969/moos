@@ -8,7 +8,7 @@
 
 ## Hierarchy
 
-```
+```text
 FFS0_Factory                     (Root)
   └── FFS1_ColliderDataSystems   (IDE Context)
         └── FFS3_ColliderFrontend (This Workspace = Nx monorepo root)
@@ -16,7 +16,8 @@ FFS0_Factory                     (Root)
 
 ## Purpose
 
-Specific context for the frontend monorepo, which delivers **appnodes** — frontend views that render workspace nodes from the DB:
+Specific context for the frontend monorepo, which delivers **appnodes** —
+frontend views that render workspace nodes from the DB:
 
 - **apps/ffs4** — Sidepanel appnode: agent seat, app tree, workspace browser
 - **apps/ffs5** — PiP appnode: Picture-in-Picture communication window (WebRTC)

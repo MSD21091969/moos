@@ -1,6 +1,6 @@
 ---
-description: Workspace hierarchy and dependency flow for FFS0–FFS3 (FFS1 governs, FFS2 implements, FFS3 consumes)
-activation: always
+description: Workspace hierarchy and dependency flow for FFS0–FFS3 (FFS1
+governs, FFS2 implements, FFS3 consumes) activation: always
 ---
 
 # Project Structure & Governance

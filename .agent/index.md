@@ -4,21 +4,22 @@
 
 ## Location
 
-```
+```text
 D:\FFS0_Factory\.agent\
 ```
 
 ## Core Concept
 
-```
+```text
 .agent/ = workspace state = purpose + relations + capabilities
 ```
 
-All components (tools, workflows, apps) are the **same pattern at different scales**.
+All components (tools, workflows, apps) are the **same pattern at different
+scales**.
 
 ## Folder Structure
 
-```
+```text
 .agent/
 ├── manifest.yaml          ← Inheritance, exports
 ├── index.md               ← You are here
@@ -35,7 +36,7 @@ All components (tools, workflows, apps) are the **same pattern at different scal
 
 ## Hierarchy
 
-```
+```text
 FFS0_Factory\.agent\              ← ROOT
     └── exports to ↓
 FFS1_ColliderDataSystems\.agent\  ← IDE Context
@@ -61,7 +62,8 @@ Applications carry a "domain" label — a set of permitted backend APIs:
 | CLOUD    | REST, SSE, WebSocket workflows   | Cloud-hosted apps    |
 | ADMIN    | User management, role assignment | System management    |
 
-This is a backend API config label on the application, not an architectural concept.
+This is a backend API config label on the application, not an architectural
+concept.
 
 ## Key Docs
 
@@ -75,4 +77,4 @@ Architecture docs live in FFS1 (the IDE workspace):
 
 ---
 
-_v3.0.0 — 2026-02-22_
+Version: v3.0.0 — 2026-02-22

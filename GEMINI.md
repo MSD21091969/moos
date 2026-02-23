@@ -56,14 +56,14 @@ pydantic-ai, Ruff, Mypy strict, Pytest
 
 ## Servers
 
-| Service                 | Port         | Role                                                       |
+| Service | Port | Role |
 | ----------------------- | ------------ | ---------------------------------------------------------- |
-| ColliderDataServer      | 8000         | REST + SSE + Agent bootstrap (SQLite)                      |
-| ColliderGraphToolServer | 8001 / 50052 | Tool registry + gRPC execution + **MCP/SSE**               |
-| ColliderVectorDbServer  | 8002         | ChromaDB semantic search (gRPC)                            |
-| **ColliderAgentRunner** | **8004**     | pydantic-ai, **Gemini 2.5 Flash**, ContextSet + Root Agent |
-| **NanoClawBridge**      | **18789**    | **WebSocket agent chat**                                   |
-| ffs6 Frontend           | 4200         | IDE viewer appnode (default)                               |
+| ColliderDataServer | 8000 | REST + SSE + Agent bootstrap (SQLite) |
+| ColliderGraphToolServer | 8001 / 50052 | Tool registry + gRPC execution + **MCP/SSE** |
+| ColliderVectorDbServer | 8002 | ChromaDB semantic search (gRPC) |
+| **ColliderAgentRunner** | **8004** | pydantic-ai, **Gemini 2.5 Flash**, ContextSet + Root Agent |
+| **NanoClawBridge** | **18789** | **WebSocket agent chat** |
+| ffs6 Frontend | 4200 | IDE viewer appnode (default) |
 
 ## Active LLM (Gemini)
 
@@ -94,7 +94,8 @@ GEMINI_API_KEY=AIzaSy...
 }
 ```
 
-AgentRunner merges this into a pydantic-ai system prompt (leaf-wins strategy for tools/skills).
+AgentRunner merges this into a pydantic-ai system prompt (leaf-wins strategy for
+tools/skills).
 
 ## ContextSet — Session Agent
 

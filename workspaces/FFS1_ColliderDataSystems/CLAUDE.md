@@ -10,24 +10,25 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 
 ## Service Ports
 
-| Service                 | Port         | Path                               |
+| Service | Port | Path |
 | ----------------------- | ------------ | ---------------------------------- |
-| ColliderDataServer      | 8000         | `FFS2.../ColliderDataServer/`      |
+| ColliderDataServer | 8000 | `FFS2.../ColliderDataServer/` |
 | ColliderGraphToolServer | 8001 / 50052 | `FFS2.../ColliderGraphToolServer/` |
-| ColliderVectorDbServer  | 8002         | `FFS2.../ColliderVectorDbServer/`  |
-| SQLite Viewer (dev)     | 8003         | `sqlite_web collider.db`           |
-| ColliderAgentRunner     | 8004 / 50051 | `FFS2.../ColliderAgentRunner/`     |
-| NanoClawBridge          | 18789        | Claude Code WebSocket agent chat   |
-| FFS3 ffs6 frontend      | 4200         | `FFS3.../apps/ffs6/`               |
-| FFS3 ffs4 sidepanel     | 4201         | `FFS3.../apps/ffs4/`               |
+| ColliderVectorDbServer | 8002 | `FFS2.../ColliderVectorDbServer/` |
+| SQLite Viewer (dev) | 8003 | `sqlite_web collider.db` |
+| ColliderAgentRunner | 8004 / 50051 | `FFS2.../ColliderAgentRunner/` |
+| NanoClawBridge | 18789 | Claude Code WebSocket agent chat |
+| FFS3 ffs6 frontend | 4200 | `FFS3.../apps/ffs6/` |
+| FFS3 ffs4 sidepanel | 4201 | `FFS3.../apps/ffs4/` |
 
 ## Context Delivery Architecture
 
-NanoClawBridge supports **two context delivery modes**, controlled by environment flags:
+NanoClawBridge supports **two context delivery modes**, controlled by
+environment flags:
 
 ### Mode 1: Filesystem (Legacy — `USE_SDK_AGENT=false`)
 
-```
+```text
 Extension -> POST :8004/agent/session -> AgentRunner composes ContextSet
   -> workspace_writer writes CLAUDE.md + .mcp.json + skills/*.SKILL.md
   -> returns session_id + nanoclaw_ws_url
@@ -36,7 +37,7 @@ Extension -> POST :8004/agent/session -> AgentRunner composes ContextSet
 
 ### Mode 2: SDK + gRPC (New — `USE_SDK_AGENT=true`, `USE_GRPC_CONTEXT=true`)
 
-```
+```text
 Extension/FFS4 -> POST :8004/agent/session -> AgentRunner composes ContextSet
   -> NanoClawBridge requests context via gRPC GetBootstrap (:50051)
   -> AgentRunner streams ContextChunks (system prompt, skills, tool schemas, MCP config)
@@ -61,7 +62,8 @@ WRITE_WORKSPACE_FILES=false     # Skip file writes when gRPC active
 
 ## Agent Teams
 
-When multiple nodes are selected in the FFS4 graph, NanoClawBridge can spawn an **agent team**:
+When multiple nodes are selected in the FFS4 graph, NanoClawBridge can spawn an
+**agent team**:
 
 - **Leader** gets merged context from all selected nodes
 - **Members** each get isolated per-node context
@@ -70,7 +72,7 @@ When multiple nodes are selected in the FFS4 graph, NanoClawBridge can spawn an 
 
 ## NanoClawBridge SDK Modules
 
-```
+```text
 NanoClawBridge/src/
 ├── sdk/
 │   ├── types.ts            # ComposedContext, SkillDefinition, ContextDelta
@@ -88,17 +90,17 @@ NanoClawBridge/src/
 
 Defined in `proto/collider_graph.proto`. Compile: `uv run python -m proto.compile_protos`
 
-| RPC                    | Input             | Output              |
+| RPC | Input | Output |
 | ---------------------- | ----------------- | ------------------- |
-| StreamContext          | ContextRequest    | stream ContextChunk |
-| GetBootstrap           | ContextRequest    | BootstrapResponse   |
+| StreamContext | ContextRequest | stream ContextChunk |
+| GetBootstrap | ContextRequest | BootstrapResponse |
 | SubscribeContextDeltas | DeltaSubscription | stream ContextDelta |
 
 ## FFS4 Sidepanel Architecture
 
 FFS4 (`localhost:4201`) is the XYFlow graph workspace browser + agent chat. Chrome extension embeds FFS4 via iframe in the `agent` view tab.
 
-```
+```text
 FFS4/src/
 ├── stores/          # Zustand: graphStore, sessionStore, contextStore
 ├── components/

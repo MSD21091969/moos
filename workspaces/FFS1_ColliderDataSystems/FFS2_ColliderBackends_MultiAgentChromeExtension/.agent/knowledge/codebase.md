@@ -4,7 +4,7 @@
 
 ## Structure
 
-```
+```text
 FFS2_ColliderBackends/
 ├── ColliderDataServer/              <- FastAPI :8000 REST + SSE + NanoClaw bootstrap
 │   ├── src/

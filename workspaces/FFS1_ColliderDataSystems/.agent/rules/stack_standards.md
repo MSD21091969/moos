@@ -1,6 +1,6 @@
 ---
-description: Authorized technology stack — Python/FastAPI (FFS2), Nx/Vite/React 19 (FFS3), ChromaDB, aiosqlite, Plasmo extension, NanoClaw
-activation: always
+description: Authorized technology stack — Python/FastAPI (FFS2), Nx/Vite/React
+19 (FFS3), ChromaDB, aiosqlite, Plasmo extension, NanoClaw activation: always
 ---
 
 # Stack Standards
@@ -11,7 +11,7 @@ activation: always
 
 ## Backend (FFS2)
 
-**Core Frameworks**
+### Backend Core Frameworks
 
 - **Language**: Python 3.12+
 - **API Framework**: FastAPI (Async)
@@ -19,7 +19,7 @@ activation: always
 - **AI Agent**: pydantic-ai (ColliderAgentRunner)
 - **gRPC**: grpcio / grpcio-tools (tool execution, vector search)
 
-**Browser Extension**
+### Browser Extension Stack
 
 - **Framework**: Plasmo (React + TypeScript)
 - **Manifest**: V3
@@ -27,7 +27,7 @@ activation: always
 - **Styling**: Tailwind CSS
 - **Agent Protocol**: NanoClaw WebSocket (nanoclaw-rpc.ts)
 
-**Persistence**
+### Persistence Stack
 
 - **Vector DB**: ChromaDB (Local/Docker)
 - **Relational**: SQLite + aiosqlite
@@ -38,20 +38,20 @@ activation: always
 
 ## Frontend (FFS3)
 
-**Core Frameworks**
+### Frontend Core Frameworks
 
 - **Monorepo**: Nx (encapsulated workspace)
 - **App Framework**: Vite 7
 - **UI Library**: React 19
 - **Language**: TypeScript 5+
 
-**UI/UX**
+### Frontend UI/UX Stack
 
 - **Styling**: Tailwind CSS
 - **Components**: Radix UI / shadcn/ui (Accessible primitives)
 - **Motion**: Framer Motion
 
-**State & Data**
+### Frontend State & Data
 
 - **Server State**: TanStack Query (React Query)
 - **Client State**: Zustand
@@ -61,7 +61,7 @@ activation: always
 
 ## Shared Protocols
 
-**Data Exchange**
+### Data Exchange Protocols
 
 - **gRPC**: Service-to-service communication (live on :50052, :8002)
 - **WebSocket**: NanoClawBridge agent communication (:18789)
@@ -70,7 +70,7 @@ activation: always
 - **SSE**: Server-Sent Events for real-time data updates
 - **JSON Schema**: Validated contract between heterogeneous systems
 
-**Infrastructure**
+### Infrastructure Stack
 
 - **Containerization**: Docker / Docker Compose
 - **Orchestration**: K8s (Future/Cloud)

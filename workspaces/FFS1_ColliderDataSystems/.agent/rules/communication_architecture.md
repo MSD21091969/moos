@@ -1,6 +1,7 @@
 ---
-description: Protocol standards connecting FFS2 (Backend/Extension) and FFS3 (Frontend) — REST, SSE, WebSocket, gRPC, Native Messaging
-activation: model_decision
+description: Protocol standards connecting FFS2 (Backend/Extension) and FFS3
+(Frontend) — REST, SSE, WebSocket, gRPC, Native Messaging activation:
+model_decision
 ---
 
 # Communication Architecture

@@ -4,7 +4,7 @@
 
 ## Structure
 
-```
+```text
 FFS3_ColliderApplicationsFrontendServer/   ← This IS the Nx workspace root
 ├── apps/
 │   ├── ffs4/                              ← Sidepanel appnode
@@ -41,22 +41,22 @@ FFS3_ColliderApplicationsFrontendServer/   ← This IS the Nx workspace root
 
 ## Key Files
 
-| File                     | Purpose                                                           |
+| File | Purpose |
 | ------------------------ | ----------------------------------------------------------------- |
-| `nx.json`                | Nx workspace config. Default project: `ffs6`. Plugin: `@nx/vite`. |
-| `package.json`           | Root deps: `react@19`, `vite@7`, `vitest@4`, `@nx/*` packages.    |
-| `tsconfig.base.json`     | Base TS config. Path aliases for `@collider/shared-ui`.           |
-| `apps/*/project.json`    | Per-app Nx targets: `build`, `serve`, `test`, `lint`.             |
-| `apps/*/vite.config.mts` | Per-app Vite config. Port defaults (ffs6 = 4200).                 |
+| `nx.json` | Nx workspace config. Default project: `ffs6`. Plugin: `@nx/vite`. |
+| `package.json` | Root deps: `react@19`, `vite@7`, `vitest@4`, `@nx/*` packages. |
+| `tsconfig.base.json` | Base TS config. Path aliases for `@collider/shared-ui`. |
+| `apps/*/project.json` | Per-app Nx targets: `build`, `serve`, `test`, `lint`. |
+| `apps/*/vite.config.mts` | Per-app Vite config. Port defaults (ffs6 = 4200). |
 
 ## Appnode Concept
 
 Each app in `apps/` is an **appnode** — a frontend view that renders workspace nodes from the DB:
 
-| App  | Role                                        | Default Port   |
+| App | Role | Default Port |
 | ---- | ------------------------------------------- | -------------- |
-| ffs4 | Sidepanel: agent seat, app tree browser     | 4201           |
-| ffs5 | PiP: Picture-in-Picture communication       | 4202           |
+| ffs4 | Sidepanel: agent seat, app tree browser | 4201 |
+| ffs5 | PiP: Picture-in-Picture communication | 4202 |
 | ffs6 | IDE viewer: renders selected workspace node | 4200 (default) |
 
 The node-container's `metadata_.frontend_app` field determines which appnode renders a given workspace.

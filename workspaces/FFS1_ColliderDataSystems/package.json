@@ -3,6 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "description": "FFS1 ColliderDataSystems Workspace Root",
+  "scripts": {
+    "lint:md": "pnpm run lint:md:ffs1 && pnpm run lint:md:ffs2 && pnpm run lint:md:ffs3",
+    "lint:md:fix": "pnpm run lint:md:ffs1:fix && pnpm run lint:md:ffs2:fix && pnpm run lint:md:ffs3:fix",
+    "lint:md:ffs1": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc \"*.md\" \".agent/**/*.md\"",
+    "lint:md:ffs1:fix": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc --fix \"*.md\" \".agent/**/*.md\"",
+    "lint:md:ffs2": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc \"FFS2_ColliderBackends_MultiAgentChromeExtension/**/*.md\"",
+    "lint:md:ffs2:fix": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc --fix \"FFS2_ColliderBackends_MultiAgentChromeExtension/**/*.md\"",
+    "lint:md:ffs3": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc \"FFS3_ColliderApplicationsFrontendServer/**/*.md\"",
+    "lint:md:ffs3:fix": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc --fix \"FFS3_ColliderApplicationsFrontendServer/**/*.md\""
+  },
   "pnpm": {
     "overrides": {
       "sharp": "^0.34.5"

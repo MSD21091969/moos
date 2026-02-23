@@ -2,11 +2,11 @@
 
 ## Core Mappings
 
-| Math Concept     | models_v2 Object    |
+| Math Concept | models_v2 Object |
 | ---------------- | ------------------- |
-| Object           | Node                |
-| Morphism         | Edge                |
-| Functor          | Definition          |
+| Object | Node |
+| Morphism | Edge |
+| Functor | Definition |
 | Quotient Functor | CompositeDefinition |
 
 ## Category Laws
@@ -17,7 +17,7 @@ Every node has identity morphism (self-loop, not stored).
 
 ### Composition
 
-```
+```text
 f: A → B, g: B → C  ⟹  g∘f: A → C
 ```
 
@@ -25,7 +25,7 @@ Edge composition preserves wire specs.
 
 ### Associativity
 
-```
+```text
 h∘(g∘f) = (h∘g)∘f
 ```
 
@@ -38,7 +38,7 @@ Collider graphs form SMC:
 - **Tensor product** (⊗): Parallel composition
 - **Composition** (∘): Sequential composition
 
-```
+```text
        ┌─────┐
 A ──►──┤  f  ├──►── B
        └─────┘       ⊗ (parallel)

@@ -83,10 +83,10 @@ call time via the `_client.py` shared httpx client.
 
 ### Available tools
 
-| Module            | Functions                                                                    |
+| Module | Functions |
 | ----------------- | ---------------------------------------------------------------------------- |
-| `nodes`           | `create_node`, `update_node`, `get_node`, `list_nodes`, `delete_node`        |
-| `apps`            | `create_app`, `list_apps`, `get_app`                                         |
-| `permissions`     | `grant_permission`, `assign_role`, `list_access_requests`, `approve_request` |
-| `agent_bootstrap` | `bootstrap_node`, `discover_skills`, `list_skills`                           |
-| `graph`           | `discover_tools`, `register_tool`                                            |
+| `nodes` | `create_node`, `update_node`, `get_node`, `list_nodes`, `delete_node` |
+| `apps` | `create_app`, `list_apps`, `get_app` |
+| `permissions` | `grant_permission`, `assign_role`, `list_access_requests`, `approve_request` |
+| `agent_bootstrap` | `bootstrap_node`, `discover_skills`, `list_skills` |
+| `graph` | `discover_tools`, `register_tool` |

@@ -1,6 +1,6 @@
 ---
-description: Enforced coding standards for reliability and maintainability across Python (FFS2) and TypeScript (FFS3)
-activation: always
+description: Enforced coding standards for reliability and maintainability
+across Python (FFS2) and TypeScript (FFS3) activation: always
 ---
 
 # Code Quality & Best Practices
@@ -34,7 +34,7 @@ activation: always
 - **Formatter**: `Black` (Strict).
 - **Type Checking**: `Mypy` (Strict mode enabled).
 
-### Testing
+### Backend Testing
 
 - **Framework**: `Pytest`.
 - **Async**: `pytest-asyncio`.
@@ -50,7 +50,7 @@ activation: always
 - **Formatter**: `Prettier`.
 - **Strict Mode**: `tsconfig.json` must have `"strict": true`.
 
-### Testing
+### Frontend Testing
 
 - **Unit**: `Vitest` (Faster than Jest, native ESM).
 - **Integration**: `Playwright` (for E2E browser testing).

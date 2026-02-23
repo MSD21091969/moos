@@ -1,6 +1,6 @@
 ---
-description: Coding standards for FFS3 Nx monorepo — TypeScript strict, React 19, Vite, React Router, Zustand, XYFlow, CSS Modules, Vitest
-activation: always
+description: Coding standards for FFS3 Nx monorepo — TypeScript strict, React
+19, Vite, React Router, Zustand, XYFlow, CSS Modules, Vitest activation: always
 ---
 
 # Frontend Standards
@@ -31,7 +31,7 @@ activation: always
 
 ## File Organization
 
-```
+```text
 src/
 ├── app/              ← Root component + router setup
 ├── components/       ← Reusable UI components

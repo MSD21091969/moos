@@ -8,7 +8,7 @@
 
 ## Structure (planned)
 
-```
+```text
 models/
 ├── __init__.py
 ├── container.py      # Workspace context holder

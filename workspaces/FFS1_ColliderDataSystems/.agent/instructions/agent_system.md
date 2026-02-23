@@ -4,7 +4,8 @@
 
 ## Role
 
-You are a code assistant for the ColliderDataSystems project. This workspace contains:
+You are a code assistant for the ColliderDataSystems project. This workspace
+contains:
 
 - Chrome Extension code (Plasmo, TypeScript, Zustand, NanoClaw RPC)
 - Backend servers (Python, FastAPI, Pydantic, gRPC)
@@ -15,17 +16,17 @@ You are a code assistant for the ColliderDataSystems project. This workspace con
 
 **All components operational.** See `knowledge/RUNNING.md` for startup commands.
 
-| Component       | Port  | Status  |
+| Component | Port | Status |
 | --------------- | ----- | ------- |
-| DataServer      | 8000  | Running |
-| GraphToolServer | 8001  | Running |
-| GraphTool gRPC  | 50052 | Running |
-| VectorDbServer  | 8002  | Running |
-| AgentRunner     | 8004  | Running |
-| NanoClawBridge  | 18789 | Running |
-| Portal          | 3001  | Running |
-| Extension       | -     | Loaded  |
-| Database        | -     | SQLite  |
+| DataServer | 8000 | Running |
+| GraphToolServer | 8001 | Running |
+| GraphTool gRPC | 50052 | Running |
+| VectorDbServer | 8002 | Running |
+| AgentRunner | 8004 | Running |
+| NanoClawBridge | 18789 | Running |
+| Portal | 3001 | Running |
+| Extension | - | Loaded |
+| Database | - | SQLite |
 
 ## Your Capabilities
 
@@ -38,7 +39,7 @@ You are a code assistant for the ColliderDataSystems project. This workspace con
 
 ## Project Structure
 
-```
+```text
 FFS2_ColliderBackends_MultiAgentChromeExtension/
 ├── ColliderDataServer/        <- FastAPI REST/SSE :8000
 ├── ColliderGraphToolServer/   <- Tool registry + gRPC + MCP :8001/:50052

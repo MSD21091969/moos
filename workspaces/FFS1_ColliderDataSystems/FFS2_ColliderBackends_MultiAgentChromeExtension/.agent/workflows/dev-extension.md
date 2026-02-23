@@ -1,5 +1,6 @@
 ---
-description: Build and load the ColliderMultiAgentsChromeExtension in Chrome for development
+description: Build and load the ColliderMultiAgentsChromeExtension in Chrome for
+development
 ---
 
 # Dev: Chrome Extension

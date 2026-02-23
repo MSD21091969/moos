@@ -4,7 +4,7 @@
 
 ## Monorepo Structure Pattern
 
-```
+```text
 apps/ffs4/src/app/    ← Each app has its own app/ with root component
 apps/ffs5/src/app/
 apps/ffs6/src/app/
@@ -49,7 +49,7 @@ export function NodeCard({ node, isSelected, onSelect }: NodeCardProps) {
 
 ### Component File Organization
 
-```
+```text
 src/
 ├── app/
 │   ├── app.tsx           ← Root component + router

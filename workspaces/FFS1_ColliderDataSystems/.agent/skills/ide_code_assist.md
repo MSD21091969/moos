@@ -8,7 +8,8 @@ ide_code_assist
 
 ## Description
 
-Provides code assistance within IDE context, including code completion, refactoring suggestions, and documentation lookup.
+Provides code assistance within IDE context, including code completion,
+refactoring suggestions, and documentation lookup.
 
 ## Inputs
 

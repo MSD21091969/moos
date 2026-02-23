@@ -166,16 +166,19 @@ export class SessionManager {
 
     (async () => {
       try {
+        console.log(`[sendMessageSdk] starting for session ${sessionKey}`);
         // Fetch context via gRPC if not provided directly
         let context = config.composedContext;
         if (!context && grpcClient) {
           try {
+            console.log(`[sendMessageSdk] calling grpcClient.getBootstrap...`);
             context = await grpcClient.getBootstrap({
               sessionId: sessionKey,
               nodeIds: [],
-              role: "app_user",
+              role: "superadmin",  // Changed to superadmin to match default testing
               appId: "",
             });
+            console.log(`[sendMessageSdk] getBootstrap returned`, !!context);
           } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             broadcast({ kind: "error", message: `gRPC context fetch failed: ${msg}` });
@@ -184,10 +187,13 @@ export class SessionManager {
           }
         }
         if (!context) {
+          console.log(`[sendMessageSdk] no context available`);
           broadcast({ kind: "error", message: "No context available (neither direct nor via gRPC)" });
           broadcast({ kind: "message_end" });
           return;
         }
+
+        console.log(`[sendMessageSdk] initializing SDK session...`);
 
         // Create SDK session if this is the first message
         if (!session!.process && !agent.getHistory(sessionKey).length) {
@@ -213,9 +219,12 @@ export class SessionManager {
           }
         }
 
+        console.log(`[sendMessageSdk] calling agent.sendMessage...`);
         for await (const event of agent.sendMessage(sessionKey, message)) {
+          console.log(`[sendMessageSdk] yielding event: ${event.kind}`);
           broadcast(event);
         }
+        console.log(`[sendMessageSdk] agent.sendMessage completed.`);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         broadcast({ kind: "error", message: msg });

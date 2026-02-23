@@ -23,14 +23,14 @@
 
 ### Base URL
 
-```
+```text
 http://localhost:8000/api/v1    ← DataServer
 http://localhost:8002/api/v1    ← VectorDbServer
 ```
 
 ### Authentication
 
-```
+```text
 Authorization: Bearer <JWT>
 ```
 
@@ -76,7 +76,7 @@ Authorization: Bearer <JWT>
 
 ### Endpoint
 
-```
+```text
 GET /api/v1/sse
 Authorization: Bearer <JWT>
 ```
@@ -93,9 +93,9 @@ Persistent connection from Extension SW to DataServer.
 | `app_config_changed` | `{ app_id, config }`                                | Application config modified |
 | `keepalive`          | `{ timestamp }`                                     | Every 30s                   |
 
-### Message Format
+### Native Host Message Format
 
-```
+```text
 event: node_modified
 data: {"app_id":"abc","node_id":"def","action":"create","node_path":"root/research"}
 
@@ -128,7 +128,7 @@ eventSource.addEventListener("node_modified", (e) => {
 
 ### GraphToolServer Workflows
 
-```
+```text
 WS ws://localhost:8001/ws/workflow
 ```
 
@@ -166,7 +166,7 @@ WS ws://localhost:8001/ws/workflow
 
 ### DataServer WebRTC Signaling
 
-```
+```text
 WS ws://localhost:8000/ws/rtc/
 ```
 
@@ -180,7 +180,7 @@ Used by **ffs5 PiP appnode** for real-time communication.
 
 ### Signaling Flow
 
-```
+```text
 Peer A                    DataServer (/ws/rtc/)              Peer B
   │                           │                               │
   ├── join(roomId) ──────────►│                               │
@@ -229,7 +229,7 @@ Used by **FILESYST domain** for local file system operations.
 
 ### Architecture
 
-```
+```text
 Extension SW ──chrome.runtime.sendNativeMessage("collider_host", msg)──► Native Host
                                                                               │
                                                                         Read/Write FS
@@ -281,7 +281,7 @@ Extension SW ◄────────────────── JSON resp
 
 ### FILESYST Sync Flow
 
-```
+```text
 1. Agent triggers sync (TOOL_EXECUTE: sync_workspace)
 2. Native host reads local .agent/ directory tree
 3. Native host sends tree structure to SW
@@ -323,6 +323,7 @@ service ColliderVectorDb {
 ### Proto definitions
 
 Located in `proto/`:
+
 - `collider_graph.proto` — tool + subgraph execution
 - `collider_data.proto` — data sync, schema registration
 - `collider_vectordb.proto` — index + search
@@ -376,9 +377,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 ## 9. WebSocket (NanoClawBridge)
 
-### Endpoint
+### WebSocket Endpoint
 
-```
+```text
 WS ws://127.0.0.1:18789?token=<session_token>
 ```
 
@@ -423,14 +424,14 @@ JSON-RPC 2.0 over WebSocket with server-sent streaming events.
 
 ## 10. AgentRunner REST
 
-### Base URL
+### AgentRunner Base URL
 
-```
+```text
 http://localhost:8004
 ```
 
-The ColliderAgentRunner is the context composer. It builds ContextSet sessions by
-bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
+The ColliderAgentRunner is the context composer. It builds ContextSet sessions
+by bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Key Endpoints
 
@@ -475,7 +476,7 @@ bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Flow 1: Agent Creates Node
 
-```
+```text
 1. User sends query in sidepanel ChatPanel
 2. Sidepanel → SW: { type: "AGENT_QUERY", payload: { query: "Create a research section" } }
 3. SW routes to active agent (e.g. cloud-agent)
@@ -489,7 +490,7 @@ bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Flow 2: Startup
 
-```
+```text
 1. User opens extension → sidepanel mounts
 2. Sidepanel → SW: LOGIN (cached credentials or prompt)
 3. SW → DataServer: POST /auth/login → JWT
@@ -501,7 +502,7 @@ bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Flow 3: Node Selection → Appnode Delivery
 
-```
+```text
 1. User clicks node in NodeTree
 2. Sidepanel → SW: SELECT_NODE { nodeId, path }
 3. SW ContextManager:
@@ -515,7 +516,7 @@ bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Flow 4: Application Creation
 
-```
+```text
 1. App admin creates application via REST POST /api/v1/apps
 2. DataServer creates Application row + root Node
 3. Root node gets NodeContainer with workspace context:
@@ -528,7 +529,7 @@ bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Flow 5: FILESYST Sync
 
-```
+```text
 1. Agent triggers sync tool
 2. SW → Native Host: { action: "sync_workspace", payload: { localPath, nodeId, appId } }
 3. Native Host reads .agent/ directory recursively
@@ -540,7 +541,7 @@ bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Flow 6: NanoClaw ContextSet Session
 
-```
+```text
 1. User opens sidepanel → WorkspaceBrowser (Compose tab)
 2. User selects role, picks nodes, optionally enters vector query
 3. User clicks Compose
@@ -562,7 +563,7 @@ bootstrapping nodes from DataServer and writing workspace files for NanoClaw.
 
 ### Flow 7: Root Agent Session
 
-```
+```text
 1. User opens RootAgentPanel tab
 2. Panel → POST :8004/agent/root/session { app_id }
 3. AgentRunner fetches Application.root_node_id

@@ -1,5 +1,6 @@
 ---
-description: Start all Collider services for local development (DataServer, GraphToolServer, VectorDbServer, frontend)
+description: Start all Collider services for local development (DataServer,
+GraphToolServer, VectorDbServer, frontend)
 ---
 
 # Start Dev Environment
@@ -66,10 +67,10 @@ Starts all FFS1 services in the correct order for local development.
 
 ## Verify
 
-- DataServer: http://localhost:8000/docs
-- GraphToolServer: http://localhost:8001/docs (+ MCP at /mcp/sse)
-- VectorDbServer: http://localhost:8002/docs
-- SQL Viewer: http://localhost:8003
+- DataServer: <http://localhost:8000/docs>
+- GraphToolServer: <http://localhost:8001/docs> (+ MCP at /mcp/sse)
+- VectorDbServer: <http://localhost:8002/docs>
+- SQL Viewer: <http://localhost:8003>
 - AgentRunner: <http://localhost:8004/health>
-- Frontend (ffs6): http://localhost:4200
+- Frontend (ffs6): <http://localhost:4200>
 - Claude Code MCP: `claude mcp list` → collider-tools

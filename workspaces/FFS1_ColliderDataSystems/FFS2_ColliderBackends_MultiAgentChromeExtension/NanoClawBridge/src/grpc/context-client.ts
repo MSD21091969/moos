@@ -127,6 +127,8 @@ export class ContextGrpcClient {
           app_id: opts.appId,
           inherit_ancestors: opts.inheritAncestors ?? true,
         },
+        new grpc.Metadata(),
+        { deadline: new Date(Date.now() + 5000) },
         (err: grpc.ServiceError | null, response: BootstrapResponse) => {
           if (err) {
             log.error({ err: err.message }, "GetBootstrap failed");
@@ -151,13 +153,17 @@ export class ContextGrpcClient {
     appId: string;
     inheritAncestors?: boolean;
   }): AsyncGenerator<Partial<ComposedContext>> {
-    const call = this.client.StreamContext({
-      session_id: opts.sessionId,
-      node_ids: opts.nodeIds,
-      role: opts.role,
-      app_id: opts.appId,
-      inherit_ancestors: opts.inheritAncestors ?? true,
-    });
+    const call = this.client.StreamContext(
+      {
+        session_id: opts.sessionId,
+        node_ids: opts.nodeIds,
+        role: opts.role,
+        app_id: opts.appId,
+        inherit_ancestors: opts.inheritAncestors ?? true,
+      },
+      new grpc.Metadata(),
+      { deadline: new Date(Date.now() + 5000) }
+    );
 
     for await (const chunk of call) {
       yield this.convertChunk(chunk);

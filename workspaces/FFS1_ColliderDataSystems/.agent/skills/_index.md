@@ -4,11 +4,12 @@
 
 ## What Are Skills?
 
-Skills are reusable agent capabilities for code assistance. Loaded at runtime by IDE agents (Antigravity, App X).
+Skills are reusable agent capabilities for code assistance. Loaded at runtime by
+IDE agents (Antigravity, App X).
 
 ## Available Skills
 
-| Skill           | Purpose                                          |
+| Skill | Purpose |
 | --------------- | ------------------------------------------------ |
 | ide_code_assist | General code assistance, completion, refactoring |
 
