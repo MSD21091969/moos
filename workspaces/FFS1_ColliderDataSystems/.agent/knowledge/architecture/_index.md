@@ -38,12 +38,12 @@ selected workspace node in DB.
 
 ## Documents
 
-| # | Document | Covers |
+| #   | Document                                                                                                                                           | Covers                                                                                |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 01 | [FFS2 Backend Services](01_ffs2_backend_services.md) | DataServer, GraphToolServer, VectorDbServer, AgentRunner — APIs, DB models, protocols |
-| 02 | [FFS2 Chrome Extension](02_ffs2_chrome_extension.md) | 3-tab sidepanel, NanoClaw RPC, appStore, appnode delivery |
-| 03 | [FFS3 Frontend Appnodes](file:///D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/03_ffs3_frontend_appnodes.md) | Nx monorepo, appnode concept, ffs4/5/6, routing, XYFlow |
-| 04 | [Communication Protocols](file:///D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/04_communication_protocols.md) | All 10 protocols, end-to-end flows, message formats |
+| 01  | [FFS2 Backend Services](01_ffs2_backend_services.md)                                                                                               | DataServer, GraphToolServer, VectorDbServer, AgentRunner — APIs, DB models, protocols |
+| 02  | [FFS2 Chrome Extension](02_ffs2_chrome_extension.md)                                                                                               | 3-tab sidepanel, NanoClaw RPC, appStore, appnode delivery                             |
+| 03  | [FFS3 Frontend Appnodes](file:///D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/03_ffs3_frontend_appnodes.md)   | Nx monorepo, appnode concept, ffs4/5/6, routing, XYFlow                               |
+| 04  | [Communication Protocols](file:///D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/.agent/knowledge/architecture/04_communication_protocols.md) | All 10 protocols, end-to-end flows, message formats                                   |
 
 ## Reading Order
 
@@ -54,13 +54,13 @@ selected workspace node in DB.
 
 ## Key Technologies
 
-| Layer | Stack |
+| Layer     | Stack                                                         |
 | --------- | ------------------------------------------------------------- |
-| Backend | FastAPI, SQLAlchemy async, aiosqlite, ChromaDB, pydantic-ai |
-| gRPC | grpcio, protobuf (tool execution :50052, vector search :8002) |
-| Extension | Plasmo, React, Zustand, NanoClaw RPC, SimplePeer |
-| Frontend | Nx, Vite 7, React 19, Vitest 4, XYFlow (`@xyflow/react`) |
-| Agent | NanoClawBridge, WebSocket, workspace files |
+| Backend   | FastAPI, SQLAlchemy async, aiosqlite, ChromaDB, pydantic-ai   |
+| gRPC      | grpcio, protobuf (tool execution :50052, vector search :8002) |
+| Extension | Plasmo, React, Zustand, NanoClaw RPC, SimplePeer              |
+| Frontend  | Nx, Vite 7, React 19, Vitest 4, XYFlow (`@xyflow/react`)      |
+| Agent     | NanoClawBridge, WebSocket, workspace files                    |
 
 ## Archived Docs
 

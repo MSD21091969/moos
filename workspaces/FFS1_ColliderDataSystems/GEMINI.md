@@ -10,15 +10,15 @@ Refer to the main factory instructions at `D:\FFS0_Factory\GEMINI.md`.
 
 ## Service Ports
 
-| Service | Port | Path |
+| Service                 | Port         | Path                               |
 | ----------------------- | ------------ | ---------------------------------- |
-| ColliderDataServer | 8000 | `FFS2.../ColliderDataServer/` |
+| ColliderDataServer      | 8000         | `FFS2.../ColliderDataServer/`      |
 | ColliderGraphToolServer | 8001 / 50052 | `FFS2.../ColliderGraphToolServer/` |
-| ColliderVectorDbServer | 8002 | `FFS2.../ColliderVectorDbServer/` |
-| SQLite Viewer (dev) | 8003 | `sqlite_web collider.db` |
-| ColliderAgentRunner | 8004 | `FFS2.../ColliderAgentRunner/` |
-| NanoClawBridge | 18789 | WebSocket agent chat |
-| FFS3 ffs6 frontend | 4200 | `FFS3.../apps/ffs6/` |
+| ColliderVectorDbServer  | 8002         | `FFS2.../ColliderVectorDbServer/`  |
+| SQLite Viewer (dev)     | 8003         | `sqlite_web collider.db`           |
+| ColliderAgentRunner     | 8004         | `FFS2.../ColliderAgentRunner/`     |
+| NanoClawBridge          | 18789        | WebSocket agent chat               |
+| FFS3 ffs6 frontend      | 4200         | `FFS3.../apps/ffs6/`               |
 
 ## MVP State
 

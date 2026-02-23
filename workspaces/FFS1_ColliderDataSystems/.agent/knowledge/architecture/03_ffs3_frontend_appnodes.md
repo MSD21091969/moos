@@ -55,11 +55,11 @@ apps/ffs6/
 
 ## Appnodes
 
-| App | Name | Purpose | Default Port |
+| App    | Name               | Purpose                                                          | Default Port |
 | ------ | ------------------ | ---------------------------------------------------------------- | ------------ |
-| `ffs4` | Sidepanel Appnode | Agent seat, app tree browser, workspace navigator | 4201 |
-| `ffs5` | PiP Appnode | Picture-in-Picture communication window (WebRTC P2P) | 4202 |
-| `ffs6` | IDE Viewer Appnode | Renders the selected workspace node's view — **default project** | 4200 |
+| `ffs4` | Sidepanel Appnode  | Agent seat, app tree browser, workspace navigator                | 4201         |
+| `ffs5` | PiP Appnode        | Picture-in-Picture communication window (WebRTC P2P)             | 4202         |
+| `ffs6` | IDE Viewer Appnode | Renders the selected workspace node's view — **default project** | 4200         |
 
 Each appnode is a standalone Vite + React 19 app that receives workspace context
 from the extension and renders the appropriate view.
@@ -136,11 +136,11 @@ Contents:
 
 When an application is created, its `config.domain` field picks from:
 
-| Config Label | Permitted APIs | Use Case |
+| Config Label | Permitted APIs                               | Use Case             |
 | ------------ | -------------------------------------------- | -------------------- |
-| `FILESYST` | Native Messaging, sync APIs, file operations | Local workspace apps |
-| `CLOUD` | REST API, SSE, WebSocket workflows | Cloud-hosted apps |
-| `ADMIN` | User management, role assignment, secrets | System management |
+| `FILESYST`   | Native Messaging, sync APIs, file operations | Local workspace apps |
+| `CLOUD`      | REST API, SSE, WebSocket workflows           | Cloud-hosted apps    |
+| `ADMIN`      | User management, role assignment, secrets    | System management    |
 
 The node-container carries this config. The frontend reads it to know which API
 clients to initialize and which tools the agent can use.

@@ -122,19 +122,19 @@ Markdown body describing how to use this skill...
 
 Collider's `SkillDefinition` is a **strict superset** of this standard:
 
-| Agent Skills Field | Collider SkillDefinition Field | Notes |
+| Agent Skills Field | Collider SkillDefinition Field            | Notes                                      |
 | ------------------ | ----------------------------------------- | ------------------------------------------ |
-| `name` | `name` | Direct map |
-| `description` | `description` | Direct map |
-| `version` | Handled by NodeContainer versioning | Container-level, not skill-level |
-| `tools` | `tool_ref` (single) + container `tools[]` | Collider separates tool ownership |
-| `authors` | Container `session_meta.username` | Session-scoped |
-| `tags` | Container `config.domain` | Domain-based categorization |
-| — | `emoji` | Collider extension |
-| — | `user_invocable` / `model_invocable` | Collider extension: invocation control |
-| — | `invocation_policy` | Collider extension: auto/confirm/disabled |
-| — | `requires_bins` / `requires_env` | Collider extension: dependency declaration |
-| — | `markdown_body` | Same as SKILL.md body content |
+| `name`             | `name`                                    | Direct map                                 |
+| `description`      | `description`                             | Direct map                                 |
+| `version`          | Handled by NodeContainer versioning       | Container-level, not skill-level           |
+| `tools`            | `tool_ref` (single) + container `tools[]` | Collider separates tool ownership          |
+| `authors`          | Container `session_meta.username`         | Session-scoped                             |
+| `tags`             | Container `config.domain`                 | Domain-based categorization                |
+| —                  | `emoji`                                   | Collider extension                         |
+| —                  | `user_invocable` / `model_invocable`      | Collider extension: invocation control     |
+| —                  | `invocation_policy`                       | Collider extension: auto/confirm/disabled  |
+| —                  | `requires_bins` / `requires_env`          | Collider extension: dependency declaration |
+| —                  | `markdown_body`                           | Same as SKILL.md body content              |
 
 **Key difference**: Agent Skills stores skills as flat files in `skills/`
 directories. Collider stores skills as **JSON objects in a versioned
@@ -210,15 +210,15 @@ compose with whatever context they're inserted into.
 
 ### Services
 
-| Service | Port | Role |
+| Service                 | Port         | Role                                                            |
 | ----------------------- | ------------ | --------------------------------------------------------------- |
-| ColliderDataServer | 8000 | Node CRUD, bootstrap rendering, auth, SSE |
-| ColliderGraphToolServer | 8001 / 50052 | MCP tool server, gRPC tool registry, tool execution |
-| ColliderVectorDbServer | 8002 | Semantic search for tool/skill discovery |
-| ColliderAgentRunner | 8004 / 50051 | Context composition, gRPC context streaming, session management |
-| NanoClawBridge | 18789 | Anthropic SDK agent sessions, WebSocket RPC, agent teams |
-| FFS4 Sidepanel | 4201 | XYFlow graph workspace browser + agent chat |
-| FFS6 IDE Viewer | 4200 | Tree-based node viewer, CRUD, auth |
+| ColliderDataServer      | 8000         | Node CRUD, bootstrap rendering, auth, SSE                       |
+| ColliderGraphToolServer | 8001 / 50052 | MCP tool server, gRPC tool registry, tool execution             |
+| ColliderVectorDbServer  | 8002         | Semantic search for tool/skill discovery                        |
+| ColliderAgentRunner     | 8004 / 50051 | Context composition, gRPC context streaming, session management |
+| NanoClawBridge          | 18789        | Anthropic SDK agent sessions, WebSocket RPC, agent teams        |
+| FFS4 Sidepanel          | 4201         | XYFlow graph workspace browser + agent chat                     |
+| FFS6 IDE Viewer         | 4200         | Tree-based node viewer, CRUD, auth                              |
 
 ### Context Delivery Pipeline
 

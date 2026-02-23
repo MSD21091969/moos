@@ -4,12 +4,12 @@
 
 ## Service Map
 
-| Service | Port | Stack | Storage | Role |
+| Service                 | Port  | Stack                          | Storage            | Role                                            |
 | ----------------------- | ----- | ------------------------------ | ------------------ | ----------------------------------------------- |
-| ColliderDataServer | :8000 | FastAPI + SQLAlchemy async | SQLite (aiosqlite) | Primary API, auth, SSE, WebRTC, agent bootstrap |
-| ColliderGraphToolServer | :8001 | FastAPI + WebSocket + gRPC MCP | — | Tool registry, workflow execution, MCP server |
-| ColliderVectorDbServer | :8002 | FastAPI + ChromaDB | ChromaDB | Semantic search + embeddings |
-| ColliderAgentRunner | :8004 | FastAPI + pydantic-ai | — | ContextSet sessions, LLM streaming (claude-s46) |
+| ColliderDataServer      | :8000 | FastAPI + SQLAlchemy async     | SQLite (aiosqlite) | Primary API, auth, SSE, WebRTC, agent bootstrap |
+| ColliderGraphToolServer | :8001 | FastAPI + WebSocket + gRPC MCP | —                  | Tool registry, workflow execution, MCP server   |
+| ColliderVectorDbServer  | :8002 | FastAPI + ChromaDB             | ChromaDB           | Semantic search + embeddings                    |
+| ColliderAgentRunner     | :8004 | FastAPI + pydantic-ai          | —                  | ContextSet sessions, LLM streaming (claude-s46) |
 
 ---
 
@@ -60,22 +60,22 @@ ColliderDataServer/
 
 ### API Routes
 
-| Router | Module | Purpose |
+| Router          | Module                | Purpose                                                     |
 | --------------- | --------------------- | ----------------------------------------------------------- |
-| health | `api.health` | `GET /api/v1/health` |
-| auth | `api.auth` | `POST /api/v1/auth/login`, `POST /api/v1/auth/verify` |
-| users | `api.users` | User CRUD |
-| apps | `api.apps` | Application CRUD, `GET /api/v1/apps` |
-| nodes | `api.nodes` | Node CRUD, tree operations, `GET /api/v1/nodes?app_id=...` |
-| context | `api.context` | `GET /api/v1/context/:app_id/:node_path` — hydrated context |
-| sse | `api.sse` | `GET /api/v1/sse` — persistent event stream |
-| roles | `api.roles` | `POST /api/v1/users/{id}/assign-role` |
-| app_permissions | `api.app_permissions` | Request/approve/reject app access |
-| permissions | `api.permissions` | Per-app permission checks |
-| rtc | `api.rtc` | `WS /ws/rtc/` — WebRTC signaling |
-| agent_bootstrap | `api.agent_bootstrap` | `GET /api/v1/agent/bootstrap/{node_id}` — agent bootstrap |
-| execution | `api.execution` | `POST /api/v1/execution/tool/{name}` — tool/workflow proxy |
-| templates | `api.templates` | `GET /api/v1/templates` — node templates |
+| health          | `api.health`          | `GET /api/v1/health`                                        |
+| auth            | `api.auth`            | `POST /api/v1/auth/login`, `POST /api/v1/auth/verify`       |
+| users           | `api.users`           | User CRUD                                                   |
+| apps            | `api.apps`            | Application CRUD, `GET /api/v1/apps`                        |
+| nodes           | `api.nodes`           | Node CRUD, tree operations, `GET /api/v1/nodes?app_id=...`  |
+| context         | `api.context`         | `GET /api/v1/context/:app_id/:node_path` — hydrated context |
+| sse             | `api.sse`             | `GET /api/v1/sse` — persistent event stream                 |
+| roles           | `api.roles`           | `POST /api/v1/users/{id}/assign-role`                       |
+| app_permissions | `api.app_permissions` | Request/approve/reject app access                           |
+| permissions     | `api.permissions`     | Per-app permission checks                                   |
+| rtc             | `api.rtc`             | `WS /ws/rtc/` — WebRTC signaling                            |
+| agent_bootstrap | `api.agent_bootstrap` | `GET /api/v1/agent/bootstrap/{node_id}` — agent bootstrap   |
+| execution       | `api.execution`       | `POST /api/v1/execution/tool/{name}` — tool/workflow proxy  |
+| templates       | `api.templates`       | `GET /api/v1/templates` — node templates                    |
 
 ### Database Models
 
@@ -166,13 +166,13 @@ User (system_role) ──1:N──► Application (owner_id) ──1:N──► 
 
 ### SSE Event Types
 
-| Event | Trigger | Action |
+| Event                | Trigger                      | Action                              |
 | -------------------- | ---------------------------- | ----------------------------------- |
-| `context_update` | Node container modified | Invalidate cache, notify sidepanel |
-| `node_modified` | Node created/updated/deleted | Update tree if viewing affected app |
-| `permission_changed` | Permissions modified | Refresh permissions |
-| `app_config_changed` | Application config modified | Reload app config |
-| `keepalive` | Periodic | Maintain connection |
+| `context_update`     | Node container modified      | Invalidate cache, notify sidepanel  |
+| `node_modified`      | Node created/updated/deleted | Update tree if viewing affected app |
+| `permission_changed` | Permissions modified         | Refresh permissions                 |
+| `app_config_changed` | Application config modified  | Reload app config                   |
+| `keepalive`          | Periodic                     | Maintain connection                 |
 
 ### WebRTC Signaling
 
@@ -220,15 +220,15 @@ Agent (NanoClaw / Chrome Extension) → REST call (create/modify/delete node)
 
 ### Endpoints
 
-| Transport | Endpoint | Purpose |
+| Transport | Endpoint                 | Purpose                                           |
 | --------- | ------------------------ | ------------------------------------------------- |
-| WebSocket | `/ws/workflow` | Execute multi-step agent workflows (streamed) |
-| WebSocket | `/ws/graph` | Graph operations (create/modify nodes) |
-| REST | `/api/v1/registry/tools` | Register / list / delete tools |
-| gRPC | `:50052` | `ExecuteSubgraph`, `ExecuteTool`, `DiscoverTools` |
-| MCP/SSE | `/mcp/sse` | SSE stream — AI client connects here |
-| MCP/SSE | `/mcp/messages/` | JSON-RPC POST body endpoint |
-| REST | `/health` | Health + registry stats |
+| WebSocket | `/ws/workflow`           | Execute multi-step agent workflows (streamed)     |
+| WebSocket | `/ws/graph`              | Graph operations (create/modify nodes)            |
+| REST      | `/api/v1/registry/tools` | Register / list / delete tools                    |
+| gRPC      | `:50052`                 | `ExecuteSubgraph`, `ExecuteTool`, `DiscoverTools` |
+| MCP/SSE   | `/mcp/sse`               | SSE stream — AI client connects here              |
+| MCP/SSE   | `/mcp/messages/`         | JSON-RPC POST body endpoint                       |
+| REST      | `/health`                | Health + registry stats                           |
 
 ### MCP Integration
 
@@ -246,13 +246,13 @@ so tools registered after server start appear immediately.
 
 ### gRPC Service (`ColliderGraph`)
 
-| RPC | Request / Response | Purpose |
+| RPC                     | Request / Response                               | Purpose                         |
 | ----------------------- | ------------------------------------------------ | ------------------------------- |
-| `RegisterTool` | `RegisterToolRequest` → `RegisterToolResponse` | Register a tool in the registry |
-| `DiscoverTools` | `ToolDiscoveryRequest` → `ToolDiscoveryResponse` | Semantic tool search |
-| `ExecuteSubgraph` | `SubgraphRequest` → `SubgraphResponse` | Run a workflow by name |
-| `ExecuteSubgraphStream` | `SubgraphRequest` → `stream SubgraphProgress` | Streaming workflow execution |
-| `ExecuteTool` | `ToolExecutionRequest` → `ToolExecutionResponse` | Execute a single tool by name |
+| `RegisterTool`          | `RegisterToolRequest` → `RegisterToolResponse`   | Register a tool in the registry |
+| `DiscoverTools`         | `ToolDiscoveryRequest` → `ToolDiscoveryResponse` | Semantic tool search            |
+| `ExecuteSubgraph`       | `SubgraphRequest` → `SubgraphResponse`           | Run a workflow by name          |
+| `ExecuteSubgraphStream` | `SubgraphRequest` → `stream SubgraphProgress`    | Streaming workflow execution    |
+| `ExecuteTool`           | `ToolExecutionRequest` → `ToolExecutionResponse` | Execute a single tool by name   |
 
 ### Workflow Execution Flow
 
@@ -286,18 +286,18 @@ with context defined by the workflow.
 
 ### gRPC Service
 
-| RPC | Method | Purpose |
+| RPC           | Method | Purpose                    |
 | ------------- | ------ | -------------------------- |
-| `IndexTool` | Unary | Index tool into ChromaDB |
-| `SearchTools` | Unary | Semantic similarity search |
+| `IndexTool`   | Unary  | Index tool into ChromaDB   |
+| `SearchTools` | Unary  | Semantic similarity search |
 
 Also exposes REST fallback endpoints:
 
-| Endpoint | Method | Purpose |
+| Endpoint         | Method | Purpose                       |
 | ---------------- | ------ | ----------------------------- |
-| `/api/v1/search` | POST | Semantic similarity search |
-| `/api/v1/embed` | POST | Generate embeddings for text |
-| `/api/v1/index` | POST | Index documents into ChromaDB |
+| `/api/v1/search` | POST   | Semantic similarity search    |
+| `/api/v1/embed`  | POST   | Generate embeddings for text  |
+| `/api/v1/index`  | POST   | Index documents into ChromaDB |
 
 Documents are indexed from NodeContainer `knowledge` and `tools` fields. Used by agents for semantic tool discovery (`TOOL_SEARCH` message type).
 
@@ -312,13 +312,13 @@ Documents are indexed from NodeContainer `knowledge` and `tools` fields. Used by
 
 ### AgentRunner API
 
-| Endpoint | Method | Purpose |
+| Endpoint              | Method | Purpose                                                |
 | --------------------- | ------ | ------------------------------------------------------ |
-| `/health` | GET | Liveness probe |
-| `/agent/session` | POST | Compose ContextSet → cache session → return session_id |
-| `/agent/root/session` | POST | Auto-compose from app root_node_id → root orchestrator |
-| `/agent/chat` | GET | SSE stream: LLM response (works for all session types) |
-| `/tools/discover` | GET | Proxy to GraphToolServer tool discovery |
+| `/health`             | GET    | Liveness probe                                         |
+| `/agent/session`      | POST   | Compose ContextSet → cache session → return session_id |
+| `/agent/root/session` | POST   | Auto-compose from app root_node_id → root orchestrator |
+| `/agent/chat`         | GET    | SSE stream: LLM response (works for all session types) |
+| `/tools/discover`     | GET    | Proxy to GraphToolServer tool discovery                |
 
 ### ContextSet (`POST /agent/session`)
 
@@ -355,11 +355,11 @@ Auto-composes the full application context:
 
 `_build_model()` in `runner.py` selects the LLM based on `COLLIDER_AGENT_PROVIDER`:
 
-| Provider | Env var | Default model |
+| Provider        | Env var             | Default model       |
 | --------------- | ------------------- | ------------------- |
-| `gemini` | `GEMINI_API_KEY` | `gemini-2.5-flash` |
-| `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
-| `google-vertex` | ADC (gcloud) | `claude-sonnet-4-6` |
+| `gemini`        | `GEMINI_API_KEY`    | `gemini-2.5-flash`  |
+| `anthropic`     | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
+| `google-vertex` | ADC (gcloud)        | `claude-sonnet-4-6` |
 
 Override with `COLLIDER_AGENT_MODEL`. Uses `COLLIDER_AGENT_*` prefix to avoid collision with the FFS2 shared `AGENT_MODEL` env var.
 
@@ -443,12 +443,12 @@ No migration tool required for development.
 
 ### System Roles
 
-| Role | Level | Can Assign Roles |
+| Role                   | Level                | Can Assign Roles        |
 | ---------------------- | -------------------- | ----------------------- |
-| `superadmin` (SAD) | Full platform access | All roles |
-| `collider_admin` (CAD) | Platform management | `app_admin`, `app_user` |
-| `app_admin` | Per-app management | — |
-| `app_user` | Per-app access | — |
+| `superadmin` (SAD)     | Full platform access | All roles               |
+| `collider_admin` (CAD) | Platform management  | `app_admin`, `app_user` |
+| `app_admin`            | Per-app management   | —                       |
+| `app_user`             | Per-app access       | —                       |
 
 ### Secrets Management
 
