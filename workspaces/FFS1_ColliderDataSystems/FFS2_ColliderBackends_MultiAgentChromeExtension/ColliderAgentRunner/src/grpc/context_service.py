@@ -228,6 +228,17 @@ def _skill_to_chunk(skill: dict[str, Any]) -> pb2.SkillChunk:
         invocation_policy=skill.get("invocation_policy", "auto"),
         requires_bins=skill.get("requires_bins", []),
         requires_env=skill.get("requires_env", []),
+        namespace=skill.get("namespace", ""),
+        version=skill.get("version", ""),
+        kind=skill.get("kind", ""),
+        scope=skill.get("scope", ""),
+        source_node_path=skill.get("source_node_path", ""),
+        source_node_id=skill.get("source_node_id", ""),
+        inputs=skill.get("inputs", []),
+        outputs=skill.get("outputs", []),
+        depends_on=skill.get("depends_on", []),
+        exposes_tools=skill.get("exposes_tools", []),
+        child_skills=skill.get("child_skills", []),
     )
 
 

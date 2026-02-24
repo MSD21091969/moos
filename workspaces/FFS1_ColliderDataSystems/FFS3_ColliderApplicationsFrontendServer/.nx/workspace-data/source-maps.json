@@ -12,126 +12,6 @@
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
     ],
-    "targets.build": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.options": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.cache": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.build.dependsOn": [
-      "nx.json",
-      "nx/target-defaults"
-    ],
-    "targets.build.inputs": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.outputs": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.metadata": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.executor": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.options.cwd": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.options.command": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.metadata.technologies": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.metadata.technologies.0": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.metadata.description": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.metadata.help": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.metadata.help.command": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build.metadata.help.example": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.continuous": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.options": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.executor": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.options.cwd": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.options.command": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata.technologies": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata.technologies.0": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata.description": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata.help": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata.help.command": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata.help.example": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve.metadata.deprecated": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
     "targets.dev": [
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
@@ -240,30 +120,6 @@
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
     ],
-    "targets.serve-static": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve-static.continuous": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve-static.executor": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve-static.options": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve-static.options.buildTarget": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.serve-static.options.spa": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
     "targets.typecheck": [
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
@@ -320,14 +176,6 @@
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
     ],
-    "targets.build-deps": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
-    "targets.build-deps.dependsOn": [
-      "apps/ffs4/vite.config.mts",
-      "@nx/vite/plugin"
-    ],
     "targets.watch-deps": [
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
@@ -371,6 +219,46 @@
     "tags": [
       "apps/ffs4/project.json",
       "nx/core/project-json"
+    ],
+    "targets.build": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.command": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.executor": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.command": [
+      "apps/ffs4/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
     ],
     "targets.build.parallelism": [
       "nx.json",

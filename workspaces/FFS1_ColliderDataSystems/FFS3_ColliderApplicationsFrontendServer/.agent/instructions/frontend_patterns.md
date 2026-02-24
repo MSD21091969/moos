@@ -1,6 +1,6 @@
 # Frontend Patterns
 
-> Patterns for FFS3 Nx monorepo: Vite + React 19 default, Next.js optional.
+> Patterns for FFS3 Nx monorepo: Vite + React 19.
 
 ## Monorepo Structure Pattern
 
@@ -105,8 +105,6 @@ Use `React.lazy()` for route-level splitting:
 ```tsx
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 ```
-
-> **Next.js apps**: If using `@nx/next`, use the App Router with `next/dynamic` instead of `React.lazy()`.
 
 ---
 
@@ -243,12 +241,12 @@ export function WorkspaceNode({ data }: NodeProps<WorkspaceNodeData>) {
 }
 
 function getDomainColor(domain: string): string {
-  const colors: Record<string, string> = {
-    FILESYST: '#4caf50',
-    CLOUD: '#2196f3',
-    ADMIN: '#ff9800',
+  const tokenMap: Record<string, string> = {
+    FILESYST: 'var(--color-domain-filesyst)',
+    CLOUD: 'var(--color-domain-cloud)',
+    ADMIN: 'var(--color-domain-admin)',
   };
-  return colors[domain] || '#9e9e9e';
+  return tokenMap[domain] || 'var(--color-domain-default)';
 }
 ```
 
@@ -306,9 +304,10 @@ Each app has a `src/styles.css` for global styles and CSS custom properties:
 
 ```css
 :root {
-  --color-filesyst: #4caf50;
-  --color-cloud: #2196f3;
-  --color-admin: #ff9800;
+  --color-domain-filesyst: var(--token-color-domain-filesyst);
+  --color-domain-cloud: var(--token-color-domain-cloud);
+  --color-domain-admin: var(--token-color-domain-admin);
+  --color-domain-default: var(--token-color-domain-default);
   --border-radius: 8px;
   --spacing-sm: 8px;
   --spacing-md: 16px;

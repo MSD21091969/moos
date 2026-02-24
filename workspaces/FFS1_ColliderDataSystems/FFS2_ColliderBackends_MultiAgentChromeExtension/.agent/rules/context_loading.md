@@ -1,34 +1,43 @@
 ---
-description: How agent context is layered — App0 base layer, active tab appnode
-additive layer, domain-specific loading (FILESYST/CLOUD/ADMIN) activation:
-model_decision
+description: Runtime-aware context layering rules for Collider sessions (anthropic, pi, pi-shadow)
+activation: always
 ---
 
 # Context Loading Rules
 
-> Rules for how agent context is loaded and layered.
+## Source of Truth
 
-## Layering
+- Authoring source: `.agent/` filesystem content (seed input).
+- Runtime canonical source: DB `NodeContainer` graph.
+- Session delivery: composed context generated per session (`ContextSet`).
 
-1. **Layer 0**: App0 default context (always present)
-2. **Layer N**: Active tab's appnode context (additive)
+## Layering Order
 
-## Inheritance
+1. Global/root skill context (e.g., `collider-workspace`)
+2. Ancestor context (if `inherit_ancestors=true`, root-first)
+3. Selected node contexts (`node_ids`, leaf-wins)
+4. Session-time deltas (`ContextDelta` updates)
 
-- Child workspaces inherit from parent via manifest.yaml
-- `includes:` defines what to load from parent
-- `exports:` defines what children can inherit
+## Runtime Application
 
-## Domain-Specific Loading
+- `anthropic`: context rendered through `buildSystemPrompt(...)`.
+- `pi`: context rendered by PI context extension state.
+- `pi-shadow`: Anthropic stream returned; PI runs in shadow for KPI comparison.
 
-| Domain | Source | Method |
-| -------- | ----------------- | ---------------- |
-| FILESYST | .agent/ folders | Native Messaging |
-| CLOUD | nodecontainer | Data Server API |
-| ADMIN | account container | Data Server API |
+## Skill Injection Policy
 
-## Cache Strategy
+- Inject focused top-N model-invocable skills in detail.
+- Summarize overflow skills under token budget limits.
+- Keep deterministic selection behavior to avoid prompt drift.
 
-- IndexedDB for persistent cache
-- chrome.storage.session for hot cache
-- SSE for real-time updates
+## Transport Rules
+
+- Bootstrap context: AgentRunner composition + gRPC bootstrap path.
+- Tool execution: DataServer execution endpoint contract.
+- Live updates: context delta injection per active session.
+
+## Caching & Freshness
+
+- Session cache is authoritative only for active session state.
+- Re-composition required for new session bootstrap changes.
+- Shadow KPI metrics are aggregated from runtime event streams; they do not alter session payloads.

@@ -13,6 +13,9 @@
     "lint:md:ffs3": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc \"FFS3_ColliderApplicationsFrontendServer/**/*.md\"",
     "lint:md:ffs3:fix": "pnpm dlx markdownlint-cli2 --config ../../.markdownlint-cli2.jsonc --fix \"FFS3_ColliderApplicationsFrontendServer/**/*.md\""
   },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  },
   "pnpm": {
     "overrides": {
       "sharp": "^0.34.5"

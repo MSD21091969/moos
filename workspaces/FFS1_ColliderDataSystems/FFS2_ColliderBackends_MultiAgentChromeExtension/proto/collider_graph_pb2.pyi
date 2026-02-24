@@ -195,7 +195,7 @@ class SystemPromptChunk(_message.Message):
     def __init__(self, section: _Optional[str] = ..., content: _Optional[str] = ...) -> None: ...
 
 class SkillChunk(_message.Message):
-    __slots__ = ("name", "description", "emoji", "markdown_body", "tool_ref", "user_invocable", "model_invocable", "invocation_policy", "requires_bins", "requires_env")
+    __slots__ = ("name", "description", "emoji", "markdown_body", "tool_ref", "user_invocable", "model_invocable", "invocation_policy", "requires_bins", "requires_env", "namespace", "version", "kind", "scope", "source_node_path", "source_node_id", "inputs", "outputs", "depends_on", "exposes_tools", "child_skills")
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     EMOJI_FIELD_NUMBER: _ClassVar[int]
@@ -206,6 +206,17 @@ class SkillChunk(_message.Message):
     INVOCATION_POLICY_FIELD_NUMBER: _ClassVar[int]
     REQUIRES_BINS_FIELD_NUMBER: _ClassVar[int]
     REQUIRES_ENV_FIELD_NUMBER: _ClassVar[int]
+    NAMESPACE_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    SCOPE_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_NODE_PATH_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_NODE_ID_FIELD_NUMBER: _ClassVar[int]
+    INPUTS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUTS_FIELD_NUMBER: _ClassVar[int]
+    DEPENDS_ON_FIELD_NUMBER: _ClassVar[int]
+    EXPOSES_TOOLS_FIELD_NUMBER: _ClassVar[int]
+    CHILD_SKILLS_FIELD_NUMBER: _ClassVar[int]
     name: str
     description: str
     emoji: str
@@ -216,7 +227,18 @@ class SkillChunk(_message.Message):
     invocation_policy: str
     requires_bins: _containers.RepeatedScalarFieldContainer[str]
     requires_env: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., emoji: _Optional[str] = ..., markdown_body: _Optional[str] = ..., tool_ref: _Optional[str] = ..., user_invocable: bool = ..., model_invocable: bool = ..., invocation_policy: _Optional[str] = ..., requires_bins: _Optional[_Iterable[str]] = ..., requires_env: _Optional[_Iterable[str]] = ...) -> None: ...
+    namespace: str
+    version: str
+    kind: str
+    scope: str
+    source_node_path: str
+    source_node_id: str
+    inputs: _containers.RepeatedScalarFieldContainer[str]
+    outputs: _containers.RepeatedScalarFieldContainer[str]
+    depends_on: _containers.RepeatedScalarFieldContainer[str]
+    exposes_tools: _containers.RepeatedScalarFieldContainer[str]
+    child_skills: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., emoji: _Optional[str] = ..., markdown_body: _Optional[str] = ..., tool_ref: _Optional[str] = ..., user_invocable: bool = ..., model_invocable: bool = ..., invocation_policy: _Optional[str] = ..., requires_bins: _Optional[_Iterable[str]] = ..., requires_env: _Optional[_Iterable[str]] = ..., namespace: _Optional[str] = ..., version: _Optional[str] = ..., kind: _Optional[str] = ..., scope: _Optional[str] = ..., source_node_path: _Optional[str] = ..., source_node_id: _Optional[str] = ..., inputs: _Optional[_Iterable[str]] = ..., outputs: _Optional[_Iterable[str]] = ..., depends_on: _Optional[_Iterable[str]] = ..., exposes_tools: _Optional[_Iterable[str]] = ..., child_skills: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ToolSchemaChunk(_message.Message):
     __slots__ = ("name", "description", "parameters_json")

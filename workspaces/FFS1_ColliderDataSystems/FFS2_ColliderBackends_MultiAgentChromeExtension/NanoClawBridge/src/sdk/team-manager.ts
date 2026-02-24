@@ -12,7 +12,7 @@
  * multiple nodes in the FFS4 graph.
  */
 
-import { AnthropicAgent } from "./anthropic-agent.js";
+import type { IAgentSession } from "./agent-session.js";
 import { ContextGrpcClient } from "../grpc/context-client.js";
 import type { ComposedContext } from "./types.js";
 import type { AgentEvent } from "../event-parser.js";
@@ -65,12 +65,12 @@ export interface TeamStatus {
 // ---------------------------------------------------------------------------
 
 export class TeamManager {
-  private agent: AnthropicAgent;
+  private agent: IAgentSession;
   private grpcClient: ContextGrpcClient | null;
   private teams = new Map<string, AgentTeam>();
   private messageCounter = 0;
 
-  constructor(agent: AnthropicAgent, grpcClient?: ContextGrpcClient) {
+  constructor(agent: IAgentSession, grpcClient?: ContextGrpcClient) {
     this.agent = agent;
     this.grpcClient = grpcClient ?? null;
   }

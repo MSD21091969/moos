@@ -2,6 +2,10 @@
 
 > **Purpose**: Comprehensive analysis, research synthesis, and implementation blueprint for integrating Anthropic's 2026 Agent Skills paradigm with Collider's recursive NodeContainer graph, using the PI open-source runtime as the preferred agent harness. This document hydrates FFS0 `.agent/` knowledge for phased implementation across downstream workspaces.
 
+> **Implementation Status (2026-02-24)**: Phases 5-9 have been implemented in NanoClawBridge with validation gates passing. Treat this document as canonical strategy + design rationale. For execution evidence and current operational thresholds, use:
+> - `D:/FFS0_Factory/.agent/knowledge/architecture/phase5_mvp_execution_checklist.md`
+> - `D:/FFS0_Factory/.agent/knowledge/architecture/phase9_shadow_validation_snapshot.md`
+
 ---
 
 ## 1. Goals
@@ -68,16 +72,16 @@ The industry has converged on a critical insight: **the model is not the bottlen
 
 86 tasks, 11 domains, 7 agent-model configurations, 7,308 trajectories. The first systematic benchmark for agent skills.
 
-| Finding | Number | Collider Implication |
-|---------|--------|---------------------|
-| Curated skills average improvement | +16.2pp | Human-authored procedural guidance is the highest-value augmentation |
-| 2-3 focused skills sweet spot | +18.6pp | Inject only top 2-3 ranked skills per session |
-| 4+ skills diminishing returns | +5.9pp | Don't flood — more context != better |
-| Comprehensive skills hurt | -2.9pp | Keep skills compact and procedural, not encyclopedic |
-| Self-generated skills | -1.3pp | Models can't author the knowledge they benefit from consuming |
-| Healthcare domain improvement | +51.9pp | Custom/novel domains benefit most (Collider's domain is novel) |
-| Software Engineering improvement | +4.5pp | Well-known domains benefit least (models already know coding) |
-| Smaller model + skills >= larger model without | Parity | Skills are an equalizer across model tiers |
+| Finding                                        | Number  | Collider Implication                                                 |
+| ---------------------------------------------- | ------- | -------------------------------------------------------------------- |
+| Curated skills average improvement             | +16.2pp | Human-authored procedural guidance is the highest-value augmentation |
+| 2-3 focused skills sweet spot                  | +18.6pp | Inject only top 2-3 ranked skills per session                        |
+| 4+ skills diminishing returns                  | +5.9pp  | Don't flood — more context != better                                 |
+| Comprehensive skills hurt                      | -2.9pp  | Keep skills compact and procedural, not encyclopedic                 |
+| Self-generated skills                          | -1.3pp  | Models can't author the knowledge they benefit from consuming        |
+| Healthcare domain improvement                  | +51.9pp | Custom/novel domains benefit most (Collider's domain is novel)       |
+| Software Engineering improvement               | +4.5pp  | Well-known domains benefit least (models already know coding)        |
+| Smaller model + skills >= larger model without | Parity  | Skills are an equalizer across model tiers                           |
 
 **Critical insight for Collider**: Your custom tool/workflow/workspace domain is exactly the kind of novel domain where curated skills provide the most uplift. Software engineering skills add only +4.5pp because models already know how to code. But teaching an agent how to navigate Collider's recursive container graph — that's a domain with poor pretraining coverage where skills will have **massive** impact.
 
@@ -453,13 +457,13 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: Fix the four contract mismatches before building anything new.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Fix vector discovery shape mismatch | `runner.py`, GraphToolServer registry API | 1 day |
-| Fix context delta SSE route | `context-subscriber.ts`, DataServer stream endpoint | 1 day |
-| Consolidate execution config defaults | `.env` files, `servers.yaml`, AgentRunner settings | 0.5 day |
-| Replace mutable literals with `Field(default_factory=...)` | `nodes.py`, `agent_bootstrap.py`, `context_set.py` | 0.5 day |
-| Add contract integration tests | New test files in each service | 1-2 days |
+| Task                                                       | File(s)                                             | Effort   |
+| ---------------------------------------------------------- | --------------------------------------------------- | -------- |
+| Fix vector discovery shape mismatch                        | `runner.py`, GraphToolServer registry API           | 1 day    |
+| Fix context delta SSE route                                | `context-subscriber.ts`, DataServer stream endpoint | 1 day    |
+| Consolidate execution config defaults                      | `.env` files, `servers.yaml`, AgentRunner settings  | 0.5 day  |
+| Replace mutable literals with `Field(default_factory=...)` | `nodes.py`, `agent_bootstrap.py`, `context_set.py`  | 0.5 day  |
+| Add contract integration tests                             | New test files in each service                      | 1-2 days |
 
 **Exit gate**: All contract tests pass. Vector discovery returns correct shapes. SSE deltas flow end-to-end.
 
@@ -467,13 +471,13 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: Add graph-aware fields to SkillDefinition and create ContainerSkillView.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Add `SkillKind`, `SkillScope` enums | `nodes.py` | 0.5 day |
-| Add graph-aware fields to `SkillDefinition` | `nodes.py` | 0.5 day |
-| Update `AgentSkillEntry` with new fields | `agent_bootstrap.py` | 0.5 day |
-| Create `ContainerSkillView`, `ToolSummary`, `WorkflowSummary` | `skill_view.py` (NEW in AgentRunner) | 0.5 day |
-| Update seeder to populate new fields | `agent_walker.py`, `node_upserter.py` | 0.5 day |
+| Task                                                          | File(s)                               | Effort  |
+| ------------------------------------------------------------- | ------------------------------------- | ------- |
+| Add `SkillKind`, `SkillScope` enums                           | `nodes.py`                            | 0.5 day |
+| Add graph-aware fields to `SkillDefinition`                   | `nodes.py`                            | 0.5 day |
+| Update `AgentSkillEntry` with new fields                      | `agent_bootstrap.py`                  | 0.5 day |
+| Create `ContainerSkillView`, `ToolSummary`, `WorkflowSummary` | `skill_view.py` (NEW in AgentRunner)  | 0.5 day |
+| Update seeder to populate new fields                          | `agent_walker.py`, `node_upserter.py` | 0.5 day |
 
 **Exit gate**: Seeder produces containers with graph-aware skill fields. Bootstrap response includes new fields (defaulting to empty for existing data).
 
@@ -481,13 +485,13 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: `compose_context_set()` builds `ContainerSkillView[]` with scope tracking and provenance.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Update composition to set `scope` and `source_node_path` | `runner.py` | 1 day |
-| Add namespace-aware merge key (`namespace:name`) | `runner.py` | 0.5 day |
-| Extend proto `SkillChunk` with fields 20-28 | `collider_graph.proto` | 0.5 day |
-| Update `_skill_to_chunk()` to serialize new fields | `context_service.py` | 0.5 day |
-| Update gRPC context client to parse new fields | `context-client.ts` | 0.5 day |
+| Task                                                     | File(s)                | Effort  |
+| -------------------------------------------------------- | ---------------------- | ------- |
+| Update composition to set `scope` and `source_node_path` | `runner.py`            | 1 day   |
+| Add namespace-aware merge key (`namespace:name`)         | `runner.py`            | 0.5 day |
+| Extend proto `SkillChunk` with fields 20-28              | `collider_graph.proto` | 0.5 day |
+| Update `_skill_to_chunk()` to serialize new fields       | `context_service.py`   | 0.5 day |
+| Update gRPC context client to parse new fields           | `context-client.ts`    | 0.5 day |
 
 **Exit gate**: gRPC `GetBootstrap` returns skills with scope, kind, source_node_path, and exposes_tools populated.
 
@@ -495,10 +499,10 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: Create the global navigation skill and update the seeder to support subdirectory skills.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Create `collider-workspace/SKILL.md` | `.agent/skills/collider-workspace/SKILL.md` (NEW) | 0.25 day |
-| Support subdirectory skill format in seeder | `agent_walker.py` | 0.25 day |
+| Task                                        | File(s)                                           | Effort   |
+| ------------------------------------------- | ------------------------------------------------- | -------- |
+| Create `collider-workspace/SKILL.md`        | `.agent/skills/collider-workspace/SKILL.md` (NEW) | 0.25 day |
+| Support subdirectory skill format in seeder | `agent_walker.py`                                 | 0.25 day |
 
 **Exit gate**: Running the seeder creates a `collider-workspace` skill at the root node. It appears in all bootstrapped sessions.
 
@@ -506,12 +510,12 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: Extract the runtime-agnostic interface from the existing Anthropic adapter.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Define `IAgentSession` interface | `NanoClawBridge/src/pi/types.ts` (NEW) | 0.5 day |
-| Refactor `AnthropicAgent` to implement `IAgentSession` | `anthropic-agent.ts` | 0.5 day |
-| Add `COLLIDER_AGENT_RUNTIME` feature flag to `session-manager.ts` | `session-manager.ts` | 0.5 day |
-| Create PI adapter skeleton | `pi-adapter.ts` (NEW) | 0.5 day |
+| Task                                                              | File(s)                                | Effort  |
+| ----------------------------------------------------------------- | -------------------------------------- | ------- |
+| Define `IAgentSession` interface                                  | `NanoClawBridge/src/pi/types.ts` (NEW) | 0.5 day |
+| Refactor `AnthropicAgent` to implement `IAgentSession`            | `anthropic-agent.ts`                   | 0.5 day |
+| Add `COLLIDER_AGENT_RUNTIME` feature flag to `session-manager.ts` | `session-manager.ts`                   | 0.5 day |
+| Create PI adapter skeleton                                        | `pi-adapter.ts` (NEW)                  | 0.5 day |
 
 **Exit gate**: Both runtimes compile. Feature flag selects between them. Anthropic path unchanged.
 
@@ -519,12 +523,12 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: PI sessions can receive context from gRPC and execute Collider tools.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Build `colliderContextExtension` | `pi/extensions/collider-context.ts` (NEW) | 2 days |
-| Build `colliderToolsExtension` | `pi/extensions/collider-tools.ts` (NEW) | 1-2 days |
-| Build `model-resolver.ts` | `pi/model-resolver.ts` (NEW) | 0.5 day |
-| Build `colliderWidgetExtension` | `pi/extensions/collider-widget.ts` (NEW) | 0.5 day |
+| Task                             | File(s)                                   | Effort   |
+| -------------------------------- | ----------------------------------------- | -------- |
+| Build `colliderContextExtension` | `pi/extensions/collider-context.ts` (NEW) | 2 days   |
+| Build `colliderToolsExtension`   | `pi/extensions/collider-tools.ts` (NEW)   | 1-2 days |
+| Build `model-resolver.ts`        | `pi/model-resolver.ts` (NEW)              | 0.5 day  |
+| Build `colliderWidgetExtension`  | `pi/extensions/collider-widget.ts` (NEW)  | 0.5 day  |
 
 **Exit gate**: PI session creates, receives structured workspace context, executes a Collider tool via REST.
 
@@ -532,11 +536,11 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: PI sessions are secure and emit events matching Anthropic adapter shape.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Build `colliderPolicyExtension` | `pi/extensions/collider-policy.ts` (NEW) | 2 days |
-| Implement WS event emission parity | `pi-adapter.ts` | 1-2 days |
-| Write event parity test suite | `test/pi/event-parity.test.ts` (NEW) | 1 day |
+| Task                               | File(s)                                  | Effort   |
+| ---------------------------------- | ---------------------------------------- | -------- |
+| Build `colliderPolicyExtension`    | `pi/extensions/collider-policy.ts` (NEW) | 2 days   |
+| Implement WS event emission parity | `pi-adapter.ts`                          | 1-2 days |
+| Write event parity test suite      | `test/pi/event-parity.test.ts` (NEW)     | 1 day    |
 
 **Exit gate**: `pi-shadow` mode runs. Event streams match on 3 representative sessions.
 
@@ -544,12 +548,12 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: Multi-agent teams work with PI runtime.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Build `colliderTeamLeaderExtension` | `pi/extensions/collider-team-leader.ts` (NEW) | 1-2 days |
-| Build `colliderTeamMemberExtension` | `pi/extensions/collider-team-member.ts` (NEW) | 1 day |
-| Build `pipeline-runner.ts` | `pi/pipeline-runner.ts` (NEW) | 1 day |
-| Update `team-manager.ts` for `IAgentSession` union | `team-manager.ts` | 0.5 day |
+| Task                                               | File(s)                                       | Effort   |
+| -------------------------------------------------- | --------------------------------------------- | -------- |
+| Build `colliderTeamLeaderExtension`                | `pi/extensions/collider-team-leader.ts` (NEW) | 1-2 days |
+| Build `colliderTeamMemberExtension`                | `pi/extensions/collider-team-member.ts` (NEW) | 1 day    |
+| Build `pipeline-runner.ts`                         | `pi/pipeline-runner.ts` (NEW)                 | 1 day    |
+| Update `team-manager.ts` for `IAgentSession` union | `team-manager.ts`                             | 0.5 day  |
 
 **Exit gate**: Team with leader + 2 members verified.
 
@@ -557,23 +561,23 @@ Manus found that after ~50 tool calls, the model loses track of its objectives. 
 
 **Goal**: Structured workspace state replaces flat markdown.
 
-| Task | File(s) | Effort |
-|------|---------|--------|
-| Add graph-aware fields to TS `SkillDefinition` | `types.ts` | 0.5 day |
-| Replace `formatSkills()` with `formatWorkspaceContext()` | `prompt-builder.ts` | 1 day |
-| Add token budget enforcement | `prompt-builder.ts` | 0.5 day |
+| Task                                                     | File(s)             | Effort  |
+| -------------------------------------------------------- | ------------------- | ------- |
+| Add graph-aware fields to TS `SkillDefinition`           | `types.ts`          | 0.5 day |
+| Replace `formatSkills()` with `formatWorkspaceContext()` | `prompt-builder.ts` | 1 day   |
+| Add token budget enforcement                             | `prompt-builder.ts` | 0.5 day |
 
 **Exit gate**: System prompt contains structured workspace context.
 
 ### Phase 9: Shadow Traffic + Validation (2-3 days)
 
-| Criteria | Target |
-|----------|--------|
-| Event parity | >=99% |
+| Criteria             | Target                           |
+| -------------------- | -------------------------------- |
+| Event parity         | >=99%                            |
 | Task completion rate | Within 10% of Anthropic baseline |
-| Tool error rate | Within 5% |
-| Token usage delta | Within 15% |
-| Policy bypasses | Zero critical |
+| Tool error rate      | Within 5%                        |
+| Token usage delta    | Within 15%                       |
+| Policy bypasses      | Zero critical                    |
 
 **Total: ~5-7 weeks (one engineer), ~3-4 weeks (two engineers)**
 
@@ -606,12 +610,12 @@ Each schema model, extension, and adapter method gets tests.
 
 ### Integration Tests
 
-| Test | Services | Assertion |
-|------|----------|-----------|
-| Bootstrap with graph-aware skills | DataServer + AgentRunner | Skills have scope, kind, source_node_path |
-| Composition with ancestors | DataServer + AgentRunner | Ancestor = inherited, local = local |
-| PI session tool execution | NanoClawBridge + DataServer | Tool returns correct result |
-| Team creation with PI | NanoClawBridge + AgentRunner | Leader = merged, members = isolated |
+| Test                              | Services                     | Assertion                                 |
+| --------------------------------- | ---------------------------- | ----------------------------------------- |
+| Bootstrap with graph-aware skills | DataServer + AgentRunner     | Skills have scope, kind, source_node_path |
+| Composition with ancestors        | DataServer + AgentRunner     | Ancestor = inherited, local = local       |
+| PI session tool execution         | NanoClawBridge + DataServer  | Tool returns correct result               |
+| Team creation with PI             | NanoClawBridge + AgentRunner | Leader = merged, members = isolated       |
 
 ### E2E Smoke Test
 ```bash

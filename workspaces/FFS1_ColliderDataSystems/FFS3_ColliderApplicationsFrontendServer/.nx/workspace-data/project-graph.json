@@ -9,67 +9,22 @@
         "metadata": {},
         "targets": {
           "build": {
+            "executor": "nx:run-commands",
             "options": {
-              "cwd": "apps/ffs4",
-              "command": "vite build"
+              "command": "pnpm exec vite build --config apps/ffs4/vite.config.mts"
             },
+            "configurations": {},
+            "parallelism": true,
             "cache": true,
             "dependsOn": [
               "^build"
-            ],
-            "inputs": [
-              "default",
-              "^default",
-              {
-                "externalDependencies": [
-                  "vite"
-                ]
-              }
-            ],
-            "outputs": [
-              "{workspaceRoot}\\dist\\apps\\ffs4"
-            ],
-            "metadata": {
-              "technologies": [
-                "vite"
-              ],
-              "description": "Run Vite build",
-              "help": {
-                "command": "npx vite build --help",
-                "example": {
-                  "options": {
-                    "sourcemap": true,
-                    "manifest": "manifest.json"
-                  }
-                }
-              }
-            },
-            "executor": "nx:run-commands",
-            "configurations": {},
-            "parallelism": true
+            ]
           },
           "serve": {
-            "continuous": true,
-            "options": {
-              "cwd": "apps/ffs4",
-              "command": "vite"
-            },
-            "metadata": {
-              "technologies": [
-                "vite"
-              ],
-              "description": "Starts Vite dev server",
-              "help": {
-                "command": "npx vite --help",
-                "example": {
-                  "options": {
-                    "port": 3000
-                  }
-                }
-              },
-              "deprecated": "Use devTargetName instead. This option will be removed in Nx 22."
-            },
             "executor": "nx:run-commands",
+            "options": {
+              "command": "pnpm exec vite --config apps/ffs4/vite.config.mts"
+            },
             "configurations": {},
             "parallelism": true,
             "cache": false
@@ -600,5 +555,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1771855805604
+  "computedAt": 1771941428019
 }

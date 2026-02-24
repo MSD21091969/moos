@@ -112,10 +112,10 @@ export class ToolExecutor {
 
   private async executeMcpTool(block: ToolUseBlock): Promise<unknown> {
     // The DataServer exposes tool execution at /execution/tool/{name}
-    // which internally routes to GraphToolServer via gRPC.
+    // which internally routes to GraphToolServer.
     const dataServerUrl =
       process.env.COLLIDER_DATA_SERVER_URL ?? "http://localhost:8000";
-    const url = `${dataServerUrl}/api/v1/execution/tool/${encodeURIComponent(block.name)}`;
+    const url = `${dataServerUrl}/execution/tool/${encodeURIComponent(block.name)}`;
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",

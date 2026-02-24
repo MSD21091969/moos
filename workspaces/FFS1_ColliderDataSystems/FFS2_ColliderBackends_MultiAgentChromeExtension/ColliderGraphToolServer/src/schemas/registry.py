@@ -19,7 +19,7 @@ class GraphStepEntry(BaseModel):
     tool_name: str
     origin_node_id: str  # DataServer Node.id
     owner_user_id: str
-    params_schema: dict = {}  # JSON Schema for create_model()
+    params_schema: dict = Field(default_factory=dict)  # JSON Schema for create_model()
     code_ref: str = ""
     visibility: Literal["local", "group", "global"] = "local"
     registered_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -36,7 +36,9 @@ class SubgraphManifest(BaseModel):
     workflow_name: str
     origin_node_id: str  # DataServer Node.id
     owner_user_id: str
-    steps: list[str] = []  # Ordered GraphStepEntry.tool_name refs
+    steps: list[str] = Field(
+        default_factory=list
+    )  # Ordered GraphStepEntry.tool_name refs
     entry_point: str = ""  # First step name
     registered_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -46,9 +48,7 @@ class ToolQuery(BaseModel):
 
     query: str = ""
     user_id: str | None = None
-    visibility_filter: list[Literal["local", "group", "global"]] = [
-        "local",
-        "group",
-        "global",
-    ]
+    visibility_filter: list[Literal["local", "group", "global"]] = Field(
+        default_factory=lambda: ["local", "group", "global"]
+    )
     limit: int = 50

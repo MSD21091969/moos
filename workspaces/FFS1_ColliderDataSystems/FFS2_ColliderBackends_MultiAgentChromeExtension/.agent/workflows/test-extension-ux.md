@@ -1,73 +1,69 @@
 ---
-description: How to test the Multi-Agent Chrome Extension Sidepanel UX and
-WebSocket connection
+description: Test the Multi-Agent Chrome Extension sidepanel, NanoClawBridge WebSocket flow, and runtime modes (anthropic/pi/pi-shadow)
 ---
 
 # Testing the Chrome Extension Sidepanel
 
-This workflow provides the exact steps to verify that the Chrome Extension
-sidepanel can successfully connect to the `NanoClawBridge` WebSocket, retrieve
-contexts, and stream responses from the `AnthropicAgent`.
+This workflow verifies sidepanel session composition, WebSocket streaming, and runtime behavior for `anthropic`, `pi`, and `pi-shadow`.
 
 ## Prerequisites
 
-Ensure all required services are running, specifically:
+Required services:
 
-1. `ColliderDataServer` (REST API - port 8000)
-2. `ColliderAgentRunner` (Context gRPC - port 8004)
-3. `NanoClawBridge` (WebSocket Bridge - port 18789)
-4. `FFS6` (Frontend Viewer - port 4200)
+1. `ColliderDataServer` (:8000)
+2. `ColliderGraphToolServer` (:8001)
+3. `ColliderAgentRunner` (:8004)
+4. `NanoClawBridge` (:18789)
+5. `ffs4` or `ffs6` frontend (typically :4201/:4200)
 
-(You can run the `/dev-start` workflow to launch all of these).
+Use the parent workflow: `FFS1/.agent/workflows/dev-start.md`.
 
-## Step-by-Step UI Verification
+## Runtime Mode Setup
 
-### 1. Open Service Verification Tabs
+Set runtime before launching `NanoClawBridge`:
 
-Before testing the extension, open your browser and load the following service
-endpoints in separate tabs to verify they are running:
+- `COLLIDER_AGENT_RUNTIME=anthropic` (baseline)
+- `COLLIDER_AGENT_RUNTIME=pi` (PI active)
+- `COLLIDER_AGENT_RUNTIME=pi-shadow` (Anthropic primary + PI shadow validation)
 
-1. **Frontend:** `http://localhost:4200/`
-2. **DataServer Docs:** `http://localhost:8000/docs`
-3. **GraphToolServer Docs:** `http://localhost:8001/docs`
-4. *(Skip `8002` VectorDB and `8003` SQLite Web)*
-5. **AgentRunner Docs:** `http://localhost:8004/docs`
+For pre-prod validation, use `pi-shadow` and keep `PI_SHADOW_SAMPLE_TARGET=20`.
 
-### 2. Load the Extension Sidepanel
+## UI Verification
 
-1. While on any page, click the browser's side panel icon and select "Collider Multi-Agent Chrome Extension".
-2. **IMPORTANT:** You must operate the agent interface from *within the
-   sidepanel itself*, not from the main FFS6 web page. The NanoClaw agent is
-   designed to be hosted in the extension.
+1. Open service endpoints:
+   - `http://localhost:8000/docs`
+   - `http://localhost:8001/docs`
+   - `http://localhost:8004/docs`
+   - `http://localhost:4201/` (ffs4) or `http://localhost:4200/` (ffs6)
 
-### 2. Compose Context
+2. Open the browser sidepanel and select the Collider extension.
 
-1. In the sidepanel, under the **Collider** header, verify you are on the **Tree** tab.
-2. Click the **Select application...** dropdown and choose your seeded application (e.g., `Application 2XZ`).
-3. Click on a node in the tree (e.g., `admin` or a child node) to select it as the context root.
+3. In **Tree** tab:
+   - select an application
+   - select one or more nodes
 
-### 3. Start the Session
+4. In **Agent** tab:
+   - start a session
+   - send a test message (`hello runtime`)
 
-1. Switch to the **Agent** tab in the sidepanel.
-2. The UI should now display a "Context Composer" section indicating the selected node.
-3. Click the button to **Start Session**.
-4. The UI should show "Session active" with a session ID displayed.
+5. Expected behavior:
+   - user message appears immediately
+   - agent response streams with `text_delta`
+   - session ends with `message_end`
 
-### 4. Verify WebSocket Streaming
+6. Tool execution test:
+   - send `/tool <known_tool> {}`
+   - expect `tool_use_start` then `tool_result`
 
-1. In the chat input box at the bottom ("Message the agent..."), type a test message: `Hello Agent, are you connected?`
-2. Press `Enter` or click the Send button.
-3. **Expected Behavior:**
-   - The message should immediately appear in the chat history.
-   - Within 5-10 seconds, the agent should reply in the chat history (e.g., "Yes, I am connected...").
-   - If you check the terminal running `NanoClawBridge` (port 18789), you should see pino logs confirming the `text_delta` and `message_end` events streaming.
+## Runtime-Specific Checks
+
+- `anthropic`: standard response behavior.
+- `pi`: PI adapter emits canonical event classes.
+- `pi-shadow`: client sees Anthropic stream; shadow KPI checkpoints appear in NanoClawBridge logs.
 
 ## Troubleshooting
 
-- **"Connection Refused" in Sidepanel UI:** Ensure `npm run dev` in
-   `NanoClawBridge` is actually running on port 18789 and you have a valid
-   `ANTHROPIC_API_KEY` in `NanoClawBridge/.env`.
-- **Extension fails to load application tree:** Ensure `ColliderDataServer` is running on port 8000 and the database is seeded.
-- **Agent fails to reply:** Check the `ColliderAgentRunner` logs (port 8004)
-   to see if the gRPC context request failed. Ensure `GEMINI_API_KEY` is set in
-   the `secrets/api_keys.env`.
+- Session not created: verify app/node selection and AgentRunner availability.
+- No streamed response: check NanoClawBridge logs for `error` events.
+- Tool command fails: confirm tool exists in `tool_schemas` for the composed context.
+- `pi-shadow` not reporting KPIs: verify `COLLIDER_AGENT_RUNTIME=pi-shadow` in NanoClawBridge environment.

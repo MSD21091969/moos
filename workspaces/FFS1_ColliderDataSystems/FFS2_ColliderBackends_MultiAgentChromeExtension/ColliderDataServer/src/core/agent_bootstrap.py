@@ -14,12 +14,12 @@ Skills precedence model.
 from __future__ import annotations
 
 from src.db.models import Node, User
-from src.schemas.nodes import NodeContainer
 from src.schemas.agent_bootstrap import (
     AgentBootstrap,
     AgentSkillEntry,
     AgentToolSchema,
 )
+from src.schemas.nodes import NodeContainer
 
 # ---------------------------------------------------------------------------
 # Execute-workflow tool schema (injected into every bootstrap response)
@@ -81,13 +81,26 @@ _EXECUTE_TOOL_SCHEMA: dict = {
 # ---------------------------------------------------------------------------
 
 
-def _skill_entry(skill) -> AgentSkillEntry:
+def _skill_entry(
+    skill, *, source_node_id: str, source_node_path: str, scope: str
+) -> AgentSkillEntry:
     return AgentSkillEntry(
         name=skill.name,
         description=skill.description,
         emoji=skill.emoji,
+        namespace=skill.namespace,
+        version=skill.version,
+        kind=skill.kind.value,
+        scope=scope,
+        source_node_path=skill.source_node_path or source_node_path,
+        source_node_id=skill.source_node_id or source_node_id,
         requires_bins=skill.requires_bins,
         requires_env=skill.requires_env,
+        inputs=skill.inputs,
+        outputs=skill.outputs,
+        depends_on=skill.depends_on,
+        exposes_tools=skill.exposes_tools,
+        child_skills=skill.child_skills,
         user_invocable=skill.invocation.user_invocable,
         model_invocable=skill.invocation.model_invocable,
         markdown_body=skill.markdown_body,
@@ -136,7 +149,13 @@ def render_bootstrap(
 
     # --- Build skill + tool maps from root (inserted first, lower priority) ---
     skill_map: dict[str, AgentSkillEntry] = {
-        skill.name: _skill_entry(skill) for skill in container.skills
+        skill.name: _skill_entry(
+            skill,
+            source_node_id=str(node.id),
+            source_node_path=node.path,
+            scope="local",
+        )
+        for skill in container.skills
     }
     tool_schema_map: dict[str, AgentToolSchema] = {
         tool.name: _tool_schema(tool) for tool in container.tools
@@ -147,7 +166,12 @@ def render_bootstrap(
         for desc_node in descendants:
             desc_container = NodeContainer.model_validate(desc_node.container)
             for skill in desc_container.skills:
-                skill_map[skill.name] = _skill_entry(skill)
+                skill_map[skill.name] = _skill_entry(
+                    skill,
+                    source_node_id=str(desc_node.id),
+                    source_node_path=desc_node.path,
+                    scope="inherited",
+                )
             for tool in desc_container.tools:
                 tool_schema_map[tool.name] = _tool_schema(tool)
 

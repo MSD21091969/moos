@@ -50,9 +50,8 @@ export class NanoClawRpcClient {
             return;
           }
 
-          // Notification (agent event stream)
-          if (msg.method === "agent.event" && msg.params) {
-            const agentEvent = msg.params as AgentEvent;
+          const agentEvent = this.parseAgentEvent(msg);
+          if (agentEvent) {
             for (const listener of this.eventListeners) {
               listener(agentEvent);
             }
@@ -85,13 +84,23 @@ export class NanoClawRpcClient {
 
   async agentRequest(
     message: string,
-    opts?: { sessionKey?: string; model?: string; workspaceDir?: string },
+    opts?: {
+      sessionKey?: string;
+      model?: string;
+      workspaceDir?: string;
+      role?: string;
+      appId?: string;
+      nodeIds?: string[];
+    },
   ): Promise<void> {
     await this.rpc("agent.request", {
       message,
       sessionKey: opts?.sessionKey,
       model: opts?.model,
       workspaceDir: opts?.workspaceDir,
+      role: opts?.role,
+      appId: opts?.appId,
+      nodeIds: opts?.nodeIds,
     });
   }
 
@@ -128,5 +137,58 @@ export class NanoClawRpcClient {
         }
       }, 120_000);
     });
+  }
+
+  private parseAgentEvent(msg: Record<string, unknown>): AgentEvent | null {
+    // Legacy JSON-RPC notifications: { method: "agent.event", params: AgentEvent }
+    if (msg.method === "agent.event" && msg.params && typeof msg.params === "object") {
+      return msg.params as AgentEvent;
+    }
+
+    // Bridge event frames: { type: "event", event: "...", data?: ..., message?: ... }
+    if (msg.type !== "event" || typeof msg.event !== "string") {
+      return null;
+    }
+
+    switch (msg.event) {
+      case "text_delta":
+        return {
+          kind: "text_delta",
+          text: typeof msg.data === "string" ? msg.data : "",
+        };
+      case "tool_use_start": {
+        const data = (msg.data as Record<string, unknown> | undefined) ?? {};
+        return {
+          kind: "tool_use_start",
+          name: typeof data.name === "string" ? data.name : "",
+          args: typeof data.args === "string" ? data.args : JSON.stringify(data.args ?? ""),
+        };
+      }
+      case "tool_result": {
+        const data = (msg.data as Record<string, unknown> | undefined) ?? {};
+        return {
+          kind: "tool_result",
+          name: typeof data.name === "string" ? data.name : "",
+          result:
+            typeof data.result === "string"
+              ? data.result
+              : JSON.stringify(data.result ?? ""),
+        };
+      }
+      case "thinking":
+        return {
+          kind: "thinking",
+          text: typeof msg.data === "string" ? msg.data : "",
+        };
+      case "message_end":
+        return { kind: "message_end" };
+      case "error":
+        return {
+          kind: "error",
+          message: typeof msg.message === "string" ? msg.message : "Unknown error",
+        };
+      default:
+        return null;
+    }
   }
 }

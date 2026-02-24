@@ -4,10 +4,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from src.db.models import AppRole
-
 
 # ---------------------------------------------------------------------------
 # Container classification & boundary types
@@ -73,6 +72,24 @@ class SkillInvocationPolicy(BaseModel):
     model_invocable: bool = True
 
 
+class SkillKind(str, Enum):
+    """Semantic role of a skill entry."""
+
+    PROCEDURAL = "procedural"
+    NAVIGATION = "navigation"
+    WORKFLOW = "workflow"
+    COMPOSITE = "composite"
+
+
+class SkillScope(str, Enum):
+    """Composition provenance of a skill entry."""
+
+    LOCAL = "local"
+    INHERITED = "inherited"
+    COMPOSED = "composed"
+    GLOBAL = "global"
+
+
 class SkillDefinition(BaseModel):
     """An agent-compatible skill entry backed by a Collider ToolDefinition.
 
@@ -85,10 +102,25 @@ class SkillDefinition(BaseModel):
     name: str
     description: str = ""
     emoji: str = ""
+    namespace: str | None = None
+    version: str | None = None
+    kind: SkillKind = SkillKind.PROCEDURAL
+    scope: SkillScope = SkillScope.LOCAL
+    source_node_path: str | None = None
+    source_node_id: str | None = None
     tool_ref: str | None = None  # References ToolDefinition.name in same container
-    requires_bins: list[str] = []  # CLI binaries needed, e.g. ["gh", "curl"]
-    requires_env: list[str] = []  # Env vars needed, e.g. ["GITHUB_TOKEN"]
-    invocation: SkillInvocationPolicy = SkillInvocationPolicy()
+    requires_bins: list[str] = Field(
+        default_factory=list
+    )  # CLI binaries needed, e.g. ["gh", "curl"]
+    requires_env: list[str] = Field(
+        default_factory=list
+    )  # Env vars needed, e.g. ["GITHUB_TOKEN"]
+    invocation: SkillInvocationPolicy = Field(default_factory=SkillInvocationPolicy)
+    inputs: list[str] = Field(default_factory=list)
+    outputs: list[str] = Field(default_factory=list)
+    depends_on: list[str] = Field(default_factory=list)
+    exposes_tools: list[str] = Field(default_factory=list)
+    child_skills: list[str] = Field(default_factory=list)
     markdown_body: str = ""  # Usage docs: when to use, examples, avoid
 
 
@@ -107,7 +139,7 @@ class ToolDefinition(BaseModel):
 
     name: str
     description: str = ""
-    params_schema: dict = {}  # JSON Schema (from create_model)
+    params_schema: dict = Field(default_factory=dict)  # JSON Schema (from create_model)
     code_ref: str = ""  # Module path or script reference
     visibility: Literal["local", "group", "global"] = "local"
 
@@ -117,7 +149,9 @@ class WorkflowStep(BaseModel):
 
     tool_name: str  # References a ToolDefinition.name
     condition: str | None = None  # Edge condition expression
-    inputs_map: dict = {}  # Maps step inputs from prior outputs
+    inputs_map: dict = Field(
+        default_factory=dict
+    )  # Maps step inputs from prior outputs
 
 
 class WorkflowDefinition(BaseModel):
@@ -128,7 +162,7 @@ class WorkflowDefinition(BaseModel):
 
     name: str
     description: str = ""
-    steps: list[WorkflowStep] = []
+    steps: list[WorkflowStep] = Field(default_factory=list)
     entry_step: str | None = None  # First step name
 
 
@@ -155,21 +189,21 @@ class NodeContainer(BaseModel):
     version: str = "1.0.0"
     kind: NodeKind = NodeKind.WORKSPACE  # semantic role discriminator
     species: ContainerSpecies | None = None
-    api_boundary: ApiBoundary = ApiBoundary()
+    api_boundary: ApiBoundary = Field(default_factory=ApiBoundary)
 
     # Context (the .agent structure)
-    manifest: dict = {}
-    instructions: list[str] = []
-    rules: list[str] = []
-    knowledge: list[str] = []
-    configs: dict = {}
+    manifest: dict = Field(default_factory=dict)
+    instructions: list[str] = Field(default_factory=list)
+    rules: list[str] = Field(default_factory=list)
+    knowledge: list[str] = Field(default_factory=list)
+    configs: dict = Field(default_factory=dict)
 
     # Skills interface — Agent-compatible (was list[str], now typed)
-    skills: list[SkillDefinition] = []
+    skills: list[SkillDefinition] = Field(default_factory=list)
 
     # Executable definitions
-    tools: list[ToolDefinition] = []
-    workflows: list[WorkflowDefinition] = []
+    tools: list[ToolDefinition] = Field(default_factory=list)
+    workflows: list[WorkflowDefinition] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod
@@ -193,8 +227,8 @@ class NodeContainer(BaseModel):
 class NodeCreate(BaseModel):
     path: str
     parent_id: str | None = None
-    container: NodeContainer = NodeContainer()
-    metadata: dict = {}
+    container: NodeContainer = Field(default_factory=NodeContainer)
+    metadata: dict = Field(default_factory=dict)
 
 
 class NodeUpdate(BaseModel):
@@ -223,7 +257,7 @@ class NodeTreeResponse(BaseModel):
     path: str
     container: dict
     metadata_: dict
-    children: list[NodeTreeResponse] = []
+    children: list[NodeTreeResponse] = Field(default_factory=list)
 
 
 class PermissionCreate(BaseModel):

@@ -14,7 +14,7 @@ inheritance:
 
 # Parent context (factory level)
 includes:
-  - path: "../../.agent"
+  - path: "../../../.agent"
     type: factory
     load:
       - rules/sandbox.md

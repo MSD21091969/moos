@@ -59,7 +59,7 @@ async def execute_tool(
     import httpx
 
     graph_tool_url = os.environ.get(
-        "GRAPHTOOL_SERVER_URL", "http://localhost:8005"
+        "GRAPHTOOL_SERVER_URL", "http://localhost:8001"
     ).rstrip("/")
     try:
         async with httpx.AsyncClient() as client:

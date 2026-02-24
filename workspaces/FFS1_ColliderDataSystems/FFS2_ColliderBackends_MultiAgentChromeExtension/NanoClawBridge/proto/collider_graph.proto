@@ -198,6 +198,19 @@ message SkillChunk {
   string invocation_policy = 8;    // "auto" | "confirm" | "disabled"
   repeated string requires_bins = 9;
   repeated string requires_env = 10;
+
+  // Optional graph-aware metadata (additive, backward-compatible)
+  string namespace = 20;
+  string version = 21;
+  string kind = 22;                // "procedural" | "navigation" | "workflow" | "composite"
+  string scope = 23;               // "local" | "inherited" | "composed" | "global"
+  string source_node_path = 24;
+  string source_node_id = 25;
+  repeated string inputs = 26;
+  repeated string outputs = 27;
+  repeated string depends_on = 28;
+  repeated string exposes_tools = 29;
+  repeated string child_skills = 30;
 }
 
 message ToolSchemaChunk {

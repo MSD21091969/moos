@@ -1,20 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TeamManager } from "../../src/sdk/team-manager.js";
-import type { AnthropicAgent } from "../../src/sdk/anthropic-agent.js";
+import type { IAgentSession } from "../../src/sdk/agent-session.js";
 import type { ContextGrpcClient } from "../../src/grpc/context-client.js";
 
-function createMockAgent(): AnthropicAgent {
+function createMockAgent(): IAgentSession {
     return {
         createSession: vi.fn(),
-        resumeSession: vi.fn(),
         injectContext: vi.fn(),
         terminateSession: vi.fn(),
-        getHistory: vi.fn(),
+        hasHistory: vi.fn().mockReturnValue(false),
         sendMessage: vi.fn().mockImplementation(async function* () {
             yield { kind: "text_delta", text: "Mock response" };
             yield { kind: "message_end" };
         })
-    } as unknown as AnthropicAgent;
+    } as unknown as IAgentSession;
 }
 
 function createMockGrpcClient(): ContextGrpcClient {
@@ -33,7 +32,7 @@ function createMockGrpcClient(): ContextGrpcClient {
 }
 
 describe("TeamManager", () => {
-    let agent: AnthropicAgent;
+    let agent: IAgentSession;
     let grpcClient: ContextGrpcClient;
     let manager: TeamManager;
 

@@ -17,11 +17,20 @@ export interface Message {
 interface SessionState {
   sessionId: string | null;
   wsUrl: string | null;
+  sessionContext: {
+    appId: string;
+    nodeIds: string[];
+    role: string;
+  } | null;
   connected: boolean;
   messages: Message[];
   sending: boolean;
 
-  setSession: (sessionId: string, wsUrl: string) => void;
+  setSession: (
+    sessionId: string,
+    wsUrl: string,
+    sessionContext?: { appId: string; nodeIds: string[]; role: string },
+  ) => void;
   setConnected: (connected: boolean) => void;
   addMessage: (message: Message) => void;
   updateLastAssistant: (text: string) => void;
@@ -35,11 +44,13 @@ interface SessionState {
 export const useSessionStore = create<SessionState>((set, get) => ({
   sessionId: null,
   wsUrl: null,
+  sessionContext: null,
   connected: false,
   messages: [],
   sending: false,
 
-  setSession: (sessionId, wsUrl) => set({ sessionId, wsUrl }),
+  setSession: (sessionId, wsUrl, sessionContext) =>
+    set({ sessionId, wsUrl, sessionContext: sessionContext ?? null }),
 
   setConnected: (connected) => set({ connected }),
 
@@ -82,6 +93,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     set({
       sessionId: null,
       wsUrl: null,
+      sessionContext: null,
       connected: false,
       messages: [],
       sending: false,

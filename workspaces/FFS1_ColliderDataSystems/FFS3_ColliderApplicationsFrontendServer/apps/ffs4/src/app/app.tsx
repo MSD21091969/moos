@@ -56,7 +56,11 @@ export function App() {
         node_ids: selectedNodeIds,
         inherit_ancestors: inheritAncestors,
       });
-      setSession(resp.session_id, resp.nanoclaw_ws_url);
+      setSession(resp.session_id, resp.nanoclaw_ws_url, {
+        appId,
+        nodeIds: selectedNodeIds,
+        role,
+      });
     } catch (err) {
       console.error("Failed to compose session:", err);
     } finally {

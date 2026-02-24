@@ -9,7 +9,6 @@ import pytest
 from src.core.workspace_writer import (
     _format_tool_descriptions,
     _render_skill_md,
-    _truncate,
     write_workspace,
 )
 
@@ -17,27 +16,6 @@ from src.core.workspace_writer import (
 @pytest.fixture
 def tmp_workspace(tmp_path: Path) -> Path:
     return tmp_path / "workspace"
-
-
-# ---------------------------------------------------------------------------
-# _truncate
-# ---------------------------------------------------------------------------
-
-
-def test_truncate_within_limit():
-    assert _truncate("hello", 100) == "hello"
-
-
-def test_truncate_at_limit():
-    content = "x" * 20_000
-    assert _truncate(content) == content
-
-
-def test_truncate_over_limit():
-    content = "x" * 21_000
-    result = _truncate(content)
-    assert len(result) < 21_000
-    assert "truncated" in result
 
 
 # ---------------------------------------------------------------------------
@@ -73,7 +51,7 @@ def test_format_tool_descriptions_with_tools():
     assert "list_nodes" in result
     assert "app_id" in result
     assert "(required)" in result
-    assert "collider-grpc" in result
+    assert "MCP server" in result
 
 
 # ---------------------------------------------------------------------------
@@ -104,9 +82,8 @@ def test_render_skill_md_with_metadata():
         "markdown_body": "",
     }
     result = _render_skill_md(skill)
-    assert "metadata:" in result
-    assert "grpcurl" in result
-    assert "API_KEY" in result
+    assert "name: gated-skill" in result
+    assert "description: Needs env" in result
 
 
 # ---------------------------------------------------------------------------
@@ -135,16 +112,19 @@ async def test_write_workspace_creates_files(tmp_workspace: Path):
         session_meta={"session_id": "test-123", "role": "app_user"},
     )
 
-    assert (tmp_workspace / "AGENTS.md").exists()
-    assert (tmp_workspace / "SOUL.md").exists()
-    assert (tmp_workspace / "TOOLS.md").exists()
+    assert (tmp_workspace / "CLAUDE.md").exists()
+    assert (tmp_workspace / ".mcp.json").exists()
     assert (tmp_workspace / "context" / "session.json").exists()
 
-    agents = (tmp_workspace / "AGENTS.md").read_text()
-    assert "Agent instructions here" in agents
+    claude_md = (tmp_workspace / "CLAUDE.md").read_text()
+    assert "Agent instructions here" in claude_md
+    assert "Rules here" in claude_md
+    assert "Reference docs" in claude_md
+    assert "list_apps" in claude_md
 
-    tools = (tmp_workspace / "TOOLS.md").read_text()
-    assert "list_apps" in tools
+    mcp = json.loads((tmp_workspace / ".mcp.json").read_text())
+    assert "mcpServers" in mcp
+    assert "collider-tools" in mcp["mcpServers"]
 
     meta = json.loads((tmp_workspace / "context" / "session.json").read_text())
     assert meta["session_id"] == "test-123"
@@ -176,7 +156,9 @@ async def test_write_workspace_with_skills(tmp_workspace: Path):
 
 
 @pytest.mark.asyncio
-async def test_write_workspace_copies_static_skills(tmp_workspace: Path, tmp_path: Path):
+async def test_write_workspace_copies_static_skills(
+    tmp_workspace: Path, tmp_path: Path
+):
     # Create a static skill dir
     static_dir = tmp_path / "static-skills"
     grpc_skill = static_dir / "collider-grpc"
@@ -211,8 +193,8 @@ async def test_write_workspace_empty_content_skips_files(tmp_workspace: Path):
         session_meta={},
     )
 
-    # Empty content files should not be written
-    assert not (tmp_workspace / "AGENTS.md").exists()
-    assert not (tmp_workspace / "SOUL.md").exists()
-    # But context/session.json always written
+    # CLAUDE.md omitted when there is no composed content
+    assert not (tmp_workspace / "CLAUDE.md").exists()
+    # .mcp.json and context/session.json are always written
+    assert (tmp_workspace / ".mcp.json").exists()
     assert (tmp_workspace / "context" / "session.json").exists()

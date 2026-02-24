@@ -15,6 +15,12 @@ import {
   type RunOptions,
 } from "./container-runner.js";
 import { AnthropicAgent } from "./sdk/anthropic-agent.js";
+import { PiAdapter } from "./pi/pi-adapter.js";
+import {
+  evaluateShadowTraffic,
+  type ShadowTrafficSample,
+} from "./pi/shadow-validation.js";
+import type { IAgentSession } from "./sdk/agent-session.js";
 import { ContextGrpcClient } from "./grpc/context-client.js";
 import { ContextSubscriber } from "./sse/context-subscriber.js";
 import type { ComposedContext } from "./sdk/types.js";
@@ -26,6 +32,9 @@ const log = pino({ name: "session-manager" });
 const USE_SDK_AGENT = process.env.USE_SDK_AGENT === "true";
 const USE_GRPC_CONTEXT = process.env.USE_GRPC_CONTEXT === "true";
 const GRPC_CONTEXT_ADDRESS = process.env.GRPC_CONTEXT_ADDRESS ?? "localhost:50051";
+const COLLIDER_AGENT_RUNTIME = (process.env.COLLIDER_AGENT_RUNTIME ?? "anthropic").toLowerCase();
+const IS_PI_SHADOW = COLLIDER_AGENT_RUNTIME === "pi-shadow";
+const SHADOW_SAMPLE_TARGET = parseInt(process.env.PI_SHADOW_SAMPLE_TARGET ?? "20", 10);
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,6 +49,12 @@ export interface SessionConfig {
   idleTimeoutMs?: number;
   /** When USE_SDK_AGENT=true, context is delivered as JSON instead of files. */
   composedContext?: ComposedContext;
+  /** Session role used for context bootstrap in SDK mode. */
+  role?: string;
+  /** Application ID used for context bootstrap in SDK mode. */
+  appId?: string;
+  /** Node IDs used for context bootstrap in SDK mode. */
+  nodeIds?: string[];
 }
 
 interface ActiveSession {
@@ -58,15 +73,29 @@ export class SessionManager {
   private db!: SessionDb;
   private active = new Map<string, ActiveSession>();
   private defaultIdleTimeoutMs: number;
-  private sdkAgent: AnthropicAgent | null = null;
+  private sdkAgent: IAgentSession | null = null;
+  private shadowAgent: IAgentSession | null = null;
   private grpcClient: ContextGrpcClient | null = null;
   private contextSubscribers = new Map<string, ContextSubscriber>();
+  private shadowSamples: ShadowTrafficSample[] = [];
 
   private constructor(idleTimeoutMinutes: number) {
     this.defaultIdleTimeoutMs = idleTimeoutMinutes * 60_000;
     if (USE_SDK_AGENT) {
-      this.sdkAgent = new AnthropicAgent();
-      log.info("SDK agent mode enabled");
+      if (IS_PI_SHADOW) {
+        this.sdkAgent = new AnthropicAgent();
+        this.shadowAgent = new PiAdapter();
+        log.info(
+          { sampleTarget: SHADOW_SAMPLE_TARGET },
+          "SDK agent mode enabled (runtime=pi-shadow, anthropic primary + pi shadow)",
+        );
+      } else if (COLLIDER_AGENT_RUNTIME === "pi") {
+        this.sdkAgent = new PiAdapter();
+        log.info("SDK agent mode enabled (runtime=pi)");
+      } else {
+        this.sdkAgent = new AnthropicAgent();
+        log.info("SDK agent mode enabled (runtime=anthropic)");
+      }
     }
     if (USE_GRPC_CONTEXT) {
       this.grpcClient = new ContextGrpcClient(GRPC_CONTEXT_ADDRESS);
@@ -166,19 +195,29 @@ export class SessionManager {
 
     (async () => {
       try {
-        console.log(`[sendMessageSdk] starting for session ${sessionKey}`);
         // Fetch context via gRPC if not provided directly
         let context = config.composedContext;
         if (!context && grpcClient) {
+          const resolvedRole = config.role ?? "superadmin";
+          const resolvedAppId = config.appId ?? "";
+          const resolvedNodeIds = config.nodeIds ?? [];
+
+          if (!resolvedAppId || resolvedNodeIds.length === 0) {
+            broadcast({
+              kind: "error",
+              message: "Missing appId/nodeIds for SDK context bootstrap",
+            });
+            broadcast({ kind: "message_end" });
+            return;
+          }
+
           try {
-            console.log(`[sendMessageSdk] calling grpcClient.getBootstrap...`);
             context = await grpcClient.getBootstrap({
               sessionId: sessionKey,
-              nodeIds: [],
-              role: "superadmin",  // Changed to superadmin to match default testing
-              appId: "",
+              nodeIds: resolvedNodeIds,
+              role: resolvedRole,
+              appId: resolvedAppId,
             });
-            console.log(`[sendMessageSdk] getBootstrap returned`, !!context);
           } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             broadcast({ kind: "error", message: `gRPC context fetch failed: ${msg}` });
@@ -187,21 +226,26 @@ export class SessionManager {
           }
         }
         if (!context) {
-          console.log(`[sendMessageSdk] no context available`);
           broadcast({ kind: "error", message: "No context available (neither direct nor via gRPC)" });
           broadcast({ kind: "message_end" });
           return;
         }
 
-        console.log(`[sendMessageSdk] initializing SDK session...`);
-
         // Create SDK session if this is the first message
-        if (!session!.process && !agent.getHistory(sessionKey).length) {
+        if (!session!.process && !agent.hasHistory(sessionKey)) {
           agent.createSession({
             sessionId: sessionKey,
             context,
             model: config.model ?? undefined,
           });
+
+          if (this.shadowAgent && !this.shadowAgent.hasHistory(sessionKey)) {
+            this.shadowAgent.createSession({
+              sessionId: sessionKey,
+              context,
+              model: config.model ?? undefined,
+            });
+          }
 
           // Start SSE delta subscription for live context updates
           if (USE_GRPC_CONTEXT && context.session_meta?.composed_nodes?.length) {
@@ -219,12 +263,37 @@ export class SessionManager {
           }
         }
 
-        console.log(`[sendMessageSdk] calling agent.sendMessage...`);
-        for await (const event of agent.sendMessage(sessionKey, message)) {
-          console.log(`[sendMessageSdk] yielding event: ${event.kind}`);
-          broadcast(event);
+        const primaryEvents: AgentEvent[] = [];
+
+        const primaryPromise = (async () => {
+          for await (const event of agent.sendMessage(sessionKey, message)) {
+            primaryEvents.push(event);
+            broadcast(event);
+          }
+        })();
+
+        let shadowEventsPromise: Promise<AgentEvent[]> | null = null;
+        if (this.shadowAgent) {
+          const shadowAgent = this.shadowAgent;
+          shadowEventsPromise = (async () => {
+            const events: AgentEvent[] = [];
+            for await (const event of shadowAgent.sendMessage(sessionKey, message)) {
+              events.push(event);
+            }
+            return events;
+          })();
         }
-        console.log(`[sendMessageSdk] agent.sendMessage completed.`);
+
+        await primaryPromise;
+
+        if (shadowEventsPromise) {
+          const shadowEvents = await shadowEventsPromise;
+          this.recordShadowSample({
+            sessionId: sessionKey,
+            anthropicEvents: primaryEvents,
+            piEvents: shadowEvents,
+          });
+        }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         broadcast({ kind: "error", message: msg });
@@ -357,6 +426,9 @@ export class SessionManager {
     if (this.sdkAgent) {
       try { this.sdkAgent.terminateSession(sessionKey); } catch { /* noop */ }
     }
+    if (this.shadowAgent) {
+      try { this.shadowAgent.terminateSession(sessionKey); } catch { /* noop */ }
+    }
     // Stop context subscriber for this session
     const subscriber = this.contextSubscribers.get(sessionKey);
     if (subscriber) {
@@ -391,6 +463,9 @@ export class SessionManager {
       if (this.sdkAgent) {
         try { this.sdkAgent.terminateSession(key); } catch { /* noop */ }
       }
+      if (this.shadowAgent) {
+        try { this.shadowAgent.terminateSession(key); } catch { /* noop */ }
+      }
       this.active.delete(key);
     }
     this.db.close();
@@ -420,6 +495,30 @@ export class SessionManager {
     if (session.idleTimer) {
       clearTimeout(session.idleTimer);
       session.idleTimer = null;
+    }
+  }
+
+  private recordShadowSample(sample: ShadowTrafficSample): void {
+    this.shadowSamples.push(sample);
+    if (this.shadowSamples.length > SHADOW_SAMPLE_TARGET) {
+      this.shadowSamples.shift();
+    }
+
+    const report = evaluateShadowTraffic(this.shadowSamples);
+    const baseLog = {
+      samples: report.metrics.sampleCount,
+      sampleTarget: SHADOW_SAMPLE_TARGET,
+      eventParityPercent: Number(report.metrics.eventParityPercent.toFixed(2)),
+      taskCompletionDeltaPercent: Number(report.metrics.taskCompletionDeltaPercent.toFixed(2)),
+      toolErrorRateDeltaPercent: Number(report.metrics.toolErrorRateDeltaPercent.toFixed(2)),
+      tokenUsageDeltaPercent: Number(report.metrics.tokenUsageDeltaPercent.toFixed(2)),
+      criticalPolicyBypasses: report.metrics.criticalPolicyBypasses,
+    };
+
+    if (report.pass) {
+      log.info(baseLog, "pi-shadow validation checkpoint passed");
+    } else {
+      log.warn({ ...baseLog, failures: report.failures }, "pi-shadow validation checkpoint failed");
     }
   }
 }

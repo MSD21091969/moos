@@ -53,9 +53,20 @@ async def discover_tools(
         # GraphToolServer may not be running; silently return empty
         return []
 
-    # Convert GraphToolServer GraphStepEntry list → AgentToolSchema dicts
+    # Convert GraphToolServer discover response → AgentToolSchema dicts.
+    # Contract-compatible with both legacy list responses and envelope responses:
+    #   {"query": ..., "count": N, "tools": [...]}.
+    entries: list[dict[str, Any]]
+    if isinstance(data, dict) and isinstance(data.get("tools"), list):
+        entries = [entry for entry in data["tools"] if isinstance(entry, dict)]
+    elif isinstance(data, list):
+        entries = [entry for entry in data if isinstance(entry, dict)]
+    else:
+        entries = []
+
+    # Convert GraphToolServer GraphStepEntry entries → AgentToolSchema dicts
     schemas: list[dict[str, Any]] = []
-    for entry in data if isinstance(data, list) else []:
+    for entry in entries:
         tool_name: str = entry.get("tool_name", "")
         if not tool_name:
             continue
@@ -65,7 +76,9 @@ async def discover_tools(
                 "function": {
                     "name": tool_name,
                     "description": entry.get("description", ""),
-                    "parameters": entry.get("params_schema", {"type": "object", "properties": {}}),
+                    "parameters": entry.get(
+                        "params_schema", {"type": "object", "properties": {}}
+                    ),
                 },
             }
         )

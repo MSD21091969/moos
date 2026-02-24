@@ -382,7 +382,7 @@ Context is inherited top-down: `FFS0 → FFS1 → FFS2 / FFS3`. Child workspaces
 ```text
 FFS0_Factory/
 ├── CLAUDE.md               ← Claude Code project context
-├── GEMINI.md               ← Gemini CLI / Antigravity context
+├── GEMINI.md               ← Compatibility pointer (CLAUDE.md is canonical)
 ├── .mcp.json               ← Claude Code project-level MCP config
 ├── .vscode/
 │   ├── mcp.json            ← VS Code Copilot MCP config

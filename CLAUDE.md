@@ -52,15 +52,15 @@ CSS Modules, ESLint, Vitest
 
 ## Servers
 
-| Service | Port | Role |
+| Service                 | Port             | Role                                           |
 | ----------------------- | ---------------- | ---------------------------------------------- |
-| ColliderDataServer | 8000 | REST + SSE + agent bootstrap, async SQLite |
-| ColliderGraphToolServer | 8001 | WebSocket + gRPC + **MCP/SSE** — tool registry |
-| ColliderVectorDbServer | 8002 | ChromaDB semantic search |
-| **ColliderAgentRunner** | **8004 / 50051** | Context composer + **gRPC context streaming** |
-| **NanoClawBridge** | **18789** | **Anthropic SDK** agent sessions + teams |
-| ffs4 Sidepanel | 4201 | XYFlow graph workspace browser + agent chat |
-| ffs6 Frontend | 4200 | IDE viewer appnode (default) |
+| ColliderDataServer      | 8000             | REST + SSE + agent bootstrap, async SQLite     |
+| ColliderGraphToolServer | 8001             | WebSocket + gRPC + **MCP/SSE** — tool registry |
+| ColliderVectorDbServer  | 8002             | ChromaDB semantic search                       |
+| **ColliderAgentRunner** | **8004 / 50051** | Context composer + **gRPC context streaming**  |
+| **NanoClawBridge**      | **18789**        | **Anthropic SDK** agent sessions + teams       |
+| ffs4 Sidepanel          | 4201             | XYFlow graph workspace browser + agent chat    |
+| ffs6 Frontend           | 4200             | IDE viewer appnode (default)                   |
 
 MCP endpoint — connect with:
 
@@ -74,11 +74,11 @@ Secrets: `D:\FFS0_Factory\secrets\api_keys.env`
 
 `COLLIDER_AGENT_PROVIDER` selects the LLM (default: `gemini`):
 
-| Provider | Env var | Default model |
+| Provider            | Env var             | Default model       |
 | ------------------- | ------------------- | ------------------- |
-| `gemini` *(active)* | `GEMINI_API_KEY` | `gemini-2.5-flash` |
-| `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
-| `google-vertex` | ADC (gcloud) | `claude-sonnet-4-6` |
+| `gemini` *(active)* | `GEMINI_API_KEY`    | `gemini-2.5-flash`  |
+| `anthropic`         | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
+| `google-vertex`     | ADC (gcloud)        | `claude-sonnet-4-6` |
 
 > Use `COLLIDER_AGENT_*` prefix — avoids collision with FFS2 shared `AGENT_MODEL` var.
 
@@ -129,6 +129,26 @@ uv run python -m sdk.seeder.cli --root D:/FFS0_Factory --app-id <uuid>
 - TypeScript: TSDoc, strict mode, no `any`, Interfaces for props
 - Only modify files under `D:\FFS0_Factory\`
 - Check `.agent/` context before modifying any workspace
+
+## Current Direction (2026-02-23)
+
+- Runtime strategy: PI runtime adapter path is preferred; Anthropic SDK remains active baseline during migration.
+- Skills model: DB `NodeContainer` is canonical runtime truth; `.agent` files are authoring/seed source.
+- Skills resolution: moving to namespace + version-aware precedence over name-only merges.
+- MCP strategy: tools-first in production, with prompts/resources deferred until runtime contracts stabilize.
+
+### Active VS Code MCP Stack
+
+- `collider-tools` (SSE)
+- `filesystem-workspace` (stdio)
+- `git-root` (stdio)
+- `sqlite-collider` (stdio)
+- `http-fetch` (stdio)
+
+Architecture references:
+
+- `.agent/knowledge/architecture/collider-skills-runtime-integration-draft.md`
+- `.agent/knowledge/architecture/mcp-minimal-stack-recommendation.md`
 
 ## Agent Permissions
 

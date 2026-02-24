@@ -11,20 +11,21 @@ Tests the context composition → gRPC delivery pipeline:
 from __future__ import annotations
 
 import json
-
-# Mock the proto modules before importing the service
-# (proto compilation may not be available in test environment)
-import sys
 from dataclasses import dataclass, field
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-mock_pb2 = MagicMock()
-mock_pb2_grpc = MagicMock()
-sys.modules["proto.collider_graph_pb2"] = mock_pb2
-sys.modules["proto.collider_graph_pb2_grpc"] = mock_pb2_grpc
+pytest.importorskip("grpc")
+
+try:
+    from proto import collider_graph_pb2 as pb2
+except Exception as exc:
+    pytest.skip(
+        f"Proto runtime not available in this test environment: {exc}",
+        allow_module_level=True,
+    )
 
 from src.grpc.context_service import (
     ColliderContextServicer,
@@ -135,26 +136,26 @@ class TestSkillToChunk:
             "requires_env": ["API_KEY"],
         }
         result = _skill_to_chunk(skill)
-        mock_pb2.SkillChunk.assert_called_once_with(
-            name="my-skill",
-            description="Does stuff",
-            emoji="S",
-            markdown_body="# Instructions",
-            tool_ref="my_tool",
-            user_invocable=True,
-            model_invocable=False,
-            invocation_policy="confirm",
-            requires_bins=["node"],
-            requires_env=["API_KEY"],
-        )
+        assert result.name == "my-skill"
+        assert result.description == "Does stuff"
+        assert result.emoji == "S"
+        assert result.markdown_body == "# Instructions"
+        assert result.tool_ref == "my_tool"
+        assert result.user_invocable is True
+        assert result.model_invocable is False
+        assert result.invocation_policy == "confirm"
+        assert list(result.requires_bins) == ["node"]
+        assert list(result.requires_env) == ["API_KEY"]
+        assert result.namespace == ""
+        assert result.version == ""
 
     def test_missing_fields_default_to_empty(self):
         skill = {"name": "minimal"}
-        _skill_to_chunk(skill)
-        call_kwargs = mock_pb2.SkillChunk.call_args[1]
-        assert call_kwargs["description"] == ""
-        assert call_kwargs["emoji"] == ""
-        assert call_kwargs["requires_bins"] == []
+        result = _skill_to_chunk(skill)
+        assert result.description == ""
+        assert result.emoji == ""
+        assert list(result.requires_bins) == []
+        assert list(result.requires_env) == []
 
 
 class TestToolSchemaToChunk:
@@ -166,19 +167,17 @@ class TestToolSchemaToChunk:
                 "parameters": {"type": "object", "properties": {}},
             }
         }
-        _tool_schema_to_chunk(schema)
-        call_kwargs = mock_pb2.ToolSchemaChunk.call_args[1]
-        assert call_kwargs["name"] == "test_tool"
-        assert call_kwargs["description"] == "A tool"
-        assert json.loads(call_kwargs["parameters_json"]) == {
+        result = _tool_schema_to_chunk(schema)
+        assert result.name == "test_tool"
+        assert result.description == "A tool"
+        assert json.loads(result.parameters_json.decode("utf-8")) == {
             "type": "object",
             "properties": {},
         }
 
     def test_empty_schema(self):
-        _tool_schema_to_chunk({})
-        call_kwargs = mock_pb2.ToolSchemaChunk.call_args[1]
-        assert call_kwargs["name"] == ""
+        result = _tool_schema_to_chunk({})
+        assert result.name == ""
 
 
 class TestSessionMetaToChunk:
@@ -189,10 +188,9 @@ class TestSessionMetaToChunk:
             "composed_nodes": ["a", "b", "c"],
             "username": "admin",
         }
-        _session_meta_to_chunk(meta)
-        call_kwargs = mock_pb2.SessionMetaChunk.call_args[1]
-        assert call_kwargs["role"] == "collider_admin"
-        assert call_kwargs["composed_nodes"] == ["a", "b", "c"]
+        result = _session_meta_to_chunk(meta)
+        assert result.role == "collider_admin"
+        assert list(result.composed_nodes) == ["a", "b", "c"]
 
 
 # ---------------------------------------------------------------------------
@@ -207,15 +205,11 @@ class TestGetBootstrap:
         self, mock_compose, servicer, mock_request, mock_context, composed_context
     ):
         mock_compose.return_value = composed_context
-        await servicer.GetBootstrap(mock_request, mock_context)
-
-        # Verify BootstrapResponse was constructed
-        mock_pb2.BootstrapResponse.assert_called_once()
-        call_kwargs = mock_pb2.BootstrapResponse.call_args[1]
-        assert call_kwargs["session_id"] == "test-session-123"
-        assert call_kwargs["agents_md"] == "# Agent Instructions\nTest instructions."
-        assert call_kwargs["soul_md"] == "# Soul\nBe helpful."
-        assert call_kwargs["tools_md"] == "# Tools\nUse tools wisely."
+        response = await servicer.GetBootstrap(mock_request, mock_context)
+        assert response.session_id == "test-session-123"
+        assert response.agents_md == "# Agent Instructions\nTest instructions."
+        assert response.soul_md == "# Soul\nBe helpful."
+        assert response.tools_md == "# Tools\nUse tools wisely."
 
     @pytest.mark.asyncio
     @patch("src.grpc.context_service.compose_context_set")
@@ -223,10 +217,9 @@ class TestGetBootstrap:
         self, mock_compose, servicer, mock_request, mock_context, composed_context
     ):
         mock_compose.return_value = composed_context
-        await servicer.GetBootstrap(mock_request, mock_context)
-
-        call_kwargs = mock_pb2.BootstrapResponse.call_args[1]
-        assert len(call_kwargs["skills"]) == 1
+        response = await servicer.GetBootstrap(mock_request, mock_context)
+        assert len(response.skills) == 1
+        assert response.skills[0].name == "test-skill"
 
     @pytest.mark.asyncio
     @patch("src.grpc.context_service.compose_context_set")
@@ -234,8 +227,9 @@ class TestGetBootstrap:
         self, mock_compose, servicer, mock_request, mock_context
     ):
         mock_compose.side_effect = RuntimeError("DB connection failed")
-        await servicer.GetBootstrap(mock_request, mock_context)
+        response = await servicer.GetBootstrap(mock_request, mock_context)
         mock_context.abort.assert_called_once()
+        assert isinstance(response, pb2.BootstrapResponse)
 
 
 # ---------------------------------------------------------------------------
@@ -264,10 +258,8 @@ class TestStreamContext:
     ):
         mock_compose.return_value = composed_context
         sequences = []
-        async for _ in servicer.StreamContext(mock_request, mock_context):
-            # Verify ContextChunk was called with incrementing sequence
-            call_kwargs = mock_pb2.ContextChunk.call_args[1]
-            sequences.append(call_kwargs["sequence"])
+        async for chunk in servicer.StreamContext(mock_request, mock_context):
+            sequences.append(chunk.sequence)
 
         assert sequences == list(range(len(sequences)))
 

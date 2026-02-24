@@ -5,7 +5,7 @@ description: Coding standards for FFS3 Nx monorepo — TypeScript strict, React
 
 # Frontend Standards
 
-> Coding standards for FFS3 Nx monorepo: Vite + React 19 default, Next.js optional.
+> Coding standards for FFS3 Nx monorepo: Vite + React 19.
 
 ---
 
@@ -62,13 +62,6 @@ src/
 - Use `React.lazy()` for route-level code splitting
 - Prefer `<Outlet />` for nested layouts
 
-### Next.js Apps (If Added)
-
-- Use App Router (`app/` directory convention)
-- `'use client'` directive for client components
-- Server components by default
-- Use `next/dynamic` for code splitting
-
 ---
 
 ## State Management
@@ -92,7 +85,7 @@ src/
 ## XYFlow Standards
 
 - Custom node types must implement `Handle` for connections
-- Use domain-based color scheme: FILESYST=#4caf50, CLOUD=#2196f3, ADMIN=#ff9800
+- Use shared design tokens for domain colors (no hardcoded hex values)
 - Node data interfaces extend a `BaseNodeData` type
 - Graph state managed via Zustand, not local state
 - Always include `<Background />`, `<Controls />`, `<MiniMap />`

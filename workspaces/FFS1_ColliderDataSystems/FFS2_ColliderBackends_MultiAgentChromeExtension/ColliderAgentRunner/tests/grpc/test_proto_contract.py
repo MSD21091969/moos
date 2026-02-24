@@ -1,7 +1,18 @@
 import json
 import uuid
 
-from proto import collider_graph_pb2 as pb2
+import pytest
+
+pytest.importorskip("grpc")
+
+try:
+    from proto import collider_graph_pb2 as pb2
+except Exception as exc:
+    pytest.skip(
+        f"Proto runtime not available in this test environment: {exc}",
+        allow_module_level=True,
+    )
+
 from src.grpc.context_service import (
     _session_meta_to_chunk,
     _skill_to_chunk,
@@ -12,10 +23,10 @@ from src.grpc.context_service import (
 def test_bootstrap_response_has_all_fields():
     """Ensure BootstrapResponse has session_id, agents_md, soul_md, etc."""
     skill_chunk = pb2.SkillChunk(name="test_skill", markdown_body="body")
-    tool_chunk = pb2.ToolSchemaChunk(name="test_tool", parameters_json=b'{}')
+    tool_chunk = pb2.ToolSchemaChunk(name="test_tool", parameters_json=b"{}")
     mcp_chunk = pb2.McpConfigChunk(name="mcp", transport_type="sse", url="http://mcp")
     meta_chunk = pb2.SessionMetaChunk(role="admin", app_id="test_app")
-    
+
     resp = pb2.BootstrapResponse(
         session_id="test_session",
         agents_md="# agents",
@@ -26,7 +37,7 @@ def test_bootstrap_response_has_all_fields():
         mcp_servers=[mcp_chunk],
         session_meta=meta_chunk,
     )
-    
+
     assert resp.session_id == "test_session"
     assert resp.agents_md == "# agents"
     assert resp.soul_md == "# soul"
@@ -42,7 +53,7 @@ def test_bootstrap_response_has_all_fields():
 
 def test_context_chunk_oneof_coverage():
     """Every oneof variant (skill, tool_schema, system_prompt, etc.) can be constructed."""
-    
+
     # 1. SystemPrompt
     c1 = pb2.ContextChunk(
         chunk_id=str(uuid.uuid4()),
@@ -50,7 +61,7 @@ def test_context_chunk_oneof_coverage():
         system_prompt=pb2.SystemPromptChunk(section="agents_md", content="..."),
     )
     assert c1.HasField("system_prompt")
-    
+
     # 2. Skill
     c2 = pb2.ContextChunk(
         chunk_id=str(uuid.uuid4()),
@@ -58,7 +69,7 @@ def test_context_chunk_oneof_coverage():
         skill=pb2.SkillChunk(name="skill1"),
     )
     assert c2.HasField("skill")
-    
+
     # 3. ToolSchema
     c3 = pb2.ContextChunk(
         chunk_id=str(uuid.uuid4()),
@@ -66,7 +77,7 @@ def test_context_chunk_oneof_coverage():
         tool_schema=pb2.ToolSchemaChunk(name="tool1"),
     )
     assert c3.HasField("tool_schema")
-    
+
     # 4. McpConfig
     c4 = pb2.ContextChunk(
         chunk_id=str(uuid.uuid4()),
@@ -74,7 +85,7 @@ def test_context_chunk_oneof_coverage():
         mcp_config=pb2.McpConfigChunk(name="mcp1"),
     )
     assert c4.HasField("mcp_config")
-    
+
     # 5. SessionMeta
     c5 = pb2.ContextChunk(
         chunk_id=str(uuid.uuid4()),
@@ -86,7 +97,7 @@ def test_context_chunk_oneof_coverage():
 
 def test_skill_chunk_round_trip():
     """SkillDefinition dict → SkillChunk protobuf"""
-    
+
     skill_dict = {
         "name": "search",
         "description": "Search the web",
@@ -99,9 +110,9 @@ def test_skill_chunk_round_trip():
         "requires_bins": ["curl", "jq"],
         "requires_env": ["API_KEY"],
     }
-    
+
     chunk = _skill_to_chunk(skill_dict)
-    
+
     assert chunk.name == "search"
     assert chunk.description == "Search the web"
     assert chunk.emoji == "🔍"
@@ -122,17 +133,15 @@ def test_tool_schema_chunk_conversion():
             "description": "Gets the weather",
             "parameters": {
                 "type": "object",
-                "properties": {
-                    "location": {"type": "string"}
-                }
-            }
-        }
+                "properties": {"location": {"type": "string"}},
+            },
+        },
     }
-    
+
     chunk = _tool_schema_to_chunk(schema_dict)
     assert chunk.name == "get_weather"
     assert chunk.description == "Gets the weather"
-    
+
     params = json.loads(chunk.parameters_json.decode("utf-8"))
     assert params["type"] == "object"
     assert "location" in params["properties"]
@@ -143,9 +152,9 @@ def test_session_meta_chunk_conversion():
         "role": "app_admin",
         "app_id": "test_app",
         "composed_nodes": ["node1", "node2"],
-        "username": "Sam"
+        "username": "Sam",
     }
-    
+
     chunk = _session_meta_to_chunk(meta_dict)
     assert chunk.role == "app_admin"
     assert chunk.app_id == "test_app"

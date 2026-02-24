@@ -13,6 +13,7 @@ export function AgentChat() {
   const {
     sessionId,
     wsUrl,
+    sessionContext,
     connected,
     messages,
     sending,
@@ -87,13 +88,18 @@ export function AgentChat() {
     setSending(true);
 
     try {
-      await clientRef.current.agentRequest(text, { sessionKey: sessionId ?? undefined });
+      await clientRef.current.agentRequest(text, {
+        sessionKey: sessionId ?? undefined,
+        role: sessionContext?.role,
+        appId: sessionContext?.appId,
+        nodeIds: sessionContext?.nodeIds,
+      });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       addMessage({ role: "assistant", content: `Send error: ${msg}` });
       setSending(false);
     }
-  }, [input, connected, sending, sessionId, addMessage, setSending]);
+  }, [input, connected, sending, sessionId, sessionContext, addMessage, setSending]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

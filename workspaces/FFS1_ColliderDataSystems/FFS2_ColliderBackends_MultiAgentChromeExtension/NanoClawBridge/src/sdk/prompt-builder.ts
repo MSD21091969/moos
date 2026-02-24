@@ -8,6 +8,18 @@
 
 import type { ComposedContext, ContextDelta, SkillDefinition } from "./types.js";
 
+const SKILL_TOKEN_BUDGET = 2000;
+const MAX_FULL_SKILLS = 3;
+const MIN_SUMMARY_TOKENS = 24;
+
+export interface RankedSkillSelection {
+  fullSkills: SkillDefinition[];
+  summarizedSkills: SkillDefinition[];
+  usedTokens: number;
+  budget: number;
+  maxFullSkills: number;
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -19,19 +31,9 @@ import type { ComposedContext, ContextDelta, SkillDefinition } from "./types.js"
 export function buildSystemPrompt(context: ComposedContext): string {
   const sections: string[] = [];
 
-  // Agent identity (from NodeContainer.instructions)
-  if (context.agents_md.trim()) {
-    sections.push(`# Agent Instructions\n\n${context.agents_md.trim()}`);
-  }
-
-  // Rules and guardrails (from NodeContainer.rules)
-  if (context.soul_md.trim()) {
-    sections.push(`# Rules & Guardrails\n\n${context.soul_md.trim()}`);
-  }
-
-  // Knowledge and reference docs (from NodeContainer.knowledge)
-  if (context.tools_md.trim()) {
-    sections.push(`# Knowledge\n\n${context.tools_md.trim()}`);
+  const workspaceContext = formatWorkspaceContext(context);
+  if (workspaceContext) {
+    sections.push(workspaceContext);
   }
 
   // Skills — injected as system prompt sections, not SKILL.md files
@@ -127,19 +129,193 @@ function formatSkills(skills: SkillDefinition[]): string {
   const invocable = skills.filter((s) => s.model_invocable);
   if (invocable.length === 0) return "";
 
-  const entries = invocable.map((skill) => {
-    const header = `## ${skill.emoji ? `${skill.emoji} ` : ""}${skill.name}`;
-    const desc = skill.description ? `\n\n${skill.description}` : "";
-    const body = skill.markdown_body?.trim()
-      ? `\n\n${skill.markdown_body.trim()}`
-      : "";
-    const toolRef = skill.tool_ref
-      ? `\n\n> Invokes tool: \`${skill.tool_ref}\``
-      : "";
-    return `${header}${desc}${body}${toolRef}`;
-  });
+  const selection = selectRankedSkills(invocable);
+  const fullEntries = selection.fullSkills.map((skill) => formatFullSkill(skill));
+  const summarizedSkills = selection.summarizedSkills;
+  let usedTokens = selection.usedTokens;
+  let summaryTokens = 0;
 
-  return `# Available Skills\n\n${entries.join("\n\n---\n\n")}`;
+  const sections: string[] = [];
+  if (fullEntries.length > 0) {
+    sections.push(fullEntries.join("\n\n---\n\n"));
+  }
+
+  const remainingBudget = Math.max(0, selection.budget - usedTokens);
+  const summarizedLines: string[] = [];
+
+  for (const skill of summarizedSkills) {
+    const tags = [skill.kind ?? "procedural", skill.scope ?? "local"];
+    const versionTag = skill.version ? ` v${skill.version}` : "";
+    const description = skill.description ? ` — ${skill.description}` : "";
+    const line = `- **${skill.name}${versionTag}** [${tags.join(" | ")}]${description}`;
+    const estimatedLineTokens = estimateTokens(`${line}\n`);
+
+    if (summaryTokens + estimatedLineTokens > remainingBudget) {
+      break;
+    }
+
+    summarizedLines.push(line);
+    summaryTokens += estimatedLineTokens;
+  }
+
+  if (summaryTokens > 0 || summarizedSkills.length > 0) {
+    usedTokens += summaryTokens;
+  }
+
+  const omittedSummaries = summarizedSkills.length - summarizedLines.length;
+
+  if (summarizedSkills.length > 0) {
+    if (summarizedLines.length > 0) {
+      sections.push(
+        `## Additional Skills (summarized)\n\n${summarizedLines.join("\n")}`,
+      );
+    }
+
+    if (omittedSummaries > 0 && remainingBudget < MIN_SUMMARY_TOKENS) {
+      sections.push(
+        `## Additional Skills (omitted)\n\n- ${omittedSummaries} summarized skills omitted to enforce skill token budget.`,
+      );
+    } else if (omittedSummaries > 0) {
+      sections.push(
+        `## Additional Skills (omitted)\n\n- ${omittedSummaries} summarized skills omitted after token limit was reached.`,
+      );
+    }
+  }
+
+  sections.push(
+    [
+      "## Skill Selection",
+      "",
+      `- **Model-invocable skills**: ${invocable.length}`,
+      `- **Full skills injected**: ${fullEntries.length}`,
+      `- **Summarized skills**: ${summarizedLines.length}`,
+      `- **Omitted summarized skills**: ${Math.max(omittedSummaries, 0)}`,
+      `- **Estimated skill tokens used**: ${usedTokens}/${SKILL_TOKEN_BUDGET}`,
+    ].join("\n"),
+  );
+
+  return `# Available Skills\n\n${sections.join("\n\n")}`;
+}
+
+export function selectRankedSkills(
+  skills: SkillDefinition[],
+  opts?: { tokenBudget?: number; maxFullSkills?: number },
+): RankedSkillSelection {
+  const budget = opts?.tokenBudget ?? SKILL_TOKEN_BUDGET;
+  const maxFullSkills = opts?.maxFullSkills ?? MAX_FULL_SKILLS;
+
+  const ranked = [...skills]
+    .map((skill) => ({ skill, score: rankSkill(skill) }))
+    .sort((left, right) => {
+      if (left.score !== right.score) return right.score - left.score;
+      return left.skill.name.localeCompare(right.skill.name);
+    });
+
+  const fullSkills: SkillDefinition[] = [];
+  const summarizedSkills: SkillDefinition[] = [];
+  let usedTokens = 0;
+
+  for (const item of ranked) {
+    const entry = formatFullSkill(item.skill);
+    const estimatedTokens = estimateTokens(entry);
+    const canIncludeFull =
+      fullSkills.length < maxFullSkills &&
+      usedTokens + estimatedTokens <= budget;
+
+    if (canIncludeFull) {
+      fullSkills.push(item.skill);
+      usedTokens += estimatedTokens;
+    } else {
+      summarizedSkills.push(item.skill);
+    }
+  }
+
+  return {
+    fullSkills,
+    summarizedSkills,
+    usedTokens,
+    budget,
+    maxFullSkills,
+  };
+}
+
+function formatFullSkill(skill: SkillDefinition): string {
+  const tags = [skill.kind ?? "procedural", skill.scope ?? "local"];
+  const versionTag = skill.version ? ` v${skill.version}` : "";
+  const namespaceTag = skill.namespace ? `${skill.namespace}::` : "";
+  const header = `## ${skill.emoji ? `${skill.emoji} ` : ""}${namespaceTag}${skill.name}${versionTag} [${tags.join(" | ")}]`;
+  const desc = skill.description ? `\n\n${skill.description}` : "";
+  const body = skill.markdown_body?.trim() ? `\n\n${skill.markdown_body.trim()}` : "";
+
+  const details: string[] = [];
+  if (skill.tool_ref) details.push(`> Invokes tool: \`${skill.tool_ref}\``);
+  if (skill.source_node_path) {
+    details.push(`> Source: \`${skill.source_node_path}\``);
+  }
+  if (skill.outputs?.length) {
+    details.push(`> Outputs: ${skill.outputs.join(", ")}`);
+  }
+
+  const detailsBlock = details.length > 0 ? `\n\n${details.join("\n")}` : "";
+  return `${header}${desc}${body}${detailsBlock}`;
+}
+
+function rankSkill(skill: SkillDefinition): number {
+  const scopeWeight: Record<string, number> = {
+    local: 40,
+    composed: 30,
+    inherited: 20,
+    global: 10,
+  };
+
+  let score = scopeWeight[skill.scope ?? "local"] ?? 0;
+
+  if (skill.tool_ref) score += 15;
+  if (skill.exposes_tools?.length) score += 10;
+  if (skill.outputs?.length) score += 5;
+  if (skill.depends_on?.length) score += 3;
+  if (skill.markdown_body?.trim()) score += 5;
+
+  const versionBoost = parseVersionBoost(skill.version);
+  score += versionBoost;
+
+  return score;
+}
+
+function parseVersionBoost(version?: string): number {
+  if (!version) return 0;
+  const first = version.split(".")[0] ?? "0";
+  const major = Number.parseInt(first.replace(/\D/g, ""), 10);
+  return Number.isFinite(major) ? Math.min(major, 10) : 0;
+}
+
+function estimateTokens(text: string): number {
+  // Simple approximation: 1 token ~= 4 chars for English-like markdown.
+  return Math.ceil(text.length / 4);
+}
+
+export function formatWorkspaceContext(
+  context: Pick<ComposedContext, "agents_md" | "soul_md" | "tools_md">,
+): string {
+  const blocks: string[] = [];
+
+  if (context.agents_md.trim()) {
+    blocks.push(`## Instructions\n\n${context.agents_md.trim()}`);
+  }
+
+  if (context.soul_md.trim()) {
+    blocks.push(`## Rules & Guardrails\n\n${context.soul_md.trim()}`);
+  }
+
+  if (context.tools_md.trim()) {
+    blocks.push(`## Knowledge\n\n${context.tools_md.trim()}`);
+  }
+
+  if (blocks.length === 0) {
+    return "";
+  }
+
+  return `# Workspace Context\n\n${blocks.join("\n\n")}`;
 }
 
 function formatSessionMeta(meta: ComposedContext["session_meta"]): string {

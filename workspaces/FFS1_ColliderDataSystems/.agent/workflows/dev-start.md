@@ -1,11 +1,18 @@
 ---
-description: Start all Collider services for local development (DataServer,
-GraphToolServer, VectorDbServer, frontend)
+description: Start all Collider services for local development, including NanoClawBridge runtime mode selection and validation gates
 ---
 
 # Start Dev Environment
 
 Starts all FFS1 services in the correct order for local development.
+
+## Runtime Modes
+
+- `COLLIDER_AGENT_RUNTIME=anthropic` → baseline runtime.
+- `COLLIDER_AGENT_RUNTIME=pi` → PI runtime.
+- `COLLIDER_AGENT_RUNTIME=pi-shadow` → Anthropic primary + PI shadow KPI validation.
+
+Pre-production promotions require `pi-shadow` validation with at least 20 representative sessions.
 
 ## Steps
 
@@ -56,7 +63,15 @@ Starts all FFS1 services in the correct order for local development.
    uv run uvicorn src.main:app --reload --port 8004
    ```
 
-7. Connect Claude Code to the Collider MCP server (once GraphToolServer is running on :8001):
+7. Start NanoClawBridge (WebSocket runtime on :18789):
+
+   ```powershell
+   cd D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\NanoClawBridge
+   # optional: set COLLIDER_AGENT_RUNTIME=pi-shadow
+   npm run dev
+   ```
+
+8. Connect Claude Code to the Collider MCP server (once GraphToolServer is running on :8001):
 
    ```powershell
    claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
@@ -73,4 +88,11 @@ Starts all FFS1 services in the correct order for local development.
 - SQL Viewer: <http://localhost:8003>
 - AgentRunner: <http://localhost:8004/health>
 - Frontend (ffs6): <http://localhost:4200>
+- NanoClawBridge: <ws://localhost:18789>
 - Claude Code MCP: `claude mcp list` → collider-tools
+
+## Validation Gates
+
+Run the full compatibility gate workflow after runtime or prompt changes:
+
+- [Cross-Service Validation Gates](cross-service-validation-gates.md)

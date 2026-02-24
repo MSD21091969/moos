@@ -13,7 +13,7 @@ these structures so that Claude Code can:
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class AgentToolSchema(BaseModel):
@@ -34,8 +34,19 @@ class AgentSkillEntry(BaseModel):
     name: str
     description: str
     emoji: str = ""
-    requires_bins: list[str] = []
-    requires_env: list[str] = []
+    namespace: str | None = None
+    version: str | None = None
+    kind: str = "procedural"
+    scope: str = "local"
+    source_node_path: str | None = None
+    source_node_id: str | None = None
+    requires_bins: list[str] = Field(default_factory=list)
+    requires_env: list[str] = Field(default_factory=list)
+    inputs: list[str] = Field(default_factory=list)
+    outputs: list[str] = Field(default_factory=list)
+    depends_on: list[str] = Field(default_factory=list)
+    exposes_tools: list[str] = Field(default_factory=list)
+    child_skills: list[str] = Field(default_factory=list)
     user_invocable: bool = True
     model_invocable: bool = True
     markdown_body: str = ""

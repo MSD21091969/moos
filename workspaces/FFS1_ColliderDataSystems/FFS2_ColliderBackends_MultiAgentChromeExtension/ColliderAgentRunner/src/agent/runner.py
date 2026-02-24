@@ -13,6 +13,7 @@ NanoClaw calls Collider tools via gRPC at grpc://localhost:50052.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from itertools import zip_longest
 from typing import Any
 
 from src.core import collider_client, graph_tool_client
@@ -127,6 +128,7 @@ async def compose_context_set(
     tools_md_parts: list[str] = []
     skill_map: dict[str, dict[str, Any]] = {}
     tool_schema_map: dict[str, dict[str, Any]] = {}
+    selected_node_ids = set(ctx.node_ids)
 
     for b in bootstraps:
         node_label = b.get("node_path") or b.get("node_id", "")
@@ -141,8 +143,24 @@ async def compose_context_set(
         if t:
             tools_md_parts.append(t)
 
+        source_node_id = str(b.get("node_id", ""))
+        source_scope = "local" if source_node_id in selected_node_ids else "inherited"
         for skill in b.get("skills", []):
-            skill_map[skill.get("name", "")] = skill
+            if not isinstance(skill, dict):
+                continue
+
+            skill_name = str(skill.get("name", "")).strip()
+            if not skill_name:
+                continue
+
+            incoming_skill = dict(skill)
+            incoming_skill.setdefault("source_node_path", node_label)
+            incoming_skill.setdefault("source_node_id", source_node_id)
+            incoming_skill.setdefault("scope", source_scope)
+
+            key = _skill_merge_key(incoming_skill)
+            existing = skill_map.get(key)
+            skill_map[key] = _resolve_skill_conflict(existing, incoming_skill)
         for schema in b.get("tool_schemas", []):
             fn = schema.get("function", {})
             name = fn.get("name", "")
@@ -203,6 +221,75 @@ async def compose_context_set(
             "composed_nodes": ctx.node_ids,
         },
     )
+
+
+def _skill_merge_key(skill: dict[str, Any]) -> str:
+    """Compute deterministic merge key for skills.
+
+    Namespace-aware keying avoids accidental collisions across domains while
+    preserving backward compatibility when namespace is omitted.
+    """
+    name = str(skill.get("name", "")).strip()
+    namespace = str(skill.get("namespace") or "").strip()
+    return f"{namespace}::{name}" if namespace else name
+
+
+def _resolve_skill_conflict(
+    existing: dict[str, Any] | None,
+    incoming: dict[str, Any],
+) -> dict[str, Any]:
+    """Resolve deterministic conflict between two skill entries.
+
+    Policy:
+      - If both have parseable versions, higher version wins.
+      - If only one has parseable version, prefer the versioned entry.
+      - Otherwise, leaf-wins fallback (incoming overrides existing).
+    """
+    if existing is None:
+        return incoming
+
+    existing_version = _parse_version(existing.get("version"))
+    incoming_version = _parse_version(incoming.get("version"))
+
+    if existing_version and incoming_version:
+        if _compare_versions(incoming_version, existing_version) >= 0:
+            return incoming
+        return existing
+
+    if incoming_version and not existing_version:
+        return incoming
+    if existing_version and not incoming_version:
+        return existing
+
+    return incoming
+
+
+def _parse_version(raw: Any) -> tuple[int, ...] | None:
+    """Parse semantic-ish version strings into integer tuples."""
+    if not raw:
+        return None
+    version = str(raw).strip()
+    if not version:
+        return None
+
+    parts: list[int] = []
+    for piece in version.split("."):
+        digits = "".join(ch for ch in piece if ch.isdigit())
+        if not digits:
+            return None
+        parts.append(int(digits))
+
+    return tuple(parts)
+
+
+def _compare_versions(left: tuple[int, ...], right: tuple[int, ...]) -> int:
+    """Return positive when left > right, 0 when equal, negative when left < right."""
+    for lhs, rhs in zip_longest(left, right, fillvalue=0):
+        if lhs > rhs:
+            return 1
+        if lhs < rhs:
+            return -1
+    return 0
 
 
 def _role_context_only(role: str, user: dict[str, Any]) -> str:

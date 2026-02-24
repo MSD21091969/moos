@@ -156,10 +156,20 @@ export class WsBridge {
       (req.params.sessionKey as string) ??
       makeSessionKey({ workspaceDir: this.defaultWorkspaceDir });
 
+    const nodeIds = Array.isArray(req.params.nodeIds)
+      ? req.params.nodeIds.filter((value): value is string => typeof value === "string" && value.length > 0)
+      : undefined;
+
+    const role = typeof req.params.role === "string" ? req.params.role : undefined;
+    const appId = typeof req.params.appId === "string" ? req.params.appId : undefined;
+
     const config: SessionConfig = {
       workspaceDir: (req.params.workspaceDir as string) ?? this.defaultWorkspaceDir,
       model: req.params.model as string | undefined,
       label: req.params.label as string | undefined,
+      role,
+      appId,
+      nodeIds,
     };
 
     // Acknowledge the request immediately

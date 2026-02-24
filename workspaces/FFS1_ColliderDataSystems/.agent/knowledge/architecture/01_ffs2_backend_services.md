@@ -11,6 +11,18 @@
 | ColliderVectorDbServer  | :8002 | FastAPI + ChromaDB             | ChromaDB           | Semantic search + embeddings                    |
 | ColliderAgentRunner     | :8004 | FastAPI + pydantic-ai          | —                  | ContextSet sessions, LLM streaming (claude-s46) |
 
+## Runtime Status (2026-02-24)
+
+- `NanoClawBridge` supports `anthropic`, `pi`, and `pi-shadow` runtime modes.
+- PI adapter extensions implemented: context, tools, widget, policy, team-leader, team-member.
+- Prompt-builder structured workspace context and skill token budget are implemented and consumed in PI flow.
+- `pi-shadow` computes and logs validation KPIs (event parity, task completion delta, tool error delta, token usage delta, policy bypasses).
+
+Operational references:
+
+- `D:/FFS0_Factory/.agent/knowledge/architecture/phase5_mvp_execution_checklist.md`
+- `D:/FFS0_Factory/.agent/knowledge/architecture/phase9_shadow_validation_snapshot.md`
+
 ---
 
 ## ColliderDataServer (:8000)

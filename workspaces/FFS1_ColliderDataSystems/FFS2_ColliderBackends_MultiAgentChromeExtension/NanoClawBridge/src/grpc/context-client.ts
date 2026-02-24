@@ -67,6 +67,17 @@ interface ProtoSkill {
   invocationPolicy: string;
   requiresBins: string[];
   requiresEnv: string[];
+  namespace?: string;
+  version?: string;
+  kind?: string;
+  scope?: string;
+  sourceNodePath?: string;
+  sourceNodeId?: string;
+  inputs?: string[];
+  outputs?: string[];
+  dependsOn?: string[];
+  exposesTools?: string[];
+  childSkills?: string[];
 }
 
 interface ProtoToolSchema {
@@ -199,6 +210,12 @@ export class ContextGrpcClient {
       name: s.name,
       description: s.description,
       emoji: s.emoji || undefined,
+      namespace: s.namespace || undefined,
+      version: s.version || undefined,
+      kind: (s.kind as SkillDefinition["kind"]) || undefined,
+      scope: (s.scope as SkillDefinition["scope"]) || undefined,
+      source_node_path: s.sourceNodePath || undefined,
+      source_node_id: s.sourceNodeId || undefined,
       markdown_body: s.markdownBody,
       tool_ref: s.toolRef || undefined,
       user_invocable: s.userInvocable,
@@ -206,6 +223,11 @@ export class ContextGrpcClient {
       invocation_policy: (s.invocationPolicy as "auto" | "confirm" | "disabled") || "auto",
       requires_bins: s.requiresBins,
       requires_env: s.requiresEnv,
+      inputs: s.inputs ?? [],
+      outputs: s.outputs ?? [],
+      depends_on: s.dependsOn ?? [],
+      exposes_tools: s.exposesTools ?? [],
+      child_skills: s.childSkills ?? [],
     };
   }
 

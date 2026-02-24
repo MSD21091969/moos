@@ -25,6 +25,7 @@ import type {
   ContextDelta,
   SdkSessionConfig,
 } from "./types.js";
+import type { IAgentSession } from "./agent-session.js";
 import type { AgentEvent } from "../event-parser.js";
 import pino from "pino";
 
@@ -67,7 +68,7 @@ interface AgentSession {
 // Agent
 // ---------------------------------------------------------------------------
 
-export class AnthropicAgent {
+export class AnthropicAgent implements IAgentSession {
   private client: Anthropic;
   private sessions: Map<string, AgentSession> = new Map();
 
@@ -165,6 +166,10 @@ export class AnthropicAgent {
    */
   getHistory(sessionId: string): ConversationMessage[] {
     return this.getSession(sessionId).history;
+  }
+
+  hasHistory(sessionId: string): boolean {
+    return this.getHistory(sessionId).length > 0;
   }
 
   // -----------------------------------------------------------------------

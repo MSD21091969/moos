@@ -1,6 +1,6 @@
 # Codebase: FFS2 ColliderBackends
 
-> Backend services, Chrome Extension, NanoClaw skill, and SDK source.
+> Backend services, Chrome Extension, and runtime bridge implementation.
 
 ## Structure
 
@@ -182,21 +182,23 @@ Application x1z is seeded with 4 nodes:
 ```text
 Chrome ext WorkspaceBrowser
   → POST :8004/agent/session (role, node_ids, vector_query, inherit_ancestors)
-  → AgentRunner: bootstrap nodes via DataServer NanoClaw
-  → merge contexts (leaf-wins), vector-augment tools
-  → write workspace files → ~/.nanoclaw/workspaces/collider/
-  → return session_id + nanoclaw_ws_url
+  → AgentRunner: compose context (leaf-wins merge + tool schema set)
+  → NanoClawBridge session runtime selected by COLLIDER_AGENT_RUNTIME
+      - anthropic: AnthropicAgent primary
+      - pi: PiAdapter primary
+      - pi-shadow: Anthropic primary + PI shadow validation
   → Chrome ext AgentSeat connects WebSocket → NanoClawBridge :18789
 ```
 
 ### Tool Execution
 
 ```text
-NanoClaw agent invokes tool
-  → gRPC :50052 ExecuteTool({name, params})
+Agent runtime invokes tool
+  → POST :8000/api/v1/execution/tool/{name}
+  → DataServer execution proxy
   → GraphToolServer ToolRunner.execute()
   → importlib → code_ref Python function
-  → result returned to agent
+  → result returned to runtime
 ```
 
 ## Developer Guide
@@ -231,7 +233,8 @@ cd ColliderDataServer && uv run python -m src.seed
 
 ### Key Patterns
 
-- **NanoClaw sessions**: WorkspaceBrowser composes a ContextSet → AgentRunner writes workspace files → NanoClawBridge reads them and runs the agent.
+- **Runtime adapters**: `IAgentSession` contract supports Anthropic and PI runtimes under one bridge path.
+- **Shadow validation**: `pi-shadow` compares Anthropic vs PI event streams and tracks KPI thresholds.
 - **SSE**: Data updates flow via Server-Sent Events from `DataServer/api/v1/sse`.
 - **gRPC**: Tool execution flows `DataServer → gRPC → GraphToolServer → ToolRunner`.
 - **MCP**: IDE clients connect at `GET :8001/mcp/sse` for tool access.
