@@ -23,6 +23,7 @@
         "**/ARCHIVE/**",
         "**/_archive/**",
         "**/_archive_devlog/**",
+        ".agent/knowledge/architecture/collider-skills-runtime-integration.md",
         "workspaces/maassen_hochrath/**"
     ]
 }

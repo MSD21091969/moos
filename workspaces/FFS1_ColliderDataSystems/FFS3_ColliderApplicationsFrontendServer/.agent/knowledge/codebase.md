@@ -84,29 +84,30 @@ Path defined in `tsconfig.base.json`:
 ### Setup
 
 ```bash
-cd FFS3_ColliderApplicationsFrontendServer
+cd D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems
 pnpm install
+cd FFS3_ColliderApplicationsFrontendServer
 ```
 
 ### Dev Server
 
 ```bash
-nx serve ffs6          # Start default app (port 4200)
-nx serve ffs4          # Start sidepanel app
-nx serve ffs5          # Start PiP app
+pnpm nx serve ffs6     # Start default app (port 4200)
+pnpm nx serve ffs4     # Start sidepanel app
+pnpm nx serve ffs5     # Start PiP app
 ```
 
 ### Build & Test
 
 ```bash
-nx build ffs6          # Production build
-nx test ffs6           # Run Vitest tests
-nx lint ffs6           # ESLint
-nx run-many -t build   # Build all apps
+pnpm nx build ffs6     # Production build
+pnpm nx test ffs6      # Run Vitest tests
+pnpm nx lint ffs6      # ESLint
+pnpm nx run-many -t build # Build all apps
 ```
 
 ### Add New App
 
 ```bash
-nx g @nx/react:app apps/ffs7       # New Vite + React app
+pnpm nx g @nx/react:app apps/ffs7  # New Vite + React app
 ```

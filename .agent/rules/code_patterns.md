@@ -6,9 +6,9 @@
 
 ## Status
 
-**Current state**: `models/` and `sdk/` are the active directories.
+**Current state**: `models/`, `sdk/`, and workspace-local implementations are active.
 
-**Legacy**: `_legacy/` contains archived v2 models and parts.
+**Historical transitions**: tracked through git history/tags and workflow runbooks.
 
 ---
 

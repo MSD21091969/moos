@@ -6,20 +6,34 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 
 - **Identity**: Governance, Schemas, and Orchestration layer for the Collider platform.
 - **Backend**: Python 3.12+, FastAPI, Pydantic v2, UV.
-- **Frontend**: Nx monorepo, Vite 7, React 19, TypeScript 5+, npm.
+- **Frontend**: Nx monorepo, Vite 7, React 19, TypeScript 5+, pnpm.
+
+## Canonical References
+
+- Root authority: `D:\FFS0_Factory\CLAUDE.md`
+- Rehydration runbook: `D:\FFS0_Factory\.agent\workflows\conversation-state-rehydration.md`
+
+## Package Management & Secrets
+
+- **Lockfile Authority**: The FFS1 root `pnpm-lock.yaml` is canonical. FFS3 is
+  a workspace member. Always run `pnpm install` from this root.
+- **Secrets**: Store active API keys in
+  `D:\FFS0_Factory\secrets\api_keys.env`. Local `.env` files should only
+  contain non-sensitive overrides and are untracked. Rotate any keys previously
+  committed to untracked files if the environment is shared.
 
 ## Service Ports
 
-| Service | Port | Path |
+| Service                 | Port         | Path                               |
 | ----------------------- | ------------ | ---------------------------------- |
-| ColliderDataServer | 8000 | `FFS2.../ColliderDataServer/` |
+| ColliderDataServer      | 8000         | `FFS2.../ColliderDataServer/`      |
 | ColliderGraphToolServer | 8001 / 50052 | `FFS2.../ColliderGraphToolServer/` |
-| ColliderVectorDbServer | 8002 | `FFS2.../ColliderVectorDbServer/` |
-| SQLite Viewer (dev) | 8003 | `sqlite_web collider.db` |
-| ColliderAgentRunner | 8004 / 50051 | `FFS2.../ColliderAgentRunner/` |
-| NanoClawBridge | 18789 | Claude Code WebSocket agent chat |
-| FFS3 ffs6 frontend | 4200 | `FFS3.../apps/ffs6/` |
-| FFS3 ffs4 sidepanel | 4201 | `FFS3.../apps/ffs4/` |
+| ColliderVectorDbServer  | 8002         | `FFS2.../ColliderVectorDbServer/`  |
+| SQLite Viewer (dev)     | 8003         | `sqlite_web collider.db`           |
+| ColliderAgentRunner     | 8004 / 50051 | `FFS2.../ColliderAgentRunner/`     |
+| NanoClawBridge          | 18789        | Claude Code WebSocket agent chat   |
+| FFS3 ffs6 frontend      | 4200         | `FFS3.../apps/ffs6/`               |
+| FFS3 ffs4 sidepanel     | 4201         | `FFS3.../apps/ffs4/`               |
 
 ## Context Delivery Architecture
 
@@ -90,10 +104,10 @@ NanoClawBridge/src/
 
 Defined in `proto/collider_graph.proto`. Compile: `uv run python -m proto.compile_protos`
 
-| RPC | Input | Output |
+| RPC                    | Input             | Output              |
 | ---------------------- | ----------------- | ------------------- |
-| StreamContext | ContextRequest | stream ContextChunk |
-| GetBootstrap | ContextRequest | BootstrapResponse |
+| StreamContext          | ContextRequest    | stream ContextChunk |
+| GetBootstrap           | ContextRequest    | BootstrapResponse   |
 | SubscribeContextDeltas | DeltaSubscription | stream ContextDelta |
 
 ## FFS4 Sidepanel Architecture

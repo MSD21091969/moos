@@ -1,5 +1,11 @@
 # Collider: Recursive Workspace Context for Agentic Skill Engineering
 
+## Canonical Docs (DRY)
+
+- Root authority: `D:\FFS0_Factory\CLAUDE.md`
+- Rehydration runbook: `D:\FFS0_Factory\.agent\workflows\conversation-state-rehydration.md`
+- FFS1 local context: `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\CLAUDE.md`
+
 ## Vision
 
 Collider is an **application-agnostic context orchestration platform** built on

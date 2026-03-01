@@ -1,11 +1,11 @@
 # Agent Context Manifest - FFS3 ColliderFrontend
-# Frontend Application Server (Nx + Vite/Next.js + React 19)
+# Frontend Application Server (Nx + Vite + React 19)
 
 # Manifest metadata
 name: collider-frontend-server
-version: '2.0.0'
+version: "2.0.0"
 display_name: Collider Frontend Server
-description: Nx monorepo with Vite + React 19 applications (Next.js supported via @nx/next)
+description: Nx monorepo with Vite + React 19 applications
 
 # Inheritance settings
 inheritance:
@@ -14,7 +14,7 @@ inheritance:
 
 # Domain context
 domain: frontend
-framework: nx-react # bundler-agnostic: Vite default, Next.js optional
+framework: nx-react-vite
 components:
   - apps/ffs4/ # Sidepanel appnode (Vite + React 19)
   - apps/ffs5/ # PiP appnode (Vite + React 19)
@@ -22,27 +22,27 @@ components:
   - libs/shared-ui/ # @collider/shared-ui (shared components + utilities)
 
 key_libraries:
-  - '@xyflow/react' # Graph visualization (XYFlow)
+  - "@xyflow/react" # Graph visualization (XYFlow)
 
 # Parent context (FFS1 workspace level)
 includes:
-  - path: '../.agent'
+  - path: "../.agent"
     type: workspace
     load:
       - instructions/agent_system.md
-      - instructions/filesyst_domain.md
-      - configs/domains.yaml
+      - rules/communication_architecture.md
+      - workflows/cross-service-validation-gates.md
 
 # Local context - Frontend specific
 # NOTE: Empty folders inherit from parent
 local:
-  instructions: './instructions/'
-  rules: './rules/'
-  skills: './skills/'
-  tools: './tools/'
-  configs: './configs/'
-  knowledge: './knowledge/'
-  workflows: './workflows/'
+  instructions: "./instructions/"
+  rules: "./rules/"
+  skills: "./skills/"
+  tools: "./tools/"
+  configs: "./configs/"
+  knowledge: "./knowledge/"
+  workflows: "./workflows/"
 
 # Exports to child apps
 exports:
@@ -50,8 +50,8 @@ exports:
 
 # Secrets for frontend builds (Vite env vars)
 secrets:
-  - VITE_API_BASE
-  - VITE_FIREBASE_CONFIG
+  - VITE_DATA_SERVER_URL
+  - VITE_AGENT_RUNNER_URL
 
 # Permission requirements
 permissions:

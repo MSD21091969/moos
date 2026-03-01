@@ -1,17 +1,11 @@
-# Configuration System
+# Configuration System (LEGACY)
 
-> Configuration for FFS1 ColliderDataSystems workspace.
+> [!WARNING]
+> This directory is now **EMPTY**. All legacy `.yaml` configuration files have been archived
+> or deleted. The 2026 canonical source of truth for runtime configuration is the
+> **NodeContainer database** via the AgentRunner and DataServer.
 
-## Files
+## Active Status
 
-| File | Purpose |
-| -------------- | ------------------------------------------- |
-| extension.yaml | Chrome Extension we're building (reference) |
-| servers.yaml | Backend servers we're building (reference) |
-| domains.yaml | Domain definitions (architecture reference) |
-| app_x.yaml | This workspace's App X config |
-
-## Note
-
-App1/CLOUD and AppZ/ADMIN configs belong to their domain containers on Data
-Server, not here.
+No files are currently active in this authoring folder. All functional configuration
+is synchronized from the filesystem into the database by the Seeder.

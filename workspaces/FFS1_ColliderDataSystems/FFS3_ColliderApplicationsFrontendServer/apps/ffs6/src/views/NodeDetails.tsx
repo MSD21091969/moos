@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import styles from './NodeDetails.module.css';
 
 interface NodeDetailsProps {
     appId: string;
@@ -16,7 +17,7 @@ export function NodeDetails({ appId }: NodeDetailsProps) {
 
     useEffect(() => {
         if (!id || !appId) return;
-        
+
         const fetchNode = async () => {
             setLoading(true);
             setError(null);
@@ -49,11 +50,11 @@ export function NodeDetails({ appId }: NodeDetailsProps) {
             // For MVP we assume container.name or we use the node path leaf if missing
             // Adjust based on your WorkflowDefinition schema
             const workflowName = node.container?.name || node.path.split('/').pop();
-            
+
             const token = localStorage.getItem('auth_token');
             const res = await fetch(`/api/v1/execution/workflow/${workflowName}`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     ...(token ? { 'Authorization': `Bearer ${token}` } : {})
                 },
@@ -74,92 +75,63 @@ export function NodeDetails({ appId }: NodeDetailsProps) {
         }
     };
 
-    if (loading) return <div style={{ padding: '20px' }}>Loading node details...</div>;
-    if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
-    if (!node) return <div style={{ padding: '20px' }}>Node not found</div>;
+    if (loading) return <div className={styles.stateMessage}>Loading node details...</div>;
+    if (error) return <div className={styles.stateError}>Error: {error}</div>;
+    if (!node) return <div className={styles.stateMessage}>Node not found</div>;
 
     const isWorkflow = node.container?.species === 'workflow' || !!node.container?.workflows?.length;
 
     return (
-        <div style={{ padding: '24px', maxWidth: '800px' }}>
-            <h2 style={{ borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+        <div className={styles.container}>
+            <h2 className={styles.title}>
                 {node.path}
             </h2>
 
-            <div style={{ marginTop: '20px' }}>
-                <strong>ID:</strong> <span style={{ fontFamily: 'monospace', color: '#666' }}>{node.id}</span>
+            <div className={styles.metaRowPrimary}>
+                <strong>ID:</strong> <span className={styles.monoValue}>{node.id}</span>
             </div>
-            
-            <div style={{ marginTop: '10px' }}>
-                <strong>Species:</strong> 
-                <span style={{ 
-                    marginLeft: '8px',
-                    padding: '2px 6px', 
-                    backgroundColor: '#e0e7ff', 
-                    color: '#3730a3', 
-                    borderRadius: '4px',
-                    fontSize: '14px'
-                }}>
+
+            <div className={styles.metaRowSecondary}>
+                <strong>Species:</strong>
+                <span className={styles.speciesBadge}>
                     {node.container?.species || 'generic'}
                 </span>
             </div>
 
             {isWorkflow && (
-                <div style={{ marginTop: '24px', padding: '16px', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                    <h3 style={{ marginTop: 0, color: '#166534' }}>⚡ Workflow Actions</h3>
-                    <p style={{ fontSize: '14px', color: '#15803d' }}>
+                <div className={styles.workflowSection}>
+                    <h3 className={styles.workflowTitle}>⚡ Workflow Actions</h3>
+                    <p className={styles.workflowText}>
                         This node contains an executable workflow.
                     </p>
-                    <button 
+                    <button
                         onClick={handleExecute}
                         disabled={executing}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: executing ? '#9ca3af' : '#16a34a',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: executing ? 'not-allowed' : 'pointer',
-                            fontWeight: 'bold'
-                        }}
+                        className={`${styles.executeButton} ${executing ? styles.executeButtonDisabled : styles.executeButtonEnabled}`}
                     >
                         {executing ? 'Executing...' : 'Run Workflow'}
                     </button>
 
                     {executionResult && (
-                        <div style={{ marginTop: '16px', backgroundColor: 'white', padding: '12px', borderRadius: '4px', border: '1px solid #ddd' }}>
+                        <div className={styles.resultBox}>
                             <strong>Result:</strong>
-                            <pre style={{ 
-                                marginTop: '8px', 
-                                backgroundColor: '#f8fafc', 
-                                padding: '8px', 
-                                borderRadius: '4px',
-                                overflow: 'auto',
-                                maxHeight: '200px'
-                            }}>
+                            <pre className={styles.resultPre}>
                                 {JSON.stringify(executionResult, null, 2)}
                             </pre>
                         </div>
                     )}
 
                     {execError && (
-                        <div style={{ marginTop: '16px', backgroundColor: '#fef2f2', padding: '12px', borderRadius: '4px', border: '1px solid #fca5a5', color: '#991b1b' }}>
+                        <div className={styles.execErrorBox}>
                             <strong>Execution Error:</strong> {execError}
                         </div>
                     )}
                 </div>
             )}
 
-            <div style={{ marginTop: '30px' }}>
+            <div className={styles.containerDataSection}>
                 <h3>Container Data</h3>
-                <pre style={{ 
-                    backgroundColor: '#f8fafc', 
-                    padding: '16px', 
-                    borderRadius: '8px', 
-                    overflow: 'auto',
-                    fontSize: '12px',
-                    border: '1px solid #e2e8f0'
-                }}>
+                <pre className={styles.containerDataPre}>
                     {JSON.stringify(node.container, null, 2)}
                 </pre>
             </div>

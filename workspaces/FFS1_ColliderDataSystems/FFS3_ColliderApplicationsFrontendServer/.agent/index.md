@@ -1,6 +1,6 @@
 # FFS3 ColliderFrontend - Agent Context
 
-> Frontend Application Server (Nx + Vite + React 19, Next.js optional)
+> Frontend Application Server (Nx + Vite + React 19)
 
 ## Location
 
@@ -24,7 +24,9 @@ frontend views that render workspace nodes from the DB:
 - **apps/ffs6** — IDE viewer appnode: renders selected workspace node (default project)
 - **libs/shared-ui** — Shared UI components, utilities, and XYFlow graph visualization
 
-Each app is a Vite + React 19 appnode. The node-container's `metadata_.frontend_app` field determines which appnode renders a given workspace node.
+Each app is a Vite + React 19 appnode. The NodeContainer
+`metadata_.frontend_app` field determines which appnode renders a given
+workspace node.
 
 ## Contents
 

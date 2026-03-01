@@ -24,17 +24,18 @@ FFS1 (Root)
 
 ## Documents
 
-| #   | Document                                           | Topic                                                              |
-| --- | -------------------------------------------------- | ------------------------------------------------------------------ |
-| 01  | [System Overview](./01_system_overview.md)         | Core concepts, .agent pattern, NodeContainer, manifest inheritance |
-| 02  | [Workspace Hierarchy](./02_workspace_hierarchy.md) | FFS0-8 directory map, workspace purposes, pnpm configuration       |
-| 03  | [Backend Services](./03_backend_services.md)       | DataServer, GraphToolServer, VectorDbServer, database models       |
-| 04  | [Chrome Extension](./04_chrome_extension.md)       | Service worker, ContextManager, sidepanel, message routing         |
-| 05  | [Frontend Packages](./05_frontend_packages.md)     | Shared libraries, application packages, build configuration        |
-| 06  | [Domains & Routing](./06_domains_and_routing.md)   | FILESYST/CLOUD/ADMIN domains, context-driven viewer routing        |
-| 07  | [Data Flow](./07_data_flow.md)                     | 6 protocols, message types, SSE, sync flows                        |
-| 08  | [Security](./08_security.md)                       | Firebase Auth, permissions, secrets, CORS, context layers          |
-| 09  | [Agent System](./09_agent_system.md)               | LangGraph.js, Pydantic AI, 3 browser agents, templates             |
+| #   | Document                                                 | Topic                                                              |
+| --- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| 01  | [System Overview](./01_system_overview.md)               | Core concepts, .agent pattern, NodeContainer, manifest inheritance |
+| 02  | [Workspace Hierarchy](./02_workspace_hierarchy.md)       | FFS0-8 directory map, workspace purposes, pnpm configuration       |
+| 03  | [Backend Services](./03_backend_services.md)             | DataServer, GraphToolServer, VectorDbServer, database models       |
+| 04  | [Chrome Extension](./04_chrome_extension.md)             | Service worker, ContextManager, sidepanel, message routing         |
+| 05  | [Frontend Packages](./05_frontend_packages.md)           | Shared libraries, application packages, build configuration        |
+| 06  | [Domains & Routing](./06_domains_and_routing.md)         | FILESYST/CLOUD/ADMIN domains, context-driven viewer routing        |
+| 07  | [Data Flow](./07_data_flow.md)                           | 6 protocols, message types, SSE, sync flows                        |
+| 08  | [Security](./08_security.md)                             | Firebase Auth, permissions, secrets, CORS, context layers          |
+| 09  | [Agent System](./09_agent_system.md)                     | LangGraph.js, Pydantic AI, 3 browser agents, templates             |
+| 11  | [Legacy Domains Config](./11_legacy_domains_config.yaml) | Legacy `domains.yaml` configuration mapping (pre-2026 DB sync)     |
 
 ## Reading Order
 

@@ -25,16 +25,6 @@
         "D:/FFS0_Factory"
       ]
     },
-    "sqlite-collider": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sqlite",
-        "--db",
-        "D:/FFS0_Factory/workspaces/FFS1_ColliderDataSystems/FFS2_ColliderBackends_MultiAgentChromeExtension/ColliderDataServer/collider.db"
-      ]
-    },
     "http-fetch": {
       "type": "stdio",
       "command": "npx",

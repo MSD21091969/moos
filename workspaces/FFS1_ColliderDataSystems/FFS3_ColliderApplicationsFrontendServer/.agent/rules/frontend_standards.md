@@ -75,7 +75,8 @@ src/
 
 ## Data Fetching
 
-- Use `fetch()` with `import.meta.env.VITE_API_BASE` for API calls
+- Use `fetch()` with `import.meta.env.VITE_DATA_SERVER_URL` for DataServer API calls
+- Use `import.meta.env.VITE_AGENT_RUNNER_URL` for AgentRunner session endpoints
 - Custom hooks for data fetching (`useNodes`, `useApplications`)
 - Handle loading/error states in every data hook
 - No direct API calls in components — always through hooks or stores

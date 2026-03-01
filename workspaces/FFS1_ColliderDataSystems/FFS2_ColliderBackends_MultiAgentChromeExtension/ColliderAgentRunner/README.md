@@ -3,6 +3,12 @@
 > Context hydration service — composes Collider node bootstraps into NanoClaw workspace sessions.
 > **Chat is handled by NanoClawBridge directly** (ws://127.0.0.1:18789).
 
+Canonical docs (DRY):
+
+- `D:\FFS0_Factory\CLAUDE.md`
+- `D:\FFS0_Factory\.agent\workflows\conversation-state-rehydration.md`
+- `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\CLAUDE.md`
+
 **Port**: 8004
 
 ---
@@ -147,25 +153,19 @@ src/
 
 ## Configuration
 
-All settings via `pydantic-settings` — env file priority (highest first):
+All settings via `pydantic-settings`. Config is read from (in order):
 
 1. Environment variables
 2. `D:/FFS0_Factory/secrets/api_keys.env`
-3. `../.env` (FFS2 shared — contains `AGENT_MODEL`, `AGENT_RUNNER_PORT`)
-4. `.env` (local override)
+3. `.env` (local override)
 
 Key settings:
 
-| Env var                       | Default                                | Description                                       |
-| ----------------------------- | -------------------------------------- | ------------------------------------------------- |
-| `COLLIDER_AGENT_PROVIDER`     | `anthropic`                            | Supported: `gemini`, `anthropic`, `google-vertex` |
-| `COLLIDER_AGENT_MODEL`        | *(per-provider)*                       | Override model name                               |
-| `VERTEX_PROJECT_ID`           | —                                      | GCP project for Vertex AI                         |
-| `VERTEX_REGION`               | `us-east5`                             | Vertex AI region                                  |
-| `DATA_SERVER_URL`             | `http://localhost:8000`                | ColliderDataServer base URL                       |
-| `GRAPH_TOOL_URL`              | `http://localhost:8001`                | ColliderGraphToolServer base URL                  |
-| `NANOCLAW_BRIDGE_URL`         | `ws://127.0.0.1:18789`                 | NanoClawBridge WebSocket URL                      |
-| `NANOCLAW_BRIDGE_TOKEN`       | `collider-dev-token-2026`              | Auth token for NanoClawBridge                     |
-| `NANOCLAW_WORKSPACE_DIR`      | `~/.nanoclaw/workspaces/collider`      | Session workspace path                            |
-| `NANOCLAW_ROOT_WORKSPACE_DIR` | `~/.nanoclaw/workspaces/collider-root` | Root agent workspace path                         |
-| `PORT`                        | `8004`                                 | Server port                                       |
+| Env var                   | Default                 | Description                                       |
+| ------------------------- | ----------------------- | ------------------------------------------------- |
+| `COLLIDER_AGENT_PROVIDER` | `anthropic`             | Supported: `gemini`, `anthropic`, `google-vertex` |
+| `COLLIDER_AGENT_MODEL`    | *(per-provider)*        | Override model name                               |
+| `PORT`                    | `8004`                  | Server port                                       |
+| `DATA_SERVER_URL`         | `http://localhost:8000` | ColliderDataServer base URL                       |
+
+> **Note**: `COLLIDER_AGENT_*` replaces the legacy `AGENT_MODEL`. Ensure `PORT` (8004) is used instead of `AGENT_RUNNER_PORT`.

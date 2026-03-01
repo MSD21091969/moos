@@ -12,5 +12,4 @@ Single source of truth for project instructions is `CLAUDE.md`.
 ## Policy
 
 - Treat `CLAUDE.md` files as canonical.
-- Treat `GEMINI.md` files as compatibility pointers only.
 - If guidance conflicts, `CLAUDE.md` wins.

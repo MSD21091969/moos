@@ -7,6 +7,8 @@ This is the root of the Collider ecosystem monorepo at `D:\FFS0_Factory`.
 Every workspace has an `.agent/` folder containing architecture docs, rules, and instructions.
 **Always read `.agent/index.md` first** when working in any workspace.
 
+Session rehydration runbook (canonical): `.agent/workflows/conversation-state-rehydration.md`.
+
 Key files:
 
 - `.agent/index.md` — workspace identity and purpose
@@ -142,7 +144,6 @@ uv run python -m sdk.seeder.cli --root D:/FFS0_Factory --app-id <uuid>
 - `collider-tools` (SSE)
 - `filesystem-workspace` (stdio)
 - `git-root` (stdio)
-- `sqlite-collider` (stdio)
 - `http-fetch` (stdio)
 
 Architecture references:

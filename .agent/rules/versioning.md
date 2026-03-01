@@ -1,63 +1,41 @@
 # Versioning Strategy
 
-> Archive legacy, start fresh with clean imports
+> Keep canonical governance in FFS0, track runtime evolution via explicit versioned artifacts.
 
 ---
 
-## Proposed Structure
+## Active Structure
 
 ```text
 D:\FFS0_Factory\
-├── models/              ← NEW (clean v3)
-├── sdk/                 ← NEW (clean)
-├── _legacy/
-│   ├── models_v2/       ← archived from ./models_v2/
-│   ├── parts/           ← archived from ./parts/
-│   ├── ffs2_mvp/        ← archived FFS2 backend + extension source
-│   │   ├── ColliderDataServer/
-│   │   ├── ColliderGraphToolServer/
-│   │   ├── ColliderVectorDbServer/
-│   │   └── ColliderMultiAgentsChromeExtension/
-│   └── ffs3_mvp/        ← archived FFS3 frontend source
-│       └── collider-frontend/
-└── workspaces/          ← .agent/ folders preserved, source rebuilt clean
+├── .agent/              ← canonical governance and context docs
+├── models/              ← active shared schemas/models
+├── sdk/                 ← active seeder/tools runtime glue
+└── workspaces/          ← execution workspaces (FFS1/FFS2/FFS3)
 ```
 
 ---
 
-## Migration Steps
+## Versioning Rules
 
-1. [x] Create `_legacy/` folder
-2. [x] Move `models_v2/` → `_legacy/models_v2/`
-3. [x] Move `parts/` → `_legacy/parts/`
-4. [x] Create new `models/` with clean structure
-5. [x] Create new `sdk/` with clean structure
-6. [ ] Update imports in workspaces as needed
-7. [x] Tag `mvp-pre-rebuild` before FFS2/FFS3 archive
-8. [x] Move FFS2 backend/extension source → `_legacy/ffs2_mvp/`
-9. [x] Move FFS3 frontend source → `_legacy/ffs3_mvp/`
-10. [ ] Rebuild FFS2 services from scratch (see `collider_rebuild_plan.md`)
-11. [ ] Rebuild FFS3 frontend from scratch (see `collider_rebuild_plan.md`)
+1. Canonical terms and process docs are versioned in `.agent/knowledge/*`.
+2. Structural migrations are documented as workflow runbooks in `.agent/workflows/*`.
+3. Runtime/service versions are tracked in their owning workspace repos.
+4. Historical transitions should be preserved in git history/tags, not implicit file-path assumptions.
 
 ---
 
-## Version Naming
+## Canonical References
 
-| Version | Location | Status |
-| ------------- | ---------------------- | ------------------ |
-| v2 (legacy) | `_legacy/models_v2/` | Archived reference |
-| v3 (new) | `models/` | Active development |
-| FFS2 MVP | `_legacy/ffs2_mvp/` | Archived reference |
-| FFS3 MVP | `_legacy/ffs3_mvp/` | Archived reference |
-| FFS2 v2 (new) | FFS2 service dirs | Clean rebuild |
-| FFS3 v2 (new) | FFS3 collider-frontend | Clean rebuild |
+- `.agent/knowledge/current-codebase-glossary-canonical-v1.md`
+- `.agent/workflows/repo-split-superrepo.md`
+- `.agent/workflows/conversation-state-rehydration.md`
 
 ---
 
 ## Git Strategy
 
-- Tag current state: `git tag v2-legacy`
-- Tag pre-rebuild state: `git tag mvp-pre-rebuild`
-- Commit archive move
-- Begin clean development on fresh slate
-- `.agent/` folders are never archived (workspace metadata, not source code)
+- Use semantic commits for governance/doc updates (`docs:`, `chore:`).
+- Keep root `.agent` changes small and traceable.
+- Avoid deleting historical context without a replacement reference.
+- `.agent/` remains active governance metadata and should not be treated as disposable build output.

@@ -1,6 +1,7 @@
 import { Button } from './Button';
 import { Card } from './Card';
 import { UserRoleBadge } from './UserRoleBadge';
+import styles from './AccessRequestCard.module.css';
 
 export interface AccessRequest {
   id: string;
@@ -24,49 +25,42 @@ export function AccessRequestCard({ request, onApprove, onReject }: AccessReques
   const date = new Date(request.requested_at).toLocaleDateString();
 
   return (
-    <Card style={{ marginBottom: '12px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+    <Card className={styles.card}>
+      <div className={styles.layout}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ fontWeight: 600, fontSize: '16px' }}>{request.user.username}</span>
+          <div className={styles.headerRow}>
+            <span className={styles.username}>{request.user.username}</span>
             <UserRoleBadge role={request.user.system_role} type="system" />
           </div>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>
+          <div className={styles.subText}>
             Requested access on {date}
           </div>
           {request.message && (
-            <div style={{ 
-              backgroundColor: '#f9fafb', 
-              padding: '8px', 
-              borderRadius: '4px', 
-              fontSize: '14px', 
-              fontStyle: 'italic',
-              marginBottom: '12px'
-            }}>
+            <div className={styles.message}>
               "{request.message}"
             </div>
           )}
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <Button 
-            variant="primary" 
+
+        <div className={styles.actions}>
+          <Button
+            variant="primary"
             onClick={() => onApprove(request.id, 'app_user')}
-            style={{ fontSize: '13px' }}
+            className={styles.actionButton}
           >
             Approve (User)
           </Button>
-          <Button 
+          <Button
             variant="secondary"
-            onClick={() => onApprove(request.id, 'app_admin')} 
-            style={{ fontSize: '13px' }}
+            onClick={() => onApprove(request.id, 'app_admin')}
+            className={styles.actionButton}
           >
             Approve (Admin)
           </Button>
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             onClick={() => onReject(request.id)}
-            style={{ fontSize: '13px' }}
+            className={styles.actionButton}
           >
             Reject
           </Button>

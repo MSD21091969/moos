@@ -19,7 +19,7 @@ exports:
   - rules/sandbox.md
   - rules/code_patterns.md
   - rules/versioning.md
-  # Instructions
+  # Instructions (minimal intent contract)
   - instructions/agent_system.md
   # Configs (shared settings)
   - configs/users.yaml

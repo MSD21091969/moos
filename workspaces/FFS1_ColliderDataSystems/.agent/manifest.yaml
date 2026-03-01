@@ -35,15 +35,18 @@ local:
 # NOTE: cloud/admin domain instructions belong in DB containers (seed.py), not IDE .agent
 exports:
   - instructions/agent_system.md
-  - instructions/filesyst_domain.md
   - skills/ide_code_assist.md
   - tools/filesyst_tools.json
-  - configs/domains.yaml
   # Rules
   - rules/stack_standards.md
   - rules/communication_architecture.md
   - rules/code_quality.md
   - rules/project_structure.md
+  # Workflows
+  - workflows/cross-service-validation-gates.md
+  - workflows/dev-start.md
+  - workflows/markdown-quality.md
+  - workflows/markdown-quality-all.md
 
 # Secrets this workspace may use (injected at runtime)
 secrets:

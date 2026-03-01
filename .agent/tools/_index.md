@@ -2,5 +2,6 @@
 
 > Root-level tool schemas shared across all workspaces.
 
-Currently empty. Add shared tool schemas here that should be inherited by all
-child workspaces.
+`collider_management.json` exists as a broad administrative tool surface.
+It remains intentionally centralized for now, pending a minimal split into
+smaller scoped tool contracts.

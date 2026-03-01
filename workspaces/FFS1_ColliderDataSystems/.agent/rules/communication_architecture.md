@@ -12,6 +12,14 @@ model_decision
 
 ## 1. Inter-Service Communication
 
+### 2026 Context Delivery (Primary Runtime Path)
+
+- **Canonical Source**: **NodeContainer database** (DataServer).
+- **Primary Context Transport**: **gRPC ColliderContext** (AgentRunner :50051 -> NanoClawBridge SDK).
+  - **RPCs**: `GetBootstrap`, `StreamContext`, `SubscribeContextDeltas`.
+  - **Why**: Typed context contracts, incremental updates, and stable runtime composition.
+- **Compatibility Mode**: Filesystem prompt hydration remains a legacy fallback for local/dev workflows.
+
 ### FFS3 (Frontend) <-> FFS2 (Data Server)
 
 - **Primary Protocol**: **REST (JSON over HTTP)**
@@ -23,15 +31,17 @@ model_decision
 
 ### FFS3 (Frontend) <-> FFS2 (Graph Server)
 
-- **Primary Protocol**: **WebSockets**
-  - **Why**: Full duplex required for graph manipulation (layout updates, node dragging sync).
-  - **Optimization**: Use **SharedWorker** to maintain a _single_ socket connection across multiple tabs.
+- **Protocol**: **WebSockets** (conditional)
+  - **Role**: Direct client-to-graph channels are optional and scenario-specific.
+  - **Default Path**: Prefer DataServer/AgentRunner-mediated flows for standard appnode operations.
+  - **Optimization**: Use **SharedWorker** to maintain a _single_ socket connection across multiple tabs when direct sockets are enabled.
 
 ### FFS2 Backend <-> Backend (gRPC)
 
 - **Primary Protocol**: **gRPC** (HTTP/2)
   - **Why**: Typed protobuf contracts, streaming, high-performance inter-service calls.
   - **Routes**:
+    - AgentRunner (:50051) -> NanoClawBridge: context bootstrap + delta streaming
     - DataServer / AgentRunner -> GraphToolServer (:50052): tool execution, discovery
     - GraphToolServer -> VectorDbServer (:8002): semantic search, indexing
 

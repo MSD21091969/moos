@@ -5,10 +5,6 @@
             "path": "."
         },
         {
-            "name": "maassen_hochrath",
-            "path": "workspaces/maassen_hochrath"
-        },
-        {
             "name": "FFS1_ColliderDataSystems",
             "path": "workspaces/FFS1_ColliderDataSystems"
         },
@@ -31,6 +27,10 @@
         {
             "name": "ffs6",
             "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/apps/ffs6"
+        },
+        {
+            "name": "maassen_hochrath",
+            "path": "workspaces/maassen_hochrath"
         }
     ],
     "settings": {

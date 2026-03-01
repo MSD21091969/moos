@@ -1,69 +1,61 @@
-# Agent System Instruction (FFS1 IDE Context)
+# Agent System Instruction (MO:OS Context)
 
-> IDE code assist instruction for ColliderDataSystems workspace.
+> IDE code assist instruction for MO:OS / ColliderDataSystems workspace.
 
-## Role
+## Identity & Category Theory (MO:OS)
 
-You are a code assistant for the ColliderDataSystems project. This workspace
-contains:
+You are a code assistant operating within the
+**MO:OS (Meta-Operating System) Harness**. The architecture of this system is
+fundamentally built on functional programming and category theory principles.
 
-- Chrome Extension code (Plasmo, TypeScript, Zustand, NanoClaw RPC)
-- Backend servers (Python, FastAPI, Pydantic, gRPC)
-- Portal frontend (Vite 7, React 19, Nx monorepo)
-- Shared libraries (api-client, node-container)
+This filesystem (`FFS` folders) is not just a repository; it is a **pure function** mapping human-authorable state into graph-addressable runtime context.
 
-## MVP Status (2026-02-21)
+### The Functorial Model
 
-**All components operational.** See `knowledge/RUNNING.md` for startup commands.
+1. **The Graph as the Monad:**
+   The core unit of state is the `NodeContainer`. Both users and applications are modeled identically as trees of these containers.
+   - `UserContext` = `[RootContainerID]` (A list of permitted root seeds)
+   - `Application` = A sub-graph of `NodeContainers` (Access-controlled content)
 
-| Component | Port | Status |
-| --------------- | ----- | ------- |
-| DataServer | 8000 | Running |
-| GraphToolServer | 8001 | Running |
-| GraphTool gRPC | 50052 | Running |
-| VectorDbServer | 8002 | Running |
-| AgentRunner | 8004 | Running |
-| NanoClawBridge | 18789 | Running |
-| Portal | 3001 | Running |
-| Extension | - | Loaded |
-| Database | - | SQLite |
+2. **Hydration (The Functor):**
+   The `FFS` filesystem is the **authoring format** (the source category).
+   The database is the **runtime format** (the target category).
+   The `Seeder` acts as the functor mapping `f: Filesystem -> Database`,
+   ensuring that the tree structure and context hierarchy are preserved.
 
-## Your Capabilities
+3. **Application 1XZ (my-tiny-data-collider):**
+   The current workspace (FFS1-6) represents a specific template closure.
+   When hydrated, this template produces a specific `ContainerList`
+   representing application `1XZ`.
 
-- Code completion and suggestions
-- Refactoring assistance
-- Documentation generation
-- Test generation
-- Architecture guidance
-- Bug identification
+4. **Context Composition (The Fold):**
+   Context is never monolithic. When an agent is instantiated, the
+   `AgentRunner` performs a `fold` (or reduce) operation up the path from the
+   selected leaf node to the `SubRootContext` (app `1XZ`), and finally to the
+   absolute root (`MO:OS harness main loop`). The result is a pure, immutable
+   context stream pushed to the LLM agent via gRPC.
 
-## Project Structure
+## Technical Stack (2026 NanoClaw Era)
 
-```text
-FFS2_ColliderBackends_MultiAgentChromeExtension/
-├── ColliderDataServer/        <- FastAPI REST/SSE :8000
-├── ColliderGraphToolServer/   <- Tool registry + gRPC + MCP :8001/:50052
-├── ColliderVectorDbServer/    <- gRPC semantic search :8002
-├── ColliderAgentRunner/       <- Context composer :8004
-├── ColliderMultiAgentsChromeExtension/  <- Chrome ext
-└── (removed — NanoClawBridge replaced legacy skill package)
+**Component Status & Mapping:**
 
-FFS3_ColliderApplicationsFrontendServer/
-└── collider-frontend/         <- Nx + Vite + React 19 portal
-```
+| Component       | Port  | Role                                     |
+| --------------- | ----- | ---------------------------------------- |
+| DataServer      | 8000  | Pure state mutations (CRUD), Hydration   |
+| GraphToolServer | 8001  | Tool Registry & execution routing (gRPC) |
+| VectorDbServer  | 8002  | Semantic search mapping (ChromaDB)       |
+| AgentRunner     | 8004  | Context Reducer & Streamer (gRPC)        |
+| NanoClawBridge  | 18789 | Agent Runtime (WebSocket side-effects)   |
+| Frontend (ffs6) | 4200  | Pure visual projection of DB state       |
 
-## Code Patterns
+## Development Rules (Functional First)
 
-Follow patterns documented in:
+1. **Structure == Data**: Changes to `.agent` folders must reflect valid state mutations that can be cleanly mapped to DB fields via the seeder function.
+2. **No Global State (Monolithic Context)**: Everything is graph-addressable.
+   The agent only receives the precise context projected by the
+   `AgentRunner`'s reduce function for a given node.
+3. **Event-Driven Context**: Context reaches the runtime purely via gRPC delta
+   streams (`AgentRunner` -> `NanoClawBridge`), ensuring the agent always reacts
+   to the latest immutable state snapshot.
 
-- `knowledge/architecture/` - System architecture
-- `knowledge/devlog/` - Implementation decisions
-- `rules/` - Code patterns and boundaries
-
-## Key Technical Notes
-
-- **CORS:** Backend configured with `allow_origin_regex` for dynamic chrome-extension:// IDs
-- **Service Worker:** Background SW handles message routing, SSE, native messaging
-- **Auth:** DataServer uses username/password + JWT; Chrome extension authenticates per-role
-- **NanoClaw:** Agent sessions composed by AgentRunner, executed via WebSocket on NanoClawBridge (:18789)
-- **gRPC:** Tool execution flows through GraphToolServer (:50052), vector search via VectorDbServer (:8002)
+*(Refer to `D:\FFS0_Factory\CLAUDE.md` and `.agent/workflows/conversation-state-rehydration.md` for primary directives.)*

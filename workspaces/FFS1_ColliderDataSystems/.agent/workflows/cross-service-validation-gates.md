@@ -16,21 +16,28 @@ npm run build
 npm test
 ```
 
-2. **AgentRunner tests**
+1. **AgentRunner tests**
 
 ```powershell
 cd D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderAgentRunner
 uv run pytest -q
 ```
 
-3. **DataServer execution API contract tests**
+1. **DataServer execution API contract tests**
 
 ```powershell
 cd D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderDataServer
 uv run pytest tests/test_execution_api.py -q
 ```
 
-4. **Frontend appnode build gate**
+1. **AgentRunner gRPC context gate**
+
+```powershell
+cd D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\ColliderAgentRunner
+uv run pytest tests/grpc/test_context_service.py -q
+```
+
+1. **Frontend appnode build gate**
 
 ```powershell
 cd D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS3_ColliderApplicationsFrontendServer
@@ -42,6 +49,7 @@ pnpm nx build ffs4 --verbose
 - NanoClawBridge build succeeds and test suite is green (integration skips are acceptable when explicitly gated).
 - AgentRunner suite is green.
 - DataServer `test_execution_api.py` is green.
+- AgentRunner `tests/grpc/test_context_service.py` is green.
 - `ffs4` build succeeds.
 
 ## pi-shadow Pre-Prod Requirement
@@ -57,6 +65,4 @@ When promoting runtime changes beyond dev:
   - Token usage delta <= 15%
   - Critical policy bypasses = 0
 
-Reference:
-
-- `D:/FFS0_Factory/.agent/knowledge/architecture/phase9_shadow_validation_snapshot.md`
+Reference: capture KPI evidence in the current release or devlog entry.

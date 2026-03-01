@@ -34,8 +34,7 @@ FFS2, FFS3...                     ← Child code projects
 ├── index.md               ← You are here
 │
 ├── instructions/          ← Agent prompts for IDE context
-│   ├── agent_system.md
-│   └── filesyst_domain.md
+│   └── agent_system.md
 │
 ├── rules/                 ← Node rules (patterns, stack, comms)
 │   ├── stack_standards.md
@@ -52,22 +51,19 @@ FFS2, FFS3...                     ← Child code projects
 │   └── filesyst_tools.json
 │
 ├── configs/               ← Workspace configuration
-│   ├── _index.md
-│   └── domains.yaml
+│   └── _index.md
 │
 ├── knowledge/
 │   ├── _index.md
 │   ├── architecture/      ← System architecture docs
-│   │   ├── _index.md
-│   │   ├── 01_ffs2_backend_services.md
-│   │   ├── 02_ffs2_chrome_extension.md
-│   │   ├── 03_ffs3_frontend_appnodes.md
-│   │   ├── 04_communication_protocols.md
-│   │   └── _archive/      ← Pre-Feb-17 docs
-│   └── devlog/            ← Development session logs
+│   │   └── _archive/      ← Archived architecture references
+│   └── _archive_devlog/   ← Development session logs
 │
 └── workflows/
-    └── dev-start.md
+    ├── cross-service-validation-gates.md
+    ├── dev-start.md
+    ├── markdown-quality.md
+    └── markdown-quality-all.md
 ```
 
 ## What Belongs Here
@@ -75,7 +71,7 @@ FFS2, FFS3...                     ← Child code projects
 - **IDE code assist** context (skills, tools)
 - **Architecture knowledge** (what we're building)
 - **Development workflows** (testing, building)
-- **FILESYST domain** config (App X)
+- **Workspace-level** guidance for DB-backed NodeContainer runtime
 
 ## What Does NOT Belong Here
 
@@ -88,7 +84,8 @@ Per-application context belongs in the DataServer (node containers), not here:
 
 ## Quick Links
 
-- [Architecture Index](knowledge/architecture/_index.md)
+- [Architecture Archive Index](knowledge/architecture/_archive/_index.md)
 - [Skills Index](skills/_index.md)
 - [Tools Index](tools/_index.md)
-- [Workflows Index](workflows/_index.md)
+- [Dev Start](workflows/dev-start.md)
+- [Cross-Service Validation Gates](workflows/cross-service-validation-gates.md)

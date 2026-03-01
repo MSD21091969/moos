@@ -1,0 +1,135 @@
+{
+    "version": "v1",
+    "locked_at": "2026-02-28",
+    "based_on": "current-codebase-glossary.json",
+    "status": "complete_v1",
+    "decisions": {
+        "workspace": {
+            "canonical": "Admin control-plane context",
+            "aliases": [
+                "workspace folder",
+                "runtime workspace context"
+            ],
+            "note": "Use explicit terms for non-canonical meanings (filesystem workspace, session context)."
+        },
+        "app": {
+            "canonical": "Template + policy envelope",
+            "aliases": [
+                "application entity",
+                "app instance",
+                "appnode"
+            ],
+            "note": "Differentiate AppTemplate, AppInstance, and Appnode in docs/contracts."
+        },
+        "app_transition_mapping": {
+            "current": {
+                "Application": "persisted DB entity"
+            },
+            "canonical": {
+                "Application": "AppTemplate",
+                "HydratedRuntime": "AppInstance",
+                "FrontendSurface": "Appnode"
+            },
+            "migration_note": "Preserve DB/API naming for compatibility; apply canonical names in architecture/specs first."
+        },
+        "graph": {
+            "canonical": "Three explicit graphs",
+            "normalized_terms": [
+                "ContainerGraph",
+                "ExecutionGraph",
+                "ViewGraph"
+            ],
+            "note": "Avoid bare term 'graph' in architecture docs and contracts."
+        },
+        "skill": {
+            "canonical": "Compatibility projection",
+            "aliases": [
+                "skill authoring artifact",
+                "skill chunk",
+                "skill entry"
+            ],
+            "note": "Treat as derived/generated layer, not runtime source of truth."
+        },
+        "session": {
+            "canonical": "session_id external, sessionKey internal",
+            "note": "Public APIs remain session_id; runtime internals may map to sessionKey."
+        },
+        "metadata": {
+            "canonical": "metadata",
+            "alias": "metadata_",
+            "note": "metadata_ remains adapter/ORM alias where required."
+        },
+        "roles": {
+            "canonical": "Two-layer role model",
+            "normalized_terms": [
+                "SystemRole",
+                "AppRole"
+            ],
+            "projection": "ContextRole (frontend)",
+            "note": "Frontend roles map to backend role layers, not independent semantics."
+        },
+        "context": {
+            "canonical": "Typed runtime state",
+            "non_canonical": [
+                "prompt text bundle as source-of-truth"
+            ],
+            "note": "Prompt/prose are views/projections of typed state."
+        },
+        "tool": {
+            "canonical": "Atomic executable contract",
+            "note": "Smallest capability unit with explicit input/output/effect semantics."
+        },
+        "workflow": {
+            "canonical": "Composed executable contract",
+            "note": "Ordered/conditional composition of tools and/or subworkflows."
+        },
+        "node": {
+            "canonical": "Persisted graph entity",
+            "normalized_terms": [
+                "Node (entity)",
+                "NodeContainer (payload)"
+            ],
+            "note": "Use Node for DB hierarchy entity and NodeContainer for runtime typed payload."
+        },
+        "container": {
+            "canonical": "Typed recursive runtime payload",
+            "normalized_terms": [
+                "NodeContainer"
+            ],
+            "note": "Container semantics are runtime payload semantics, not UI node shell semantics."
+        },
+        "identifier_axis": {
+            "canonical": "app_id",
+            "aliases": [
+                "id",
+                "application_id"
+            ],
+            "note": "Prefer app_id for new cross-layer contracts unless adapter constraints require aliases."
+        },
+        "boundary_axis": {
+            "canonical": "domain + species + api_boundary",
+            "note": "domain is profile label, species is classification taxonomy, api_boundary is enforceable protocol permission model."
+        },
+        "runtime_provider_axis": {
+            "canonical": "separate axes",
+            "normalized_terms": [
+                "provider selection",
+                "runtime implementation selection"
+            ],
+            "note": "Do not collapse provider choice and runtime path into one concept."
+        },
+        "agent": {
+            "canonical": "Runtime process role",
+            "note": "Agent is executor over state/effects, not persona prose object."
+        },
+        "subagent": {
+            "canonical": "Capability-scoped delegated runtime",
+            "note": "Child executor with bounded capabilities and trace linkage."
+        },
+        "appnode": {
+            "canonical": "Frontend runtime surface",
+            "note": "UI application surface (e.g., ffs4/ffs5/ffs6), distinct from app template or app instance."
+        }
+    },
+    "next_terms_pending": []
+}
