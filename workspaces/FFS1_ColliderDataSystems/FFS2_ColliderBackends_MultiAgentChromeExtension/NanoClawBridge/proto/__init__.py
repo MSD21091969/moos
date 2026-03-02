@@ -1,1 +1,0 @@
-"""Compiled protobuf stubs."""

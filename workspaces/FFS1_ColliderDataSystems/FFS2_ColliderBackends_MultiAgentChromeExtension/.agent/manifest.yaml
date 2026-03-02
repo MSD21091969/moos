@@ -24,7 +24,7 @@ components:
 
 # Parent context (FFS1 workspace level)
 includes:
-  - path: "../.agent"
+  - path: "../../.agent"
     type: workspace
     load:
       - instructions/agent_system.md

@@ -1,52 +1,26 @@
 # FFS0 Factory - Agent Context
 
-> Minimal root semantic index for FFS0.
+Root governance layer for inheritance into FFS1 and downstream workspaces.
 
-## Core Model
+## Structure
 
-```text
-.agent/ = governance + constraints + executable contracts
-```
+- `instructions/` — base intent contract
+- `rules/` — global constraints
+- `configs/` — shared settings
+- `knowledge/` — canonical references
+- `skills/`, `tools/`, `workflows/` — minimal placeholders for wiring consistency
 
-## Semantic Layers (minimal)
+## Inheritance Chain
 
-- `rules/` = hard constraints
-- `tools/` = atomic executable contracts
-- `workflows/` = composed executable contracts
-- `instructions/` = compact intent framing
-- `configs/` = shared settings
-- `knowledge/` = canonical reference (not runtime contract)
-
-`skills/` is optional at root and may remain empty.
-
-## Inheritance Direction
-
-```text
-FFS0 .agent (canonical)
-  -> FFS1 .agent (execution context)
-    -> FFS2 / FFS3 local execution artifacts
-```
-
-## Export Contract
-
-See `manifest.yaml` for authoritative exports.
-
-Current exported categories:
-
-- `rules/*`
-- `instructions/agent_system.md`
-- `configs/*`
+`FFS0 .agent` → `FFS1 .agent` → `FFS2/FFS3 .agent` → app-level `.agent` stubs (`ffs4/ffs5/ffs6`)
 
 ## Canonical References
 
 - [Conversation Rehydration Runbook](workflows/conversation-state-rehydration.md)
 - [Canonical Glossary v1](knowledge/current-codebase-glossary-canonical-v1.md)
-- [Container-Graph Logic JSON Schema v0](knowledge/container-graph-logic-json-schema-v0.md)
-- [Conversation State](knowledge/conversation-state.md)
-- [Architecture Findings](knowledge/architecture-findings.md)
-- [Research Findings](knowledge/research-findings.md)
-- [Implementation Plan Scaffold](knowledge/implementation-plan-scaffold.md)
-
----
-
-Version: v4.0.0 — 2026-03-01
+- [Control Plane Governance](knowledge/control-plane-governance.md)
+- [RBAC to GitHub Mapping](knowledge/rbac-github-mapping.md)
+- [Git Collaboration Policy](workflows/git-collaboration-policy.md)
+- [Workspace-to-DB Sync Contract](workflows/db-sync-contract.md)
+- [Pre-Public Readiness Checklist](workflows/pre-public-readiness-checklist.md)
+- [Manifest](manifest.yaml)

@@ -7,11 +7,22 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 - **Identity**: Governance, Schemas, and Orchestration layer for the Collider platform.
 - **Backend**: Python 3.12+, FastAPI, Pydantic v2, UV.
 - **Frontend**: Nx monorepo, Vite 7, React 19, TypeScript 5+, pnpm.
+- **.agent state**: Minimal rehydrated inheritance backbone for FFS2/FFS3.
+
+## Runtime Status (2026-03-02)
+
+- **Active backend runtime for FFS3**: `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos`
+- **FFS2 backend folders** under
+  `FFS2_ColliderBackends_MultiAgentChromeExtension/` are **reference-only** for
+  contract parity and historical context.
+- FFS3 client behavior remains unchanged and is served by MOOS compatibility
+  surfaces.
 
 ## Canonical References
 
 - Root authority: `D:\FFS0_Factory\CLAUDE.md`
 - Rehydration runbook: `D:\FFS0_Factory\.agent\workflows\conversation-state-rehydration.md`
+- FFS1 context index: `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\.agent\index.md`
 
 ## Package Management & Secrets
 
@@ -24,6 +35,20 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 
 ## Service Ports
 
+### Active (MOOS-owned)
+
+| Service                     | Port  | Path                                                                                                                        |
+| --------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------------- |
+| MOOS Data Compatibility     | 8000  | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\data-server` |
+| MOOS Tool Server            | 8001  | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\tool-server` |
+| MOOS Engine                 | app   | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\engine`      |
+| MOOS Agent Compatibility    | 8004  | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\data-server` |
+| MOOS NanoClaw Compatibility | 18789 | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\data-server` |
+| FFS3 ffs6 frontend          | 4200  | `FFS3.../apps/ffs6/`                                                                                                        |
+| FFS3 ffs4 sidepanel         | 4201  | `FFS3.../apps/ffs4/`                                                                                                        |
+
+### Legacy Reference (FFS2 — retired runtime)
+
 | Service                 | Port         | Path                               |
 | ----------------------- | ------------ | ---------------------------------- |
 | ColliderDataServer      | 8000         | `FFS2.../ColliderDataServer/`      |
@@ -32,83 +57,14 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 | SQLite Viewer (dev)     | 8003         | `sqlite_web collider.db`           |
 | ColliderAgentRunner     | 8004 / 50051 | `FFS2.../ColliderAgentRunner/`     |
 | NanoClawBridge          | 18789        | Claude Code WebSocket agent chat   |
-| FFS3 ffs6 frontend      | 4200         | `FFS3.../apps/ffs6/`               |
-| FFS3 ffs4 sidepanel     | 4201         | `FFS3.../apps/ffs4/`               |
 
 ## Context Delivery Architecture
 
-NanoClawBridge supports **two context delivery modes**, controlled by
-environment flags:
+MOOS compatibility runtime is the active path for FFS3:
 
-### Mode 1: Filesystem (Legacy — `USE_SDK_AGENT=false`)
-
-```text
-Extension -> POST :8004/agent/session -> AgentRunner composes ContextSet
-  -> workspace_writer writes CLAUDE.md + .mcp.json + skills/*.SKILL.md
-  -> returns session_id + nanoclaw_ws_url
-  -> NanoClawBridge spawns Claude Code CLI with workspace context
-```
-
-### Mode 2: SDK + gRPC (New — `USE_SDK_AGENT=true`, `USE_GRPC_CONTEXT=true`)
-
-```text
-Extension/FFS4 -> POST :8004/agent/session -> AgentRunner composes ContextSet
-  -> NanoClawBridge requests context via gRPC GetBootstrap (:50051)
-  -> AgentRunner streams ContextChunks (system prompt, skills, tool schemas, MCP config)
-  -> NanoClawBridge creates Anthropic SDK session programmatically
-  -> Skills injected as JSON (no SKILL.md files), tools via MCP SSE
-  -> SSE subscription for live context deltas (hot-reload mid-session)
-```
-
-### Environment Flags
-
-```env
-# NanoClawBridge
-USE_SDK_AGENT=true              # SDK instead of CLI spawn
-USE_GRPC_CONTEXT=true           # gRPC context instead of filesystem
-GRPC_CONTEXT_ADDRESS=localhost:50051
-
-# AgentRunner
-GRPC_CONTEXT_ENABLED=true       # Start gRPC ColliderContext server
-GRPC_PORT=50051
-WRITE_WORKSPACE_FILES=false     # Skip file writes when gRPC active
-```
-
-## Agent Teams
-
-When multiple nodes are selected in the FFS4 graph, NanoClawBridge can spawn an
-**agent team**:
-
-- **Leader** gets merged context from all selected nodes
-- **Members** each get isolated per-node context
-- Communication via mailbox pattern
-- Team RPCs: `team.create`, `team.send`, `team.status`
-
-## NanoClawBridge SDK Modules
-
-```text
-NanoClawBridge/src/
-├── sdk/
-│   ├── types.ts            # ComposedContext, SkillDefinition, ContextDelta
-│   ├── prompt-builder.ts   # buildSystemPrompt(), applyDeltaToContext()
-│   ├── tool-executor.ts    # ToolExecutor (routes to MCP/DataServer)
-│   ├── anthropic-agent.ts  # AnthropicAgent (streaming agentic loop)
-│   └── team-manager.ts     # TeamManager (multi-node orchestration)
-├── grpc/
-│   └── context-client.ts   # ContextGrpcClient (getBootstrap, streamContext)
-└── sse/
-    └── context-subscriber.ts # ContextSubscriber (live delta watcher)
-```
-
-## gRPC Proto (ColliderContext Service)
-
-Defined in `proto/collider_graph.proto`. Compile: `uv run python -m proto.compile_protos`
-
-| RPC                    | Input             | Output              |
-| ---------------------- | ----------------- | ------------------- |
-| StreamContext          | ContextRequest    | stream ContextChunk |
-| GetBootstrap           | ContextRequest    | BootstrapResponse   |
-| SubscribeContextDeltas | DeltaSubscription | stream ContextDelta |
+- `:8000` data/API compatibility
+- `:8004` agent-session compatibility
+- `:18789` NanoClaw-compatible WebSocket bridge
 
 ## FFS4 Sidepanel Architecture
 
@@ -128,15 +84,26 @@ FFS4/src/
 ## Development
 
 - Run services using `dev-start.md` in `.agent/workflows/`.
-- Fill in `D:\FFS0_Factory\secrets\api_keys.env` with `GEMINI_API_KEY`, `COLLIDER_USERNAME`, `COLLIDER_PASSWORD` before starting AgentRunner.
-- Seed the DB: `uv run python -m src.seed` from `ColliderDataServer/`.
+- Use MOOS root compatibility targets from `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos`:
+  - `pnpm nx run @moos/source:compat:build`
+  - `pnpm nx run @moos/source:compat:test`
+  - `pnpm nx run @moos/source:compat:serve:backend`
 - Schemas shared from root `models/`.
 
-## Architecture Docs
+## Minimal .agent Contract
 
-See `.agent/knowledge/architecture/` for detailed service docs:
+FFS1 is the inheritance provider for FFS2 and FFS3.
 
-- `01_ffs2_backend_services.md` — all backend services including AgentRunner
-- `02_ffs2_chrome_extension.md` — extension 3-tab sidepanel + NanoClawBridge RPC
-- `03_ffs3_frontend_appnodes.md` — Nx appnodes (ffs4/ffs5/ffs6)
-- `04_communication_protocols.md` — all 10 protocols
+Required FFS1 exports (see `.agent/manifest.yaml`):
+- `instructions/agent_system.md`
+- `instructions/filesyst_domain.md`
+- `skills/ide_code_assist.md`
+- `tools/filesyst_tools.json`
+- `rules/stack_standards.md`
+- `rules/communication_architecture.md`
+- `rules/code_quality.md`
+- `rules/project_structure.md`
+- `workflows/cross-service-validation-gates.md`
+- `workflows/dev-start.md`
+- `workflows/markdown-quality.md`
+- `workflows/markdown-quality-all.md`

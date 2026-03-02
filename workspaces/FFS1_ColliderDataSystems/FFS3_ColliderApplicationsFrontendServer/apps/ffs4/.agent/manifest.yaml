@@ -1,0 +1,13 @@
+name: ffs4-app
+version: "1.0.0"
+inheritance:
+  enabled: true
+  strategy: deep_merge
+includes:
+  - path: "../../../.agent"
+    type: workspace
+local:
+  instructions: "./instructions/"
+  rules: "./rules/"
+  knowledge: "./knowledge/"
+exports: []

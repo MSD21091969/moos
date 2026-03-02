@@ -18,11 +18,28 @@ vector_data/
 .env.local
 .env.development
 .env.production
+**/.env
+**/.env.local
+**/.env.development
+**/.env.production
 !.env.example
+!**/.env.example
+
+# Explicit local secret paths
+/secrets/api_keys.env
+/secrets/gmail_credentials.json
+/secrets/gmail_token.json
+/secrets/mailmind-ai-djbuw-ee3ee7ff8368.json
+/workspaces/maassen_hochrath/_legacy/legacy_container_UX/frontend/.env.development
+/workspaces/maassen_hochrath/_legacy/legacy_container_UX/frontend/.env.production
+/workspaces/maassen_hochrath/_legacy/legacy_container_UX/backend/.env
 
 # GCP service account credentials (must live in secrets/)
 *-service-account*.json
 mailmind-ai-djbuw-*.json
+secrets/*.json
+secrets/*.env
+!secrets/*.example
 
 # Node.js
 node_modules/

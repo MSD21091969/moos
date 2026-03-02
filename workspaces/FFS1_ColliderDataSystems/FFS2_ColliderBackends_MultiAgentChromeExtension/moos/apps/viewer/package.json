@@ -1,0 +1,8 @@
+{
+  "name": "@moos/viewer",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@moos/shared-ui": "workspace:*"
+  }
+}

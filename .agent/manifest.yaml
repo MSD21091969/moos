@@ -19,6 +19,7 @@ exports:
   - rules/sandbox.md
   - rules/code_patterns.md
   - rules/versioning.md
+  - rules/public_repo_safety.md
   # Instructions (minimal intent contract)
   - instructions/agent_system.md
   # Configs (shared settings)
