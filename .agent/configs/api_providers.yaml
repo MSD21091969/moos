@@ -1,85 +1,88 @@
-# API Provider Configuration
-# Shared across all workspaces
-# NOTE: API keys are NOT stored here - they go in secrets/api_keys.env
+schema_version: "1.0.0"
+updated_at: "2026-03-02"
+owner: "FFS0_Factory"
+description: "Central registry of AI providers and models. Secrets stored in secrets/api_keys.env."
+
+defaults:
+  provider: gemini
+  model: gemini-3.1-pro
 
 providers:
-  # Google AI Studio (direct Gemini API)
   gemini:
     name: "Google AI Studio"
     base_url: "https://generativelanguage.googleapis.com"
-    env_key: "GEMINI_API_KEY"
+    auth:
+      type: "api_key"
+      env_key: "GEMINI_API_KEY"
     models:
-      - gemini-2.5-flash
-      - gemini-2.5-flash-lite
-      - gemini-2.5-pro
-      - gemini-3-flash
-      - gemini-3-pro
-      - gemini-3.1-pro
-    default_model: gemini-3.1-pro
+      - id: gemini-2.5-flash
+      - id: gemini-2.5-flash-lite
+      - id: gemini-2.5-pro
+      - id: gemini-3-flash
+      - id: gemini-3-pro
+      - id: gemini-3.1-pro
+        is_default: true
 
-  # Google Vertex AI
   google-vertex:
     name: "Google Vertex AI"
-    base_url: null # Uses gcloud default credentials
-    env_key: "GOOGLE_APPLICATION_CREDENTIALS"
+    base_url: null # Uses gcloud/ADC
+    auth:
+      type: "google_application_credentials"
+      env_key: "GOOGLE_APPLICATION_CREDENTIALS"
     models:
-      - gemini-2.5-flash
-      - gemini-2.5-pro
-      - gemini-3-flash
-      - gemini-3-pro
-      - gemini-3.1-pro
-      - claude-opus-4-6
-      - claude-sonnet-4-6
-    default_model: claude-opus-4-6
+      - id: gemini-2.5-flash
+      - id: gemini-2.5-pro
+      - id: gemini-3-flash
+      - id: gemini-3-pro
+      - id: gemini-3.1-pro
+      - id: claude-opus-4-6
+        is_default: true
+      - id: claude-sonnet-4-6
 
-  # Local Ollama
   ollama:
     name: "Ollama (Local)"
     base_url: "http://localhost:11434"
-    env_key: null # No key needed for local
+    auth:
+      type: "none"
     models:
-      - qwen2.5:14b
-      - llama3.2:latest
-      - codellama:13b
-    default_model: qwen2.5:14b
+      - id: qwen2.5:14b
+        is_default: true
+      - id: llama3.2:latest
+      - id: codellama:13b
 
-  # OpenAI
   openai:
     name: "OpenAI"
     base_url: "https://api.openai.com/v1"
-    env_key: "OPENAI_API_KEY"
+    auth:
+      type: "api_key"
+      env_key: "OPENAI_API_KEY"
     models:
-      - gpt-4o
-      - gpt-4o-mini
-      - gpt-5.1
-      - gpt-5.1-codex
-      - gpt-5.1-codex-max
-      - gpt-5.1-codex-mini
-      - gpt-5.2
-      - gpt-5.2-codex
-      - gpt-5.3-codex # Latest Codex — code gen, debugging, software dev (1x rate)
-      - o1-preview
-      - o3-pro
-    default_model: gpt-5.3-codex
+      - id: gpt-4o
+      - id: gpt-4o-mini
+      - id: gpt-5.1
+      - id: gpt-5.1-codex
+      - id: gpt-5.1-codex-max
+      - id: gpt-5.1-codex-mini
+      - id: gpt-5.2
+      - id: gpt-5.2-codex
+      - id: gpt-5.3-codex
+        is_default: true
+      - id: o1-preview
+      - id: o3-pro
 
-  # Anthropic
   anthropic:
     name: "Anthropic"
     base_url: "https://api.anthropic.com/v1"
-    env_key: "ANTHROPIC_API_KEY"
+    auth:
+      type: "api_key"
+      env_key: "ANTHROPIC_API_KEY"
     models:
-      - claude-haiku-4.5
-      - claude-sonnet-4
-      - claude-sonnet-4.5
-      - claude-sonnet-4.6
-      - claude-opus-4
-      - claude-opus-4.5
-      - claude-opus-4-6
-      - claude-opus-4-6-fast # Fast mode (Preview, 30x rate)
-    default_model: claude-opus-4-6
-
-# Default provider for the Factory
-default_provider: gemini
-default_model: gemini-3.1-pro
-# Provider-model format for pydantic-ai
-# Usage: f"{provider}:{model}" -> "gemini:gemini-2.0-flash"
+      - id: claude-haiku-4.5
+      - id: claude-sonnet-4
+      - id: claude-sonnet-4.5
+      - id: claude-sonnet-4.6
+      - id: claude-opus-4
+      - id: claude-opus-4.5
+      - id: claude-opus-4-6
+        is_default: true
+      - id: claude-opus-4-6-fast

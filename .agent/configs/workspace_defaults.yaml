@@ -1,47 +1,50 @@
-# Workspace Default Settings
-# Inherited by all child workspaces via manifest.yaml includes
+schema_version: "1.0.0"
+updated_at: "2026-03-02"
+owner: "FFS0_Factory"
+description: "Workspace-wide defaults for paths, agents, and pilots."
 
+# Path resolution defaults
 paths:
-  # Factory root (resolved at runtime)
   factory_root: "${FACTORY_ROOT:-D:/FFS0_Factory}"
-
-  # Standard locations relative to any workspace
   agents_dir: ".agent"
   pilots_dir: "shared/pilots"
   knowledge_dir: "knowledge"
   secrets_dir: "${FACTORY_ROOT}/secrets"
 
+# Agent runtime defaults
 agent_defaults:
-  # Default LLM settings for workspace agents
+  # Reference canonical models from api_providers.yaml
   model: "gemini-2.5-flash"
   temperature: 0.7
   max_tokens: 4096
   retries: 3
 
-  # History management
-  summarization:
-    trigger_tokens: 8000
+  history:
+    summarization_threshold: 8000
     keep_messages: 10
 
+# Pilot/UI defaults
 pilot_defaults:
-  # Default LLM settings for application pilots
   model: "gemini-2.5-flash"
   temperature: 0.7
   max_tokens: 8192
 
-  # UI defaults
-  position: "bottom-right"
-  theme: "dark"
+  ui:
+    position: "bottom-right"
+    theme: "dark"
 
-# Feature flags
+# Feature flags & Safety
 features:
-  enable_filesystem_tools: false # Must be explicitly enabled per agent
+  enable_filesystem_tools: false
   enable_subagents: true
   enable_todo_decomposition: false
-  require_tool_approval: true # Safety default
 
-# Logging
+  # Governance override: Root CLAUDE.md policies apply
+  # "Auto-approve all tool uses"
+  require_tool_approval: false
+
+# Observability
 logging:
   level: "INFO"
   format: "[{time}] {level}: {message}"
-  output: "console" # or "file" or "both"
+  output: "console"

@@ -1,35 +1,32 @@
-# Factory Seed Users
-# Used by ColliderDataServer seed.py (username/password auth)
+schema_version: "1.0.0"
+updated_at: "2026-03-02"
+owner: "FFS0_Factory"
+description: "Defines the RBAC schema and authentication profiles. This file does not contain actual user data."
 
-users:
-  Sam:
-    system_role: superadmin
-    display_name: "Sam"
-  Lola:
-    system_role: collider_admin
-    display_name: "Lola"
-  Menno:
-    system_role: collider_admin
-    display_name: "Menno"
+# Roles automatically seeded/managed by system
+rbac_catalog:
+  system_roles:
+    - id: superadmin
+      description: "Full system access (SAD)"
+    - id: collider_admin
+      description: "Can assign roles, manage all apps (CAD)"
+    - id: app_admin
+      description: "Can create apps, grant app permissions"
+    - id: app_user
+      description: "Basic authenticated user"
 
-# System roles (on User model, assigned by SAD/CAD only)
-system_roles:
-  - superadmin        # Full system access (SAD)
-  - collider_admin    # Can assign roles, manage all apps (CAD)
-  - app_admin         # Can create apps, grant app permissions
-  - app_user          # Basic authenticated user
+  app_roles:
+    - id: app_admin
+      description: "Owner/admin of an application"
+    - id: app_user
+      description: "Regular member"
 
-# App roles (on AppPermission, per-application)
-app_roles:
-  - app_admin   # Owner/admin of an application
-  - app_user    # Regular member
-
-# Auth methods by component
-auth:
+# Authentication profiles
+auth_profiles:
   dataserver:
     method: username_password
     jwt_algorithm: HS256
-    note: "Direct auth for DataServer API"
+    description: "Direct auth for DataServer API"
   extension:
     method: firebase_google_signin
-    note: "Planned for Chrome extension sign-in"
+    description: "Planned for Chrome extension sign-in"
