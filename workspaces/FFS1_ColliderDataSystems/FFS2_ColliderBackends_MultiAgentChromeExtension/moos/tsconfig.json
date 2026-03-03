@@ -4,6 +4,15 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/functors"
+    },
+    {
+      "path": "./packages/store"
+    },
+    {
       "path": "./apps/sidepanel"
     },
     {

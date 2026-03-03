@@ -1,3 +1,4 @@
+import type { Message } from '@moos/functors';
 import { appendHistory, createSessionState, type SessionState } from './state.js';
 
 export class SessionManager {
@@ -9,7 +10,7 @@ export class SessionManager {
         return state;
     }
 
-    public append(sessionId: string, message: string): SessionState {
+    public append(sessionId: string, message: Message): SessionState {
         const existing = this.sessions.get(sessionId) ?? this.create(sessionId);
         const updated = appendHistory(existing, message);
         this.sessions.set(sessionId, updated);

@@ -49,6 +49,16 @@ export const createToolServer = () => {
                 return;
             }
 
+            if (req.method === 'GET' && req.url === '/') {
+                sendJson(res, 200, {
+                    status: 'ok',
+                    service: 'tool-server',
+                    health: '/health',
+                    docs: ['/tools', '/mcp/sse', '/mcp/messages', '/execute'],
+                });
+                return;
+            }
+
             if (req.method === 'GET' && req.url === '/tools') {
                 sendJson(res, 200, { tools: registry.list() });
                 return;

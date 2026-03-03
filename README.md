@@ -54,15 +54,15 @@ The frontend presentation layer and shared UI library.
 
 The FFS0 architecture relies on standardized ports for seamless communication between the UI, tools, and agents.
 
-| Surface | Port | Protocol | Owner | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| **MOOS Data Server** | `8000` | REST | FFS2 | Primary data API / workspace graph retrieval |
-| **MOOS Tool/MCP Server**| `8001` | SSE/HTTP | FFS2 | Model Context Protocol endpoints |
-| **MOOS Agent Runner** | `8004` | REST | FFS2 | Agent session compatibility & runtime execution |
-| **NanoClaw WS Bridge** | `18789` | WebSocket | FFS2 | Live bidirectional RPC for agents |
-| **FFS6 Frontend** | `4200` | HTTP | FFS3 | IDE Viewer application |
-| **FFS4 Sidepanel** | `4201` | HTTP | FFS3 | Chrome Extension sidepanel UI |
-| **FFS5 PiP App** | `4202` | HTTP | FFS3 | Picture-in-Picture application |
+| Surface                  | Port    | Protocol  | Owner | Description                                     |
+| :----------------------- | :------ | :-------- | :---- | :---------------------------------------------- |
+| **MOOS Data Server**     | `8000`  | REST      | FFS2  | Primary data API / workspace graph retrieval    |
+| **MOOS Tool/MCP Server** | `8001`  | SSE/HTTP  | FFS2  | Model Context Protocol endpoints                |
+| **MOOS Agent Runner**    | `8004`  | REST      | FFS2  | Agent session compatibility & runtime execution |
+| **NanoClaw WS Bridge**   | `18789` | WebSocket | FFS2  | Live bidirectional RPC for agents               |
+| **FFS6 Frontend**        | `4200`  | HTTP      | FFS3  | IDE Viewer application                          |
+| **FFS4 Sidepanel**       | `4201`  | HTTP      | FFS3  | Chrome Extension sidepanel UI                   |
+| **FFS5 PiP App**         | `4202`  | HTTP      | FFS3  | Picture-in-Picture application                  |
 
 *Tip: To add the local MCP server to Claude, run:*
 `claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse`

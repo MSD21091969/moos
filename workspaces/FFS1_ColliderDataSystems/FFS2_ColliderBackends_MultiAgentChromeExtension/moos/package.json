@@ -9,7 +9,13 @@
       "compat:build": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "pnpm nx run-many -t build -p @moos/data-server,@moos/tool-server,@moos/engine,@moos/sidepanel,@moos/viewer"
+          "command": "pnpm nx run-many -t build -p @moos/data-server,@moos/tool-server,@moos/engine,@moos/sidepanel,@moos/viewer,@moos/chrome-extension"
+        }
+      },
+      "compat:clean": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "node -e \"const fs=require('node:fs');const path=require('node:path');const dirs=['apps/data-server/dist','apps/tool-server/dist','apps/engine/dist','apps/sidepanel/dist','apps/viewer/dist','apps/chrome-extension/dist','packages/core/dist','packages/store/dist','packages/functors/dist'];for(const d of dirs){fs.rmSync(path.resolve(d),{recursive:true,force:true});}console.log('[moos] compat clean done');\""
         }
       },
       "compat:serve": {

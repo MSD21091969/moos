@@ -1,8 +1,8 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { randomUUID } from 'node:crypto';
-import { makeContainer } from '@moos/core';
+import { MutationEnvelopeSchema, type MutationEnvelope, makeContainer } from '@moos/core';
 import { InMemoryCategoryStore, type StoredObject } from '@moos/store';
-import { WebSocketServer, type WebSocket } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 
 const port = Number(process.env.PORT ?? 8000);
 
@@ -86,6 +86,9 @@ interface AppPermissionRecord {
 }
 
 const nowIso = (): string => new Date().toISOString();
+
+const FFS4_SURFACE_ID = 'ffs4-sidepanel';
+const FFS4_SURFACE_PATH = 'root/runtime-surfaces/ffs4-sidepanel';
 
 const roleRank = (role: SystemRole): number => {
     switch (role) {
@@ -180,6 +183,31 @@ const createSeedData = () => {
         updated_at: createdAt,
     };
 
+    const runtimeSurfaceNode: NodeRecord = {
+        id: '44444444-4444-4444-4444-444444444444',
+        application_id: appId,
+        parent_id: rootNodeId,
+        path: FFS4_SURFACE_PATH,
+        container: {
+            kind: 'runtime_surface',
+            species: 'chrome_sidepanel',
+            name: FFS4_SURFACE_ID,
+            config: {
+                app: 'ffs4',
+                channel: 'sidepanel',
+                dev_url: 'http://localhost:4201',
+            },
+            skills: [{ name: 'ui_projection' }],
+            tools: [],
+        },
+        metadata_: {
+            runtime_surface_id: FFS4_SURFACE_ID,
+            runtime_surface_kind: 'chrome-extension',
+        },
+        created_at: createdAt,
+        updated_at: createdAt,
+    };
+
     const pendingRequest: AccessRequestRecord = {
         id: '22222222-2222-2222-2222-222222222222',
         user_id: appUser.id,
@@ -209,6 +237,7 @@ const createSeedData = () => {
         nodes: new Map<string, NodeRecord>([
             [rootNode.id, rootNode],
             [workflowNode.id, workflowNode],
+            [runtimeSurfaceNode.id, runtimeSurfaceNode],
         ]),
         accessRequests: new Map<string, AccessRequestRecord>([[pendingRequest.id, pendingRequest]]),
         appPermissions: new Map<string, AppPermissionRecord>([[appAdminPermission.id, appAdminPermission]]),
@@ -216,9 +245,70 @@ const createSeedData = () => {
     };
 };
 
-export const createDataServer = () => {
+type SeedState = ReturnType<typeof createSeedData>;
+
+const findPrimaryApp = (state: SeedState): AppRecord | null => {
+    const first = state.apps.values().next();
+    return first.done ? null : first.value;
+};
+
+const ensureRuntimeSurfaceNode = (
+    state: SeedState,
+    requestedAppId?: string,
+): { appId: string; nodeId: string } | null => {
+    const app =
+        (requestedAppId ? state.apps.get(requestedAppId) : null) ??
+        findPrimaryApp(state);
+
+    if (!app) {
+        return null;
+    }
+
+    const existing = [...state.nodes.values()].find(
+        (node) =>
+            node.application_id === app.id &&
+            ((node.metadata_['runtime_surface_id'] as string | undefined) === FFS4_SURFACE_ID ||
+                node.path === FFS4_SURFACE_PATH),
+    );
+
+    if (existing) {
+        return { appId: app.id, nodeId: existing.id };
+    }
+
+    const createdAt = nowIso();
+    const nodeId = `runtime-surface-${FFS4_SURFACE_ID}-${app.id}`;
+
+    state.nodes.set(nodeId, {
+        id: nodeId,
+        application_id: app.id,
+        parent_id: app.root_node_id,
+        path: FFS4_SURFACE_PATH,
+        container: {
+            kind: 'runtime_surface',
+            species: 'chrome_sidepanel',
+            name: FFS4_SURFACE_ID,
+            config: {
+                app: 'ffs4',
+                channel: 'sidepanel',
+                dev_url: 'http://localhost:4201',
+            },
+            skills: [{ name: 'ui_projection' }],
+            tools: [],
+        },
+        metadata_: {
+            runtime_surface_id: FFS4_SURFACE_ID,
+            runtime_surface_kind: 'chrome-extension',
+        },
+        created_at: createdAt,
+        updated_at: createdAt,
+    });
+
+    return { appId: app.id, nodeId };
+};
+
+export const createDataServer = (seedState?: SeedState) => {
     const db = new InMemoryCategoryStore();
-    const state = createSeedData();
+    const state = seedState ?? createSeedData();
 
     const sendJsonWithCors = (res: ServerResponse, statusCode: number, body: unknown): void => {
         res.statusCode = statusCode;
@@ -356,6 +446,22 @@ export const createDataServer = () => {
 
             if (req.method === 'GET' && req.url === '/health') {
                 sendJsonWithCors(res, 200, { status: 'ok', service: 'data-server' });
+                return;
+            }
+
+            if (req.method === 'GET' && path === '/') {
+                sendJsonWithCors(res, 200, {
+                    status: 'ok',
+                    service: 'data-server',
+                    health: '/health',
+                    docs: [
+                        '/api/v1/auth/login',
+                        '/api/v1/users/me',
+                        '/api/v1/apps',
+                        '/agent/session',
+                        '/agent/morphisms',
+                    ],
+                });
                 return;
             }
 
@@ -706,7 +812,11 @@ export interface SessionRecord {
     label?: string;
 }
 
-export const createAgentCompatServer = (sessionStore: Map<string, SessionRecord>) => {
+export const createAgentCompatServer = (
+    sessionStore: Map<string, SessionRecord>,
+    onMorphisms?: (payload: MutationEnvelope) => void,
+    seedState?: SeedState,
+) => {
     const sendJsonWithCors = (res: ServerResponse, statusCode: number, body: unknown): void => {
         res.statusCode = statusCode;
         res.setHeader('content-type', 'application/json');
@@ -735,6 +845,16 @@ export const createAgentCompatServer = (sessionStore: Map<string, SessionRecord>
                 return;
             }
 
+            if (req.method === 'GET' && path === '/') {
+                sendJsonWithCors(res, 200, {
+                    status: 'ok',
+                    service: 'agent-compat',
+                    health: '/health',
+                    docs: ['/agent/session', '/agent/root/session', '/agent/morphisms'],
+                });
+                return;
+            }
+
             if (req.method === 'POST' && path === '/agent/session') {
                 const payload = await readJsonBody<{
                     role?: string;
@@ -760,6 +880,10 @@ export const createAgentCompatServer = (sessionStore: Map<string, SessionRecord>
                     label: payload.label,
                 });
 
+                const runtimeSurface = seedState
+                    ? ensureRuntimeSurfaceNode(seedState, app_id || undefined)
+                    : null;
+
                 sendJsonWithCors(res, 200, {
                     session_id,
                     nanoclaw_ws_url: wsBase,
@@ -770,6 +894,7 @@ export const createAgentCompatServer = (sessionStore: Map<string, SessionRecord>
                         role,
                         vector_matches: 0,
                     },
+                    runtime_surface: runtimeSurface,
                 });
                 return;
             }
@@ -787,6 +912,10 @@ export const createAgentCompatServer = (sessionStore: Map<string, SessionRecord>
                     created_at: nowIso(),
                 });
 
+                const runtimeSurface = seedState
+                    ? ensureRuntimeSurfaceNode(seedState, payload.app_id)
+                    : null;
+
                 sendJsonWithCors(res, 200, {
                     session_id,
                     nanoclaw_ws_url: wsBase,
@@ -797,6 +926,28 @@ export const createAgentCompatServer = (sessionStore: Map<string, SessionRecord>
                         role: 'superadmin',
                         vector_matches: 0,
                     },
+                    runtime_surface: runtimeSurface,
+                });
+                return;
+            }
+
+            if (req.method === 'POST' && path === '/agent/morphisms') {
+                const payload = await readJsonBody<unknown>(req);
+                const parsed = MutationEnvelopeSchema.safeParse(payload);
+                if (!parsed.success) {
+                    sendJsonWithCors(res, 400, {
+                        error: 'invalid_payload',
+                        message: 'mutation envelope failed schema validation',
+                    });
+                    return;
+                }
+
+                onMorphisms?.(parsed.data);
+                sendJsonWithCors(res, 202, {
+                    accepted: true,
+                    count: parsed.data.morphisms.length,
+                    source: parsed.data.source ?? 'engine',
+                    turn: parsed.data.turn ?? null,
                 });
                 return;
             }
@@ -824,6 +975,7 @@ export const createNanoClawCompatBridge = (sessionStore: Map<string, SessionReco
     });
 
     const wss = new WebSocketServer({ server });
+    const clients = new Set<WebSocket>();
 
     const sendResponse = (
         ws: WebSocket,
@@ -850,7 +1002,31 @@ export const createNanoClawCompatBridge = (sessionStore: Map<string, SessionReco
         );
     };
 
+    const broadcastEvent = (event: string, payload: Record<string, unknown> = {}) => {
+        const frame = JSON.stringify({ type: 'event', event, ...payload });
+        for (const client of clients) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(frame);
+            }
+        }
+    };
+
+    const broadcastMorphisms = (envelope: MutationEnvelope): void => {
+        broadcastEvent('morphism', {
+            data: {
+                source: envelope.source ?? 'engine',
+                turn: envelope.turn ?? null,
+                sessionKey: envelope.sessionKey ?? null,
+                morphisms: envelope.morphisms,
+            },
+        });
+    };
+
     wss.on('connection', (ws: WebSocket) => {
+        clients.add(ws);
+        ws.on('close', () => {
+            clients.delete(ws);
+        });
         ws.on('message', (buffer: Buffer) => {
             try {
                 const raw = JSON.parse(buffer.toString()) as Record<string, unknown>;
@@ -908,9 +1084,10 @@ export const createNanoClawCompatBridge = (sessionStore: Map<string, SessionReco
                             : randomUUID();
 
                     if (!sessionStore.has(sessionKey)) {
+                        const appId = typeof params.appId === 'string' ? params.appId : '';
                         sessionStore.set(sessionKey, {
                             session_id: sessionKey,
-                            app_id: typeof params.appId === 'string' ? params.appId : '',
+                            app_id: appId,
                             role: typeof params.role === 'string' ? params.role : 'app_user',
                             node_ids: Array.isArray(params.nodeIds)
                                 ? params.nodeIds.filter((value): value is string => typeof value === 'string')
@@ -918,6 +1095,10 @@ export const createNanoClawCompatBridge = (sessionStore: Map<string, SessionReco
                             created_at: nowIso(),
                             model: typeof params.model === 'string' ? params.model : undefined,
                         });
+
+                        if (seedState) {
+                            ensureRuntimeSurfaceNode(seedState, appId || undefined);
+                        }
                     }
 
                     sendResponse(ws, id, { status: 'streaming', sessionKey });
@@ -934,6 +1115,13 @@ export const createNanoClawCompatBridge = (sessionStore: Map<string, SessionReco
                             result: JSON.stringify({ echoed: text }),
                         },
                     });
+                    if (Array.isArray(params.morphisms)) {
+                        sendEvent(ws, 'morphism', {
+                            data: {
+                                morphisms: params.morphisms,
+                            },
+                        });
+                    }
                     sendEvent(ws, 'text_delta', { data: `MOOS: ${text}` });
                     sendEvent(ws, 'message_end');
                     return;
@@ -946,13 +1134,19 @@ export const createNanoClawCompatBridge = (sessionStore: Map<string, SessionReco
         });
     });
 
-    return server;
+    return { server, broadcastMorphisms };
 };
 
-const server = createDataServer();
+const seedState = createSeedData();
+const server = createDataServer(seedState);
 const sessionStore = new Map<string, SessionRecord>();
-const agentCompatServer = createAgentCompatServer(sessionStore);
-const nanoclawCompatServer = createNanoClawCompatBridge(sessionStore);
+const nanoclawCompatBridge = createNanoClawCompatBridge(sessionStore);
+const nanoclawCompatServer = nanoclawCompatBridge.server;
+const agentCompatServer = createAgentCompatServer(
+    sessionStore,
+    (payload) => nanoclawCompatBridge.broadcastMorphisms(payload),
+    seedState,
+);
 
 if (process.env.NODE_ENV !== 'test') {
     server.listen(port, () => {

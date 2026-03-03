@@ -1,6 +1,8 @@
+import type { Message } from '@moos/functors';
+
 export interface BootstrapContext {
     system: string;
-    messages: string[];
+    messages: Message[];
 }
 
 export const fetchBootstrapContext = async (
@@ -23,5 +25,14 @@ export const fetchBootstrapContext = async (
         };
     }
 
-    return (await response.json()) as BootstrapContext;
+    const raw = (await response.json()) as { system: string; messages: string[] };
+
+    // Convert string messages from store into Message objects
+    return {
+        system: raw.system,
+        messages: raw.messages.map((text): Message => ({
+            role: 'user',
+            content: text,
+        })),
+    };
 };

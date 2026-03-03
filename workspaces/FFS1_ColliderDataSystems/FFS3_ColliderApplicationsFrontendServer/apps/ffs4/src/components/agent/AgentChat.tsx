@@ -8,8 +8,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { NanoClawRpcClient } from "../../lib/nanoclaw-client";
 import { useSessionStore } from "../../stores/sessionStore";
+import { useGraphStore } from "../../stores/graphStore";
 
 export function AgentChat() {
+  const applyMorphisms = useGraphStore((s) => s.applyMorphisms);
   const {
     sessionId,
     wsUrl,
@@ -55,6 +57,9 @@ export function AgentChat() {
         case "tool_result":
           addToolMessage(event.name, event.result);
           break;
+        case "morphism":
+          applyMorphisms(event.morphisms);
+          break;
         case "message_end":
           finalizeLastAssistant();
           setSending(false);
@@ -77,7 +82,7 @@ export function AgentChat() {
       clientRef.current = null;
       setConnected(false);
     };
-  }, [wsUrl, sessionId]);
+  }, [wsUrl, sessionId, applyMorphisms]);
 
   const handleSend = useCallback(async () => {
     const text = input.trim();

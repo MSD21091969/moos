@@ -1,0 +1,26 @@
+Term,Type,Broad_Category,Description,Source_Connection,Target_Connection
+No_Meta_Only_Recursive,Axiom,Principle,"The prefix 'meta' is deprecated. Systems nest recursively.",,
+Code_Is_Axiomatic,Axiom,Principle,"No 'skill' metadata is precise enough unless defined as code/structural nodes.",,
+DB_Is_Truth,Axiom,Principle,"Git holds infrastructure engines. The graph DB holds all logic, templates, and state.",,
+Multi_Path_DAGs,Axiom,Principle,"Execution rejects single-path CoT for Multi-path Directed Acyclic Graph reasoning.",,
+AuthUser,Object,Actor,"The authenticated human operator represented as a graph node. The anchor.",,
+AppAdmin,Object,Actor,"Operator capable of architecting AppTemplates within the database.",,
+SuperAdmin,Object,Actor,"Infrastructure engineer managing Git and the base code engines.",,
+AppTemplate,Object,Schema,"A pristine, read-only cluster of NodeContainers. The logic payload of an app.",,
+NodeContainer,Object,Entity,"The fundamental unit of reality. Holds recursive graph data, tools, and UI mapping.",,
+AgnosticModel,Object,Entity,"The LLM, stripped of provider constraints, treated as a graph transformer.",,
+SystemTool,Object,Entity,"A globally available foundational tool executed by the ToolServer.",,
+UI_Lens,Object,Functor,"The frontend app (ffs6/xyflow). A Functor projecting JSON into React components.",,
+RuntimeSurface,Object,Entity,"A persisted runtime UI surface object (chrome sidepanel/tab/pip) linked to root and synchronized via morphisms.",,
+OWNS,Morphism,Rule,"Grants full CRUD traversal rights. Ensures mathematical RBAC compliance.",AuthUser/AppAdmin/SuperAdmin,NodeContainer/AppTemplate/SystemTool
+CAN_HYDRATE,Morphism,Rule,"Allows a user to instantiate an AppTemplate into a localized NodeContainer.",AuthUser,AppTemplate
+PRE_FLIGHT_CONFIG,Morphism,Operation,"Structural mapping before model call (e.g. setting params).",MainLoop,AgnosticModel
+SYNC_ACTIVE_STATE,Morphism,Operation,"WebSocket projection of the RAM DAG graph into the user's view.",ActiveStateCache,UI_Lens
+ADD_NODE_CONTAINER,Morphism,Model_Action,"An LLM output intent that inserts a new NodeContainer.",AgnosticModel,ActiveStateCache
+LINK_NODES,Morphism,Model_Action,"An LLM output intent connecting two objects.",AgnosticModel,ActiveStateCache
+UPDATE_NODE_KERNEL,Morphism,Model_Action,"Mutate internal data payload/properties without altering edges.",AgnosticModel,ActiveStateCache
+DELETE_EDGE,Morphism,Model_Action,"Sever relationship between two objects, altering DAG topology.",AgnosticModel,ActiveStateCache
+RootContainer,System,Environment,"mo:os OS harness running the Main Loop.",,
+MainLoop,System,Process,"Event-based execution cycle. Monitors Active State Cache and fires Morphisms.",,
+RestingStateDB,System,Environment,"Base DB where collapsed, finalized DAG reasoning and profiles are stored.",,
+ActiveStateCache,System,Environment,"Fast, hot-loading RAM space for dynamic multi-path LLM evaluation.",,

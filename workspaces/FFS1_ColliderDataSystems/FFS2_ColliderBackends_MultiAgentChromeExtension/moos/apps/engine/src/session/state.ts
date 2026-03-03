@@ -1,6 +1,8 @@
+import type { Message } from '@moos/functors';
+
 export interface SessionState {
     sessionId: string;
-    history: string[];
+    history: Message[];
 }
 
 export const createSessionState = (sessionId: string): SessionState => ({
@@ -8,7 +10,7 @@ export const createSessionState = (sessionId: string): SessionState => ({
     history: [],
 });
 
-export const appendHistory = (state: SessionState, message: string): SessionState => ({
+export const appendHistory = (state: SessionState, message: Message): SessionState => ({
     ...state,
     history: [...state.history, message],
 });

@@ -10,6 +10,7 @@ type AgentEvent =
   | { kind: "tool_use_start"; name: string; args: string }
   | { kind: "tool_result"; name: string; result: string }
   | { kind: "thinking"; text: string }
+  | { kind: "morphism"; morphisms: unknown[] }
   | { kind: "message_end" }
   | { kind: "error"; message: string };
 
@@ -180,6 +181,14 @@ export class NanoClawRpcClient {
           kind: "thinking",
           text: typeof msg.data === "string" ? msg.data : "",
         };
+      case "morphism": {
+        const data = (msg.data as Record<string, unknown> | undefined) ?? {};
+        const morphisms = Array.isArray(data.morphisms) ? data.morphisms : [];
+        return {
+          kind: "morphism",
+          morphisms,
+        };
+      }
       case "message_end":
         return { kind: "message_end" };
       case "error":

@@ -25,127 +25,111 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": ".agent/rules/frontend_standards.md",
-        "hash": "11182171919311759604"
-      },
-      {
-        "file": "libs/shared-ui/src/components/Button.tsx",
-        "hash": "5975789490815840690"
-      },
-      {
-        "file": ".agent/index.md",
-        "hash": "16931068328539359766"
-      },
-      {
-        "file": ".prettierignore",
-        "hash": "14688272390704683536"
-      },
-      {
-        "file": "libs/shared-ui/src/components/TreeView.tsx",
-        "hash": "2376979488095452992"
-      },
-      {
-        "file": ".vscode/settings.json",
-        "hash": "2559019736230183372"
-      },
-      {
-        "file": "libs/shared-ui/src/components/AccessRequestCard.tsx",
-        "hash": "2063395686769581590"
-      },
-      {
-        "file": "libs/shared-ui/src/utils/theme.ts",
-        "hash": "15249647201457843985"
-      },
-      {
-        "file": "pnpm-lock.yaml",
-        "hash": "8689714600933400788"
-      },
-      {
-        "file": ".agent/tools/_index.md",
-        "hash": "15643169044275091914"
-      },
-      {
-        "file": ".prettierrc",
-        "hash": "16267754514737964994"
-      },
-      {
         "file": "libs/shared-ui/src/index.ts",
         "hash": "16390690973186480259"
       },
       {
-        "file": ".vscode/extensions.json",
-        "hash": "13377419431693519786"
-      },
-      {
-        "file": ".env.example",
-        "hash": "3494986051279246481"
-      },
-      {
         "file": "tsconfig.base.json",
-        "hash": "17819768887782999970"
-      },
-      {
-        "file": "CLAUDE.md",
-        "hash": "12240104148749371191"
-      },
-      {
-        "file": "libs/shared-ui/src/components/Card.tsx",
-        "hash": "17578840431477507182"
-      },
-      {
-        "file": "libs/shared-ui/src/components/AccessRequestCard.module.css",
-        "hash": "6179790806103068869"
-      },
-      {
-        "file": "nx.json",
-        "hash": "16994271650195575681"
-      },
-      {
-        "file": ".agent/skills/_index.md",
-        "hash": "17024863794059921906"
-      },
-      {
-        "file": ".agent/knowledge/codebase.md",
-        "hash": "15219137633919749012"
-      },
-      {
-        "file": ".agent/manifest.yaml",
-        "hash": "4800239585566723125"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "527181948614936038"
-      },
-      {
-        "file": ".agent/workflows/dev-frontend.md",
-        "hash": "6859891431060456141"
-      },
-      {
-        "file": ".agent/instructions/frontend_patterns.md",
-        "hash": "15173824375641761844"
+        "hash": "4293039089431874391"
       },
       {
         "file": "libs/shared-ui/src/components/UserRoleBadge.tsx",
         "hash": "4616048182079704491"
       },
       {
-        "file": ".agent/workflows/markdown-quality.md",
-        "hash": "16213549342899365303"
+        "file": ".agent/knowledge/codebase.md",
+        "hash": "6127531092601923070"
+      },
+      {
+        "file": "nx.json",
+        "hash": "9559256842712502387"
+      },
+      {
+        "file": "libs/shared-ui/src/components/TreeView.tsx",
+        "hash": "2376979488095452992"
+      },
+      {
+        "file": "pnpm-lock.yaml",
+        "hash": "4767417754161163520"
+      },
+      {
+        "file": "libs/shared-ui/src/components/AccessRequestCard.module.css",
+        "hash": "6179790806103068869"
+      },
+      {
+        "file": "CLAUDE.md",
+        "hash": "15218823911524058924"
+      },
+      {
+        "file": "libs/shared-ui/src/components/Button.tsx",
+        "hash": "5975789490815840690"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "6820402234827505055"
+      },
+      {
+        "file": ".agent/index.md",
+        "hash": "16794476458456035844"
+      },
+      {
+        "file": ".vscode/settings.json",
+        "hash": "2559019736230183372"
+      },
+      {
+        "file": ".vscode/extensions.json",
+        "hash": "17569899701928424576"
+      },
+      {
+        "file": "libs/shared-ui/src/components/AccessRequestCard.tsx",
+        "hash": "2063395686769581590"
+      },
+      {
+        "file": "libs/shared-ui/src/components/Card.tsx",
+        "hash": "17578840431477507182"
       },
       {
         "file": "package.json",
-        "hash": "9783688175101475956"
+        "hash": "7231243985719358910"
+      },
+      {
+        "file": "libs/shared-ui/src/utils/theme.ts",
+        "hash": "15249647201457843985"
+      },
+      {
+        "file": ".env.example",
+        "hash": "3494986051279246481"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "527181948614936038"
+      },
+      {
+        "file": ".agent/manifest.yaml",
+        "hash": "13561967893163743431"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "17085498363870782104"
       }
     ],
     "projectFileMap": {
       "ffs5": [
         {
+          "file": "apps/ffs5/.agent/index.md",
+          "hash": "17209667164188641938"
+        },
+        {
+          "file": "apps/ffs5/.agent/manifest.yaml",
+          "hash": "5035797825918743954"
+        },
+        {
           "file": "apps/ffs5/index.html",
-          "hash": "17329157423215703703"
+          "hash": "2557012085936581159"
         },
         {
           "file": "apps/ffs5/project.json",
-          "hash": "12834104756494906835"
+          "hash": "17103613393566224715"
         },
         {
           "file": "apps/ffs5/public/favicon.ico",
@@ -153,15 +137,15 @@
         },
         {
           "file": "apps/ffs5/src/app/app.module.css",
-          "hash": "8887387885984320532"
+          "hash": "14507130133388590702"
         },
         {
           "file": "apps/ffs5/src/app/app.tsx",
-          "hash": "9036458805917137370"
+          "hash": "18175881403094721565"
         },
         {
           "file": "apps/ffs5/src/app/nx-welcome.tsx",
-          "hash": "2348102959109701629"
+          "hash": "9037022745836018742"
         },
         {
           "file": "apps/ffs5/src/assets/.gitkeep",
@@ -169,7 +153,7 @@
         },
         {
           "file": "apps/ffs5/src/main.tsx",
-          "hash": "11332670511827407186",
+          "hash": "17502088439288046292",
           "deps": [
             "npm:react",
             "npm:react-dom"
@@ -177,19 +161,159 @@
         },
         {
           "file": "apps/ffs5/src/styles.css",
-          "hash": "5195668842064076916"
+          "hash": "2917954890128038984"
         },
         {
           "file": "apps/ffs5/tsconfig.app.json",
-          "hash": "7232119452847825095"
+          "hash": "9014817974750934731"
         },
         {
           "file": "apps/ffs5/tsconfig.json",
-          "hash": "2843773793157498944"
+          "hash": "1172371253974053326"
         },
         {
           "file": "apps/ffs5/vite.config.mts",
-          "hash": "10802023476451408969",
+          "hash": "3682530219108845581",
+          "deps": [
+            "npm:vite",
+            "npm:@vitejs/plugin-react",
+            "npm:@nx/vite"
+          ]
+        }
+      ],
+      "ffs4": [
+        {
+          "file": "apps/ffs4/.agent/index.md",
+          "hash": "11336910001656997787"
+        },
+        {
+          "file": "apps/ffs4/.agent/manifest.yaml",
+          "hash": "1909208187096850131"
+        },
+        {
+          "file": "apps/ffs4/index.html",
+          "hash": "8652194050689454257"
+        },
+        {
+          "file": "apps/ffs4/project.json",
+          "hash": "15304750062932044747"
+        },
+        {
+          "file": "apps/ffs4/public/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "apps/ffs4/src/app/app.module.css",
+          "hash": "14507130133388590702"
+        },
+        {
+          "file": "apps/ffs4/src/app/app.tsx",
+          "hash": "6513928137914857138",
+          "deps": [
+            "npm:react",
+            "npm:@xyflow/react"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/app/nx-welcome.tsx",
+          "hash": "9037022745836018742"
+        },
+        {
+          "file": "apps/ffs4/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/ffs4/src/components/agent/AgentChat.tsx",
+          "hash": "12582689334772497701",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/components/agent/TeamPanel.tsx",
+          "hash": "8842720295394087439",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/components/graph/NodeCard.tsx",
+          "hash": "14606581157441707470",
+          "deps": [
+            "npm:react",
+            "npm:@xyflow/react"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/components/graph/WorkspaceGraph.tsx",
+          "hash": "14253833536924320992",
+          "deps": [
+            "npm:react",
+            "npm:@xyflow/react"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/hooks/useGraphData.ts",
+          "hash": "12948816780819171445",
+          "deps": [
+            "npm:react",
+            "npm:@xyflow/react"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/lib/api.ts",
+          "hash": "17570556284759940231"
+        },
+        {
+          "file": "apps/ffs4/src/lib/nanoclaw-client.ts",
+          "hash": "8579293726187054504"
+        },
+        {
+          "file": "apps/ffs4/src/main.tsx",
+          "hash": "12522059095887795088",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom",
+            "npm:react-dom"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/stores/contextStore.ts",
+          "hash": "2836413468249803387",
+          "deps": [
+            "npm:zustand"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/stores/graphStore.ts",
+          "hash": "7068871515003075283",
+          "deps": [
+            "npm:zustand",
+            "npm:@xyflow/react"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/stores/sessionStore.ts",
+          "hash": "10712826141957089645",
+          "deps": [
+            "npm:zustand"
+          ]
+        },
+        {
+          "file": "apps/ffs4/src/styles.css",
+          "hash": "2917954890128038984"
+        },
+        {
+          "file": "apps/ffs4/tsconfig.app.json",
+          "hash": "9014817974750934731"
+        },
+        {
+          "file": "apps/ffs4/tsconfig.json",
+          "hash": "1172371253974053326"
+        },
+        {
+          "file": "apps/ffs4/vite.config.mts",
+          "hash": "17676610389326728800",
           "deps": [
             "npm:vite",
             "npm:@vitejs/plugin-react",
@@ -199,12 +323,20 @@
       ],
       "ffs6": [
         {
+          "file": "apps/ffs6/.agent/index.md",
+          "hash": "12406489683523657797"
+        },
+        {
+          "file": "apps/ffs6/.agent/manifest.yaml",
+          "hash": "2899992453266880973"
+        },
+        {
           "file": "apps/ffs6/index.html",
-          "hash": "5936503477293976787"
+          "hash": "7742646347496598167"
         },
         {
           "file": "apps/ffs6/project.json",
-          "hash": "1634966319074092055"
+          "hash": "3351210303051488889"
         },
         {
           "file": "apps/ffs6/public/favicon.ico",
@@ -212,11 +344,11 @@
         },
         {
           "file": "apps/ffs6/src/app/app.module.css",
-          "hash": "8887387885984320532"
+          "hash": "14507130133388590702"
         },
         {
           "file": "apps/ffs6/src/app/app.tsx",
-          "hash": "7305214722616263571",
+          "hash": "14492110968947762390",
           "deps": [
             "npm:react",
             "npm:react-router-dom"
@@ -224,7 +356,7 @@
         },
         {
           "file": "apps/ffs6/src/app/nx-welcome.tsx",
-          "hash": "2348102959109701629"
+          "hash": "9037022745836018742"
         },
         {
           "file": "apps/ffs6/src/assets/.gitkeep",
@@ -232,7 +364,7 @@
         },
         {
           "file": "apps/ffs6/src/main.tsx",
-          "hash": "14274457375754152060",
+          "hash": "17074478540376363828",
           "deps": [
             "npm:react",
             "npm:react-dom"
@@ -240,7 +372,7 @@
         },
         {
           "file": "apps/ffs6/src/styles.css",
-          "hash": "5195668842064076916"
+          "hash": "2917954890128038984"
         },
         {
           "file": "apps/ffs6/src/views/AdminDashboard.tsx",
@@ -274,147 +406,15 @@
         },
         {
           "file": "apps/ffs6/tsconfig.app.json",
-          "hash": "7232119452847825095"
+          "hash": "9014817974750934731"
         },
         {
           "file": "apps/ffs6/tsconfig.json",
-          "hash": "2843773793157498944"
+          "hash": "1172371253974053326"
         },
         {
           "file": "apps/ffs6/vite.config.mts",
-          "hash": "13743690691167345799",
-          "deps": [
-            "npm:vite",
-            "npm:@vitejs/plugin-react",
-            "npm:@nx/vite"
-          ]
-        }
-      ],
-      "ffs4": [
-        {
-          "file": "apps/ffs4/index.html",
-          "hash": "18068154179117627422"
-        },
-        {
-          "file": "apps/ffs4/project.json",
-          "hash": "17555511825269096633"
-        },
-        {
-          "file": "apps/ffs4/public/favicon.ico",
-          "hash": "9303420814833116677"
-        },
-        {
-          "file": "apps/ffs4/src/app/app.module.css",
-          "hash": "8887387885984320532"
-        },
-        {
-          "file": "apps/ffs4/src/app/app.tsx",
-          "hash": "17761437976497998161",
-          "deps": [
-            "npm:react",
-            "npm:@xyflow/react"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/app/nx-welcome.tsx",
-          "hash": "2348102959109701629"
-        },
-        {
-          "file": "apps/ffs4/src/assets/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "apps/ffs4/src/components/agent/AgentChat.tsx",
-          "hash": "15127581697485763362",
-          "deps": [
-            "npm:react"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/components/agent/TeamPanel.tsx",
-          "hash": "8288832293207468116",
-          "deps": [
-            "npm:react"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/components/graph/NodeCard.tsx",
-          "hash": "6711955943009472062",
-          "deps": [
-            "npm:react",
-            "npm:@xyflow/react"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/components/graph/WorkspaceGraph.tsx",
-          "hash": "13492334382456968388",
-          "deps": [
-            "npm:react",
-            "npm:@xyflow/react"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/hooks/useGraphData.ts",
-          "hash": "13008125164807672806",
-          "deps": [
-            "npm:react",
-            "npm:@xyflow/react"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/lib/api.ts",
-          "hash": "13504815475731479031"
-        },
-        {
-          "file": "apps/ffs4/src/lib/nanoclaw-client.ts",
-          "hash": "8387954891329681104"
-        },
-        {
-          "file": "apps/ffs4/src/main.tsx",
-          "hash": "561879556058763919",
-          "deps": [
-            "npm:react",
-            "npm:react-router-dom",
-            "npm:react-dom"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/stores/contextStore.ts",
-          "hash": "2649498627724479147",
-          "deps": [
-            "npm:zustand"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/stores/graphStore.ts",
-          "hash": "9647130109557101293",
-          "deps": [
-            "npm:zustand",
-            "npm:@xyflow/react"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/stores/sessionStore.ts",
-          "hash": "7573116112558933973",
-          "deps": [
-            "npm:zustand"
-          ]
-        },
-        {
-          "file": "apps/ffs4/src/styles.css",
-          "hash": "5195668842064076916"
-        },
-        {
-          "file": "apps/ffs4/tsconfig.app.json",
-          "hash": "7232119452847825095"
-        },
-        {
-          "file": "apps/ffs4/tsconfig.json",
-          "hash": "2843773793157498944"
-        },
-        {
-          "file": "apps/ffs4/vite.config.mts",
-          "hash": "8447048079007093483",
+          "hash": "10003077202475019174",
           "deps": [
             "npm:vite",
             "npm:@vitejs/plugin-react",

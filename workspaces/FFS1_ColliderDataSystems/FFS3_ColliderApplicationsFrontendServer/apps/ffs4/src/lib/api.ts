@@ -7,12 +7,38 @@
 
 const DATA_SERVER = import.meta.env.VITE_DATA_SERVER_URL ?? "http://localhost:8000";
 const AGENT_RUNNER = import.meta.env.VITE_AGENT_RUNNER_URL ?? "http://localhost:8004";
+const MVP_USERNAME = import.meta.env.VITE_MVP_USERNAME ?? "Sam";
+const MVP_PASSWORD = import.meta.env.VITE_MVP_PASSWORD ?? "Sam";
 
 function authHeaders(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   const token = localStorage.getItem("auth_token");
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
+}
+
+async function authedFetch(url: string, init?: RequestInit): Promise<Response> {
+  const first = await fetch(url, {
+    ...(init ?? {}),
+    headers: {
+      ...authHeaders(),
+      ...(init?.headers ?? {}),
+    },
+  });
+
+  if (first.status !== 401) {
+    return first;
+  }
+
+  await login(MVP_USERNAME, MVP_PASSWORD);
+
+  return fetch(url, {
+    ...(init ?? {}),
+    headers: {
+      ...authHeaders(),
+      ...(init?.headers ?? {}),
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -32,7 +58,7 @@ export async function login(username: string, password: string): Promise<string>
 }
 
 export async function getCurrentUser(): Promise<{ id: string; username: string; role: string }> {
-  const resp = await fetch(`${DATA_SERVER}/api/v1/users/me`, { headers: authHeaders() });
+  const resp = await authedFetch(`${DATA_SERVER}/api/v1/users/me`);
   if (!resp.ok) throw new Error(`Get user failed: ${resp.status}`);
   return resp.json();
 }
@@ -48,7 +74,7 @@ export interface Application {
 }
 
 export async function listApps(): Promise<Application[]> {
-  const resp = await fetch(`${DATA_SERVER}/api/v1/apps/`, { headers: authHeaders() });
+  const resp = await authedFetch(`${DATA_SERVER}/api/v1/apps/`);
   if (!resp.ok) throw new Error(`List apps failed: ${resp.status}`);
   return resp.json();
 }
@@ -71,9 +97,7 @@ export interface TreeNode {
 }
 
 export async function getNodeTree(appId: string): Promise<TreeNode[]> {
-  const resp = await fetch(`${DATA_SERVER}/api/v1/apps/${appId}/nodes/tree`, {
-    headers: authHeaders(),
-  });
+  const resp = await authedFetch(`${DATA_SERVER}/api/v1/apps/${appId}/nodes/tree`);
   if (!resp.ok) throw new Error(`Get tree failed: ${resp.status}`);
   return resp.json();
 }
@@ -101,9 +125,8 @@ export async function createAgentSession(params: {
   visibility_filter?: string[];
   inherit_ancestors?: boolean;
 }): Promise<SessionResponse> {
-  const resp = await fetch(`${AGENT_RUNNER}/agent/session`, {
+  const resp = await authedFetch(`${AGENT_RUNNER}/agent/session`, {
     method: "POST",
-    headers: authHeaders(),
     body: JSON.stringify({
       ...params,
       visibility_filter: params.visibility_filter ?? ["global", "group"],

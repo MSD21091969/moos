@@ -192,12 +192,93 @@ describe('agent-compat-server', () => {
 
         await closeServer(server);
     });
+
+    it('validates and broadcasts morphism envelopes to websocket clients', async () => {
+        const sessionStore = new Map();
+        const bridge = createNanoClawCompatBridge(sessionStore);
+        const wsServer = bridge.server;
+        const wsBase = await startServer(wsServer);
+        const wsPort = Number(new URL(wsBase).port);
+
+        const agentServer = createAgentCompatServer(sessionStore, (payload) => {
+            bridge.broadcastMorphisms(payload);
+        });
+        const agentBase = await startServer(agentServer);
+
+        const ws = new WebSocket(`ws://127.0.0.1:${wsPort}`);
+        await new Promise<void>((resolve, reject) => {
+            ws.once('open', () => resolve());
+            ws.once('error', (error) => reject(error));
+        });
+
+        try {
+            const frames: Array<Record<string, unknown>> = [];
+            ws.on('message', (buffer) => {
+                frames.push(JSON.parse(buffer.toString()) as Record<string, unknown>);
+            });
+
+            const validResponse = await fetch(`${agentBase}/agent/morphisms`, {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    source: 'engine',
+                    turn: 1,
+                    sessionKey: 'session-smoke',
+                    morphisms: [
+                        {
+                            morphism_type: 'ADD_NODE_CONTAINER',
+                            node_type: 'ReasoningStep',
+                            temp_urn: 'temp:path_a',
+                            properties: { thought: 'smoke-test' },
+                        },
+                    ],
+                }),
+            });
+
+            const validBody = (await validResponse.json()) as Record<string, unknown>;
+            expect(validResponse.status).toBe(202);
+            expect(validBody.accepted).toBe(true);
+
+            await waitFor(() =>
+                frames.some((frame) => frame.type === 'event' && frame.event === 'morphism'),
+            );
+
+            const morphismFrame = frames.find(
+                (frame) => frame.type === 'event' && frame.event === 'morphism',
+            );
+            const data = morphismFrame?.data as Record<string, unknown>;
+            expect(Array.isArray(data?.morphisms)).toBe(true);
+            expect((data?.morphisms as unknown[]).length).toBe(1);
+
+            const invalidResponse = await fetch(`${agentBase}/agent/morphisms`, {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    source: 'engine',
+                    turn: 2,
+                    morphisms: [
+                        {
+                            morphism_type: 'ADD_NODE_CONTAINER',
+                            node_type: 'ReasoningStep',
+                        },
+                    ],
+                }),
+            });
+
+            expect(invalidResponse.status).toBe(400);
+        } finally {
+            ws.close();
+            await closeServer(agentServer);
+            await closeServer(wsServer);
+        }
+    });
 });
 
 describe('nanoclaw-compat-bridge', () => {
     it('supports bridge and jsonrpc request formats with streaming events', async () => {
         const sessionStore = new Map();
-        const server = createNanoClawCompatBridge(sessionStore);
+        const bridge = createNanoClawCompatBridge(sessionStore);
+        const server = bridge.server;
         await new Promise<void>((resolve) => server.listen(0, resolve));
         const { port } = server.address() as AddressInfo;
         const ws = new WebSocket(`ws://127.0.0.1:${port}`);
