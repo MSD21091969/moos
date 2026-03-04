@@ -2,12 +2,14 @@ package session
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"log/slog"
 	"testing"
 	"time"
 
+	"github.com/collider/moos/internal/container"
 	"github.com/collider/moos/internal/model"
 	"github.com/collider/moos/internal/morphism"
 )
@@ -25,6 +27,19 @@ func (executor *fakeExecutor) Apply(ctx context.Context, envelope morphism.Envel
 		return 0, executor.err
 	}
 	return 1, nil
+}
+
+type fakeContainerStore struct {
+	records  []container.Record
+	children []container.Record
+}
+
+func (f *fakeContainerStore) ListByKind(ctx context.Context, kind string, limit int) ([]container.Record, error) {
+	return f.records, nil
+}
+
+func (f *fakeContainerStore) ListChildren(ctx context.Context, parentURN string) ([]container.Record, error) {
+	return f.children, nil
 }
 
 func TestManagerCreateSendAndList(t *testing.T) {
@@ -134,13 +149,18 @@ func TestManagerToolDispatchStubEvent(t *testing.T) {
 }
 
 func TestManagerRestoresFromStore(t *testing.T) {
-	persistent := newMemoryStore()
-	_ = persistent.Save(context.Background(), sessionSnapshot{
-		Summary:  Summary{SessionID: "s_restore", RootURN: "urn:moos:session:s_restore", CreatedAt: time.Now().UTC(), LastActiveAt: time.Now().UTC()},
-		Messages: []model.Message{{Role: "user", Content: "persisted"}},
-	})
+	msgBytes, _ := json.Marshal(model.Message{Role: "user", Content: "persisted"})
 
-	manager := NewManagerWithStore(&fakeExecutor{}, model.NewDispatcher("anthropic", model.AnthropicAdapter{}), time.Minute, 25*time.Millisecond, slog.New(slog.NewTextHandler(io.Discard, nil)), persistent)
+	store := &fakeContainerStore{
+		records: []container.Record{
+			{URN: "urn:moos:session:s_restore", Kind: "SESSION"},
+		},
+		children: []container.Record{
+			{URN: "urn:moos:message:1", Kind: "MESSAGE", KernelJSON: msgBytes},
+		},
+	}
+
+	manager := NewManagerWithContainerStore(&fakeExecutor{}, model.NewDispatcher("anthropic", model.AnthropicAdapter{}), time.Minute, 25*time.Millisecond, slog.New(slog.NewTextHandler(io.Discard, nil)), store)
 	defer manager.Shutdown()
 
 	list := manager.List()

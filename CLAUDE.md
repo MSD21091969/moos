@@ -51,13 +51,17 @@ Secrets:
 
 ## MOOS Backend Stack
 
+**Important**: We are heavily in Phase 4 now. The backend runtime is entirely Go. The legacy TypeScript/Nx backend stack (`data-server`, `tool-server`, `engine`) was deprecated and removed.
+
 - **Language**: Go 1.23+
 - **Router**: Chi
 - **WebSocket**: gorilla/websocket
-- **DB**: pgx/v5 (Postgres), go-redis/v9
+- **DB**: pgx/v5 (Postgres). Note: Redis is deprecated for session management; session persistence relies entirely on Postgres Universal Graph Model.
+- **Metrics**: Prometheus instrumentation at `/metrics`.
 - **LLM Integration**: Category-theory morphism pipeline (ADD/LINK/MUTATE/UNLINK)
 - **Providers**: Gemini (default), Anthropic (net/http), OpenAI (planned)
-- **Test Suite**: 46 Go tests (94% model coverage), 22 vitest frontend tests
+- **Test Suite**: Robust Go test suites (incorporating mock containers for DB outages/corrupted states). Use native `go test` rather than TS counterparts.
+- **Docker**: Single Multi-Stage container (`moos-kernel:dev`) handling endpoints in `< 60s`.
 
 ## Rules
 

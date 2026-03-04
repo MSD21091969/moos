@@ -54,3 +54,13 @@ The same structure at all scales:
 - System roles on User: `superadmin`, `collider_admin`, `app_admin`, `app_user`
 - App roles on AppPermission: `app_admin`, `app_user`
 - Formal request/approval flow for app access
+
+### Phase 4 Architectural Lessons (Go Kernel Migration)
+
+- **Do** rely purely on the Postgres Universal Graph Model (`dbStore containerStore`) for session/state persistence.
+- **Do** use Go native testing constraints (e.g., `mockContainerStore` for DB outages/corrupted graph recovery).
+- **Do** ensure Kubernetes/Docker compatibility by exposing Prometheus metrics at `/metrics` over standard HTTP muxes.
+- **Do** run standalone standard `docker build` processes when profiling/caching the build stages instead of relying heavily on `docker compose` pipelined commands which may obfuscate logs/errors.
+- **Don't** use Redis for active session/node storage in the cluster; architecture relies on universal Postgres nodes.
+- **Don't** revert to or invoke legacy TypeScript implementation loops (`engine`, `data-server`, `tool-server`); they are purged and deprecated in favor of Go 1.23+ runtime execution.
+

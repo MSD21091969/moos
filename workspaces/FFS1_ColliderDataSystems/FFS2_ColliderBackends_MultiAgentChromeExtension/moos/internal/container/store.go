@@ -460,3 +460,26 @@ func newUUIDString() (string, error) {
 		b[10], b[11], b[12], b[13], b[14], b[15],
 	), nil
 }
+
+func (store *Store) ListByKind(ctx context.Context, kind string, limit int) ([]Record, error) {
+	rows, err := store.db.QueryContext(ctx,
+		`SELECT urn, parent_urn, kind, interface_json, kernel_json, permissions_json, version
+		FROM containers
+		WHERE kind = $1
+		ORDER BY updated_at DESC
+		LIMIT $2`, kind, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Record, 0)
+	for rows.Next() {
+		var rec Record
+		if err := rows.Scan(&rec.URN, &rec.ParentURN, &rec.Kind, &rec.InterfaceJSON, &rec.KernelJSON, &rec.PermissionsJSON, &rec.Version); err != nil {
+			return nil, err
+		}
+		result = append(result, rec)
+	}
+	return result, rows.Err()
+}

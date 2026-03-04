@@ -17,6 +17,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/collider/moos/internal/config"
 	"github.com/collider/moos/internal/container"
 	"github.com/collider/moos/internal/migrate"
@@ -106,11 +108,11 @@ func main() {
 	mcpBridge := tool.NewMCPBridge(tool.NewRegistryWithContainerStore(containerStore), tool.DefaultPolicy())
 	mcpBroker := newMCPSessionBroker()
 	attachMCPRoutes(mux, mcpBridge, mcpBroker, cfg.BearerToken)
-	sessionStore, storeErr := session.NewStoreWithFallback(cfg.RedisURL, cfg.SessionTTL)
-	if storeErr != nil {
-		logger.Warn("session store fallback activated", "error", storeErr)
+	sessionManager := session.NewManager(morphismExecutor, dispatcher, cfg.SessionTTL, cfg.SessionCleanupEvery, logger)
+	// We pass containerStore if not nil
+	if containerStore != nil {
+		sessionManager = session.NewManagerWithContainerStore(morphismExecutor, dispatcher, cfg.SessionTTL, cfg.SessionCleanupEvery, logger, containerStore)
 	}
-	sessionManager := session.NewManagerWithStore(morphismExecutor, dispatcher, cfg.SessionTTL, cfg.SessionCleanupEvery, logger, sessionStore)
 	sessionManager.SetToolDispatcher(tool.NewRunner(cfg.ToolRuntimeAddr, 5*time.Second))
 	defer sessionManager.Shutdown()
 	wsGateway := newWebSocketGateway(morphismExecutor, sessionManager, cfg.BearerToken, logger)
@@ -180,6 +182,7 @@ func newMuxWithAuthAndExecutor(containerStore containerStoreAPI, bearerToken str
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write([]byte("ok"))
 	})
+	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/health/db", func(writer http.ResponseWriter, request *http.Request) {
 		if containerStore == nil {
 			writer.WriteHeader(http.StatusNotImplemented)

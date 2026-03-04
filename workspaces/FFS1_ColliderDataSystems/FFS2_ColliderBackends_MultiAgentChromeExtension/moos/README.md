@@ -1,111 +1,53 @@
-# Moos
+# mo:os - Universal Graph Runtime
 
-Moos is an Nx monorepo with a split architecture:
+`mo:os` is an advanced AI OS layer that treats all application state, model events, and tooling interactions as Universal Graph objects via a strict Morphism pipeline (ADD/MUTATE/URLINK/LINK).
 
-- **Node runtime apps** for backend execution (`data-server`, `tool-server`, `engine`)
-- **React surface apps** for UI (`sidepanel`, `viewer`)
-- **Shared TypeScript packages** for domain logic and reuse (`core`, `functors`, `store`, `shared-ui`)
+## Architecture
 
-This README describes the implementation structure and how the code is organized.
+After Phase 4 alignment, `mo:os` leverages a persistent dual-stack setup:
+- **Go Kernel**: Core persistent engine, event-loop daemon, morphism executor, and REST/WebSocket bridge.
+- **Frontend Surface Apps**: FFS4, FFS5, FFS6 (React, Tailwind, Zustand) powered by Vite.
+- **PostgreSQL**: Unified Universal Graph database. 
 
-## Implementation at a glance
+## Getting Started (for New Developers in < 15 Min)
 
-### Apps
+### 1. Prerequisites
+- Docker Engine & `docker-compose`
+- Git
 
-- `apps/data-server` (`@moos/data-server`)
-	- Node app built with esbuild
-	- Depends on `@moos/core` and `@moos/store`
-	- Entry point: `apps/data-server/src/main.ts`
+### 2. Stand Up Default Daemon
+Run the system natively using the Docker sandbox from the `moos` directory:
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+*Expected: The Go APIs, UI Servers, and Postgres instance will boot cleanly in < 60 seconds.*
 
-- `apps/tool-server` (`@moos/tool-server`)
-	- Node app built with esbuild
-	- Depends on `@moos/core` and `@moos/functors`
-	- Entry point: `apps/tool-server/src/main.ts`
+### 3. Verify System Health
+Check that the unified nodes are reporting functional status:
+- REST API (Kernel): `http://127.0.0.1:8000/health`
+- Go Metrics: `http://127.0.0.1:8000/metrics`
+- UI Sandbox (FFS6): `http://127.0.0.1:4200`
 
-- `apps/engine` (`@moos/engine`)
-	- Node orchestration/runtime app built with esbuild
-	- Depends on `@moos/core`, `@moos/functors`, `@moos/store`
-	- Entry point: `apps/engine/src/main.ts`
-
-- `apps/sidepanel` (`@moos/sidepanel`)
-	- React UI surface
-	- Depends on `@moos/shared-ui`
-
-- `apps/viewer` (`@moos/viewer`)
-	- React UI surface
-	- Depends on `@moos/shared-ui`
-
-### Packages
-
-- `packages/core` (`@moos/core`)
-	- Base shared domain primitives and shared contracts
-
-- `packages/functors` (`@moos/functors`)
-	- Composition helpers and higher-level reusable logic
-	- Depends on `@moos/core`
-
-- `packages/store` (`@moos/store`)
-	- Shared state/data model utilities
-	- Depends on `@moos/core`
-
-- `packages/shared-ui` (`@moos/shared-ui`)
-	- Shared UI components used by `sidepanel` and `viewer`
-
-## Runtime dependency flow
-
-Implementation dependency direction is intentionally one-way:
-
-- `core` is the foundation
-- `functors` and `store` build on `core`
-- backend apps consume packages according to role:
-	- `data-server` → `core` + `store`
-	- `tool-server` → `core` + `functors`
-	- `engine` → `core` + `functors` + `store`
-- UI apps consume `shared-ui`
-
-This separation keeps business logic reusable while keeping each app focused on its runtime responsibility.
-
-## Surface env vars
-
-The UI surfaces share a presence-staleness threshold env var:
-
-- `VITE_SURFACE_STALE_THRESHOLD_SECONDS`
-
-If unset or invalid, default behavior uses `10` seconds.
-
-## Build and run (implementation-level)
-
-From `moos/`:
-
-```sh
-pnpm install
-pnpm nx run @moos/source:compat:build
+### 4. Running Kernels Locally (Without Full Stack Docker)
+If you wish to do backend Go engine development independently:
+```bash
+export MOOS_BEARER_TOKEN="dev-token"
+export ENFORCE_DEBUG="true"
+go run ./cmd/kernel
 ```
 
-Compatibility-focused root targets:
+## Running the Test Suites
 
-```sh
-pnpm nx run @moos/source:compat:build
-pnpm nx run @moos/source:compat:test
-pnpm nx run @moos/source:compat:serve:backend
-pnpm nx run @moos/source:compat:serve
+To execute unit and structural integration tests for the backend pipeline:
+```bash
+go test ./... -v
 ```
 
-To run any app or package target:
+## Packages 
+- `cmd/kernel`: The primary endpoint daemon 
+- `internal/container`: Postgres Database structure interactions
+- `internal/session`: URN / Message event loops tracking contexts
+- `internal/morphism`: Universal Object modification execution
+- `internal/tool`: MCP protocol interfaces natively executed via JSON
 
-```sh
-pnpm nx <target> <project>
-```
-
-Examples:
-
-```sh
-pnpm nx serve @moos/data-server
-pnpm nx serve @moos/tool-server
-pnpm nx serve @moos/engine
-```
-
-## Notes
-
-- `scripts/` and `reports/` are currently empty by design after harness cleanup.
-- This README is intentionally implementation-focused and avoids process/gate documentation.
+*(Node.js abstractions successfully evicted in Phase 4 setup).*
