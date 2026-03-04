@@ -29,4 +29,4 @@ When guidance conflicts, apply this order:
 
 ---
 
-Version: v5.0.0 — 2026-03-01
+Version: v5.1.0 — 2026-03-04

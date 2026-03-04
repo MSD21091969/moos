@@ -108,7 +108,13 @@ describe('engine contract flow', () => {
             ),
             {
                 system: context.system,
-                messages: [...context.messages, 'integration-run'],
+                messages: [
+                    ...context.messages,
+                    {
+                        role: 'user',
+                        content: 'integration-run',
+                    },
+                ],
                 tools: [{ name: 'echo_tool' }],
             },
         );

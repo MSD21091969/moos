@@ -15,12 +15,12 @@ inheritance:
 # Domain context
 domain: development
 components:
-  - ColliderDataServer # REST/SSE API on :8000
-  - ColliderGraphToolServer # Tool registry + gRPC + MCP on :8001/:50052
-  - ColliderVectorDbServer # Vector search on :8002
-  - ColliderAgentRunner # Context composer on :8004
-  - ColliderMultiAgentsChromeExtension # Plasmo extension
-  - NanoClawBridge/skills # NanoClaw skill (gRPC tools)
+  - moos/apps/data-server # Data/API compatibility on :8000
+  - moos/apps/tool-server # Tool/MCP server on :8001
+  - moos/apps/engine # Main runtime engine
+  - moos/apps/data-server (agent-compat) # Agent/session compatibility on :8004
+  - ColliderMultiAgentsChromeExtension # Plasmo extension host
+  - moos/apps/data-server (nanoclaw-ws) # NanoClaw-compatible WebSocket bridge :18789
 
 # Parent context (FFS1 workspace level)
 includes:

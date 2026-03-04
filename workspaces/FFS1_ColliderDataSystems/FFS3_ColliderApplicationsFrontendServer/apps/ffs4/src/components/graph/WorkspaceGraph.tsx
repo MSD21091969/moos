@@ -17,7 +17,6 @@ import "@xyflow/react/dist/style.css";
 
 import { useGraphStore } from "../../stores/graphStore";
 import { useContextStore } from "../../stores/contextStore";
-import { useGraphData } from "../../hooks/useGraphData";
 import { NodeCard } from "./NodeCard";
 
 const nodeTypes: NodeTypes = {
@@ -32,14 +31,8 @@ export function WorkspaceGraph({ appId }: WorkspaceGraphProps) {
   const { nodes, edges, onNodesChange, onEdgesChange, loading, error } =
     useGraphStore();
   const selectedNodeIds = useContextStore((s) => s.selectedNodeIds);
-  const { loadTree } = useGraphData();
 
-  // Reload tree when app changes
-  useEffect(() => {
-    if (appId) {
-      loadTree(appId);
-    }
-  }, [appId, loadTree]);
+  // We rely on the WebSocket in App.tsx to keep 'nodes' and 'edges' populated via setActiveState
 
   // Update node selection state when selectedNodeIds change
   const nodesWithSelection = useMemo(() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   BrowserRouter,
   Routes,
@@ -20,20 +20,16 @@ function Layout() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const fetchTree = async (appId: string) => {
-    const token = localStorage.getItem('auth_token');
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const treeRes = await fetch(`/api/v1/apps/${appId}/nodes/tree`, { headers });
-    setNodes(await treeRes.json());
-  };
+  const kernelWsUrl =
+    (import.meta.env.VITE_KERNEL_WS_URL as string | undefined) ||
+    'ws://localhost:18789';
 
   const handleAppChange = async (appId: string) => {
     const selected = apps.find((a) => a.id === appId);
     if (!selected) return;
     setApp(selected);
     setNodes([]);
-    await fetchTree(selected.id);
+    // We rely on the WebSocket to push state now
   };
 
   useEffect(() => {
@@ -72,13 +68,7 @@ function Layout() {
           const defaultApp =
             appsList.find((a: any) => a.root_node_id) || appsList[0];
           setApp(defaultApp);
-
-          // 4. Get Node Tree for App
-          const treeRes = await fetch(
-            `/api/v1/apps/${defaultApp.id}/nodes/tree`,
-            { headers },
-          );
-          setNodes(await treeRes.json());
+          // Wait for sync.active_state from WebSocket instead of HTTP fetch
         }
 
         setLoading(false);
@@ -89,6 +79,50 @@ function Layout() {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    if (!app?.id) return;
+
+    const ws = new WebSocket(kernelWsUrl);
+
+    ws.onopen = () => {
+      ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'surface.register',
+          params: {
+            surface_id: 'ffs6',
+            name: 'FFS6 Viewer',
+            kind: 'surface',
+          },
+        }),
+      );
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg?.method === 'sync.active_state') {
+          if (msg.params?.nodes) {
+            setNodes(msg.params.nodes);
+          }
+        } else if (msg?.method === 'sync.active_state_delta') {
+          if (msg.params?.nodes) {
+            setNodes(msg.params.nodes);
+          } else {
+            setNodes((prev) => [...prev, msg.params]);
+          }
+        }
+      } catch {
+        // ignore parse errors
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [app?.id, kernelWsUrl]);
 
   if (loading) return <div style={{ padding: '20px' }}>Loading FFS6...</div>;
 

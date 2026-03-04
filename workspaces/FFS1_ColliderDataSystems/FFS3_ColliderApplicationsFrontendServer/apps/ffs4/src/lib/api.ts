@@ -7,6 +7,7 @@
 
 const DATA_SERVER = import.meta.env.VITE_DATA_SERVER_URL ?? "http://localhost:8000";
 const AGENT_RUNNER = import.meta.env.VITE_AGENT_RUNNER_URL ?? "http://localhost:8004";
+const KERNEL_WS_URL = import.meta.env.VITE_KERNEL_WS_URL ?? "ws://localhost:18789";
 const MVP_USERNAME = import.meta.env.VITE_MVP_USERNAME ?? "Sam";
 const MVP_PASSWORD = import.meta.env.VITE_MVP_PASSWORD ?? "Sam";
 
@@ -135,4 +136,8 @@ export async function createAgentSession(params: {
   });
   if (!resp.ok) throw new Error(`Create session failed: ${resp.status}`);
   return resp.json();
+}
+
+export function getKernelWsUrl(): string {
+  return KERNEL_WS_URL;
 }

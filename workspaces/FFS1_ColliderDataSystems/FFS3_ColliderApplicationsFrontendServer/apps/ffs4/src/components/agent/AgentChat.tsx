@@ -12,10 +12,10 @@ import { useGraphStore } from "../../stores/graphStore";
 
 export function AgentChat() {
   const applyMorphisms = useGraphStore((s) => s.applyMorphisms);
+  const setActiveState = useGraphStore((s) => s.setActiveState);
   const {
     sessionId,
     wsUrl,
-    sessionContext,
     connected,
     messages,
     sending,
@@ -60,6 +60,9 @@ export function AgentChat() {
         case "morphism":
           applyMorphisms(event.morphisms);
           break;
+        case "active_state":
+          setActiveState((event.nodes as unknown[]) ?? [], (event.edges as unknown[]) ?? []);
+          break;
         case "message_end":
           finalizeLastAssistant();
           setSending(false);
@@ -73,7 +76,18 @@ export function AgentChat() {
 
     client
       .connect()
-      .then(() => setConnected(true))
+      .then(async () => {
+        try {
+          await client.surfaceRegister({
+            surface_id: "ffs4",
+            name: "FFS4 Sidepanel",
+            kind: "surface",
+          });
+        } catch {
+          // best effort registration
+        }
+        setConnected(true);
+      })
       .catch(() => setConnected(false));
 
     return () => {
@@ -82,7 +96,7 @@ export function AgentChat() {
       clientRef.current = null;
       setConnected(false);
     };
-  }, [wsUrl, sessionId, applyMorphisms]);
+  }, [wsUrl, sessionId, applyMorphisms, setActiveState]);
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -93,18 +107,16 @@ export function AgentChat() {
     setSending(true);
 
     try {
-      await clientRef.current.agentRequest(text, {
-        sessionKey: sessionId ?? undefined,
-        role: sessionContext?.role,
-        appId: sessionContext?.appId,
-        nodeIds: sessionContext?.nodeIds,
-      });
+      if (!sessionId) {
+        throw new Error("Session missing");
+      }
+      await clientRef.current.sessionSend(sessionId, text);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       addMessage({ role: "assistant", content: `Send error: ${msg}` });
       setSending(false);
     }
-  }, [input, connected, sending, sessionId, sessionContext, addMessage, setSending]);
+  }, [input, connected, sending, sessionId, addMessage, setSending]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

@@ -31,6 +31,8 @@ includes:
     load:
       - instructions/agent_system.md
       - rules/communication_architecture.md
+      - rules/stack_standards.md
+      - rules/code_quality.md
       - workflows/cross-service-validation-gates.md
 
 # Local context - Frontend specific

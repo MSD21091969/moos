@@ -27,9 +27,9 @@ D:\FFS0_Factory\
 
 ## Canonical References
 
-- `.agent/knowledge/current-codebase-glossary-canonical-v1.md`
-- `.agent/workflows/repo-split-superrepo.md`
+- `.agent/knowledge/moos_architecture_foundations.md`
 - `.agent/workflows/conversation-state-rehydration.md`
+- `.agent/workflows/db-sync-contract.md`
 
 ---
 

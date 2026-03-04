@@ -7,7 +7,7 @@
     "servers": {
         "collider-tools": {
             "type": "sse",
-            "url": "http://localhost:8001/mcp/sse"
+            "url": "http://localhost:8080/mcp/sse"
         }
         // ------------------------------
         // Enable next servers gradually

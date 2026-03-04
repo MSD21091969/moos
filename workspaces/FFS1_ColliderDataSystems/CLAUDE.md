@@ -5,8 +5,9 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 ## FFS1 Context
 
 - **Identity**: Governance, Schemas, and Orchestration layer for the Collider platform.
-- **Backend**: Python 3.12+, FastAPI, Pydantic v2, UV.
-- **Frontend**: Nx monorepo, Vite 7, React 19, TypeScript 5+, pnpm.
+- **Backend (MOOS)**: Go 1.23+, Chi router, gorilla/websocket, pgx/v5, go-redis/v9.
+- **Frontend (FFS3)**: Nx monorepo, Vite 7, React 19, TypeScript 5.9, pnpm.
+- **LLM Pipeline**: Category-theory morphisms (ADD/LINK/MUTATE/UNLINK) via Gemini/Anthropic/OpenAI.
 - **.agent state**: Minimal rehydrated inheritance backbone for FFS2/FFS3.
 
 ## Runtime Status (2026-03-02)
@@ -41,11 +42,13 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 | --------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------------- |
 | MOOS Data Compatibility     | 8000  | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\data-server` |
 | MOOS Tool Server            | 8001  | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\tool-server` |
+| MOOS MCP/SSE Endpoint       | 8080  | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\data-server` |
 | MOOS Engine                 | app   | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\engine`      |
 | MOOS Agent Compatibility    | 8004  | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\data-server` |
 | MOOS NanoClaw Compatibility | 18789 | `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos\apps\data-server` |
 | FFS3 ffs6 frontend          | 4200  | `FFS3.../apps/ffs6/`                                                                                                        |
 | FFS3 ffs4 sidepanel         | 4201  | `FFS3.../apps/ffs4/`                                                                                                        |
+| FFS3 ffs5 PiP               | 4202  | `FFS3.../apps/ffs5/`                                                                                                        |
 
 ### Legacy Reference (FFS2 — retired runtime)
 
@@ -89,6 +92,12 @@ FFS4/src/
   - `pnpm nx run @moos/source:compat:test`
   - `pnpm nx run @moos/source:compat:serve:backend`
 - Schemas shared from root `models/`.
+
+## Testing
+
+- **Go (MOOS)**: `cd moos && go test ./...` — 46 tests, 94% model package coverage
+- **Frontend (FFS3)**: `cd FFS3_...FrontendServer && pnpm nx test ffs4` — 22 vitest tests
+- **Typecheck**: `pnpm nx run ffs6:typecheck`
 
 ## Minimal .agent Contract
 

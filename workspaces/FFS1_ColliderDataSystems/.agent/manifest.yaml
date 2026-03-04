@@ -20,6 +20,7 @@ includes:
       - rules/sandbox.md
       - rules/code_patterns.md
       - rules/env_and_secrets.md
+      - knowledge/moos_architecture_foundations.md
 
 # Local context directories
 local:
@@ -35,6 +36,7 @@ local:
 # NOTE: cloud/admin domain instructions belong in DB containers (seed.py), not IDE .agent
 exports:
   - instructions/agent_system.md
+  - instructions/filesyst_domain.md
   - skills/ide_code_assist.md
   - tools/filesyst_tools.json
   # Rules

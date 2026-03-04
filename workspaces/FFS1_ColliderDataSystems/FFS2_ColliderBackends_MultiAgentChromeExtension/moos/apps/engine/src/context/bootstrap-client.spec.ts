@@ -21,7 +21,12 @@ describe('bootstrap-client', () => {
         const context = await fetchBootstrapContext(`http://127.0.0.1:${port}`, ['x']);
 
         expect(context.system).toBe('test-system');
-        expect(context.messages).toEqual(['morphism:x']);
+        expect(context.messages).toEqual([
+            {
+                role: 'user',
+                content: 'morphism:x',
+            },
+        ]);
 
         await new Promise<void>((resolve, reject) => {
             server.close((error) => {

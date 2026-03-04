@@ -11,6 +11,7 @@ type AgentEvent =
   | { kind: "tool_result"; name: string; result: string }
   | { kind: "thinking"; text: string }
   | { kind: "morphism"; morphisms: unknown[] }
+  | { kind: "active_state"; nodes?: unknown; edges?: unknown }
   | { kind: "message_end" }
   | { kind: "error"; message: string };
 
@@ -105,6 +106,18 @@ export class NanoClawRpcClient {
     });
   }
 
+  async sessionCreate(): Promise<{ session_id: string; root_urn?: string }> {
+    return (await this.rpc("session.create", {})) as { session_id: string; root_urn?: string };
+  }
+
+  async sessionSend(sessionId: string, text: string): Promise<void> {
+    await this.rpc("session.send", { session_id: sessionId, text });
+  }
+
+  async surfaceRegister(params: { surface_id: string; urn?: string; kind?: string; name?: string }): Promise<unknown> {
+    return this.rpc("surface.register", params);
+  }
+
   async sessionsList(): Promise<unknown[]> {
     return (await this.rpc("sessions.list", {})) as unknown[];
   }
@@ -148,6 +161,42 @@ export class NanoClawRpcClient {
 
     // Bridge event frames: { type: "event", event: "...", data?: ..., message?: ... }
     if (msg.type !== "event" || typeof msg.event !== "string") {
+      if (typeof msg.method !== "string") {
+        return null;
+      }
+
+      const method = msg.method;
+      const params = (msg.params as Record<string, unknown> | undefined) ?? {};
+
+      if (method === "stream.text_delta") {
+        return { kind: "text_delta", text: typeof params.text === "string" ? params.text : "" };
+      }
+      if (method === "stream.thinking") {
+        return { kind: "thinking", text: typeof params.text === "string" ? params.text : "" };
+      }
+      if (method === "stream.tool_result") {
+        return {
+          kind: "tool_result",
+          name: typeof params.tool === "string" ? params.tool : "tool",
+          result: typeof params.output === "string" ? params.output : JSON.stringify(params.output ?? ""),
+        };
+      }
+      if (method === "stream.morphism" || method === "sync.active_state_delta") {
+        const envelope = params.envelope;
+        return { kind: "morphism", morphisms: envelope ? this.envelopeToGraphMorphisms(envelope) : [] };
+      }
+      if (method === "sync.active_state") {
+        return { kind: "active_state", nodes: params.nodes, edges: params.edges };
+      }
+      if (method === "stream.end") {
+        return { kind: "message_end" };
+      }
+      if (method === "stream.error") {
+        return {
+          kind: "error",
+          message: typeof params.error === "string" ? params.error : "Unknown error",
+        };
+      }
       return null;
     }
 
@@ -199,5 +248,49 @@ export class NanoClawRpcClient {
       default:
         return null;
     }
+  }
+
+  private envelopeToGraphMorphisms(envelope: unknown): unknown[] {
+    if (!envelope || typeof envelope !== "object") {
+      return [];
+    }
+    const value = envelope as Record<string, unknown>;
+    const morphismType = typeof value.type === "string" ? value.type.toUpperCase() : "";
+
+    if (morphismType === "ADD") {
+      const add = (value.add as Record<string, unknown> | undefined) ?? {};
+      const container = (add.container as Record<string, unknown> | undefined) ?? {};
+      const urn = typeof container.URN === "string" ? container.URN : typeof container.urn === "string" ? container.urn : "";
+      const kind = typeof container.Kind === "string" ? container.Kind : typeof container.kind === "string" ? container.kind : "data";
+      if (!urn) return [];
+      return [{ morphism_type: "ADD_NODE_CONTAINER", node_type: kind, temp_urn: urn, properties: {} }];
+    }
+
+    if (morphismType === "LINK") {
+      const link = (value.link as Record<string, unknown> | undefined) ?? {};
+      const wire = (link.wire as Record<string, unknown> | undefined) ?? {};
+      const source = typeof wire.from_container_urn === "string" ? wire.from_container_urn : "";
+      const target = typeof wire.to_container_urn === "string" ? wire.to_container_urn : "";
+      if (!source || !target) return [];
+      return [{ morphism_type: "LINK_NODES", source_urn: source, target_urn: target, edge_type: "wire" }];
+    }
+
+    if (morphismType === "MUTATE") {
+      const mutate = (value.mutate as Record<string, unknown> | undefined) ?? {};
+      const urn = typeof mutate.urn === "string" ? mutate.urn : "";
+      const kernelData = (mutate.kernel_json as Record<string, unknown> | undefined) ?? {};
+      if (!urn) return [];
+      return [{ morphism_type: "UPDATE_NODE_KERNEL", urn, kernel_data: kernelData }];
+    }
+
+    if (morphismType === "UNLINK") {
+      const unlink = (value.unlink as Record<string, unknown> | undefined) ?? {};
+      const source = typeof unlink.source_urn === "string" ? unlink.source_urn : "";
+      const target = typeof unlink.target_urn === "string" ? unlink.target_urn : "";
+      if (!source || !target) return [];
+      return [{ morphism_type: "DELETE_EDGE", source_urn: source, target_urn: target, edge_type: "wire" }];
+    }
+
+    return [];
   }
 }

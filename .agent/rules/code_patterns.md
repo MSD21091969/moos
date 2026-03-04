@@ -1,12 +1,14 @@
 # Code Patterns
 
-> Active patterns for FFS0 Factory (v3)
+> Active patterns for FFS0 Factory (v4)
 
 ---
 
 ## Status
 
 **Current state**: `models/`, `sdk/`, and workspace-local implementations are active.
+
+**Active backend runtime**: MOOS (Go 1.23+) — category-theory morphism pipeline.
 
 **Historical transitions**: tracked through git history/tags and workflow runbooks.
 
@@ -19,6 +21,7 @@
 | Container | Workspace context holder in graph |
 | Definition | Versioned I/O contract |
 | Graph | Topology of nodes |
+| Morphism | State mutation envelope (ADD/LINK/MUTATE/UNLINK) |
 | Application | Self-hosting recursive tree (x1z) |
 
 ---
@@ -36,8 +39,15 @@ The same structure at all scales:
 ### Two-Graph Architecture
 
 - **Container-nodes**: Rows in `nodes` table (DB) — data/workspace graph
-- **View-components**: Next.js pages/components (FFS6) — visual/UX graph
+- **View-components**: Vite+React components (FFS3 apps) — visual/UX graph
 - These are related but NOT 1:1 — multiple nodes may share a view, or vice versa
+
+### Morphism Pipeline
+
+- LLM providers return morphism envelopes in ```json fenced blocks
+- 4 operations: ADD (node), LINK (edge), MUTATE (update), UNLINK (remove edge)
+- Backend parses, validates, and dispatches morphisms
+- Frontend receives morphisms via WebSocket push and applies to Zustand store
 
 ### Role-Based Access
 

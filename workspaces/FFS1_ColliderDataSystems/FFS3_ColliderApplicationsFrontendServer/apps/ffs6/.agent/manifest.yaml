@@ -1,5 +1,9 @@
 name: ffs6-app
 version: "1.0.0"
+display_name: FFS6 IDE Viewer
+description: Primary full-screen IDE workspace — graph visualization + detail views
+domain: frontend-ide
+port: 4200
 inheritance:
   enabled: true
   strategy: deep_merge

@@ -1,0 +1,435 @@
+Hello community. So great that you are back. Today I want to tell you something about a systems three syncing approach
+and we have a look at language and logic. Now you know with language especially
+our large language model we can go especially in reasoning and complex
+reasoning here quite far now but then we hit a roadblock and the beautiful thing
+is that if we apply logic or solver algorithm we can go much further in our
+complexity in solving real complex let's say scientific problems.
+Historically we have seen here a system one. No we predict here directly the
+next token. We have a question and answer and everything seemed fine. Then we said okay let's do this slow thinking
+approach. The system two syncing approach. Now we have a human chain of sort that we kind of imitate here with
+reinforcement learning by human feedback. And this worked fine for a certain amount of time.
+But this chain of sword operates entirely either in the latent or in the natural language space which makes it
+really really difficult here to score objectively especially if we need reward functions for the reinforcement
+learning. So what about systems re-reasoning?
+What is it in essence? It is just to get rid of the human feedback completely.
+You want an autonomous AI system that learns independently from any human
+input. I have two new papers that were published today and those two new papers
+they recognize that to achieve a system 3 reasoning we must anchor here our language models
+to symbolic engines. And the first will show you that we should map our let's say English
+language to Python code for a precise reward calculation. And the second paper
+maps here to human language to a proven nine or a lean for theorem solver for
+benchmarking. I selected those paper here because I
+thought they are amazing. They are outstanding and if you read them together you get an insight where our
+current AI research is today. Because both paper will declare that the
+true reasoning in the higher complexity reasoning of an AI cannot be purely auto
+reggressive text generation or chain of sort or tree of sort or graph of sort. It must be mathematically isomorphic to
+a formal logic deck directed a cyclic graph structure.
+So you see we move here from a differentiable vector space here back here to discrete logical graph
+structures and this is not a second video on this and you remember I told
+you here yeah in principle we have the pre-training ICL then we have reinforcement learning by verifiable
+rewards this is simple if we have mathematical code we do get immediately result we can verify this but the
+problem is here if we have here open-ended human task here where it's
+really complex and you can interpret this and you do not have a mathematical or code interpretation. So let's tangle
+this now and let's see if this is now able to solve this and maybe we can get
+here rid of the human intervention or some billionaires here is now prepping
+their own um I don't know let's say large language mall in a particular
+polarization. This means in general a shift in the
+research paradigm an escape from the natural language ambiguity. So we can
+spin up different interpretation into a programmable verification routine.
+Both papers strongly supported the conclusion that for logical reasoning and especially for complex instruction
+following and multi-step deduction, we no longer need nor should we use human
+annotated preference data. This is what we know as reinforcement learning by human feedback.
+So the question is can we get rid of this but of course not completely no but
+we are just interested here for the complex part for the logical part for the reasoning part now by combining now
+and this will be the solution I want to present to you first paper backward DAC synthesis here with the second paper
+process verified GPO pipeline you can create a closed loop self-improving AI
+engine that scales without any human bottlenecks which is nice. No, remember
+the first model we had here our LLM just an auto reggressive next token prediction. Yeah. And also we had here
+on this reinforcement learning by human feedback. Imagine this would be here and
+the model just copied here the examples given. Yeah. And then we decided okay
+let's go here with a little bit more a linear complexity a chain of sort or graph of sort tree of sort whatever. So
+you saw we go just went here to the next complexity level but this was also here given or provided here from the internet
+from human feedback from all the literature from all the scientific textbooks and so on. And now in the
+third level we say okay can we now find here a self-arning autonomous AI system
+without those limitation here that we have to have a human feedback how could we do this and you you already see it we
+only have here an option here with mathematic and code otherwise we have no real ground truth otherwise so somehow
+we will have to transfer everything to mathematic and code.
+As I told you, RL HF is not entirely obsolete. No, it is just redefined. And
+I think reinforcement learning with human feedback will remain necessary also for the next generation of AI for
+the pure behavioral alignment. No, the tone that AI answers to you, the warmth
+in its inonation or some safety protocols or some human values. No, this
+is necessary. This is something that we really want that the model follows here certain guidelines. No, but whatever is
+now connected to logic or mathematic or coding or causal reasoning or any
+thinking process that has a higher complexity that goes beyond anything that you have on social media. Now we
+should say goodbye to reinforcement learning by human feedback and hello to a neuros symbolic pipeline.
+And now the first paper shows us we encounter a massive problem. I was not really that aware of that an LLM
+prioritizes here a semantic fluency over a logical entailment.
+And this is exactly what I wanted to show you here. Now your language has a beautiful semantic fluency and you are
+able to have a lot of interpretation, a lot of different views on problems.
+But the moment you go here to a pure logic system and you say hey I have an
+object no let's say I don't know tariffs no and you say okay what are the
+parameters that define the tariffs what are the output parameter what are the causal interferences that we have
+between those par parameter what is here the complexity interlink here what are
+the ecosystem that are defined by this what are possible consequences give me all possible mathematical var
+variations. Let's calculate a complete scenario. And then you see logic brings you so much further within your symbolic
+pipeline. And there's something that the first paper shows us resultoriented
+hallucination. And I'm not really sure if this is a hallucination because a hallucination would mean that this is a
+a defect in the LLM. I don't don't really think that it is a defect. Yeah,
+it's a fundamental flaw in how LLMs before sequence generation under standard optimization like next token
+prediction were outcome based reinforcement learning with reward structure. No, think about it. You have
+a start and you have a finish and maybe you know from the start the first two steps and maybe you know the step
+directly before the finish. But the LLM understanding this and understanding here my query at the start and
+understanding what I want to achieve here with my task says okay great and
+then there's a little bit nothing in the middle. So now what you would expect and
+I expected here is that the LM would start here a causal reasoning engine and
+just analyze the situation say okay what are the objects what are the dependencies between the objects what
+are the relations between the object in what ecosystem are those object embedded or there's some constraint that I have
+to take care of what about other boundary conditions start conditions and
+and uh turns out this is not happening So what is happening is an LLM and I
+mean it's in the name a large language model is heavily biased toward a specific final answer. The auto
+reggressive generation engine will attempt to construct a bridge or missing elements now between the current state
+and the final answer. But since the model lacks the true logical pair and it
+can be a real complex problem. it will and this is now important fabricate a
+structurally plausible but mathematically invalid step to force the
+connection. So it tries the LLM to build a bridge
+and since it has only the human language and let's be honest and all the nonsense also here from the social media and the
+internet how should it know what is semantically beautiful and was in the
+training data as the solution but maybe the solution were all incorrect mathematically incorrect or logical
+incorrect maybe just some person on the internet claimed something but had no
+proof proof had no argumentation, nothing. The LLM was trained on those internet
+data. So therefore, it can only give you what it was trained on. So it will
+fabricate, it will not really elucinate from the from the probability distribution that it learned with its
+pre-training data. It will calculate the highest peak here. what is structurally
+plausible but plausible given the semantic fluency and not about the
+logical entailment. So it is trying to find a nice wording but the wording can
+be mathematically absolute nonsense. So this is what our LLMs are doing
+currently and I think this is the problem. Now we
+have trained our LLMs and VLMs and VAS to build those semantic bridges. And if
+you are here in storytelling, if you in marketing, if you're in policy, if you're in social media, it works great.
+It's beautiful. It gives you a story. But the moment you go to a scientific or
+really reasoning a logical chain the LLM just collapsed because it was
+not trained on this. It is not a logical bridge and it is not a reasoning step in the bridge. It is just a semantic
+bridge. Give you an example. Imagine you're a student here looking here. You have a
+test and you're just looking at the answer key at the back of your textbook and let's say the answer is 42. What a
+coincidence. So you know you have to write down for your teacher now a page of complex
+equations and you have no idea what you're writing. No you just write some equations somehow maybe you have seen
+something from Einstein or from anybody else no so some meaningless stuff but
+then in the end you draw a box around 42 at the bottom of the page hoping the teacher will only grade the final line.
+And this was more or less here the output related reward model here the world model that we implemented up until
+now in the training of our LLMs and VLMs.
+And you might see why well it's the course of an outcome reward model. So
+traditional reinforcement learning or even some basic chain of sort prompting the reward function only evaluates here
+the final output token and if it arrives the current answer let's say it's 42
+and this this work by the student is now here pre-training data set for training
+the next LLM all this complete nonsense that the student wrote here one page of
+nonsense receives now a positive gradient update therefore This is what a neural network
+learns. Generating text that looks like a formal proof but only on a semantic
+level and ends with the correct target. This yields a high reward. And this is
+what the model learns. Nothing else. We never gave the LLMs a
+chance to really understand logic and mathematics from the from scratch on.
+So this is the problem with LLMs. Now let's come to the first study of today February 24, 2026.
+Logic graph benchmarking multipath logical reasoning
+multi-path logical reasoning via a neuros symbolic generation and verification engine.
+This is interesting because it tells us you know what if we have a problem and if I start somewhere and I want to find
+a solution there's not only one way to solve this solution one but there are
+maybe multiple valid solution and there are also multiple invalid solution.
+So if you want to have a logic DAG here and we reverse here the logic DAG great
+and then what we have to do is since we don't have a human with here the absolute reasoning potential we have to
+have another verification somehow so we transpond this over here to I don't know
+a lean 4 or solver 9 or whatever we have here as a solver network.
+So you see now we have yeah let's say or in Python this is here now transformed
+and then we know this is a code execution or a mathematical execution or
+you have a prover 9 expression you have here this solver already programmed
+great and then it is a short step if we can absolutely verify calculate here
+mathematically that this is a correct expression we don't just transfer it back here into natural language no this
+is Easy. This can be done simply but as I told you we have multiple solution and
+there the start there the fun kind of starts. Okay, because based on the
+premise give as many distant proof paths for the goal as possible and the LLM
+will now start to have solution one to my know solution M and then of course we
+have to pre-process an auto formalize this complete references in the solution
+and convert a natural language or let's say English into a symbolic format. This
+can be I don't know um lean four I like or you go with proven nine or you go with prologue or whatever you have you
+know and then you have your symbolic mathematical correct verification
+beautiful pass or fail and then you can have a look what kind of error happened
+and this is the beauty of this study why I wanted to show you this and then they have an error taxonomy
+and they say more or less we have eight possible errors that are happening ing here in the reasoning of our LLM.
+So just want to show you here the first tree. This is a semantic misinterpretation. So the AI model fails
+to correctly parse the linguistic meaning of a specific fact or a specific rule involves you confusing the
+direction of causality or just ignore negotiations. So if A then B the model says hey if B
+then A or you have an information omission the model completely ignores a
+critical piece of evidence or part of my instruction and then of course and this
+is fact hallucination. This is now really hallucination
+contradicts here or is absent from the provided contact and just the model comes up with here and says hey listen I
+have no idea how to solve this so I just look around in my probability space and I found your probability distribution
+and this gives me as an answer Disneyland so I insert Disneyland
+great this is now interesting look at GRM 4.6
+six. This is nice. Or a GPT or a GPT 5.1
+or a Kim K2 Deep Seek version 3.2 or Gemini 3. So here we have now the
+error type the semantic comprehension errors and in dark red we have the semantic misinterpretation. In middle
+red we have the information omission and in light red we have the pure hallucination of facts.
+models are absolutely different. Model have been trained in complete different ways on complete different data set. So
+this is now the behavior that they found here at the end of February 2026 and a
+GLM [clears throat] 4.6 I thought was an okay reasoning model. But look here at
+and this is here in absolute term 2,000 count here of semantic comprehension
+errors by GLM 4.6. Compare this to the Gemini 3 Pro.
+Unbelievable the differences here. But this is just the beginning because we have more. Now let's go here to the
+reasoning layer and logical executions. And we find here three more errors
+types. We have an invalid deduction. So the derivation step is logically
+fundamentally flaw. And even if the premises are correct, the conclusion cannot be derived using our logic. The
+second one is a rule misapplication. The model selects a rule, a logical rule
+that exists somewhere in the context but applies it to an entity or a situation
+where the rule's preconditions are not met. And then what is really interesting an
+insufficient premise. This mean the model draws a definite conclusion based on a subset of premises
+that are necessary but not sufficient. So it fails to aggregate all required
+conditions. Example here if A and B then C the fact
+A is true but B is unknown or false and the model concludes now okay so C is
+true solemnly based here on A and ignoring here everything about the
+condition B that is given here in the rule. So this is the behavior you find
+found here in my one of my last videos about we talked about here agents here
+multiple agents multi- aents interaction here in open claw in moldbook this is
+what is happening with your agents and if you have 10 agents or 50 agents 60 agents this is happening in each and
+every agent of yours. So guess what you get back if you have this system running
+for a particular time. So this additional logical execution
+errors here in absolute count you have here again for the GLM. So this is the complete picture. Look at insufficient
+premise. Look at here the light blue bars. These are the absolute dominant bars here. The absolute logical errors
+that we have here. insufficient premise here in the causal reasoning of our lodge language model and you see this
+here in an 03 you see this here in a deepseig and yeah you see this here also
+of course in a GLM 4.6 six. So this gives you a good idea which
+model to use if you want do not want to have logical execution or semantic
+comprehension errors. Very nice study. If you want to see this here in
+percentage of the total question, this is here really eyeopening. Look here at
+GPT 5.1. The 5.2 was not stable enough for this
+test. So the 5.1 GPT you see here the red bars are not so bad. No you are here
+an error rate of 50% with GPD 5.1. You have a semantic misinterpretation and
+then an information omission and also quite dominant here the fact hallucination for GBD 5.1. But look here
+at the insufficient premise here. If you do hear some logical reasoning look at
+this. This goes up to 90% the error rate of 90% of all the total
+question in a GPT 5.1 gives you a good idea if you compare
+this to a Gemini 3 Pro
+this study they used the very simple prompts they are really transparent you find everything in the annex of this
+study here the system role you are creative assistant your task is to infer a coherent real world domain and
+instantiate the provided logical formulas strictly in a prover 9 syntax
+or then your job is to convert proven 9 expression back into natural language
+without losing any logical information. Now you see here and this is show you we
+still have LLMs involved that might be based on reinforcement learning by human
+feedback. So they tried to get rid of this reinforcement learning by human
+feedback. But for certain steps in the process, they had to rely again here on
+our LLMs that were trained in this way. Now how you want to solve this problem?
+If you see this problem, if you see that the GPD or um GLM 4.6 has this problem,
+how to solve it? Now here's where the second paper of today comes in. solving
+it via here a very particular thinking reward that will be reasoning
+graphbased. So the second paper is it says okay we
+recognize that the outcome rewards that we use for rail are poison for complex
+reasoning. So if you do social media reasoning, no problem for you. I'm
+really focused on complex scientific, mathematical, chemical, financial,
+medical reasoning. Let's say if an instruction has five hidden dependencies, the model will simply try
+to skip it and this is not what we want. So the second paper solves this by
+transforming here a scholar reward function into a topological process
+reward. Of course. Now, if each step in the causal reasoning chain, we want to have here a particular reward to see,
+hey, step 12 was okay, step 13 contained a mistake, an error.
+Yeah. And we have to do this on a topological mesh, but more about this later. So, what it does, it translates
+here the logic into an explicit reasoning graph. Again we say goodbye to
+the normal natural language complexities and we say we want to have explicit discrete reasoning graphs where we can
+perform our logical causal reasoning structure supervises here latent sort
+process against the reference graph we have our coolback lab divergence more about this in a minute so this is not
+the study of today it was published today recording this video is 26th of February 2026 also you will find in the
+archive It is listed under February 4th. So careful.
+But anyway, it has us it has a different approach. No, I just show you the second study
+because there is a part that I need. But the overall, if you want um direction of
+this study was a little bit different. It was about stronger implicit reasoning leads to a better complex instruction
+following. So the author said how can we make our LLMs behave more in the way we
+want them to behave especially for complex instruction following and they
+said well we have to increase the implicit reasoning of the LLM and now
+you immediately understand why I show you this is the second paper of today because they show us now how to
+integrate this into the training procedure of an LLM. So I told you system three syncing and
+now this is here exactly the operational the code part here of the system three
+it is from bance in China with bihangi university. Now the idea of the paper I told you is
+a little bit different understanding and reasoning. So we have complex instruction
+and you just want to have an LLM that gets better and complex implicit reasoning for those instruction.
+So you just want to make the model a little bit more clever that it understands the complexity is dealing
+with the domain specific complexity and the implicit reasoning. And guess what?
+We have our text and then what we do we build reasoning graph structures. And
+what are the elements of our graph? The orers tell us at first we have knowledge nodes here the blue. Then we have
+relationship between the nodes no between two objects for example. Then we
+can have an operation like add subtract or multiply or whatever. And then we
+have different requirements different dependencies starting conditions whatever. And so you can see you can
+build now given you have a complex linguistic construct
+you can build explicit reasoning graphs. So multiple reasoning graphs multiple multihop reasoning constraint will of
+course be applied to this graph. So the first paper showed us here also a
+multigraph structure. The second paper shows here also a multi-graph
+complexity. what is theoretically possible and what is the best configuration regarding we also have
+multihub reasoning constraints that we have to take care therefore we want to have a better implicit reasoning
+capability of this LLM if you look at the overall process and
+don't mind we will go through this step by step in the next 5 minutes you see it
+is also everything that we know we start here with knowledge with here number of
+symmetry axis in a square or the days in a week or whatever. Then we have what we call logic relationship. Then we have
+what they call calculation here all the operation that we have and then here requirements starting conditions
+whatever the if you want imprint of the environment here are we working in finance are we working in biio medicine
+whatever. So we just build our nodes and then we build here our edges and if we
+have those we can build a graph a reasoning graph an explicit reasoning graph here given our complexity
+beautiful and if we have multiple graph structure where the system says hey I
+built those let's have now the next step so we have now generate constraint the
+reasoning and code and now we will have here the start of the adventure
+If you want to have everything condensed to one sentence, this would be the sentence. No, by formalizing now all the
+implicit constraints that we have of the system as not as a natural language but
+as a programmatically verifiable reasoning craft, a discrete graph neuro symbolic. We systematically
+construct now multihop multiconstrained implicit reasoning instruction data. We
+build this reasoning instruction data and then if we have them we can train a
+model and MLM on this with high quality chain of thought supervision and not end
+verified reinforcement learning methodologies but process verified reinforcement learning where every
+single step here in a reasoning chain has a particular reward function applied
+to it. Yeah, data synthesis is here for the instruction data is relatively simple.
+Notes are verifiable atomic constraint in the logic case. Conditional checks, mathematic factual knowledge and the
+edges just represent the dependencies between the different logical objects that we encounter.
+So what is the architecture that we're going to build? We want to solve complex instruction following by building here
+our embedded explicit reasoning graphs directly for training the LLM. So that
+the LLM is not making now a tool call to lean for an external solver and gets
+just the result 42 back like I showed you here 10 minutes ago. But now we want
+something different. Now we see listen I want that the logic is now something
+that the LLM learns. It is great if you have a tool like Solva 9 or lean 4 or
+whatever you have prologue but now you want to integrate their logic and their
+capability into your reasoning process as a system 3 reasoning AI and you're
+not satisfied with a system two chain of sort tree of sort whatever graph of sorts model so therefore we will use
+those not as a get the result back But we will use them as an indirect indirect
+reward function. So what we mean if we have to train our LLMs, we do this in
+old-fashioned way. We have some supervised finetuning and we have some reinforcement learning and we use here
+the group relative policy optimization GPO algorithm that we use now for more
+than two two and a half years for this. So as I told you here looking here at
+the overall sheet we are building here the graph. Yeah, great. And then after we build the graph, now an LLM generates
+from our verbal instruction a Python script. It's code can be verified, can
+be executed, and we get immediately here a result back that asserts if the final
+output meets the all the graph condition. if we can solve this.
+This is something that I did already months ago and in this video where I had my performance testing here of the new
+Grog 4.1 syncing and I showed you here live. We went to Gro here on the
+platform and you saw it was acting as an agent. So I was giving here my test in
+natural human language and grock transformed everything into Python code and just ran the Python code and just
+decided to go with one mathematical optimization methodology to solve my
+test. So you see at the time we said yeah this is what an agent should do. You know it
+it if it has not the capacity to have this complex logical reasoning go out go
+somewhere in in the internet you find here a Python environment maybe you find
+in a GitHub some code that tells you hey for this complexity I would recommend methodology 112 and then just solve it
+in code and come back with the result. But this is not what we want now. Now we
+want the Python code and now we want to understand each block of the Python
+code. Why do we have this representation in code? What are we doing with this
+code? What are the sequence of code blocks that we want to execute and why
+are we using in our methodology 112. So you see we want to bring every step
+of the coding into the understanding into the reasoning capabilities of an
+LLM. This is what the authors call here systems three level thinking. Okay let's
+do this. So we have the code let's say the code verified. Beautiful. So then we
+have again you see we depend here also on an L&M that might have been trained
+after processing trained here with reinforcement learning by human feedback but just as a note and the LLM
+translates here the graph now into a natural language instruction here you have an example and it deliberately
+hides here the intermediate steps to force the model to hopefully reason
+implicitly and then we have our if you want
+graph-based chain of sort reasoning in natural language. So we started here
+abstract we built here our nodes our relation everything that we need here to
+start to think about graph theory then we build different graph optimalization here we had here a reasoning graph we
+integrated all the constraint all the reasoning we did here a code mapping we
+run the code we optimized the code we validated the code we transferred the code back to a human language and then
+we built here the particular reasoning traces that let's go back to a
+chain of sort or a tree of sort or whatever you like here for that are based here on our reasoning graph.
+So we are not free in the language but we said we had here a discrete graph structure and this discrete graph
+structure maps now here to a particular reasoning trace and a particular complexity and this perfect sort process
+that we have now that we have a sinking start and end of syncing. This is now
+mapping exactly to the nodes that we had here at the very beginning when we had a
+a book or a document or whatever in identified here. What are the notes?
+What are the object? What is the knowledge that is represented? What are the relationship? What are the operation? The requirement, the
+conditions and so on. So you see this is now limited here to a note
+representation that we found. It is not that you can go around and just invent words or invent relations or you say
+okay now we change the topic and now we talk about something else and you bring in new notes. No you are limited here to
+whatever you were given and you have to build within those note complexities your logical reasoning.
+Yeah you're going to have multiple constraints. Beautiful. And now that we have this reasoning trace, let's call it
+a reasoning trace to be consistent with my other videos. Now with this additional data, this is now our
+training data. So what we have, you know, it supervised finetuning training and our GRPO
+training. But there's something special. So SFT base model doesn't know anything
+about structured graph sequences. So we feed here the model the perfectly generated examples of phase one that I
+just showed you. So the sequence is formatted here start of sync. Then we
+have here the the reasoning graph sort sequence the discrete sort sequences given our particular notes end of
+syncing the answer the verified answer and of answer and then we stand have a standardized cross entropy loss function
+across the token and this is rather simple. We just insert here our ERG
+syncing traces as here the syncing process itself.
+It does not make this system a genius. No, it just forces here the schema of reasoning on imprinted on the LLM. No,
+it learns more or less only the syntax of breaking down a problem. Yeah, but of course we have problem with SFT. This is
+not really the learning or out of distribution. It has no idea how to recover if it made a mistake in step
+three because supervised fine tooling only toward it here the perfect path.
+But if you're a little bit beneath the perfect path we have a little bit different starting condition the system
+is lost. So we need reinforcement learning. So the older like PO we have a
+critique M the value of single token beautiful but we use JPO. So JPO drops
+the critique model and it has the current policy model. Our strategy pi
+data generates a group of different answers. Calculate all the attempts using the reward model. Calculate the
+average score and reward only the attempts that scored above average penalizing here all that are below
+average. Our typical GRPO. Now this policy optimization it gets now
+a little bit more interesting because we will have different reward functions. So here if you look here at the reward
+module here you see already codebased reward LLM based reward again we have
+another LLM unfortunately here and a partial reward. So what is it? Why we
+need this? What is the reason behind this? The codebased reward is simple. Now we run the button script from phase
+one against the final answer. If it passes here the checks the reward is one. If it fails the reward is zero.
+This is an objective ungameable signal. This is here calculated. This is pure
+Python. You cannot argue about it. No objective.
+The LLM based reward here is different. No, we cannot just reward you the final answer. No, I showed you this has a lot
+of problems. No, with this bridge function being just a linguistic similarity. So we pass the model syncing
+block to a judge LLM which gives a scholar reward based on whether the
+logic is sound free of contradiction and respects here the graph structure. Now
+unfortunately here we have again the dependency on an LRM and this was maybe
+trained on reinforcement learning and then you might say hey wait there's a partial reward. What is this?
+This is now interesting. You want to have a challenge for the LLM. You want
+to have a teacher based, a bigger model, 72 billion model that is now there to
+push the little model past its own performance plateau. You want that it
+continues to learn. You want to force it to compete against the larger model, a
+72 billion model. If our base model here is an 8p model and if it's better than a
+72p model then it gets an extra star an extra bonus.
+This is the reason of the partial reward. It pushes the if you want a little llm beyond its current training
+possibilities. And as you see all of this goes back here and we have here the policy model.
+And of course we have a reference model. And this reference model is frozen. This is the direct output model here from
+supervised fine-tuning phase and you know you do not want that the difference
+between the reference model and the policy model becomes too significant. Therefore we have here Kubak lava
+divergent terms that keeps you the policy model here on a leash. So you
+know reward hacking is prohibited but kubc lava da version bring its own
+problems but for the moment we have to go with kback la otherwise we would get
+some incomp incomprehensible nonsense out of this.
+So there you have it. This is now here from the second paper the complete idea
+built here all the reasoning traces here based on a graph structure have a supervised fine tuning and a particular
+GPO training with really particular codebased reward LLM based reward
+partial reward from teacher models and so on and then we just have group quotation and our policy optimization
+that is here the group average so what we
+by synthesizing here our verifiable constraints via the code and using our
+GRPO to optimize against those constraints those programmatic constraints this architecture presents
+now a transition from the empirical preference learning to kind of an autonomous logical selfplay of the eye
+yes I know we have some LLMs with some human feedback still there but in general you understand given we have
+access here to code given we have access to mathematical solver a ground truth
+that I can immediately verify given my solver given my mathematic given my code
+this is now where we have here this transformation from a pure language reasoning into a topological
+neuro symbolic graph reasoning okay and here you have it now we have
+here our language magnitude coming in crashing all here our logical if you
+want shields but the solution is apply causal logic and then we can continue to
+build dependencies what are the insights I've selected it because I found that
+they complement each other logic graph the first paper solves the complexity by
+building a neural to symbolic pipeline to map the LLM's natural language output
+directly into proven 9 a classical first order logic theorem prove a pure
+symbolic calculus for an absolute stepwise verification
+but again careful no the solver or lean for does not give the answer this would
+be a tool call lean for analyzes here each single logic step and because the
+solver returned either true or false a boolean value we now have an objective
+unh halluc hallucinate its core. Now of course and this is the reason why I show you the second paper. It provides a
+mathematical absolute process reward. We just have to take this up and do it. And
+this is the power of the second paper because the second paper takes this true false boolean and converts it into a
+reward function to update here the policy weights pi data vapo for our
+reinforcement learning of our LM. And I think in the future this
+architecture described here in logic graph will maybe become a standard compiler for the reasoning model because
+just as a human programmer writes Python code that is translated by a compiler
+into deterministic machine code. I think future LLMs will write natural language sort graphs that are instantly
+translated and compiled by engines like proven 9 or lean for whatever you
+prefer. So if the code then compiles and this is our ground truth is the logic is valid
+this particular sort is accepted also in a high complexity and if it fail
+the error trace is fed back into the LLM as a negative gradient. This clearly
+indicates that our large language model more language cannot solve more complex
+reasoning. We at the end we hit a wall. So therefore we have to apply logic more
+causal reasoning either deduced here by mathematical solver by generative solver
+by if whatever you want. We have to integrate here higher mathematical
+objects into higher complexity reasoning pathways and we have to say goodbye to
+pure language models. So we went from a system one to a system two with a chain
+of sort and a tool call. Now we are talking about system three syncing
+models where we implement the mathematical complexity logic of solver
+directly back into our LLMs. This was the video for today. I hope you enjoyed
+these two papers. Have a look, read it yourself. You will find it really interesting. And why not leave a like?
+Maybe become a member of my channel.

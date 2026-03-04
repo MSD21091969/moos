@@ -25,7 +25,7 @@ Use this gate before switching repositories from private to public.
 
 ## 4) Runtime Contract Sanity
 - Confirm MOOS compatibility surfaces are documented and reachable:
-  - `:8000`, `:8001`, `:8004`, `:18789`
+  - `:8000`, `:8001`, `:8004`, `:8080`, `:18789`
 - Confirm FFS3 env requirements are documented:
   - `VITE_DATA_SERVER_URL`
   - `VITE_AGENT_RUNNER_URL`

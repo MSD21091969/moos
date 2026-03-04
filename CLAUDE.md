@@ -34,7 +34,7 @@ FFS0_Factory/
 | Surface                   | Port  | Owner |
 | ------------------------- | ----- | ----- |
 | MOOS data compatibility   | 8000  | FFS2  |
-| MOOS tool/MCP server      | 8001  | FFS2  |
+| MOOS tool/MCP server      | 8080  | FFS2  |
 | MOOS agent compatibility  | 8004  | FFS2  |
 | MOOS NanoClaw WS bridge   | 18789 | FFS2  |
 | FFS3 IDE viewer (ffs6)    | 4200  | FFS3  |
@@ -43,11 +43,21 @@ FFS0_Factory/
 
 MCP endpoint:
 ```bash
-claude mcp add collider-tools --transport sse http://localhost:8001/mcp/sse
+claude mcp add collider-tools --transport sse http://localhost:8080/mcp/sse
 ```
 
 Secrets:
 - `D:\FFS0_Factory\secrets\api_keys.env`
+
+## MOOS Backend Stack
+
+- **Language**: Go 1.23+
+- **Router**: Chi
+- **WebSocket**: gorilla/websocket
+- **DB**: pgx/v5 (Postgres), go-redis/v9
+- **LLM Integration**: Category-theory morphism pipeline (ADD/LINK/MUTATE/UNLINK)
+- **Providers**: Gemini (default), Anthropic (net/http), OpenAI (planned)
+- **Test Suite**: 46 Go tests (94% model coverage), 22 vitest frontend tests
 
 ## Rules
 

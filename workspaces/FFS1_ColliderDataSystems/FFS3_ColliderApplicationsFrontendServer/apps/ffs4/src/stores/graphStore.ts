@@ -59,6 +59,7 @@ interface GraphState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   applyMorphisms: (morphisms: unknown[]) => void;
+  setActiveState: (nodes: unknown[], edges: unknown[]) => void;
   reset: () => void;
 }
 
@@ -169,5 +170,6 @@ export const useGraphStore = create<GraphState>((set, get) => ({
 
       return { nodes: nextNodes, edges: nextEdges };
     }),
+  setActiveState: (nodes, edges) => set({ nodes: nodes as Node<NodeData>[], edges: edges as Edge[] }),
   reset: () => set({ nodes: [], edges: [], loading: false, error: null }),
 }));

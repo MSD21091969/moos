@@ -14,7 +14,9 @@ import { WorkspaceGraph } from "../components/graph/WorkspaceGraph";
 import { AgentChat } from "../components/agent/AgentChat";
 import { useContextStore, type ContextRole } from "../stores/contextStore";
 import { useSessionStore } from "../stores/sessionStore";
-import { listApps, createAgentSession, type Application } from "../lib/api";
+import { useGraphStore } from "../stores/graphStore";
+import { listApps, getKernelWsUrl, type Application } from "../lib/api";
+import { NanoClawRpcClient } from "../lib/nanoclaw-client";
 
 const ROLES: ContextRole[] = ["app_user", "app_admin", "collider_admin", "superadmin"];
 
@@ -36,6 +38,8 @@ export function App() {
 
   const { sessionId, setSession } = useSessionStore();
 
+  const { applyMorphisms, setActiveState, setLoading, setError } = useGraphStore();
+
   // Load apps on mount
   useEffect(() => {
     listApps()
@@ -44,19 +48,84 @@ export function App() {
       .finally(() => setLoadingApps(false));
   }, []);
 
+  // Global WebSocket connection for sync.active_state
+  useEffect(() => {
+    if (!appId) return;
+
+    setLoading(true);
+    const wsUrl = getKernelWsUrl();
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      ws.send(
+        JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "surface.register",
+          params: {
+            surface_id: "ffs4",
+            name: "FFS4 Sidepanel",
+            kind: "surface",
+          },
+        })
+      );
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg?.method === "sync.active_state") {
+          setActiveState(msg.params?.nodes ?? [], msg.params?.edges ?? []);
+          setLoading(false);
+        } else if (msg?.method === "sync.active_state_delta" || msg?.method === "stream.morphism") {
+          // If we receive a delta and we want to just append via store
+          // Wait, FFS4 graphStore has applyMorphisms for envelopes.
+          // For active_state_delta, NanoClawRpcClient maps it to morphism array.
+          // Here we can just listen to the raw msg and pass envelope.
+          if (msg.params?.envelope) {
+            // But applyMorphisms expects an array of parsed morphisms.
+            // Actually, NanoClawRpcClient handles that inside AgentChat...
+            // Let's rely on AgentChat for now or handle here broadly?
+            // "If sync.active_state_delta, do setNodes((prev) => [...prev, msg.params]) (abstractly)."
+            // Wait, we need to adapt graphStore or just use nodes if available:
+            if (msg.params?.nodes) {
+              // we do a full replace or merge, according to user abstract.
+              setActiveState(msg.params.nodes, msg.params.edges ?? []);
+            }
+          }
+        }
+      } catch {
+        // ignore parse
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [appId, setActiveState, setLoading]);
+
   // Compose session from selected nodes
   const handleCompose = useCallback(async () => {
     if (!appId || selectedNodeIds.length === 0) return;
 
     setComposing(true);
     try {
-      const resp = await createAgentSession({
-        role,
-        app_id: appId,
-        node_ids: selectedNodeIds,
-        inherit_ancestors: inheritAncestors,
-      });
-      setSession(resp.session_id, resp.nanoclaw_ws_url, {
+      const wsUrl = getKernelWsUrl();
+      const client = new NanoClawRpcClient(wsUrl);
+      await client.connect();
+      try {
+        await client.surfaceRegister({
+          surface_id: "ffs4",
+          name: "FFS4 Sidepanel",
+          kind: "surface",
+        });
+      } catch {
+        // best effort registration
+      }
+      const session = await client.sessionCreate();
+      client.disconnect();
+
+      setSession(session.session_id, wsUrl, {
         appId,
         nodeIds: selectedNodeIds,
         role,

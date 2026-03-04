@@ -1,5 +1,9 @@
 name: ffs4-app
 version: "1.0.0"
+display_name: FFS4 Sidepanel
+description: Chrome Extension sidepanel — agent chat + compact workspace graph
+domain: frontend-sidepanel
+port: 4201
 inheritance:
   enabled: true
   strategy: deep_merge

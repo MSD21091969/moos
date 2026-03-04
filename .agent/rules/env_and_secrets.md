@@ -18,8 +18,9 @@
 
 ## Loading
 
+- Go backends (MOOS) use `os.Getenv()` or config files to load env vars
 - Python backends use `pydantic-settings` with `env_prefix` to load `.env`
-- Frontend uses `NEXT_PUBLIC_*` prefix for client-side env vars
+- Frontend (FFS3) uses `VITE_*` prefix for client-side env vars (Vite 7)
 - Chrome extension env vars are build-time only
 
 ## .agent/configs vs .env
@@ -30,10 +31,16 @@
 
 ## Key Environment Variables
 
-| Variable | Location | Purpose |
-| ---------- | ---------- | --------- |
-| `GEMINI_API_KEY` | `secrets/api_keys.env` | Google AI Studio API |
-| `GOOGLE_APPLICATION_CREDENTIALS` | `secrets/api_keys.env` | GCP service account path |
-| `COLLIDER_DATABASE_URL` | `FFS2/.env` | SQLite/Postgres connection |
-| `COLLIDER_SECRET_KEY` | `FFS2/.env` | JWT signing key |
-| `NEXT_PUBLIC_API_BASE` | `FFS3/.env` | Backend API URL for frontend |
+| Variable                         | Location               | Purpose                                        |
+| -------------------------------- | ---------------------- | ---------------------------------------------- |
+| `GEMINI_API_KEY`                 | `secrets/api_keys.env` | Google AI Studio API                           |
+| `ANTHROPIC_API_KEY`              | `secrets/api_keys.env` | Anthropic Claude API                           |
+| `OPENAI_API_KEY`                 | `secrets/api_keys.env` | OpenAI API (optional)                          |
+| `GOOGLE_APPLICATION_CREDENTIALS` | `secrets/api_keys.env` | GCP service account path                       |
+| `COLLIDER_DATABASE_URL`          | `FFS2/.env`            | SQLite/Postgres connection                     |
+| `COLLIDER_SECRET_KEY`            | `FFS2/.env`            | JWT signing key                                |
+| `VITE_DATA_SERVER_URL`           | `FFS3/.env`            | Data server URL for frontend                   |
+| `VITE_AGENT_RUNNER_URL`          | `FFS3/.env`            | Agent runner URL for frontend                  |
+| `MOOS_HTTP_ADDR`                 | `MOOS/.env`            | MOOS HTTP listen address                       |
+| `MOOS_WS_ADDR`                   | `MOOS/.env`            | MOOS WebSocket listen address                  |
+| `MOOS_MODEL_PROVIDER`            | `MOOS/.env`            | Default LLM provider (gemini/anthropic/openai) |

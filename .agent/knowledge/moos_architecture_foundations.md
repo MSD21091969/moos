@@ -1,5 +1,9 @@
 # mo:os Architecture Foundations & Agreements
 
+> Authority: Canonical (current)
+> Status: Active source of truth for architectural agreements
+> Last affirmed: 2026-03
+
 *Date: March 2026*
 
 This document serves as the intermediate storage for agreements and architectural principles regarding the `mo:os` (Root Container) architecture, the Provider Superset, and the Universal Graph Model.
