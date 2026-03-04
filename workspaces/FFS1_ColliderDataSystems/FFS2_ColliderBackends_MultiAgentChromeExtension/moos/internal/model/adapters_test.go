@@ -629,3 +629,176 @@ func TestAnthropicAdapter_KeyNotInResponseText(t *testing.T) {
 		t.Error("API key must not appear in response text")
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Phase 4: Streaming adapter tests
+// ---------------------------------------------------------------------------
+
+// makeAnthropicSSE builds a fake Anthropic text/event-stream body.
+func makeAnthropicSSE(tokens ...string) string {
+	var sb strings.Builder
+	for _, tok := range tokens {
+		delta := map[string]any{
+			"type":  "content_block_delta",
+			"index": 0,
+			"delta": map[string]string{"type": "text_delta", "text": tok},
+		}
+		b, _ := json.Marshal(delta)
+		sb.WriteString("event: content_block_delta\ndata: ")
+		sb.WriteString(string(b))
+		sb.WriteString("\n\n")
+	}
+	sb.WriteString("event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n")
+	return sb.String()
+}
+
+func TestAnthropicAdapter_Stream_YieldsChunks(t *testing.T) {
+	withAPIKey(t)
+
+	want := []string{"Hello", ", ", "world!"}
+	client := mockClient(func(req *http.Request) *http.Response {
+		h := make(http.Header)
+		h.Set("Content-Type", "text/event-stream")
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(strings.NewReader(makeAnthropicSSE(want...))),
+			Header:     h,
+		}
+	})
+
+	adapter := AnthropicAdapter{Client: client}
+	ch, err := adapter.Stream(context.Background(), CompletionRequest{
+		SessionID: "s_stream",
+		Messages:  []Message{{Role: "user", Content: "hi"}},
+	})
+	if err != nil {
+		t.Fatalf("Stream() error: %v", err)
+	}
+
+	var gotText strings.Builder
+	gotDone := false
+	for chunk := range ch {
+		if chunk.Error != nil {
+			t.Fatalf("unexpected error chunk: %v", chunk.Error)
+		}
+		if chunk.Text != "" {
+			gotText.WriteString(chunk.Text)
+		}
+		if chunk.Done {
+			gotDone = true
+		}
+	}
+
+	if gotText.String() != strings.Join(want, "") {
+		t.Fatalf("expected %q, got %q", strings.Join(want, ""), gotText.String())
+	}
+	if !gotDone {
+		t.Fatal("expected Done=true chunk")
+	}
+}
+
+func TestAnthropicAdapter_Stream_MorphismsEmittedAfterText(t *testing.T) {
+	withAPIKey(t)
+
+	morphismToken := "\n```json\n[{\"Type\":\"ADD\",\"URN\":\"urn:moos:test:stream1\",\"Kind\":\"DATA\",\"Kernel\":{}}]\n```\n"
+	client := mockClient(func(req *http.Request) *http.Response {
+		h := make(http.Header)
+		h.Set("Content-Type", "text/event-stream")
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(strings.NewReader(makeAnthropicSSE("Adding node:", morphismToken))),
+			Header:     h,
+		}
+	})
+
+	adapter := AnthropicAdapter{Client: client}
+	ch, err := adapter.Stream(context.Background(), CompletionRequest{
+		SessionID: "s_morph_stream",
+		Messages:  []Message{{Role: "user", Content: "add node"}},
+	})
+	if err != nil {
+		t.Fatalf("Stream() error: %v", err)
+	}
+
+	var gotMorphisms int
+	for chunk := range ch {
+		if len(chunk.Morphisms) > 0 {
+			gotMorphisms += len(chunk.Morphisms)
+		}
+	}
+	if gotMorphisms == 0 {
+		t.Fatal("expected morphisms in stream chunks")
+	}
+}
+
+func TestAnthropicAdapter_Stream_NoKey_ReturnsError(t *testing.T) {
+	t.Setenv("ANTHROPIC_API_KEY", "")
+	adapter := AnthropicAdapter{}
+	_, err := adapter.Stream(context.Background(), CompletionRequest{
+		Messages: []Message{{Role: "user", Content: "hi"}},
+	})
+	if err == nil {
+		t.Fatal("expected error when ANTHROPIC_API_KEY is empty")
+	}
+}
+
+func TestAnthropicAdapter_Stream_APIError_ReturnsError(t *testing.T) {
+	withAPIKey(t)
+	client := mockClient(func(req *http.Request) *http.Response {
+		return &http.Response{
+			StatusCode: http.StatusUnauthorized,
+			Body:       io.NopCloser(strings.NewReader(`{"error":"invalid api key"}`)),
+			Header:     make(http.Header),
+		}
+	})
+	adapter := AnthropicAdapter{Client: client}
+	_, err := adapter.Stream(context.Background(), CompletionRequest{
+		Messages: []Message{{Role: "user", Content: "hi"}},
+	})
+	if err == nil {
+		t.Fatal("expected error on HTTP 401")
+	}
+	if !strings.Contains(err.Error(), "401") {
+		t.Fatalf("expected 401 in error, got: %v", err)
+	}
+}
+
+func TestGeminiAdapter_Stream_NoKey_FallsBackToCompletionStub(t *testing.T) {
+	t.Setenv("GEMINI_API_KEY", "")
+	adapter := GeminiAdapter{}
+	ch, err := adapter.Stream(context.Background(), CompletionRequest{
+		Messages: []Message{{Role: "user", Content: "hello gemini"}},
+	})
+	if err != nil {
+		t.Fatalf("expected stub fallback, got error: %v", err)
+	}
+	var gotText bool
+	for chunk := range ch {
+		if chunk.Text != "" {
+			gotText = true
+		}
+	}
+	if !gotText {
+		t.Fatal("expected at least one text chunk from Gemini stub fallback")
+	}
+}
+
+func TestParsedToolCalls_Exported(t *testing.T) {
+	calls := ParseToolCalls(`tool:search {"query":"DAG reasoning"}`)
+	if len(calls) != 1 {
+		t.Fatalf("expected 1 tool call, got %d", len(calls))
+	}
+	if calls[0].Name != "search" {
+		t.Fatalf("expected name 'search', got %q", calls[0].Name)
+	}
+	if calls[0].Arguments["query"] != "DAG reasoning" {
+		t.Fatalf("expected query arg, got %v", calls[0].Arguments)
+	}
+}
+
+func TestParsedToolCalls_EmptyText_ReturnsNil(t *testing.T) {
+	calls := ParseToolCalls("just regular text, no tool calls here")
+	if len(calls) != 0 {
+		t.Fatalf("expected no tool calls, got %d", len(calls))
+	}
+}

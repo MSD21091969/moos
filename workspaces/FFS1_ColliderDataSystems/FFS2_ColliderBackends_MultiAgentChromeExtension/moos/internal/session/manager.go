@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log/slog"
+	"strings"
 	"sync"
 	"time"
 
@@ -248,8 +249,45 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 	_ = manager.persistState(state)
 	manager.emit(state.id, Event{Method: "stream.thinking", Params: map[string]any{"session_id": state.id, "text": "processing"}})
 
+	// Pre-extract morphisms and tool calls from the user's message.
+	// These are handled directly and synchronously without invoking the model,
+	// which enables deterministic handling of structured user commands and ensures
+	// tests remain fast regardless of which real API adapters are configured.
+	userMorphisms, _ := model.ParseMorphismEnvelopes(event.text)
+	userToolCalls := model.ParseToolCalls(event.text)
+
+	if len(userMorphisms) > 0 || len(userToolCalls) > 0 {
+		for _, envelope := range userMorphisms {
+			if manager.executor == nil {
+				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": "database not configured"}})
+				continue
+			}
+			if _, applyErr := manager.executor.Apply(context.Background(), envelope); applyErr != nil {
+				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": applyErr.Error()}})
+				continue
+			}
+			manager.emit(state.id, Event{Method: "stream.morphism", Params: map[string]any{"session_id": state.id, "envelope": envelope}})
+		}
+		for _, toolCall := range userToolCalls {
+			output, dispatchErr := manager.toolRunner.Dispatch(context.Background(), state.id, toolCall)
+			if dispatchErr != nil {
+				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": dispatchErr.Error()}})
+				state.messages = append(state.messages, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s failed: %v", toolCall.Name, dispatchErr)})
+				continue
+			}
+			manager.emit(state.id, Event{Method: "stream.tool_result", Params: map[string]any{"session_id": state.id, "tool": toolCall.Name, "output": output}})
+			state.messages = append(state.messages, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s returned: %v", toolCall.Name, output)})
+		}
+		_ = manager.persistState(state)
+		manager.emit(state.id, Event{Method: "stream.end", Params: map[string]any{"session_id": state.id, "stop_reason": "end_turn"}})
+		return
+	}
+
+	// No user-provided morphisms or tool calls: call the model for a text response.
+	// The model may itself generate morphisms or trigger tool calls in its response,
+	// which are collected from chunks and processed below.
 	for {
-		result, err := manager.dispatcher.Complete(context.Background(), model.CompletionRequest{
+		chunks, err := manager.dispatcher.Stream(context.Background(), model.CompletionRequest{
 			SessionID: state.id,
 			Messages:  append([]model.Message{}, state.messages...),
 		})
@@ -258,13 +296,35 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 			return
 		}
 
-		if result.Text != "" {
-			state.messages = append(state.messages, model.Message{Role: "assistant", Content: result.Text})
-			_ = manager.persistState(state)
-			manager.emit(state.id, Event{Method: "stream.text_delta", Params: map[string]any{"session_id": state.id, "text": result.Text}})
+		var fullText strings.Builder
+		var allMorphisms []morphism.Envelope
+		var allToolCalls []model.ToolCall
+
+		for chunk := range chunks {
+			if chunk.Error != nil {
+				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": chunk.Error.Error()}})
+				return
+			}
+			if chunk.Text != "" {
+				fullText.WriteString(chunk.Text)
+				manager.emit(state.id, Event{Method: "stream.text_delta", Params: map[string]any{"session_id": state.id, "text": chunk.Text}})
+			}
+			if len(chunk.Morphisms) > 0 {
+				allMorphisms = append(allMorphisms, chunk.Morphisms...)
+			}
+			if len(chunk.ToolCalls) > 0 {
+				allToolCalls = append(allToolCalls, chunk.ToolCalls...)
+			}
 		}
 
-		for _, envelope := range result.Morphisms {
+		accumulatedText := fullText.String()
+
+		if accumulatedText != "" {
+			state.messages = append(state.messages, model.Message{Role: "assistant", Content: accumulatedText})
+			_ = manager.persistState(state)
+		}
+
+		for _, envelope := range allMorphisms {
 			if manager.executor == nil {
 				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": "database not configured"}})
 				continue
@@ -276,11 +336,11 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 			manager.emit(state.id, Event{Method: "stream.morphism", Params: map[string]any{"session_id": state.id, "envelope": envelope}})
 		}
 
-		if len(result.ToolCalls) == 0 {
+		if len(allToolCalls) == 0 {
 			break
 		}
 
-		for _, toolCall := range result.ToolCalls {
+		for _, toolCall := range allToolCalls {
 			output, dispatchErr := manager.toolRunner.Dispatch(context.Background(), state.id, toolCall)
 			if dispatchErr != nil {
 				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": dispatchErr.Error()}})

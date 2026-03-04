@@ -19,6 +19,12 @@ func (adapter failingAdapter) Complete(ctx context.Context, request CompletionRe
 	return CompletionResult{}, errors.New("provider failed")
 }
 
+func (adapter failingAdapter) Stream(ctx context.Context, request CompletionRequest) (<-chan Chunk, error) {
+	_ = ctx
+	_ = request
+	return nil, errors.New("provider failed")
+}
+
 func TestDispatcherFallsBackToSecondary(t *testing.T) {
 	dispatcher := NewDispatcher("anthropic", failingAdapter{name: "anthropic"}, GeminiAdapter{})
 	result, err := dispatcher.Complete(context.Background(), CompletionRequest{Messages: []Message{{Role: "user", Content: "hello"}}})
@@ -27,6 +33,48 @@ func TestDispatcherFallsBackToSecondary(t *testing.T) {
 	}
 	if result.Text == "" {
 		t.Fatalf("expected non-empty fallback response")
+	}
+}
+
+func TestDispatcherStream_FallsBackToSecondary(t *testing.T) {
+	dispatcher := NewDispatcher("anthropic", failingAdapter{name: "anthropic"}, GeminiAdapter{})
+	ch, err := dispatcher.Stream(context.Background(), CompletionRequest{
+		Messages: []Message{{Role: "user", Content: "stream test"}},
+	})
+	if err != nil {
+		t.Fatalf("expected stream fallback success, got %v", err)
+	}
+	var gotText bool
+	var gotDone bool
+	for chunk := range ch {
+		if chunk.Error != nil {
+			t.Fatalf("unexpected chunk error: %v", chunk.Error)
+		}
+		if chunk.Text != "" {
+			gotText = true
+		}
+		if chunk.Done {
+			gotDone = true
+		}
+	}
+	if !gotText {
+		t.Fatalf("expected at least one text chunk")
+	}
+	if !gotDone {
+		t.Fatalf("expected Done=true chunk")
+	}
+}
+
+func TestDispatcherStream_AllFail_ReturnsError(t *testing.T) {
+	dispatcher := NewDispatcher("anthropic", failingAdapter{name: "anthropic"}, failingAdapter{name: "gemini"})
+	_, err := dispatcher.Stream(context.Background(), CompletionRequest{
+		Messages: []Message{{Role: "user", Content: "fail"}},
+	})
+	if err == nil {
+		t.Fatal("expected error when all adapters fail to stream")
+	}
+	if !strings.Contains(err.Error(), "all model adapters failed") {
+		t.Fatalf("expected 'all model adapters failed' in error, got: %v", err)
 	}
 }
 
