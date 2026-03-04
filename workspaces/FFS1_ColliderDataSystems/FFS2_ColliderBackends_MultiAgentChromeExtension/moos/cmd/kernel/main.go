@@ -101,6 +101,7 @@ func main() {
 		cfg.ModelProvider,
 		model.AnthropicAdapter{},
 		model.GeminiAdapter{},
+		model.OpenAIAdapter{},
 	)
 	mcpBridge := tool.NewMCPBridge(tool.NewRegistryWithContainerStore(containerStore), tool.DefaultPolicy())
 	mcpBroker := newMCPSessionBroker()

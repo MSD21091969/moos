@@ -61,6 +61,7 @@ type Manager struct {
 	store       store
 	toolRunner  toolDispatcher
 	broadcaster func(sessionID string, event Event)
+	activeCache activeStateProjector
 	stopCleanup chan struct{}
 }
 
@@ -91,6 +92,7 @@ func NewManagerWithStore(executor morphismExecutor, dispatcher *model.Dispatcher
 		sessions:     map[string]*sessionState{},
 		store:        sessionStore,
 		toolRunner:   noopToolDispatcher{},
+		activeCache:  nopActiveStateCache{},
 		stopCleanup:  make(chan struct{}),
 	}
 	manager.restoreSessions()
@@ -123,6 +125,18 @@ func (manager *Manager) SetBroadcaster(broadcaster func(sessionID string, event 
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
 	manager.broadcaster = broadcaster
+}
+
+// SetActiveStateCache configures the Redis-backed cache used to project the
+// latest morphism for each scope URN and publish fan-out deltas. When nil is
+// passed the no-op implementation is used so callers never need a nil check.
+func (manager *Manager) SetActiveStateCache(cache activeStateProjector) {
+	if cache == nil {
+		cache = nopActiveStateCache{}
+	}
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	manager.activeCache = cache
 }
 
 func (manager *Manager) Shutdown() {
@@ -266,6 +280,8 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": applyErr.Error()}})
 				continue
 			}
+			_ = manager.activeCache.Set(context.Background(), envelope.ScopeURN, envelope)
+			_ = manager.activeCache.Publish(context.Background(), envelope.ScopeURN, envelope)
 			manager.emit(state.id, Event{Method: "stream.morphism", Params: map[string]any{"session_id": state.id, "envelope": envelope}})
 		}
 		for _, toolCall := range userToolCalls {
@@ -333,6 +349,8 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": applyErr.Error()}})
 				continue
 			}
+			_ = manager.activeCache.Set(context.Background(), envelope.ScopeURN, envelope)
+			_ = manager.activeCache.Publish(context.Background(), envelope.ScopeURN, envelope)
 			manager.emit(state.id, Event{Method: "stream.morphism", Params: map[string]any{"session_id": state.id, "envelope": envelope}})
 		}
 
