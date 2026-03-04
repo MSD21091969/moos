@@ -2,15 +2,15 @@
 
 This is the root of the Collider ecosystem monorepo at `D:\FFS0_Factory`.
 
-## Context System
+## Context System & The "Three Claudes"
 
-Use the rehydrated minimal `.agent` chain as canonical context wiring.
-
-Read order:
-1. `D:\FFS0_Factory\CLAUDE.md`
-2. Workspace `CLAUDE.md`
-3. Workspace `.agent/index.md`
-4. Workspace `.agent/manifest.yaml` (`includes`/`exports`)
+Due to the size of the repository, we use a hierarchical context system to prevent AI context pollution.
+Read order for AI Agents:
+1. `D:\FFS0_Factory\CLAUDE.md` (Root / Factory conventions)
+2. Workspace `CLAUDE.md` (Backend vs Frontend specifics)
+   - `workspaces/FFS1_ColliderDataSystems/CLAUDE.md` -> Loads Go 1.23 / MOOS backend context.
+   - `workspaces/FFS1.../FFS3_ColliderApplicationsFrontendServer/CLAUDE.md` -> Loads Vite/React/Nx frontend context.
+3. Workspace `.agent/index.md` & `.agent/manifest.yaml`
 
 Canonical runbook:
 - `.agent/workflows/conversation-state-rehydration.md`
