@@ -29,7 +29,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
+      target: build
     # Override entrypoint to use 'go run' for live reloading via Air or direct
     # hot-restart when source is mounted. For a lightweight alternative without
     # Air, kill + restart the container after source edits.
