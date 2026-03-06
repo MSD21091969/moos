@@ -5,12 +5,13 @@ Refer to the main factory instructions at `D:\FFS0_Factory\CLAUDE.md`.
 ## FFS1 Context
 
 - **Identity**: Governance, Schemas, and Orchestration layer for the Collider platform.
-- **Backend (MOOS)**: Go 1.23+, Chi router, gorilla/websocket, pgx/v5 (Postgres). Note: Redis session dependency removed in Phase 4 (relies entirely on Postgres Universal Graph Model). Legacy TS runtime backend stack purged.
+- **Backend (MOOS)**: Go 1.23+, Chi router, gorilla/websocket, pgx/v5 (Postgres). Redis fully removed; session persistence uses Postgres Universal Graph Model via container-store adapter pattern. Legacy TS runtime backend stack purged.
 - **Frontend (FFS3)**: Nx monorepo, Vite 7, React 19, TypeScript 5.9, pnpm.
 - **LLM Pipeline**: Category-theory morphisms (ADD/LINK/MUTATE/UNLINK) via Gemini/Anthropic/OpenAI.
+- **Knowledge Base**: v3.0 — see `D:\FFS0_Factory\.agent\knowledge/` (foundations, architecture, v2 ontology, MANIFESTO).
 - **.agent state**: Minimal rehydrated inheritance backbone for FFS2/FFS3.
 
-## Runtime Status (2026-03-04)
+## Runtime Status (2026-03-06)
 
 - **Active backend runtime for FFS3**: `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS2_ColliderBackends_MultiAgentChromeExtension\moos`
 - **Legacy TypeScript Backend Purged**: The TypeScript implementation paths (`moos/apps/data-server`, `tool-server`, `engine`) have been deleted in favor of the pure Go kernel.

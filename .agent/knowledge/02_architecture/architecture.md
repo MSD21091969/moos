@@ -13,22 +13,22 @@ The Go kernel implements a single pipeline that reduces every external event to 
 Connection → Route → Dispatch → Transform → Commit
 ```
 
-| Stage | Responsibility | Code |
-|-------|---------------|------|
-| **Connection** | Accept transport (HTTP, WS, MCP/SSE) | Chi router, gorilla/websocket, SSE handler |
-| **Route** | Parse request → determine morphism type | URL + method → one of {ADD, LINK, MUTATE, UNLINK} |
-| **Dispatch** | Validate against graph state | Check URN existence, wire uniqueness, permission wires |
-| **Transform** | Apply morphism to state | JSONB operations on `containers.state_payload` |
-| **Commit** | Append to morphism_log, update caches | `INSERT INTO morphism_log` → update `containers`/`wires` |
+| Stage          | Responsibility                          | Code                                                     |
+| -------------- | --------------------------------------- | -------------------------------------------------------- |
+| **Connection** | Accept transport (HTTP, WS, MCP/SSE)    | Chi router, gorilla/websocket, SSE handler               |
+| **Route**      | Parse request → determine morphism type | URL + method → one of {ADD, LINK, MUTATE, UNLINK}        |
+| **Dispatch**   | Validate against graph state            | Check URN existence, wire uniqueness, permission wires   |
+| **Transform**  | Apply morphism to state                 | JSONB operations on `containers.state_payload`           |
+| **Commit**     | Append to morphism_log, update caches   | `INSERT INTO morphism_log` → update `containers`/`wires` |
 
 **Connection transport surfaces** (morphisms in $\mathcal{C}$, NOT functors — see foundations.md §2 Categorical Inventory):
 
-| Transport | Port | Surface | Protocol |
-|-----------|------|---------|----------|
-| Data compatibility | 8000 | HTTP REST | JSON |
-| Agent compatibility | 8004 | HTTP REST | JSON |
-| MCP endpoint | 8080 | SSE stream | MCP/SSE |
-| NanoClaw bridge | 18789 | WebSocket | JSON-RPC |
+| Transport           | Port  | Surface    | Protocol |
+| ------------------- | ----- | ---------- | -------- |
+| Data compatibility  | 8000  | HTTP REST  | JSON     |
+| Agent compatibility | 8004  | HTTP REST  | JSON     |
+| MCP endpoint        | 8080  | SSE stream | MCP/SSE  |
+| NanoClaw bridge     | 18789 | WebSocket  | JSON-RPC |
 
 These are four wires from the kernel to external consumers — a coslice category (foundations.md §5). Adding a fifth transport (e.g., gRPC) means adding a fifth wire, not a new functor.
 
@@ -57,15 +57,15 @@ const (
 
 ### Stack
 
-| Layer | Technology | Role |
-|-------|-----------|------|
-| Language | Go 1.23+ | All backend logic |
-| Router | Chi | HTTP routing |
-| WebSocket | gorilla/websocket | Persistent connections |
-| Database | pgx/v5 (Postgres 16) | All storage — containers, wires, morphism_log |
-| Vectors | pgvector | Embeddings in `container_embeddings` |
-| Metrics | Prometheus | `/metrics` endpoint |
-| Container | Docker (multi-stage) | Single `moos-kernel:dev` image |
+| Layer     | Technology           | Role                                          |
+| --------- | -------------------- | --------------------------------------------- |
+| Language  | Go 1.23+             | All backend logic                             |
+| Router    | Chi                  | HTTP routing                                  |
+| WebSocket | gorilla/websocket    | Persistent connections                        |
+| Database  | pgx/v5 (Postgres 16) | All storage — containers, wires, morphism_log |
+| Vectors   | pgvector             | Embeddings in `container_embeddings`          |
+| Metrics   | Prometheus           | `/metrics` endpoint                           |
+| Container | Docker (multi-stage) | Single `moos-kernel:dev` image                |
 
 ---
 
@@ -122,12 +122,12 @@ type MorphismLogEntry struct {
 
 The four morphisms map onto the superset ontology (`superset/superset_ontology_v2.json`). Key correspondences:
 
-| Superset Concept | Morphism | Wire Port |
-|-----------------|----------|-----------|
-| Create entity | ADD | — |
-| Establish relationship | LINK | Determined by relationship type |
-| Update property | MUTATE | — |
-| Remove relationship | UNLINK | Matches original LINK ports |
+| Superset Concept       | Morphism | Wire Port                       |
+| ---------------------- | -------- | ------------------------------- |
+| Create entity          | ADD      | —                               |
+| Establish relationship | LINK     | Determined by relationship type |
+| Update property        | MUTATE   | —                               |
+| Remove relationship    | UNLINK   | Matches original LINK ports     |
 
 Connection morphisms (transport surfaces) re-expose these four operations over network protocols. The kernel pipeline is protocol-agnostic — the same morphism struct is processed regardless of whether it arrived via HTTP, WebSocket, or MCP/SSE.
 
@@ -139,13 +139,13 @@ Five functors map $\mathcal{C}$ to external domains. Each is a structure-preserv
 
 ### Functor Table
 
-| # | Functor | Signature | Status | Implementation |
-|---|---------|-----------|--------|---------------|
-| 1 | FileSystem | $F_{\text{fs}}: \text{Manifest} \to \mathcal{C}$ | Active | Reads `manifest.yaml` → emits LINK morphisms |
-| 2 | UI_Lens | $F_{\text{ui}}: \mathcal{C} \to \text{React}$ | Active | Graph query → XYFlow component tree |
-| 3 | Embedding | $F_{\text{embed}}: \text{state\_payload} \to \mathbb{R}^{1536}$ | Active | pgvector in `container_embeddings` |
-| 4 | Structure | $F_{\text{struct}}: \text{subgraph} \to \text{DAG}$ | Planned | GPU topological analysis |
-| 5 | Benchmark | $B: \mathcal{C}_{\text{provider}} \to \mathcal{C}_{\text{standard}}$ | Planned | Provider evaluation mapping |
+| #   | Functor    | Signature                                                            | Status  | Implementation                               |
+| --- | ---------- | -------------------------------------------------------------------- | ------- | -------------------------------------------- |
+| 1   | FileSystem | $F_{\text{fs}}: \text{Manifest} \to \mathcal{C}$                     | Active  | Reads `manifest.yaml` → emits LINK morphisms |
+| 2   | UI_Lens    | $F_{\text{ui}}: \mathcal{C} \to \text{React}$                        | Active  | Graph query → XYFlow component tree          |
+| 3   | Embedding  | $F_{\text{embed}}: \text{state\_payload} \to \mathbb{R}^{1536}$      | Active  | pgvector in `container_embeddings`           |
+| 4   | Structure  | $F_{\text{struct}}: \text{subgraph} \to \text{DAG}$                  | Planned | GPU topological analysis                     |
+| 5   | Benchmark  | $B: \mathcal{C}_{\text{provider}} \to \mathcal{C}_{\text{standard}}$ | Planned | Provider evaluation mapping                  |
 
 ### Connection Morphisms and Coslice Structure
 
@@ -158,12 +158,12 @@ Transport surfaces (HTTP, WebSocket, MCP/SSE) are **morphisms in $\mathcal{C}$**
 
 **Connection properties** (per wire in `wire_config`):
 
-| Property | Values | Purpose |
-|----------|--------|---------|
-| Transport | HTTP, WebSocket, MCP/SSE | Protocol implementation |
-| Direction | Unidirectional, Bidirectional | Communication pattern |
-| Statefulness | Stateful (WS), Stateless (HTTP) | Connection lifecycle |
-| Encoding | JSON, Protobuf, SSE events | Serialization format |
+| Property     | Values                          | Purpose                 |
+| ------------ | ------------------------------- | ----------------------- |
+| Transport    | HTTP, WebSocket, MCP/SSE        | Protocol implementation |
+| Direction    | Unidirectional, Bidirectional   | Communication pattern   |
+| Statefulness | Stateful (WS), Stateless (HTTP) | Connection lifecycle    |
+| Encoding     | JSON, Protobuf, SSE events      | Serialization format    |
 
 **Coslice structure for transport fan-out:**
 
@@ -240,12 +240,12 @@ This chains embedding + structure analysis: first embed content into vector spac
 
 **Never store functor output in `state_payload`.** Functor output belongs in its own domain:
 
-| Functor | Output Storage | NOT In |
-|---------|---------------|--------|
-| $F_{\text{embed}}$ | `container_embeddings` | `state_payload` |
-| $F_{\text{ui}}$ | React virtual DOM | `state_payload` |
+| Functor             | Output Storage            | NOT In          |
+| ------------------- | ------------------------- | --------------- |
+| $F_{\text{embed}}$  | `container_embeddings`    | `state_payload` |
+| $F_{\text{ui}}$     | React virtual DOM         | `state_payload` |
 | $F_{\text{struct}}$ | GPU memory / computed DAG | `state_payload` |
-| $B$ | Evaluation result store | `state_payload` |
+| $B$                 | Evaluation result store   | `state_payload` |
 
 Violating this creates circular dependencies: the graph contains its own projections, which change when the graph changes, requiring re-projection, ad infinitum.
 
@@ -384,24 +384,24 @@ MCP/SSE on :8080 → parse SSE events → Morphism struct → kernel pipeline
 
 ### Tool Lifecycle
 
-| Phase | Action | Morphisms Used |
-|-------|--------|---------------|
-| Register | ADD tool container + LINK to capability graph | ADD, LINK |
-| Configure | MUTATE tool's `state_payload` with config | MUTATE |
-| Bind | LINK tool to agent/workspace | LINK |
-| Execute | Traverse wire → hydrate tool → run | (read-only traversal) |
-| Unbind | UNLINK tool from agent/workspace | UNLINK |
+| Phase     | Action                                        | Morphisms Used        |
+| --------- | --------------------------------------------- | --------------------- |
+| Register  | ADD tool container + LINK to capability graph | ADD, LINK             |
+| Configure | MUTATE tool's `state_payload` with config     | MUTATE                |
+| Bind      | LINK tool to agent/workspace                  | LINK                  |
+| Execute   | Traverse wire → hydrate tool → run            | (read-only traversal) |
+| Unbind    | UNLINK tool from agent/workspace              | UNLINK                |
 
 **Key insight:** Tool registration IS graph manipulation. There is no separate tool registry — tools are containers with specific port types (`can_execute`, `provides_capability`). Tool discovery = graph traversal through capability wires.
 
 ### Protocol Comparison
 
-| Property | HTTP REST (:8000) | WebSocket (:18789) | MCP/SSE (:8080) |
-|----------|------------------|-------------------|-----------------|
-| Direction | Request/response | Bidirectional | Server→client stream |
-| Statefulness | Stateless | Stateful | Semi-stateful (SSE) |
-| Use case | CRUD operations | Real-time agent chat | LLM tool use |
-| Morphism delivery | Synchronous | Async push | Event stream |
+| Property          | HTTP REST (:8000) | WebSocket (:18789)   | MCP/SSE (:8080)      |
+| ----------------- | ----------------- | -------------------- | -------------------- |
+| Direction         | Request/response  | Bidirectional        | Server→client stream |
+| Statefulness      | Stateless         | Stateful             | Semi-stateful (SSE)  |
+| Use case          | CRUD operations   | Real-time agent chat | LLM tool use         |
+| Morphism delivery | Synchronous       | Async push           | Event stream         |
 
 All three are coslice objects from the kernel (see §1 transport table). The protocol is infrastructure; the morphisms are identical.
 
@@ -415,20 +415,20 @@ All three are coslice objects from the kernel (see §1 transport table). The pro
 
 User graph sync follows a diverge/merge model analogous to git:
 
-| Phase | Description | Implementation |
-|-------|------------|---------------|
+| Phase        | Description                                       | Implementation                                                |
+| ------------ | ------------------------------------------------- | ------------------------------------------------------------- |
 | **Snapshot** | Export user's current wires as morphism log slice | `SELECT * FROM morphism_log WHERE author = :user ORDER BY id` |
-| **Diverge** | User works offline or in different instance | Local morphism log accumulates |
-| **Merge** | Reconcile diverged logs | Conflict resolution on overlapping morphisms |
+| **Diverge**  | User works offline or in different instance       | Local morphism log accumulates                                |
+| **Merge**    | Reconcile diverged logs                           | Conflict resolution on overlapping morphisms                  |
 
 ### Conflict Resolution
 
-| Conflict Type | Resolution Strategy |
-|--------------|-------------------|
-| Same wire modified | Last-write-wins OR manual merge (configurable per wire type) |
-| Wire deleted on one side, modified on other | Delete wins (conservative) |
-| New wires on both sides | Both accepted (no conflict — wires are independent) |
-| Contradictory MUTATE payloads | Three-way merge on JSONB keys |
+| Conflict Type                               | Resolution Strategy                                          |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| Same wire modified                          | Last-write-wins OR manual merge (configurable per wire type) |
+| Wire deleted on one side, modified on other | Delete wins (conservative)                                   |
+| New wires on both sides                     | Both accepted (no conflict — wires are independent)          |
+| Contradictory MUTATE payloads               | Three-way merge on JSONB keys                                |
 
 ### Federation: CAN_FEDERATE Wires
 

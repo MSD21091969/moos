@@ -42,12 +42,12 @@ where $\Sigma : \text{Log} \to \text{State}$ folds the append-only morphism log 
 
 mo:os defines a concrete category $\mathcal{C}$:
 
-| Component | Definition | Storage |
-|-----------|-----------|---------|
-| **Objects** | URNs — rows in `containers` | `containers(urn UUID PK, type_id, state_payload JSONB, ...)` |
-| **Morphisms** Hom(A,B) | Wires — rows in `wires` | `wires(source_urn, source_port, target_urn, target_port, wire_config JSONB)` |
-| **Composition** | Traversal — $f: A \to B$ and $g: B \to C$ compose to $g \circ f: A \to C$ | Join on `target_urn = source_urn` |
-| **Identity** | Self-state — `id_A: A \to A$ is the node's current state_payload | Virtual (no explicit self-wire stored) |
+| Component              | Definition                                                                | Storage                                                                      |
+| ---------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Objects**            | URNs — rows in `containers`                                               | `containers(urn UUID PK, type_id, state_payload JSONB, ...)`                 |
+| **Morphisms** Hom(A,B) | Wires — rows in `wires`                                                   | `wires(source_urn, source_port, target_urn, target_port, wire_config JSONB)` |
+| **Composition**        | Traversal — $f: A \to B$ and $g: B \to C$ compose to $g \circ f: A \to C$ | Join on `target_urn = source_urn`                                            |
+| **Identity**           | Self-state — `id_A: A \to A$ is the node's current state_payload          | Virtual (no explicit self-wire stored)                                       |
 
 **Properties of $\mathcal{C}$:**
 
@@ -66,20 +66,20 @@ This holds because composition is SQL join, which is associative.
 
 This table is the authoritative reference for every categorical concept used in mo:os.
 
-| Concept | Categorical Identity | Storage / Realization |
-|---------|---------------------|----------------------|
-| Containers | Objects in $\mathcal{C}$ | `containers` table |
-| Wires (including connections) | Morphisms in $\mathcal{C}$ | `wires` table |
-| Fan-out from node $A$ | Coslice category $A/\mathcal{C}$ (§5) | `SELECT * FROM wires WHERE source_urn = :A` |
-| Fan-in to node $A$ | Slice category $\mathcal{C}/A$ (§5) | `SELECT * FROM wires WHERE target_urn = :A` |
-| Translation (fan-out ↔ graph) | Forgetful functor $U: A/\mathcal{C} \to \mathcal{C}$ (§5) | Implicit in traversal (drops source context, keeps targets) |
-| Container with OWNS children | Full subcategory $\mathcal{C}_W \hookrightarrow \mathcal{C}$ (§6) | Recursive CTE on `wires WHERE source_port = 'owns'` |
-| $\Sigma$ (reducer) | Colimit of morphism chain — catamorphism (§1) | Kernel pipeline: Connection → Route → Dispatch → Transform → Commit |
-| FileSystem | Functor $F_{\text{fs}}: \text{Manifest} \to \mathcal{C}$ | Reads `manifest.yaml`, produces LINK morphisms |
-| UI_Lens | Functor $F_{\text{ui}}: \mathcal{C} \to \text{React}$ | Renders containers + wires to XYFlow component tree |
-| Embedding | Functor $F_{\text{embed}}: \text{state\_payload} \to \mathbb{R}^{1536}$ | pgvector in `container_embeddings` |
-| Structure | Functor $F_{\text{struct}}: \text{subgraph} \to \text{DAG}$ (planned) | GPU-accelerated topological compression |
-| Benchmark | Functor $B: \mathcal{C}_{\text{provider}} \to \mathcal{C}_{\text{standard}}$ (planned) | Maps provider coslices to standard evaluation category |
+| Concept                       | Categorical Identity                                                                   | Storage / Realization                                               |
+| ----------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Containers                    | Objects in $\mathcal{C}$                                                               | `containers` table                                                  |
+| Wires (including connections) | Morphisms in $\mathcal{C}$                                                             | `wires` table                                                       |
+| Fan-out from node $A$         | Coslice category $A/\mathcal{C}$ (§5)                                                  | `SELECT * FROM wires WHERE source_urn = :A`                         |
+| Fan-in to node $A$            | Slice category $\mathcal{C}/A$ (§5)                                                    | `SELECT * FROM wires WHERE target_urn = :A`                         |
+| Translation (fan-out ↔ graph) | Forgetful functor $U: A/\mathcal{C} \to \mathcal{C}$ (§5)                              | Implicit in traversal (drops source context, keeps targets)         |
+| Container with OWNS children  | Full subcategory $\mathcal{C}_W \hookrightarrow \mathcal{C}$ (§6)                      | Recursive CTE on `wires WHERE source_port = 'owns'`                 |
+| $\Sigma$ (reducer)            | Colimit of morphism chain — catamorphism (§1)                                          | Kernel pipeline: Connection → Route → Dispatch → Transform → Commit |
+| FileSystem                    | Functor $F_{\text{fs}}: \text{Manifest} \to \mathcal{C}$                               | Reads `manifest.yaml`, produces LINK morphisms                      |
+| UI_Lens                       | Functor $F_{\text{ui}}: \mathcal{C} \to \text{React}$                                  | Renders containers + wires to XYFlow component tree                 |
+| Embedding                     | Functor $F_{\text{embed}}: \text{state\_payload} \to \mathbb{R}^{1536}$                | pgvector in `container_embeddings`                                  |
+| Structure                     | Functor $F_{\text{struct}}: \text{subgraph} \to \text{DAG}$ (planned)                  | GPU-accelerated topological compression                             |
+| Benchmark                     | Functor $B: \mathcal{C}_{\text{provider}} \to \mathcal{C}_{\text{standard}}$ (planned) | Maps provider coslices to standard evaluation category              |
 
 **What is NOT a functor:** Connections / transport surfaces (HTTP, WebSocket, MCP/SSE) are **morphisms** (wires) in $\mathcal{C}$ — arrows within the category, not structure-preserving maps between categories. A new transport protocol is a new wire implementation, not a new functor. See §5 for how the fan-out pattern from a service to multiple endpoints is correctly modeled as a coslice category.
 
@@ -89,12 +89,12 @@ This table is the authoritative reference for every categorical concept used in 
 
 Every state change in mo:os decomposes into exactly four operations. These are the **only** invariant natural transformations of $\mathcal{C}$:
 
-| Morphism | Signature | Effect |
-|----------|-----------|--------|
-| **ADD** | $\emptyset \to C$ | Create a new container (URN enters Objects) |
-| **LINK** | $C \times C \to W$ | Create a wire between two containers (edge enters Hom) |
-| **MUTATE** | $C \to C$ | Update a container's state_payload (endomorphism) |
-| **UNLINK** | $W \to \emptyset$ | Remove a wire (edge leaves Hom) |
+| Morphism   | Signature          | Effect                                                 |
+| ---------- | ------------------ | ------------------------------------------------------ |
+| **ADD**    | $\emptyset \to C$  | Create a new container (URN enters Objects)            |
+| **LINK**   | $C \times C \to W$ | Create a wire between two containers (edge enters Hom) |
+| **MUTATE** | $C \to C$          | Update a container's state_payload (endomorphism)      |
+| **UNLINK** | $W \to \emptyset$  | Remove a wire (edge leaves Hom)                        |
 
 **Why natural transformations?** For any functor $F: \mathcal{C} \to \mathcal{D}$ (e.g., $F_{\text{ui}}$ rendering the graph to React), the diagram commutes:
 
@@ -156,12 +156,12 @@ When a single node $A$ has multiple outgoing wires to distinct targets, the set 
 
 Given node $A$ in $\mathcal{C}$ with outgoing wires $f_1: A \to B_1, \; f_2: A \to B_2, \; \ldots, \; f_n: A \to B_n$:
 
-| Component | Definition |
-|-----------|-----------|
-| **Objects** | Outgoing morphisms from $A$: each $f_i: A \to B_i$ is an object |
-| **Morphisms** | Commuting triangles: $h: B_i \to B_j$ such that $h \circ f_i = f_j$ |
+| Component       | Definition                                                                                            |
+| --------------- | ----------------------------------------------------------------------------------------------------- |
+| **Objects**     | Outgoing morphisms from $A$: each $f_i: A \to B_i$ is an object                                       |
+| **Morphisms**   | Commuting triangles: $h: B_i \to B_j$ such that $h \circ f_i = f_j$                                   |
 | **Composition** | Inherited from $\mathcal{C}$: if $h: f_i \to f_j$ and $k: f_j \to f_k$, then $k \circ h: f_i \to f_k$ |
-| **Identity** | $\text{id}_{f_i} = \text{id}_{B_i}$ (the identity on the target) |
+| **Identity**    | $\text{id}_{f_i} = \text{id}_{B_i}$ (the identity on the target)                                      |
 
 **SQL realization:** `SELECT * FROM wires WHERE source_urn = :A` returns all objects of the coslice category $A/\mathcal{C}$.
 
@@ -171,9 +171,9 @@ Given node $A$ in $\mathcal{C}$ with outgoing wires $f_1: A \to B_1, \; f_2: A \
 
 Dually, when multiple nodes wire into a single target $A$:
 
-| Component | Definition |
-|-----------|-----------|
-| **Objects** | Incoming morphisms to $A$: each $g_i: B_i \to A$ |
+| Component     | Definition                                                          |
+| ------------- | ------------------------------------------------------------------- |
+| **Objects**   | Incoming morphisms to $A$: each $g_i: B_i \to A$                    |
 | **Morphisms** | Commuting triangles: $h: B_i \to B_j$ such that $g_j \circ h = g_i$ |
 
 **SQL realization:** `SELECT * FROM wires WHERE target_urn = :A`.
@@ -237,11 +237,11 @@ This gives the fractal structure mentioned in §2. A workspace contains projects
 
 Viewing containers-as-categories at the macro level:
 
-| Level | Category Theory | In mo:os |
-|-------|----------------|----------|
-| **0-cells** | Categories | Containers-as-categories ($\mathcal{C}_W$, $\mathcal{C}_V$, …) |
-| **1-cells** | Functors between categories | Structure-preserving maps between container scopes (wires crossing subcategory boundaries) |
-| **2-cells** | Natural transformations between functors | Morphism-level coherence (the four invariants commute across subcategory boundaries) |
+| Level       | Category Theory                          | In mo:os                                                                                   |
+| ----------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **0-cells** | Categories                               | Containers-as-categories ($\mathcal{C}_W$, $\mathcal{C}_V$, …)                             |
+| **1-cells** | Functors between categories              | Structure-preserving maps between container scopes (wires crossing subcategory boundaries) |
+| **2-cells** | Natural transformations between functors | Morphism-level coherence (the four invariants commute across subcategory boundaries)       |
 
 **SQL realization:** The recursive CTE for OWNS transitivity (architecture.md §5) is precisely the algorithm that computes $\text{Ob}(\mathcal{C}_W)$.
 
@@ -293,11 +293,11 @@ $$\frac{D}{R} = \frac{\text{Cost}_{\text{discovery}}}{\text{Cost}_{\text{retriev
 
 The D/R ratio is computed per sub-category (§8):
 
-| D/R Ratio | Meaning | Optimization Strategy |
-|-----------|---------|----------------------|
-| High D (≫ R) | Schema is evolving, edges change frequently | Pre-compute + cache subgraph structure |
+| D/R Ratio    | Meaning                                      | Optimization Strategy                        |
+| ------------ | -------------------------------------------- | -------------------------------------------- |
+| High D (≫ R) | Schema is evolving, edges change frequently  | Pre-compute + cache subgraph structure       |
 | High R (≫ D) | Schema is stable, mostly fetching known data | Optimize batch fetching, payload compression |
-| D ≈ R | Balanced | Monitor for drift |
+| D ≈ R        | Balanced                                     | Monitor for drift                            |
 
 **Edge-defined relevance:** Edges define node RELEVANCE, not existence. An orphan node (zero edges) exists in `containers` but is invisible to every traversal. Relevance is structural, not intrinsic.
 
@@ -387,10 +387,10 @@ raw content → GPU graph analysis → structured subgraph → LLM prompt → an
 
 **Locked Agreement #3.** Access is split into two orthogonal domains:
 
-| Domain | Controls | Mechanism |
-|--------|----------|-----------|
-| **Node access** | Identity — who you ARE | Auth user has a key (URN) for containers they own |
-| **Edge access** | Policy — what you CAN DO | Any rule: global, local, temporal, env-based |
+| Domain          | Controls                 | Mechanism                                         |
+| --------------- | ------------------------ | ------------------------------------------------- |
+| **Node access** | Identity — who you ARE   | Auth user has a key (URN) for containers they own |
+| **Edge access** | Policy — what you CAN DO | Any rule: global, local, temporal, env-based      |
 
 **Why two domains?** If access were node-only, you couldn't have shared resources. If access were edge-only, you couldn't have identity. The split allows: "User A owns node X" (node domain) AND "Users with role Y can hydrate node X" (edge domain) simultaneously.
 
@@ -412,10 +412,10 @@ If the wire exists, permission is granted. No separate ACL table.
 
 Two transitivity modes co-exist in $\mathcal{C}$:
 
-| Wire Type | Transitivity | Rule |
-|-----------|-------------|------|
-| **OWNS** | Automatic | If $A \xrightarrow{\text{owns}} B$ and $B \xrightarrow{\text{owns}} C$, then $A$ transitively owns $C$. No declaration needed. |
-| **CAN_HYDRATE** | Declared per-edge | Each wire's `wire_config` controls whether the edge propagates. Manifest declares propagation rules. |
+| Wire Type       | Transitivity      | Rule                                                                                                                           |
+| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **OWNS**        | Automatic         | If $A \xrightarrow{\text{owns}} B$ and $B \xrightarrow{\text{owns}} C$, then $A$ transitively owns $C$. No declaration needed. |
+| **CAN_HYDRATE** | Declared per-edge | Each wire's `wire_config` controls whether the edge propagates. Manifest declares propagation rules.                           |
 
 **Manifest = transitivity controller** (Locked Agreement #8):
 - Currently lives as a YAML/JSON config file
@@ -437,12 +437,12 @@ stored in `container_embeddings` via `pgvector`.
 
 **Graph vs Vector — complementary, not competing:**
 
-| Dimension | Graph (wires) | Vector (embeddings) |
-|-----------|--------------|-------------------|
-| Precision | Exact match | Approximate |
-| Composability | $g \circ f$ works | Non-composable |
-| Schema-awareness | Port-typed edges | Flat feature space |
-| Explainability | Wire path = audit trail | Opaque similarity score |
+| Dimension        | Graph (wires)           | Vector (embeddings)     |
+| ---------------- | ----------------------- | ----------------------- |
+| Precision        | Exact match             | Approximate             |
+| Composability    | $g \circ f$ works       | Non-composable          |
+| Schema-awareness | Port-typed edges        | Flat feature space      |
+| Explainability   | Wire path = audit trail | Opaque similarity score |
 
 **Separation principle:** Embeddings are **functor output**, not graph metadata. They are stored separately (`container_embeddings`, not `state_payload`) and regenerated on every MUTATE. This prevents functor-as-metadata pollution.
 
@@ -456,11 +456,11 @@ mo:os instantiates Lawvere's functorial semantics (1963) as an operational archi
 
 ### The Bridge
 
-| Layer | Role | In mo:os |
-|-------|------|----------|
-| **Syntax category** $\mathcal{S}$ | Structure of the language — types, ports, wiring rules, code-as-text | Container schema, `wires` topology, code references in `state_payload` |
-| **Semantics category** $\mathcal{M}$ | Meaning of the language — what happens when evaluated | Go kernel morphism execution, LLM outputs, tool results |
-| **Evaluation functor** $F_{\text{eval}}: \mathcal{S} \to \mathcal{M}$ | Structure-preserving map from syntax to semantics | Kernel pipeline $\Sigma$ — the reducer (§1) |
+| Layer                                                                 | Role                                                                 | In mo:os                                                               |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Syntax category** $\mathcal{S}$                                     | Structure of the language — types, ports, wiring rules, code-as-text | Container schema, `wires` topology, code references in `state_payload` |
+| **Semantics category** $\mathcal{M}$                                  | Meaning of the language — what happens when evaluated                | Go kernel morphism execution, LLM outputs, tool results                |
+| **Evaluation functor** $F_{\text{eval}}: \mathcal{S} \to \mathcal{M}$ | Structure-preserving map from syntax to semantics                    | Kernel pipeline $\Sigma$ — the reducer (§1)                            |
 
 **Structure preservation** means: if two syntactic elements compose in $\mathcal{S}$ (e.g., two wired containers), their semantic evaluations compose identically in $\mathcal{M}$. This is the naturality condition for the four invariant morphisms (§3).
 
@@ -501,12 +501,12 @@ The System 3 transcript (`transcripts/system 3.txt`) and `papers/LogicGraph  Ben
 
 ### Paper References
 
-| Paper | Key Contribution to mo:os |
-|-------|--------------------------|
-| **Functorial Semantics as a Unifying Perspective** | Categorical decomposition/composition guarantees; syntax/semantics bridge formalization |
-| **HyperGraphRAG** | Hypergraph-aware retrieval that preserves topological context during RAG operations |
+| Paper                                                     | Key Contribution to mo:os                                                                                                |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Functorial Semantics as a Unifying Perspective**        | Categorical decomposition/composition guarantees; syntax/semantics bridge formalization                                  |
+| **HyperGraphRAG**                                         | Hypergraph-aware retrieval that preserves topological context during RAG operations                                      |
 | **LogicGraph: Benchmarking Multi-Path Logical Reasoning** | Error taxonomy for LLM reasoning failures; neuro-symbolic verification pipeline; multi-path graph traversal as benchmark |
-| **Seven Sketches in Compositionality** (Fong & Spivak) | Monoidal categories, operads, wiring diagrams — the mathematical vocabulary of mo:os |
+| **Seven Sketches in Compositionality** (Fong & Spivak)    | Monoidal categories, operads, wiring diagrams — the mathematical vocabulary of mo:os                                     |
 
 ---
 
@@ -537,15 +537,15 @@ This reconstructs the current state of any container.
 
 Empirical observation categories for future validation:
 
-| Metric | What It Measures | Source |
-|--------|-----------------|--------|
-| Morphism frequency distribution | Which of the 4 morphisms dominate in real usage | `morphism_log` |
-| Edge density $k/(n^2 \cdot |P_s| \cdot |P_t|)$ | How sparse the actual graph is vs multi-port theoretical max (§7) | `wires` + `containers` count + port type cardinality |
-| Traversal depth | Average/max path length in ownership trees | Recursive CTE on `wires` |
-| Replay cost | Time to reconstruct state from morphism_log | Benchmark on `morphism_log` size |
-| Hypergraph fanout | Average number of distinct port types per node-pair | `wires` GROUP BY source/target |
-| Coslice cardinality | Average fan-out degree per node | `wires` GROUP BY source_urn |
-| Subcategory depth | Max nesting level of OWNS chains | Recursive CTE depth counter |
+| Metric                          | What It Measures                                    | Source                           |
+| ------------------------------- | --------------------------------------------------- | -------------------------------- |
+| Morphism frequency distribution | Which of the 4 morphisms dominate in real usage     | `morphism_log`                   |
+| Edge density $k/(n^2 \cdot      | P_s                                                 | \cdot                            | P_t | )$ | How sparse the actual graph is vs multi-port theoretical max (§7) | `wires` + `containers` count + port type cardinality |
+| Traversal depth                 | Average/max path length in ownership trees          | Recursive CTE on `wires`         |
+| Replay cost                     | Time to reconstruct state from morphism_log         | Benchmark on `morphism_log` size |
+| Hypergraph fanout               | Average number of distinct port types per node-pair | `wires` GROUP BY source/target   |
+| Coslice cardinality             | Average fan-out degree per node                     | `wires` GROUP BY source_urn      |
+| Subcategory depth               | Max nesting level of OWNS chains                    | Recursive CTE depth counter      |
 
 **Method:** Prometheus metrics at `/metrics` endpoint + direct SQL queries on `morphism_log`. These observations will validate or falsify the cost model (§7) and sub-category analysis (§8) once production data exists.
 
