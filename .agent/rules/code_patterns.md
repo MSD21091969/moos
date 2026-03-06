@@ -16,13 +16,13 @@
 
 ## Core Concepts
 
-| Concept | Purpose |
-| ---------- | --------------------------------- |
-| Container | Workspace context holder in graph |
-| Definition | Versioned I/O contract |
-| Graph | Topology of nodes |
-| Morphism | State mutation envelope (ADD/LINK/MUTATE/UNLINK) |
-| Application | Self-hosting recursive tree (x1z) |
+| Concept     | Purpose                                          |
+| ----------- | ------------------------------------------------ |
+| Container   | Workspace context holder in graph                |
+| Definition  | Versioned I/O contract                           |
+| Graph       | Topology of nodes                                |
+| Morphism    | State mutation envelope (ADD/LINK/MUTATE/UNLINK) |
+| Application | Self-hosting recursive tree (x1z)                |
 
 ---
 

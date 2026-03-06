@@ -73,8 +73,18 @@ const createApi = (apiBaseUrl?: string): SurfaceSyncApi => {
                 if (!response.ok) {
                     return { status: 'error' };
                 }
-                const payload = (await response.json()) as { status?: string };
-                return { status: payload.status ?? 'ok' };
+                const contentType = response.headers.get('content-type') ?? '';
+                if (contentType.includes('application/json')) {
+                    const payload = (await response.json()) as { status?: string };
+                    return { status: payload.status ?? 'ok' };
+                }
+
+                const payloadText = (await response.text()).trim().toLowerCase();
+                if (payloadText === 'ok') {
+                    return { status: 'ok' };
+                }
+
+                return { status: payloadText.length > 0 ? payloadText : 'ok' };
             } catch {
                 return { status: 'unavailable' };
             }

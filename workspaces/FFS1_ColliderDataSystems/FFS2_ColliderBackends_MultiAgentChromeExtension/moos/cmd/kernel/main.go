@@ -17,8 +17,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/collider/moos/internal/config"
 	"github.com/collider/moos/internal/container"
 	"github.com/collider/moos/internal/migrate"
@@ -26,6 +24,7 @@ import (
 	"github.com/collider/moos/internal/morphism"
 	"github.com/collider/moos/internal/session"
 	"github.com/collider/moos/internal/tool"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type containerStoreAPI interface {
@@ -108,11 +107,11 @@ func main() {
 	mcpBridge := tool.NewMCPBridge(tool.NewRegistryWithContainerStore(containerStore), tool.DefaultPolicy())
 	mcpBroker := newMCPSessionBroker()
 	attachMCPRoutes(mux, mcpBridge, mcpBroker, cfg.BearerToken)
-	sessionManager := session.NewManager(morphismExecutor, dispatcher, cfg.SessionTTL, cfg.SessionCleanupEvery, logger)
-	// We pass containerStore if not nil
-	if containerStore != nil {
-		sessionManager = session.NewManagerWithContainerStore(morphismExecutor, dispatcher, cfg.SessionTTL, cfg.SessionCleanupEvery, logger, containerStore)
+	sessionStore, storeErr := session.NewStoreWithFallback(cfg.RedisURL, cfg.SessionTTL)
+	if storeErr != nil {
+		logger.Warn("session store fallback activated", "error", storeErr)
 	}
+	sessionManager := session.NewManagerWithStore(morphismExecutor, dispatcher, cfg.SessionTTL, cfg.SessionCleanupEvery, logger, sessionStore)
 	sessionManager.SetToolDispatcher(tool.NewRunner(cfg.ToolRuntimeAddr, 5*time.Second))
 	defer sessionManager.Shutdown()
 	wsGateway := newWebSocketGateway(morphismExecutor, sessionManager, cfg.BearerToken, logger)

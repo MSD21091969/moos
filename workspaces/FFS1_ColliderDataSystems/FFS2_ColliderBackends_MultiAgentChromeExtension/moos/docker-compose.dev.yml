@@ -10,7 +10,7 @@ services:
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U moos -d moos']
+      test: [ 'CMD-SHELL', 'pg_isready -U moos -d moos' ]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -20,7 +20,7 @@ services:
     ports:
       - '6379:6379'
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: [ 'CMD', 'redis-cli', 'ping' ]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -33,7 +33,7 @@ services:
     # Override entrypoint to use 'go run' for live reloading via Air or direct
     # hot-restart when source is mounted. For a lightweight alternative without
     # Air, kill + restart the container after source edits.
-    command: ['go', 'run', './cmd/kernel']
+    command: [ 'go', 'run', './cmd/kernel' ]
     working_dir: /app
     volumes:
       # Mount source for live rebuilds. Requires the builder stage to have the
@@ -57,6 +57,8 @@ services:
       OPENAI_MODEL: '${OPENAI_MODEL:-}'
     ports:
       - '8000:8080'
+      - '8001:8080'
+      - '8004:8080'
       - '18789:18789'
     depends_on:
       postgres:
@@ -64,6 +66,60 @@ services:
       redis:
         condition: service_healthy
 
+  frontend-deps:
+    image: node:20-bookworm-slim
+    working_dir: /app
+    command: [ 'bash', '-lc', 'corepack enable && pnpm install --frozen-lockfile' ]
+    environment:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+    volumes:
+      - .:/app
+      - pnpmstore:/root/.pnpm-store
+      - nodemodules:/app/node_modules
+
+  sidepanel:
+    image: node:20-bookworm-slim
+    working_dir: /app
+    command: [ 'bash', '-lc', './node_modules/.bin/vite --config apps/sidepanel/vite.config.mts --host 0.0.0.0 --port 4201' ]
+    volumes:
+      - .:/app
+      - pnpmstore:/root/.pnpm-store
+      - nodemodules:/app/node_modules
+    environment:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+      VITE_DATA_SERVER_URL: '/moos-api'
+      VITE_MOOS_BEARER_TOKEN: '${MOOS_BEARER_TOKEN:-dev-token}'
+      VITE_AGENT_RUNNER_URL: 'ws://localhost:18789'
+    ports:
+      - '4201:4201'
+    depends_on:
+      frontend-deps:
+        condition: service_completed_successfully
+      kernel:
+        condition: service_started
+
+  viewer:
+    image: node:20-bookworm-slim
+    working_dir: /app
+    command: [ 'bash', '-lc', './node_modules/.bin/vite --config apps/viewer/vite.config.mts --host 0.0.0.0 --port 4203' ]
+    volumes:
+      - .:/app
+      - pnpmstore:/root/.pnpm-store
+      - nodemodules:/app/node_modules
+    environment:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+      VITE_DATA_SERVER_URL: '/moos-api'
+      VITE_AGENT_RUNNER_URL: 'ws://localhost:18789'
+    ports:
+      - '4203:4203'
+    depends_on:
+      frontend-deps:
+        condition: service_completed_successfully
+      kernel:
+        condition: service_started
+
 volumes:
   pgdata_dev:
   gomodcache:
+  pnpmstore:
+  nodemodules:

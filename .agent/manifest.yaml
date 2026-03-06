@@ -24,7 +24,13 @@ exports:
   # Instructions (minimal intent contract)
   - instructions/agent_system.md
   # Canonical architecture authority
-  - knowledge/moos_architecture_foundations.md
+  - knowledge/01_foundations/the_one_axiom.md
+  - knowledge/01_foundations/categorical_foundations.md
+  - knowledge/02_architecture/the_four_morphisms.md
+  - knowledge/02_architecture/kernel_architecture.md
+  - knowledge/superset_architecture_plan.md
+  - knowledge/phase5_ux_mvp_baseline.md
+  - knowledge/MANIFESTO.md
   # Configs (shared settings)
   - configs/users.yaml
   - configs/api_providers.yaml

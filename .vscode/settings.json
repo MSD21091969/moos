@@ -34,10 +34,13 @@
       "text": "Check for: missing Google docstrings, non-Ruff-compliant style, missing type annotations, any use of PostgreSQL (use SQLite/aiosqlite), any use of npm/yarn (use pnpm for FFS3), hardcoded secrets, non-async DB calls in FastAPI routes."
     }
   ],
-  "python.defaultInterpreterPath": "${workspaceFolder:FFS0_Factory}/.venv/Scripts/python.exe",
+  "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+  "ruff.path": [
+    ".venv/Scripts/ruff.exe"
+  ],
   "python.analysis.diagnosticMode": "openFilesOnly",
   "python.analysis.extraPaths": [
-    "${workspaceFolder:FFS0_Factory}/sdk"
+    "sdk"
   ],
   "[python]": {
     "editor.formatOnSave": true,

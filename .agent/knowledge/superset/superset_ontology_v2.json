@@ -1,0 +1,356 @@
+{
+  "schema_version": "2.0",
+  "title": "mo:os Superset Ontology",
+  "description": "Complete categorical ontology for the mo:os Universal Graph Model. All objects are containers, all relationships are wires, all changes are morphisms.",
+  "date": "2026-07-14",
+  "axioms": [
+    {
+      "id": "AX1",
+      "name": "No_Meta_Only_Recursive",
+      "statement": "Every entity in the system is a container identified by a URN. There is no metadata layer — only containers referencing containers via wires.",
+      "formal": "∀ x ∈ System, x = (urn, Σ morphisms)"
+    },
+    {
+      "id": "AX2",
+      "name": "Code_Is_Axiomatic",
+      "statement": "Code is loaded into semantic folders as atomic morphisms. Code is never stored in state_payload. Binding code to graph metadata causes structural binding loss.",
+      "formal": "state_payload ∩ executable_code = ∅"
+    },
+    {
+      "id": "AX3",
+      "name": "DB_Is_Truth",
+      "statement": "The morphism_log is the single source of truth. containers and wires tables are materialized caches. Any state can be reconstructed by replaying morphism_log.",
+      "formal": "state(x, t) = fold(morphism_log(x, 0..t))"
+    },
+    {
+      "id": "AX4",
+      "name": "Hypergraph_Superposition",
+      "statement": "The database stores THE graph — a superposition of all projected graphs. Multiple wires between the same (A,B) pair via different ports is the general case. Queries collapse the superposition by selecting edge types.",
+      "formal": "G_stored = ⋃_{p ∈ Ports} G_p; UNIQUE(source_urn, source_port, target_urn, target_port)"
+    },
+    {
+      "id": "AX5",
+      "name": "Discovery_Retrieval_Duality",
+      "statement": "The gap between potential edges (n² × |P_s| × |P_t|) and actual edges (k) IS the system's knowledge. Discovery cost is O(|E_scope| × c_index). Retrieval cost is O(k+1). The D/R ratio per sub-category is a first-class optimization metric.",
+      "formal": "Knowledge = n² × |P_s| × |P_t| - k; D/R = Cost_discovery / Cost_retrieval"
+    }
+  ],
+  "categories": {
+    "objects": [
+      {
+        "id": "OBJ01",
+        "name": "AuthUser",
+        "type_id": "auth_user",
+        "broad_category": "identity",
+        "description": "Authenticated user — a container whose morphisms grant access edges. No special ontological status.",
+        "source_connections": ["OWNS", "CAN_HYDRATE"],
+        "target_connections": []
+      },
+      {
+        "id": "OBJ02",
+        "name": "AppAdmin",
+        "type_id": "app_admin",
+        "broad_category": "identity",
+        "description": "Application administrator — AuthUser with elevated OWNS edges to system containers.",
+        "source_connections": ["OWNS", "CAN_HYDRATE", "PRE_FLIGHT_CONFIG"],
+        "target_connections": []
+      },
+      {
+        "id": "OBJ03",
+        "name": "SuperAdmin",
+        "type_id": "super_admin",
+        "broad_category": "identity",
+        "description": "Root administrator — AppAdmin with transitive OWNS over all containers.",
+        "source_connections": ["OWNS", "CAN_HYDRATE", "PRE_FLIGHT_CONFIG", "CAN_SCHEDULE", "CAN_FEDERATE"],
+        "target_connections": []
+      },
+      {
+        "id": "OBJ04",
+        "name": "AppTemplate",
+        "type_id": "app_template",
+        "broad_category": "structure",
+        "description": "Template container — defines a reusable subgraph pattern. Instantiation = ADD + LINK morphism sequence.",
+        "source_connections": ["CAN_HYDRATE"],
+        "target_connections": ["OWNS", "PRE_FLIGHT_CONFIG"]
+      },
+      {
+        "id": "OBJ05",
+        "name": "NodeContainer",
+        "type_id": "node_container",
+        "broad_category": "structure",
+        "description": "General-purpose container — the default object in C. Payload in state_payload JSONB.",
+        "source_connections": ["LINK_NODES", "SYNC_ACTIVE_STATE"],
+        "target_connections": ["OWNS", "CAN_HYDRATE", "LINK_NODES", "ADD_NODE_CONTAINER"]
+      },
+      {
+        "id": "OBJ06",
+        "name": "AgnosticModel",
+        "type_id": "agnostic_model",
+        "broad_category": "compute",
+        "description": "LLM/ML model container — provider-agnostic. Model identity is a URN; provider config lives in state_payload.",
+        "source_connections": ["CAN_HYDRATE"],
+        "target_connections": ["OWNS", "CAN_SCHEDULE", "CAN_ROUTE"]
+      },
+      {
+        "id": "OBJ07",
+        "name": "SystemTool",
+        "type_id": "system_tool",
+        "broad_category": "compute",
+        "description": "Tool container — discovered via graph traversal, exposed via MCP protocol surface. Endpoint + params in state_payload.",
+        "source_connections": [],
+        "target_connections": ["OWNS", "CAN_HYDRATE", "CAN_ROUTE"]
+      },
+      {
+        "id": "OBJ08",
+        "name": "UI_Lens",
+        "type_id": "ui_lens",
+        "broad_category": "surface",
+        "description": "UI rendering surface — functor output mapping containers × wires to React component tree.",
+        "source_connections": ["SYNC_ACTIVE_STATE"],
+        "target_connections": ["OWNS", "CAN_HYDRATE"]
+      },
+      {
+        "id": "OBJ09",
+        "name": "RuntimeSurface",
+        "type_id": "runtime_surface",
+        "broad_category": "surface",
+        "description": "Execution surface — HTTP/WS/MCP endpoint. Tools wire to RuntimeSurface to become executable.",
+        "source_connections": [],
+        "target_connections": ["OWNS", "PRE_FLIGHT_CONFIG", "CAN_ROUTE"]
+      },
+      {
+        "id": "OBJ10",
+        "name": "ComputeResource",
+        "type_id": "compute_resource",
+        "broad_category": "compute",
+        "description": "GPU device, Docker container, thread pool, or VM — a schedulable resource container.",
+        "source_connections": [],
+        "target_connections": ["OWNS", "CAN_SCHEDULE"]
+      },
+      {
+        "id": "OBJ11",
+        "name": "ProtocolAdapter",
+        "type_id": "protocol_adapter",
+        "broad_category": "protocol",
+        "description": "WS channel, MCP session, gRPC stream, HTTP endpoint — a routable communication container.",
+        "source_connections": ["CAN_ROUTE"],
+        "target_connections": ["OWNS", "CAN_HYDRATE"]
+      },
+      {
+        "id": "OBJ12",
+        "name": "InfraService",
+        "type_id": "infra_service",
+        "broad_category": "infra",
+        "description": "Postgres instance, disk volume, network segment — a persistable infrastructure container.",
+        "source_connections": [],
+        "target_connections": ["OWNS", "CAN_PERSIST"]
+      },
+      {
+        "id": "OBJ13",
+        "name": "MemoryStore",
+        "type_id": "memory_store",
+        "broad_category": "memory",
+        "description": "Vector embedding store, context window, conversation history — an ephemeral or persistent memory container.",
+        "source_connections": ["CAN_HYDRATE"],
+        "target_connections": ["OWNS", "CAN_PERSIST"]
+      }
+    ],
+    "morphisms": [
+      {
+        "id": "MOR01",
+        "name": "OWNS",
+        "decomposition": "LINK(owner, 'owns', target, 'child')",
+        "source": "identity.*",
+        "target": "any",
+        "transitivity": "automatic",
+        "description": "Ownership edge — automatic transitive propagation."
+      },
+      {
+        "id": "MOR02",
+        "name": "CAN_HYDRATE",
+        "decomposition": "LINK(actor, 'can_hydrate', target, 'hydrate')",
+        "source": "identity.* | structure.* | memory.*",
+        "target": "any",
+        "transitivity": "declared_per_edge",
+        "description": "Hydration permission — declared transitivity controlled by manifest/wire_config."
+      },
+      {
+        "id": "MOR03",
+        "name": "PRE_FLIGHT_CONFIG",
+        "decomposition": "MUTATE(surface, config_payload)",
+        "source": "identity.admin+",
+        "target": "surface.* | structure.*",
+        "transitivity": "none",
+        "description": "Runtime configuration morphism — sets initial state before activation."
+      },
+      {
+        "id": "MOR04",
+        "name": "SYNC_ACTIVE_STATE",
+        "decomposition": "MUTATE(container, current_state)",
+        "source": "surface.*",
+        "target": "structure.*",
+        "transitivity": "none",
+        "description": "State synchronization — UI or runtime surface pushes current state back to container."
+      },
+      {
+        "id": "MOR05",
+        "name": "ADD_NODE_CONTAINER",
+        "decomposition": "ADD(container) ; LINK(parent, 'owns', container, 'child')",
+        "source": "identity.* | structure.*",
+        "target": "structure.*",
+        "transitivity": "inherits_parent_owns",
+        "description": "Create a new container and wire it into the ownership tree."
+      },
+      {
+        "id": "MOR06",
+        "name": "LINK_NODES",
+        "decomposition": "LINK(source, port_s, target, port_t)",
+        "source": "structure.*",
+        "target": "structure.*",
+        "transitivity": "none",
+        "description": "General-purpose wiring — creates an edge with specified port types."
+      },
+      {
+        "id": "MOR07",
+        "name": "UPDATE_NODE_KERNEL",
+        "decomposition": "MUTATE(container, kernel_state)",
+        "source": "identity.* | compute.*",
+        "target": "structure.*",
+        "transitivity": "none",
+        "description": "Update container state_payload — kernel-level state change."
+      },
+      {
+        "id": "MOR08",
+        "name": "DELETE_EDGE",
+        "decomposition": "UNLINK(source, port_s, target, port_t)",
+        "source": "any",
+        "target": "any",
+        "transitivity": "cascades_orphan_check",
+        "description": "Remove a wire. Container persists. May create orphan nodes (visible in containers, invisible to traversal)."
+      },
+      {
+        "id": "MOR09",
+        "name": "CAN_SCHEDULE",
+        "decomposition": "LINK(kernel, 'can_schedule', resource, 'workload')",
+        "source": "identity.admin+ | compute.*",
+        "target": "compute.ComputeResource",
+        "transitivity": "none",
+        "description": "Workload allocation — kernel or admin schedules work to a compute resource."
+      },
+      {
+        "id": "MOR10",
+        "name": "CAN_ROUTE",
+        "decomposition": "LINK(adapter, 'can_route', target, 'transport')",
+        "source": "protocol.ProtocolAdapter",
+        "target": "any",
+        "transitivity": "none",
+        "description": "Transport selection — protocol adapter routes traffic to any target container."
+      },
+      {
+        "id": "MOR11",
+        "name": "CAN_PERSIST",
+        "decomposition": "LINK(source, 'can_persist', infra, 'storage')",
+        "source": "any",
+        "target": "infra.InfraService | memory.MemoryStore",
+        "transitivity": "none",
+        "description": "Storage routing — any container can persist state through an infrastructure service."
+      },
+      {
+        "id": "MOR12",
+        "name": "CAN_FEDERATE",
+        "decomposition": "LINK(kernel_a, 'can_federate', kernel_b, 'peer')",
+        "source": "identity.SuperAdmin",
+        "target": "surface.RuntimeSurface",
+        "transitivity": "none",
+        "description": "Cross-instance communication — enables morphism bundle exchange between mo:os instances."
+      },
+      {
+        "id": "MOR13",
+        "name": "CAN_FORK",
+        "decomposition": "LINK(active_state, 'can_fork', compute_gpu, 'vram_branch')",
+        "source": "compute.* | identity.admin+",
+        "target": "compute.ComputeResource",
+        "transitivity": "none",
+        "status": "planned",
+        "description": "Branch parallel exploration — fork active state graph into GPU VRAM for parallel DAG scoring."
+      }
+    ],
+    "functors": [
+      {
+        "id": "FUN01",
+        "name": "FileSystem",
+        "signature": "F_fs: manifest.yaml → wires",
+        "direction": "codebase → graph",
+        "status": "active",
+        "description": "Import functor — reads manifest.yaml and creates/reconciles LINK morphisms in wires table."
+      },
+      {
+        "id": "FUN02",
+        "name": "UI_Lens",
+        "signature": "F_ui: containers × wires → React tree",
+        "direction": "graph → browser",
+        "status": "active",
+        "description": "Render functor — maps containers and wires to XYFlow nodes/edges in React."
+      },
+      {
+        "id": "FUN03",
+        "name": "Embedding",
+        "signature": "F_embed: state_payload → R^1536",
+        "direction": "graph → vector space",
+        "status": "active",
+        "description": "Embed functor — maps container payloads to pgvector embeddings. Output in container_embeddings, not state_payload."
+      },
+      {
+        "id": "FUN04",
+        "name": "Structure",
+        "signature": "F_struct: subgraph → compressed DAG",
+        "direction": "graph → compressed representation",
+        "status": "planned",
+        "description": "GPU pre-analysis functor — adjacency matrix ops, spectral analysis, DAG compression before LLM calls."
+      },
+      {
+        "id": "FUN05",
+        "name": "Benchmark",
+        "signature": "B: C_provider → C_standard",
+        "direction": "provider graph → standard graph",
+        "status": "planned",
+        "description": "Cross-provider comparison functor — structure-preserving map from provider categories to standard evaluation category."
+      }
+    ],
+    "systems": [
+      {
+        "id": "SYS01",
+        "name": "RootContainer",
+        "description": "Top-level container — root of all ownership trees. Every container is transitively owned by RootContainer.",
+        "type_id": "root_container"
+      },
+      {
+        "id": "SYS02",
+        "name": "MainLoop",
+        "description": "Kernel event loop — Event→Route→Dispatch→Transform→Commit pipeline. Reads categories from graph, has no business logic.",
+        "type_id": "main_loop"
+      },
+      {
+        "id": "SYS03",
+        "name": "RestingStateDB",
+        "description": "Postgres ground truth — morphism_log (truth), containers/wires (caches), container_embeddings (functor output).",
+        "type_id": "resting_state_db"
+      },
+      {
+        "id": "SYS04",
+        "name": "ActiveStateGraph",
+        "description": "Live hypergraph superposition — all projected graphs coexist. Queries collapse superposition by port type selection.",
+        "type_id": "active_state_graph"
+      }
+    ]
+  },
+  "invariant_morphisms": {
+    "note": "All 12 superset morphisms above decompose into these 4 invariant natural transformations.",
+    "morphisms": [
+      {"name": "ADD", "signature": "∅ → Container", "description": "Create container"},
+      {"name": "LINK", "signature": "C × C → Wire", "description": "Create wire"},
+      {"name": "MUTATE", "signature": "C → C", "description": "Update container state"},
+      {"name": "UNLINK", "signature": "Wire → ∅", "description": "Remove wire"}
+    ]
+  }
+}

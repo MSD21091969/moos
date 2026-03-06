@@ -17,15 +17,6 @@
     },
     {
       "path": "./apps/viewer"
-    },
-    {
-      "path": "./apps/engine"
-    },
-    {
-      "path": "./apps/data-server"
-    },
-    {
-      "path": "./apps/tool-server"
     }
   ]
 }

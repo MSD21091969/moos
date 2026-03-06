@@ -3,27 +3,19 @@ package session
 import (
 	"context"
 	"crypto/rand"
-	"database/sql"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/collider/moos/internal/container"
 	"github.com/collider/moos/internal/model"
 	"github.com/collider/moos/internal/morphism"
 )
 
 type morphismExecutor interface {
 	Apply(ctx context.Context, envelope morphism.Envelope) (int64, error)
-}
-
-type containerStore interface {
-	ListByKind(ctx context.Context, kind string, limit int) ([]container.Record, error)
-	ListChildren(ctx context.Context, parentURN string) ([]container.Record, error)
 }
 
 type sessionState struct {
@@ -66,7 +58,7 @@ type Manager struct {
 
 	mu          sync.RWMutex
 	sessions    map[string]*sessionState
-	dbStore     containerStore
+	store       store
 	toolRunner  toolDispatcher
 	broadcaster func(sessionID string, event Event)
 	activeCache activeStateProjector
@@ -74,10 +66,10 @@ type Manager struct {
 }
 
 func NewManager(executor morphismExecutor, dispatcher *model.Dispatcher, ttl time.Duration, cleanupEvery time.Duration, logger *slog.Logger) *Manager {
-	return NewManagerWithContainerStore(executor, dispatcher, ttl, cleanupEvery, logger, nil)
+	return NewManagerWithStore(executor, dispatcher, ttl, cleanupEvery, logger, nil)
 }
 
-func NewManagerWithContainerStore(executor morphismExecutor, dispatcher *model.Dispatcher, ttl time.Duration, cleanupEvery time.Duration, logger *slog.Logger, dbStore containerStore) *Manager {
+func NewManagerWithStore(executor morphismExecutor, dispatcher *model.Dispatcher, ttl time.Duration, cleanupEvery time.Duration, logger *slog.Logger, sessionStore store) *Manager {
 	if logger == nil {
 		logger = slog.Default()
 	}
@@ -87,6 +79,9 @@ func NewManagerWithContainerStore(executor morphismExecutor, dispatcher *model.D
 	if cleanupEvery <= 0 {
 		cleanupEvery = time.Minute
 	}
+	if sessionStore == nil {
+		sessionStore = newMemoryStore()
+	}
 	manager := &Manager{
 		executor:     executor,
 		dispatcher:   dispatcher,
@@ -95,7 +90,7 @@ func NewManagerWithContainerStore(executor morphismExecutor, dispatcher *model.D
 		cleanupEvery: cleanupEvery,
 		now:          func() time.Time { return time.Now().UTC() },
 		sessions:     map[string]*sessionState{},
-		dbStore:      dbStore,
+		store:        sessionStore,
 		toolRunner:   noopToolDispatcher{},
 		activeCache:  nopActiveStateCache{},
 		stopCleanup:  make(chan struct{}),
@@ -132,6 +127,9 @@ func (manager *Manager) SetBroadcaster(broadcaster func(sessionID string, event 
 	manager.broadcaster = broadcaster
 }
 
+// SetActiveStateCache configures the Redis-backed cache used to project the
+// latest morphism for each scope URN and publish fan-out deltas. When nil is
+// passed the no-op implementation is used so callers never need a nil check.
 func (manager *Manager) SetActiveStateCache(cache activeStateProjector) {
 	if cache == nil {
 		cache = nopActiveStateCache{}
@@ -171,20 +169,7 @@ func (manager *Manager) Create() (Summary, error) {
 	manager.mu.Lock()
 	manager.sessions[sessionID] = state
 	manager.mu.Unlock()
-
-	if manager.executor != nil {
-		_, _ = manager.executor.Apply(context.Background(), morphism.Envelope{
-			Type:           "ADD",
-			ScopeURN:       rootURN,
-			IssuedAtUnixMs: now.UnixMilli(),
-			Add: &morphism.AddPayload{
-				Container: container.Record{
-					URN:  rootURN,
-					Kind: "SESSION",
-				},
-			},
-		})
-	}
+	_ = manager.persistState(state)
 
 	go manager.runSession(state)
 
@@ -231,6 +216,7 @@ func (manager *Manager) Close(sessionID string) error {
 	}
 	delete(manager.sessions, sessionID)
 	close(state.stopped)
+	_ = manager.store.Delete(context.Background(), sessionID)
 	return nil
 }
 
@@ -255,6 +241,7 @@ func (manager *Manager) cleanupExpired() {
 		if state.lastActiveAt.Before(cutoff) {
 			delete(manager.sessions, sessionID)
 			close(state.stopped)
+			_ = manager.store.Delete(context.Background(), sessionID)
 		}
 	}
 }
@@ -270,34 +257,16 @@ func (manager *Manager) runSession(state *sessionState) {
 	}
 }
 
-func (manager *Manager) appendMessage(state *sessionState, msg model.Message) {
-	state.messages = append(state.messages, msg)
-	if manager.executor != nil {
-		msgJSON, _ := json.Marshal(msg)
-		urnBytes := make([]byte, 8)
-		rand.Read(urnBytes)
-		msgURN := fmt.Sprintf("urn:moos:message:%s", hex.EncodeToString(urnBytes))
-		_, _ = manager.executor.Apply(context.Background(), morphism.Envelope{
-			Type:           "ADD",
-			ScopeURN:       state.rootURN,
-			IssuedAtUnixMs: manager.now().UnixMilli(),
-			Add: &morphism.AddPayload{
-				Container: container.Record{
-					URN:        msgURN,
-					ParentURN:  sql.NullString{String: state.rootURN, Valid: true},
-					Kind:       "MESSAGE",
-					KernelJSON: msgJSON,
-				},
-			},
-		})
-	}
-}
-
 func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 	state.lastActiveAt = manager.now()
-	manager.appendMessage(state, model.Message{Role: "user", Content: event.text})
+	state.messages = append(state.messages, model.Message{Role: "user", Content: event.text})
+	_ = manager.persistState(state)
 	manager.emit(state.id, Event{Method: "stream.thinking", Params: map[string]any{"session_id": state.id, "text": "processing"}})
 
+	// Pre-extract morphisms and tool calls from the user's message.
+	// These are handled directly and synchronously without invoking the model,
+	// which enables deterministic handling of structured user commands and ensures
+	// tests remain fast regardless of which real API adapters are configured.
 	userMorphisms, _ := model.ParseMorphismEnvelopes(event.text)
 	userToolCalls := model.ParseToolCalls(event.text)
 
@@ -319,16 +288,20 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 			output, dispatchErr := manager.toolRunner.Dispatch(context.Background(), state.id, toolCall)
 			if dispatchErr != nil {
 				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": dispatchErr.Error()}})
-				manager.appendMessage(state, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s failed: %v", toolCall.Name, dispatchErr)})
+				state.messages = append(state.messages, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s failed: %v", toolCall.Name, dispatchErr)})
 				continue
 			}
 			manager.emit(state.id, Event{Method: "stream.tool_result", Params: map[string]any{"session_id": state.id, "tool": toolCall.Name, "output": output}})
-			manager.appendMessage(state, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s returned: %v", toolCall.Name, output)})
+			state.messages = append(state.messages, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s returned: %v", toolCall.Name, output)})
 		}
+		_ = manager.persistState(state)
 		manager.emit(state.id, Event{Method: "stream.end", Params: map[string]any{"session_id": state.id, "stop_reason": "end_turn"}})
 		return
 	}
 
+	// No user-provided morphisms or tool calls: call the model for a text response.
+	// The model may itself generate morphisms or trigger tool calls in its response,
+	// which are collected from chunks and processed below.
 	for {
 		chunks, err := manager.dispatcher.Stream(context.Background(), model.CompletionRequest{
 			SessionID: state.id,
@@ -363,7 +336,8 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 		accumulatedText := fullText.String()
 
 		if accumulatedText != "" {
-			manager.appendMessage(state, model.Message{Role: "assistant", Content: accumulatedText})
+			state.messages = append(state.messages, model.Message{Role: "assistant", Content: accumulatedText})
+			_ = manager.persistState(state)
 		}
 
 		for _, envelope := range allMorphisms {
@@ -388,12 +362,13 @@ func (manager *Manager) handleUserEvent(state *sessionState, event userEvent) {
 			output, dispatchErr := manager.toolRunner.Dispatch(context.Background(), state.id, toolCall)
 			if dispatchErr != nil {
 				manager.emit(state.id, Event{Method: "stream.error", Params: map[string]any{"session_id": state.id, "error": dispatchErr.Error()}})
-				manager.appendMessage(state, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s failed: %v", toolCall.Name, dispatchErr)})
+				state.messages = append(state.messages, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s failed: %v", toolCall.Name, dispatchErr)})
 				continue
 			}
 			manager.emit(state.id, Event{Method: "stream.tool_result", Params: map[string]any{"session_id": state.id, "tool": toolCall.Name, "output": output}})
-			manager.appendMessage(state, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s returned: %v", toolCall.Name, output)})
+			state.messages = append(state.messages, model.Message{Role: "user", Content: fmt.Sprintf("Tool %s returned: %v", toolCall.Name, output)})
 		}
+		_ = manager.persistState(state)
 	}
 
 	manager.emit(state.id, Event{Method: "stream.end", Params: map[string]any{"session_id": state.id, "stop_reason": "end_turn"}})
@@ -416,44 +391,45 @@ func newSessionID() (string, error) {
 	return "s_" + hex.EncodeToString(bytes), nil
 }
 
+func (manager *Manager) persistState(state *sessionState) error {
+	if manager.store == nil {
+		return nil
+	}
+	snapshot := sessionSnapshot{
+		Summary: Summary{
+			SessionID:    state.id,
+			RootURN:      state.rootURN,
+			CreatedAt:    state.createdAt,
+			LastActiveAt: state.lastActiveAt,
+		},
+		Messages: append([]model.Message{}, state.messages...),
+	}
+	return manager.store.Save(context.Background(), snapshot)
+}
+
 func (manager *Manager) restoreSessions() {
-	if manager.dbStore == nil {
+	if manager.store == nil {
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	sessions, err := manager.dbStore.ListByKind(ctx, "SESSION", 50)
+	snapshots, err := manager.store.List(context.Background())
 	if err != nil {
-		manager.logger.Warn("failed to restore sessions from db", "error", err)
+		manager.logger.Warn("failed to restore sessions", "error", err)
 		return
 	}
-
-	for _, rec := range sessions {
-		sessionID := strings.TrimPrefix(rec.URN, "urn:moos:session:")
+	for _, snapshot := range snapshots {
+		if snapshot.Summary.SessionID == "" {
+			continue
+		}
 		state := &sessionState{
-			id:           sessionID,
-			rootURN:      rec.URN,
-			createdAt:    manager.now(),
-			lastActiveAt: manager.now(),
-			messages:     []model.Message{},
+			id:           snapshot.Summary.SessionID,
+			rootURN:      snapshot.Summary.RootURN,
+			createdAt:    snapshot.Summary.CreatedAt,
+			lastActiveAt: snapshot.Summary.LastActiveAt,
+			messages:     append([]model.Message{}, snapshot.Messages...),
 			events:       make(chan userEvent, 32),
 			stopped:      make(chan struct{}),
 		}
-
-		children, childErr := manager.dbStore.ListChildren(ctx, rec.URN)
-		if childErr == nil {
-			for _, child := range children {
-				if child.Kind == "MESSAGE" {
-					var msg model.Message
-					if unmarshalErr := json.Unmarshal(child.KernelJSON, &msg); unmarshalErr == nil {
-						state.messages = append(state.messages, msg)
-					}
-				}
-			}
-		}
-
-		manager.sessions[sessionID] = state
+		manager.sessions[state.id] = state
 		go manager.runSession(state)
 	}
 }

@@ -8,6 +8,46 @@
         "projectType": "application",
         "metadata": {},
         "targets": {
+          "test": {
+            "options": {
+              "cwd": "apps/ffs4",
+              "command": "vitest"
+            },
+            "cache": true,
+            "inputs": [
+              "default",
+              "^default",
+              {
+                "externalDependencies": [
+                  "vitest"
+                ]
+              },
+              {
+                "env": "CI"
+              }
+            ],
+            "outputs": [
+              "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "metadata": {
+              "technologies": [
+                "vite"
+              ],
+              "description": "Run Vite tests",
+              "help": {
+                "command": "pnpm exec vitest --help",
+                "example": {
+                  "options": {
+                    "bail": 1,
+                    "coverage": true
+                  }
+                }
+              }
+            },
+            "executor": "nx:run-commands",
+            "configurations": {},
+            "parallelism": true
+          },
           "build": {
             "executor": "nx:run-commands",
             "options": {
@@ -13615,6 +13655,11 @@
       {
         "source": "ffs4",
         "target": "npm:zustand",
+        "type": "static"
+      },
+      {
+        "source": "ffs4",
+        "target": "npm:vitest",
         "type": "static"
       },
       {
@@ -30428,5 +30473,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1772594213845
+  "computedAt": 1772642175290
 }

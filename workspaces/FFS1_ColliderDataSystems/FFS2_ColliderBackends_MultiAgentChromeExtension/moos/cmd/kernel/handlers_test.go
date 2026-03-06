@@ -160,6 +160,22 @@ func TestCreateContainerHandler(t *testing.T) {
 	}
 }
 
+func TestMetricsHandler(t *testing.T) {
+	store := &fakeStore{records: map[string]container.Record{}, wires: map[string]container.WireRecord{}}
+	mux := newMux(store)
+
+	req := httptest.NewRequest(http.MethodGet, "/metrics", nil)
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected %d, got %d", http.StatusOK, rr.Code)
+	}
+	if !strings.Contains(rr.Body.String(), "go_gc_duration_seconds") {
+		t.Fatalf("expected prometheus metrics payload")
+	}
+}
+
 func TestListChildrenHandler(t *testing.T) {
 	store := &fakeStore{records: map[string]container.Record{
 		"urn:moos:parent:1": {URN: "urn:moos:parent:1", Kind: "composite"},

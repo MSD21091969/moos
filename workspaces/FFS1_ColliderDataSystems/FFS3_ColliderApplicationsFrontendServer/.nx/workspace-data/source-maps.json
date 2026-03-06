@@ -12,6 +12,66 @@
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
     ],
+    "targets.test": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.options": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.cache": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.inputs": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.outputs": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.metadata": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.executor": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.options.cwd": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.options.command": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.metadata.technologies": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.metadata.technologies.0": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.metadata.description": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.metadata.help": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.metadata.help.command": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
+    "targets.test.metadata.help.example": [
+      "apps/ffs4/vite.config.mts",
+      "@nx/vite/plugin"
+    ],
     "targets.dev": [
       "apps/ffs4/vite.config.mts",
       "@nx/vite/plugin"
@@ -251,6 +311,10 @@
     "targets.serve.options.command": [
       "apps/ffs4/project.json",
       "nx/core/project-json"
+    ],
+    "targets.test.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
     ],
     "targets.build.cache": [
       "nx.json",

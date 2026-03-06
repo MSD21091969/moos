@@ -21,7 +21,8 @@ foreach ($remote in $remotes) {
     if ($remoteExists) {
         Write-Host "`n>>> Pushing to '$remote'..." -ForegroundColor Green
         git push $remote $branch
-    } else {
+    }
+    else {
         Write-Host "`n>>> Skipping '$remote' (remote not configured)." -ForegroundColor Yellow
     }
 }

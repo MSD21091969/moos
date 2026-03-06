@@ -2,12 +2,23 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const apiProxyTarget = process.env.MOOS_API_PROXY_TARGET ?? 'http://kernel:8080';
+
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/apps/viewer',
   server: {
     port: 4203,
     host: 'localhost',
+    proxy: {
+      '/moos-api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+        rewrite: (path) => path.replace(/^\/moos-api/, ''),
+      },
+    },
   },
   preview: {
     port: 4203,

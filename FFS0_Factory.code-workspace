@@ -70,14 +70,18 @@
             }
         },
         "python.testing.pytestEnabled": true,
-        "python.defaultInterpreterPath": "${workspaceFolder:FFS0_Factory}/.venv/Scripts/python.exe",
+        "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+        "ruff.path": [
+            ".venv/Scripts/ruff.exe"
+        ],
         "[markdown]": {
             "editor.wordWrap": "on"
         },
         "chat.tools.terminal.autoApprove": {
             "gcloud": true
         },
-        "powershell.cwd": "FFS0_Factory"
+        "powershell.cwd": "FFS0_Factory",
+        "git.ignoreLimitWarning": true
     },
     "extensions": {
         "recommendations": [
