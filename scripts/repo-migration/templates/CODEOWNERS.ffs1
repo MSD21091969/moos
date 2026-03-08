@@ -1,8 +1,0 @@
-# FFS1 superrepo ownership
-
-* @your-org/team-collider-admin
-
-/.agent/ @your-org/team-collider-admin
-/CLAUDE.md @your-org/team-collider-admin
-/FFS2_ColliderBackends_MultiAgentChromeExtension @your-org/team-collider-admin
-/FFS3_ColliderApplicationsFrontendServer @your-org/team-collider-admin @your-org/team-app-admin

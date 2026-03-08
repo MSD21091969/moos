@@ -1,9 +1,0 @@
-# FFS0 superrepo ownership
-
-* @your-org/team-superadmin
-
-/.agent/ @your-org/team-superadmin
-/.github/ @your-org/team-superadmin
-/models/ @your-org/team-superadmin
-/sdk/ @your-org/team-superadmin
-/workspaces/FFS1_ColliderDataSystems @your-org/team-superadmin @your-org/team-collider-admin

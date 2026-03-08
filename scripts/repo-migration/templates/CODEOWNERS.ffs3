@@ -1,7 +1,0 @@
-# FFS3 frontend ownership
-
-* @your-org/team-app-admin
-
-/apps/ @your-org/team-app-admin
-/libs/ @your-org/team-app-admin
-/.agent/ @your-org/team-app-admin @your-org/team-collider-admin

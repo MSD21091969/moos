@@ -1,6 +1,0 @@
-packages:
-  # FFS2 - Chrome Extension
-  - "FFS2_ColliderBackends_MultiAgentChromeExtension/moos/apps/chrome-extension"
-
-  # FFS3 - Frontend Monorepo (Nx workspace)
-  - "FFS3_ColliderApplicationsFrontendServer"

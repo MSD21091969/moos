@@ -1,6 +1,0 @@
-.venv/
-__pycache__/
-*.pyc
-.dev_assistant_history
-uv.lock
-.sync_state.json

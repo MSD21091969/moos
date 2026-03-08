@@ -63,13 +63,8 @@ FFS0_Factory/
 │   ├── platform/                         Active presets + installer metadata surface
 │   └── *                                 Legacy runtime snapshot / reference-only
 ├── secrets/                              Active local secret templates and credential staging
-├── sdk/                                  Seeder + runtime support utilities
-├── scripts/                              Utility scripts (git-push-all, etc.)
-└── workspaces/
-    ├── FFS1_ColliderDataSystems/         Legacy workspace lineage
-    │   ├── FFS2_...ChromeExtension/      Legacy/reference backend lineage
-    │   └── FFS3_...FrontendServer/       Legacy frontend lineage
-    └── maassen_hochrath/                 Legacy reference / archive
+├── CLAUDE.md                             Root policy authority
+└── FFS0_Factory.code-workspace           Preferred workspace entry point
 ```
 
 ## Knowledge Base (vNext)
