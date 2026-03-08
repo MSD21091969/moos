@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "layer": "values",
-  "structure_ref": "../superset/ontology_v3.json",
+  "structure_ref": "../../knowledge_base/superset/ontology.json",
   "description": "Provider instances — VALUE entries for Provider_p (CAT17) and adapter (CAT19) categories. Each provider is a container with OWNS wires to model containers. Adapter type maps to Go interface: internal/model/adapters.go.",
   "providers": [
     {
@@ -20,7 +20,11 @@
         {
           "id": "urn:moos:model:anthropic:claude-3-7-sonnet",
           "name": "claude-3-7-sonnet-20250219",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 200000,
           "max_output_tokens": 8192,
           "cost_per_1k_input": 0.003,
@@ -48,7 +52,11 @@
         {
           "id": "urn:moos:model:gemini:gemini-2.0-flash",
           "name": "gemini-2.0-flash",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 1000000,
           "max_output_tokens": 8192,
           "cost_per_1k_input": 0.00035,
@@ -77,7 +85,11 @@
         {
           "id": "urn:moos:model:openai:gpt-4o",
           "name": "gpt-4o",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 128000,
           "max_output_tokens": 4096,
           "cost_per_1k_input": 0.005,

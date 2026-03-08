@@ -12,7 +12,7 @@
     "MOOS_AGENT_PORT": "8004",
     "MOOS_MCP_PORT": "8080",
     "MOOS_NANOCLAW_PORT": "18789",
-    "MOOS_DATABASE_URL": "postgres://postgres:postgres@localhost:5432/moos?sslmode=disable"
+    "MOOS_DATABASE_URL": "postgres://postgres:${MOOS_DB_PASSWORD}@localhost:5432/moos?sslmode=disable"
   },
   "services": {
     "database": "external-postgres",
@@ -21,6 +21,7 @@
   },
   "notes": [
     "Use for local workstation runs.",
+    "Inject secret bindings such as MOOS_DB_PASSWORD at runtime; do not commit resolved credentials in presets.",
     "Promote platform-specific installer behavior only after it is captured here."
   ]
 }

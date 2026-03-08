@@ -46,27 +46,27 @@ where $\Sigma : \text{Log} \to \text{State}$ folds the append-only morphism log 
   > $\Sigma : \text{Log} \to \text{State}$, and (c) the `containers`
   > and `wires` tables are caches derivable from the log — if they
   > corrupt, replay rebuilds them. Treating `state_payload` as truth
-  > would collapse the distinction between *derived state* and *causal
-  > history*, making audit, rollback, and federation impossible.
+  > would collapse the distinction between _derived state_ and _causal
+  > history_, making audit, rollback, and federation impossible.
 
-- **User = label on a blind box.** An `AuthUser` is an object whose
+- **User = label on a blind box.** A `User` is an object whose
   morphisms grant edges. The user has no special ontological status — it
-  is a label *inside* the object, like all other labels. The difference
-  is *visibility*: user identity labels are projected to admins and
+  is a label _inside_ the object, like all other labels. The difference
+  is _visibility_: user identity labels are projected to admins and
   share-app users through the UI_Lens functor and connection morphisms,
   while other labels remain internal. Ontologically, user identity is a
   MUTATE on `state_payload`, not a privileged category.
 
 - **Code is separated from metadata — and code is ALSO syntax.** Code
   lives in external stores (git, filesystem). The graph stores only
-  URNs, wires, and morphism history. Binding code to state_payload creates
-  structural coupling — a failure mode we call *structural binding
+  URNs, wires, and morphism history. Binding code to state*payload creates
+  structural coupling — a failure mode we call \_structural binding
   loss*.
 
   This separation exhibits a **symmetry**: just as data in
   `state_payload` is syntax (structured JSONB parsed by the kernel),
-  code referenced by URNs is *also* syntax — it is a structured
-  representation that becomes semantics only when *evaluated*. Neither
+  code referenced by URNs is _also_ syntax — it is a structured
+  representation that becomes semantics only when _evaluated_. Neither
   code nor metadata carries meaning intrinsically; meaning arises
   through the evaluation functor (the Go kernel executing morphisms).
   This is Lawvere's functorial semantics applied: **Syntax** = container
@@ -74,7 +74,6 @@ where $\Sigma : \text{Log} \to \text{State}$ folds the append-only morphism log 
   the structure-preserving functor mapping one to the other.
 
   **Hydration on evaluation.** Code — including atomic tools at the leaf level — is hydrated (loaded, bound, made executable) only when evaluated. This happens:
-
   - On each **use** (an agent or user invokes a tool → kernel traverses
     wires → tool container's code reference is resolved and executed)
   - On each **performance test** in the classification system with
@@ -82,7 +81,7 @@ where $\Sigma : \text{Log} \to \text{State}$ folds the append-only morphism log 
     hydrated for measurement)
 
   **Topological use-case context.** Each evaluation must document its
-  *topological state* — the subgraph context in which the code was
+  _topological state_ — the subgraph context in which the code was
   hydrated. A tool evaluated in workspace A with wires {W₁, W₂, W₃} is
   a different evaluation than the same tool in workspace B with wires
   {W₁, W₄}. Only when the evaluation records its position in the
@@ -91,7 +90,7 @@ where $\Sigma : \text{Log} \to \text{State}$ folds the append-only morphism log 
   are context-free and therefore uninterpretable.
 
   **Reference:** See `papers/Functorial Semantics as a Unifying
-  Perspective.pdf` for the categorical approach to bridging syntax and
+Perspective.pdf` for the categorical approach to bridging syntax and
   semantics through decomposition and composition; see
   `papers/HyperGraphRAG.pdf` for hypergraph-aware retrieval that
   respects topological context.
@@ -190,7 +189,6 @@ log).
 - No split edges (one wire = one LINK)
 - No implicit operations (ADD doesn't auto-LINK to parent)
 
-
 **Composition:** Morphisms compose sequentially via `;`:
 
 $$\text{ADD}(c) \;;\; \text{LINK}(parent, c) \;;\; \text{MUTATE}(c, \text{payload})$$
@@ -223,7 +221,6 @@ underlying data.
 - **Breadth** = enumerate all wires from a node → discovers the superposition
 - **Depth** = follow one port type to leaves → resolves one projected graph
 
-
 **What the single graph simultaneously encodes:**
 
 - Ownership trees (port: `owns`)
@@ -231,7 +228,6 @@ underlying data.
 - Data flow DAGs (port: `data_flow`)
 - Template hierarchies (port: `template`)
 - Agent capability graphs (port: `can_execute`)
-
 
 No separate tables. No separate databases. One graph, many projections.
 
@@ -272,7 +268,7 @@ the local graph neighborhood measures connectivity density:
 $$d_{\text{eff}}(v) = \frac{\log |\text{Ball}(v, r)|}{\log r}$$
 
 where $\text{Ball}(v, r)$ counts all containers reachable within $r$ wire
-hops across all port types. This is the *"interface port diameter"* from
+hops across all port types. This is the _"interface port diameter"_ from
 the founder's manuscript — directly measuring the Wolfram graph-ball
 growth rate in the mo:os domain. Dense hub nodes have high $d_{\text{eff}}$;
 linear pipelines have $d_{\text{eff}} \approx 1$.
@@ -287,8 +283,8 @@ $$\phi_{\text{ctx}}(v) = \bigoplus_{w \in \text{wires}(v)} \left( \mathbf{ROLE}_
 where $\otimes$ = binding (creates relational structure), $\oplus$ =
 bundling (creates superposition), and $\phi$ maps URNs to random
 base hypervectors in $\{-1, +1\}^d$. The result is one hypervector
-that encodes the full relational context of a node — the *"hypergraph
-hypervector"* — enabling similarity search without graph traversal.
+that encodes the full relational context of a node — the _"hypergraph
+hypervector"_ — enabling similarity search without graph traversal.
 
 See `papers/wolfram_hdc_digest.md` for full analysis.
 
@@ -296,11 +292,11 @@ See `papers/wolfram_hdc_digest.md` for full analysis.
 
 The hypergraph model rests on three pillars integrated at the storage level:
 
-| Pillar | Provides | mo:os Surface |
-| --- | --- | --- |
-| **Category Theory** | Formal structure (objects, morphisms, functors) | §21 registry, wires, NTs |
-| **Hypergraph Rewriting** (Wolfram) | Computation model (rules, causal graph, confluence) | morphism_log, 4 invariant morphisms |
-| **Vector Symbolic Architectures** (Kanerva) | Representation ($\otimes$ bind, $\oplus$ bundle, $\pi$ permute) | embeddings table, pgvector HNSW |
+| Pillar                                      | Provides                                                        | mo:os Surface                       |
+| ------------------------------------------- | --------------------------------------------------------------- | ----------------------------------- |
+| **Category Theory**                         | Formal structure (objects, morphisms, functors)                 | §21 registry, wires, NTs            |
+| **Hypergraph Rewriting** (Wolfram)          | Computation model (rules, causal graph, confluence)             | morphism_log, 4 invariant morphisms |
+| **Vector Symbolic Architectures** (Kanerva) | Representation ($\otimes$ bind, $\oplus$ bundle, $\pi$ permute) | embeddings table, pgvector HNSW     |
 
 **Implementation status (2026-03-07):** Pillars 1 and 2 are deeply
 formalized and implemented in the Go kernel. Pillar 3 (VSA/HDC) has
@@ -468,7 +464,6 @@ where:
 - $|E_{\text{scope}}|$ = candidate edges in the evaluated scope
 - $c_{\text{index}}$ = per-node metadata density (schema JSONB size + state_payload complexity)
 
-
 Discovery builds the index BY scanning. More metadata per node = slower scan, richer result. This is not a bug — it's a fundamental tradeoff.
 
 ### Retrieval Cost
@@ -539,7 +534,6 @@ $$B: \mathcal{C}_{\text{provider}} \to \mathcal{C}_{\text{standard}}$$
 - Morphisms (wires between provider objects) map to standard morphisms, preserving composition
 - Cross-provider comparison = comparing functor images in $\mathcal{C}_{\text{standard}}$
 
-
 **Key insight (LogicGraph reference):** Benchmarks don't test models in
 isolation — they test the quality of the projected graph structure that
 models traverse. Multi-path logical reasoning benchmarks specifically
@@ -608,14 +602,14 @@ directly comparable via the standard category's hom-sets.
 
 $\mathcal{C}_{\text{standard}}$ has:
 
-| Objects | Morphisms |
-| --- | --- |
-| Scored task results: `(task, score, morphism_trace, latency)` | Score composition: subtask scores compose to pipeline score |
-| Capability profiles: `(context_length, tool_support, streaming)` | Profile ordering: partial order by capability coverage |
-| Cost metrics: `(tokens_in, tokens_out, price, p50_latency)` | Cost composition: pipeline cost = sum of stage costs |
+| Objects                                                          | Morphisms                                                   |
+| ---------------------------------------------------------------- | ----------------------------------------------------------- |
+| Scored task results: `(task, score, morphism_trace, latency)`    | Score composition: subtask scores compose to pipeline score |
+| Capability profiles: `(context_length, tool_support, streaming)` | Profile ordering: partial order by capability coverage      |
+| Cost metrics: `(tokens_in, tokens_out, price, p50_latency)`      | Cost composition: pipeline cost = sum of stage costs        |
 
 **Key property:** $\mathcal{C}_{\text{standard}}$ must be **provider-agnostic**.
-Its structure is defined by the *task domain*, not by any provider's API
+Its structure is defined by the _task domain_, not by any provider's API
 surface. This is why the four invariant morphisms (§3) define the only
 operations: any provider output must be expressible as a sequence of
 ADD/LINK/MUTATE/UNLINK. A model that produces outputs incompatible with
@@ -707,14 +701,14 @@ Task(t) ──→ B_anthropic(claude-3-7) ──→ Standard score S₁
 
 **What the benchmark measures per provider:**
 
-| Dimension | What It Captures | Morphism-Level Measurement |
-| --- | --- | --- |
-| **Accuracy** | Correct morphism extraction from LLM output | % of valid envelopes in `CompletionResult.Morphisms` |
-| **Compositionality** | Step-wise vs end-to-end consistency | $B(g \circ f) \stackrel{?}{=} B(g) \circ B(f)$ |
-| **Latency** | Time-to-first-morphism, total pipeline time | Prometheus `moos_cost_execution_seconds` per provider |
-| **Cost** | Token consumption per morphism produced | Input/output token ratio from provider billing |
-| **Robustness** | Graceful degradation under ambiguous prompts | Error rate classification per LogicGraph taxonomy |
-| **Tool fidelity** | Correct tool invocation from graph context | `CompletionResult.ToolCalls` validity rate |
+| Dimension            | What It Captures                             | Morphism-Level Measurement                            |
+| -------------------- | -------------------------------------------- | ----------------------------------------------------- |
+| **Accuracy**         | Correct morphism extraction from LLM output  | % of valid envelopes in `CompletionResult.Morphisms`  |
+| **Compositionality** | Step-wise vs end-to-end consistency          | $B(g \circ f) \stackrel{?}{=} B(g) \circ B(f)$        |
+| **Latency**          | Time-to-first-morphism, total pipeline time  | Prometheus `moos_cost_execution_seconds` per provider |
+| **Cost**             | Token consumption per morphism produced      | Input/output token ratio from provider billing        |
+| **Robustness**       | Graceful degradation under ambiguous prompts | Error rate classification per LogicGraph taxonomy     |
+| **Tool fidelity**    | Correct tool invocation from graph context   | `CompletionResult.ToolCalls` validity rate            |
 
 ---
 
@@ -741,14 +735,12 @@ raw content → GPU graph analysis → structured subgraph → LLM prompt → an
 - DAG compression (transitive reduction, redundant edge removal)
 - Subgraph extraction for bounded-context LLM prompts
 
-
 **Hardware context:** GPU handles $O(n^2 \times |rules|)$ filtering massively in parallel. The Z440's 12GB VRAM can process ~50K-node subgraphs in real time.
 
 **Composition with other functors:**
 
 - $F_{\text{struct}} \circ F_{\text{embed}}$: first embed content, then analyze structure of the embedding space
 - $F_{\text{struct}}$ standalone: pure topological analysis without semantic embedding
-
 
 **Benefit:** Reduces LLM token cost by providing pre-analyzed
 structure. Forces structural awareness before the LLM call, preventing
@@ -799,7 +791,6 @@ Two transitivity modes co-exist in $\mathcal{C}$:
 - Controls which CAN_HYDRATE edges propagate transitively
 - Will dissolve into the `wires` table when graph sync (§7 in architecture.md) is implemented
 - At that point, transitivity rules become wires themselves — self-describing graph
-
 
 **Relationship to §6:** OWNS transitivity is the mechanism that defines
 subcategory membership. The recursive CTE computes
@@ -884,8 +875,7 @@ for LLM-based task decomposition, where:
 - Recomposition has no formal guarantees
 - Subtasks can be incompatible
 
-
-mo:os avoids this by decomposing into *mathematically invariant* operations, not natural-language task descriptions.
+mo:os avoids this by decomposing into _mathematically invariant_ operations, not natural-language task descriptions.
 
 ### The Neuro-Symbolic Implication (System 3 Reasoning)
 
@@ -894,13 +884,13 @@ The System 3 transcript (`transcripts/system 3.txt`) and
 establish that:
 
 1. **LLMs prioritize semantic fluency over logical entailment.** They
-  build linguistically plausible but logically invalid bridges between
-  known start and end states (result-oriented hallucination).
+   build linguistically plausible but logically invalid bridges between
+   known start and end states (result-oriented hallucination).
 2. **Neuro-symbolic pipelines** escape this by anchoring language models to symbolic engines (Prover9, Lean 4, Python verification).
 3. **Process-verified rewards** (per-step verification) outperform
-  outcome-verified rewards (final-answer-only) for complex reasoning.
-  **This is functoriality** — see §9 for why preserving composition at
-  each step is categorically required.
+   outcome-verified rewards (final-answer-only) for complex reasoning.
+   **This is functoriality** — see §9 for why preserving composition at
+   each step is categorically required.
 
 **How mo:os already implements this:**
 
@@ -931,14 +921,14 @@ establish that:
 
 ### Paper References
 
-| Paper                                                     | Key Contribution to mo:os                                                                                                |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Functorial Semantics as a Unifying Perspective**        | Categorical decomposition/composition guarantees; syntax/semantics bridge formalization                                  |
-| **HyperGraphRAG**                                         | Hypergraph-aware retrieval that preserves topological context during RAG operations                                      |
-| **LogicGraph: Benchmarking Multi-Path Logical Reasoning** | Error taxonomy for LLM reasoning failures; neuro-symbolic verification pipeline; multi-path graph traversal as benchmark |
-| **Seven Sketches in Compositionality** (Fong & Spivak)    | Monoidal categories, operads, wiring diagrams — the mathematical vocabulary of mo:os                                     |
+| Paper                                                     | Key Contribution to mo:os                                                                                                                            |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Functorial Semantics as a Unifying Perspective**        | Categorical decomposition/composition guarantees; syntax/semantics bridge formalization                                                              |
+| **HyperGraphRAG**                                         | Hypergraph-aware retrieval that preserves topological context during RAG operations                                                                  |
+| **LogicGraph: Benchmarking Multi-Path Logical Reasoning** | Error taxonomy for LLM reasoning failures; neuro-symbolic verification pipeline; multi-path graph traversal as benchmark                             |
+| **Seven Sketches in Compositionality** (Fong & Spivak)    | Monoidal categories, operads, wiring diagrams — the mathematical vocabulary of mo:os                                                                 |
 | **Wolfram Physics Project** (Wolfram 2020)                | Hypergraph rewriting as computational primitive; multiway systems; causal invariance = replay consistency; effective dimension via graph-ball growth |
-| **Hyperdimensional Computing** (Kanerva 2009)             | Distributed representation algebra (bind/bundle/permute) for compositional graph encoding; GPU-parallel vector operations on graph structure |
+| **Hyperdimensional Computing** (Kanerva 2009)             | Distributed representation algebra (bind/bundle/permute) for compositional graph encoding; GPU-parallel vector operations on graph structure         |
 
 ---
 
@@ -961,7 +951,6 @@ This reconstructs the current state of any object.
 - Time-travel: replay morphisms up to any timestamp to reconstruct historical state.
 - Audit: every state change has an author, timestamp, and previous state.
 - Reconstruction: if `containers` and `wires` tables are corrupted, they can be rebuilt from `morphism_log` alone.
-
 
 **Σ as replay.** The reducer $\Sigma: \text{Log} \to \text{State}$
 (§1) is precisely this reconstruction operation. Folding the morphism
@@ -1022,12 +1011,12 @@ $\hookrightarrow$ is the inclusion functor (§6). Stratum 3
 ($\mathcal{L}$) is NOT a subcategory of $\mathcal{C}$ — it is a
 separate target category reached only by projection functors.
 
-| Stratum | Category | Contains | Mutability |
-| --- | --- | --- | --- |
-| **S0** | $\mathcal{C}_0$ | Bootstrap substrate — invariant algebra, log contract, evaluator reference, identity/version primitives | Immutable after seed. Protected from user morphisms. |
-| **S1** | $\mathcal{C}_1$ | Authoring syntax — category declarations, functor declarations, schema/port vocabularies, governance policies, bootstrap presets | Mutable by authoring pipeline only. Syntax about the semantic world. |
-| **S2** | $\mathcal{C}_2$ | Operational graph — workspaces, documents, tools, agents, sessions, providers, users, groups | Mutable by user/agent morphisms. Where runtime state lives. |
-| **S3** | $\mathcal{L}$ | Projection surfaces — UI renders, embeddings, compressed DAGs, API responses | Never stored in `containers`. Always computed from S2 by functors. |
+| Stratum | Category        | Contains                                                                                                                         | Mutability                                                           |
+| ------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **S0**  | $\mathcal{C}_0$ | Bootstrap substrate — invariant algebra, log contract, evaluator reference, identity/version primitives                          | Immutable after seed. Protected from user morphisms.                 |
+| **S1**  | $\mathcal{C}_1$ | Authoring syntax — category declarations, functor declarations, schema/port vocabularies, governance policies, bootstrap presets | Mutable by authoring pipeline only. Syntax about the semantic world. |
+| **S2**  | $\mathcal{C}_2$ | Operational graph — workspaces, documents, tools, agents, sessions, providers, users, groups                                     | Mutable by user/agent morphisms. Where runtime state lives.          |
+| **S3**  | $\mathcal{L}$   | Projection surfaces — UI renders, embeddings, compressed DAGs, API responses                                                     | Never stored in `containers`. Always computed from S2 by functors.   |
 
 ### Inclusion Maps as Functors
 
@@ -1113,12 +1102,12 @@ structure-preserving functors:
 
 $$\mathcal{A} \xrightarrow{V} \mathcal{V} \xrightarrow{M} \mathcal{P} \xrightarrow{E} \mathcal{C} \xrightarrow{P_i} \mathcal{L}_i$$
 
-| Functor | Name | From → To |
-| --- | --- | --- |
-| $V$ | Validate | Authored artifacts → Validated artifacts |
-| $M$ | Materialize | Validated artifacts → Morphism programs |
-| $E$ | Evaluate | Morphism programs → Operational graph $\mathcal{C}$ |
-| $P_i$ | Project (multiple) | Operational graph → Lens surfaces $\mathcal{L}_i$ |
+| Functor | Name               | From → To                                           |
+| ------- | ------------------ | --------------------------------------------------- |
+| $V$     | Validate           | Authored artifacts → Validated artifacts            |
+| $M$     | Materialize        | Validated artifacts → Morphism programs             |
+| $E$     | Evaluate           | Morphism programs → Operational graph $\mathcal{C}$ |
+| $P_i$   | Project (multiple) | Operational graph → Lens surfaces $\mathcal{L}_i$   |
 
 The evaluation functor $E$ is the reducer $\Sigma$ from §1. The
 projection functors $P_i$ are the five functors from §2 (FileSystem,
@@ -1146,8 +1135,8 @@ produces the same result as hydrating their composition.
 
 ## §20 — Rewriting Semantics and the Computation Triangle
 
-*References: Wolfram Physics Project (2020), Kanerva's HDC (2009),
-founder's manuscript, papers/wolfram_hdc_digest.md.*
+_References: Wolfram Physics Project (2020), Kanerva's HDC (2009),
+founder's manuscript, papers/wolfram_hdc_digest.md._
 
 The Collider's founding vision rests on three pillars that form a
 **computation triangle** — each pillar addressing a distinct aspect
@@ -1155,11 +1144,11 @@ of the system:
 
 ### The Three Pillars
 
-| Pillar | Provides | Formal Basis |
-| --- | --- | --- |
-| **Category Theory** | Structural framework (objects, morphisms, functors) | Lawvere's functorial semantics (§14) |
-| **Hypergraph Rewriting** | Computational model (the graph IS the computation) | Wolfram's multiway systems |
-| **Hypervector Computing** | Representation layer (distributed encoding for parallel ops) | Kanerva's VSA algebra |
+| Pillar                    | Provides                                                     | Formal Basis                         |
+| ------------------------- | ------------------------------------------------------------ | ------------------------------------ |
+| **Category Theory**       | Structural framework (objects, morphisms, functors)          | Lawvere's functorial semantics (§14) |
+| **Hypergraph Rewriting**  | Computational model (the graph IS the computation)           | Wolfram's multiway systems           |
+| **Hypervector Computing** | Representation layer (distributed encoding for parallel ops) | Kanerva's VSA algebra                |
 
 ### Rewriting Formalization
 
@@ -1191,25 +1180,25 @@ embeddings, because HDC operations distribute over each other.
 
 The manuscript explicitly states this trinity:
 
-> *"category theory and then hypervector and functional programming to
+> _"category theory and then hypervector and functional programming to
 > process the rigid logic of the numerous graphs in the hypergraph
-> instead of just 1 topological one then gpu"*
+> instead of just 1 topological one then gpu"_
 
-> *"hypergraph solves that. By placing the diff states in the same nide
-> instad of topologically"* — this IS Wolfram's multiway system: multiple
+> _"hypergraph solves that. By placing the diff states in the same nide
+> instad of topologically"_ — this IS Wolfram's multiway system: multiple
 > states coexist at the same node rather than being split into separate
 > topological copies.
 
-> *"Its a hyoergraph whatvuser buils and at any end of morf choice to pick
-> avail aother based on rules"* — rule application creating branching
+> _"Its a hyoergraph whatvuser buils and at any end of morf choice to pick
+> avail aother based on rules"_ — rule application creating branching
 > histories in the multiway graph.
 
 ---
 
 ## §21 — Category Registry: Theory vs Model
 
-*Reference: §14 (Lawvere's functorial semantics), §18 (mock
-categories), §19 (hydration bridge). Waves: `06_planning/greenfield_implementation_waves.md`.*
+_Reference: §14 (Lawvere's functorial semantics), §18 (mock
+categories), §19 (hydration bridge). Waves: `06_planning/greenfield_implementation_waves.md`._
 
 A named category is a **theory** (syntax) until its objects and
 morphisms are explicitly defined. The definition is its **model**
@@ -1225,12 +1214,12 @@ becomes load-bearing despite carrying no formal content.
 
 ### Formalization Levels
 
-| Level | Name | Definition | Risk |
-| --- | --- | --- | --- |
-| **L3** | Fully modeled | Objects, morphisms, composition, identity all explicit | None — this is the target |
-| **L2** | Partially modeled | Objects named, some morphisms described, composition implicit | Misuse — people compose in it without checking associativity |
-| **L1** | Named only | Appears in functor signatures or prose, no internal structure | Label on a blind box — §1's warning about nodes applies here too |
-| **L0** | External | Standard mathematical category (e.g. $\mathbb{R}^{1536}$, Set) | None — inherited from mathematics |
+| Level  | Name              | Definition                                                     | Risk                                                             |
+| ------ | ----------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **L3** | Fully modeled     | Objects, morphisms, composition, identity all explicit         | None — this is the target                                        |
+| **L2** | Partially modeled | Objects named, some morphisms described, composition implicit  | Misuse — people compose in it without checking associativity     |
+| **L1** | Named only        | Appears in functor signatures or prose, no internal structure  | Label on a blind box — §1's warning about nodes applies here too |
+| **L0** | External          | Standard mathematical category (e.g. $\mathbb{R}^{1536}$, Set) | None — inherited from mathematics                                |
 
 ### The Registry
 
@@ -1239,32 +1228,32 @@ defined, and when it becomes modeled.
 
 #### Core Categories
 
-| Category | Level | Objects | Morphisms | Defined In | Realized By |
-| --- | --- | --- | --- | --- | --- |
-| $\mathcal{C}$ (main) | **L3** | URNs (`containers` rows) | Wires (`wires` rows) | §2 | Wave 0 |
-| $A/\mathcal{C}$ (coslice) | **L3** | Outgoing morphisms from $A$ | Commuting triangles | §5 | Wave 0 |
-| $\mathcal{C}/A$ (slice) | **L3** | Incoming morphisms to $A$ | Commuting triangles | §5 | Wave 0 |
-| $\mathcal{C}_W$ (scoped) | **L3** | $W$ + OWNS children (recursive) | Inherited from $\mathcal{C}$ | §6 | Wave 0 |
-| $\mathcal{C}_{\text{kernel}}$ | **L3** | = $\mathcal{C}$ (same objects, post-dispatch) | = $\mathcal{C}$ morphisms | §9, kernel\_spec §14 | Wave 0 |
+| Category                      | Level  | Objects                                       | Morphisms                    | Defined In          | Realized By |
+| ----------------------------- | ------ | --------------------------------------------- | ---------------------------- | ------------------- | ----------- |
+| $\mathcal{C}$ (main)          | **L3** | URNs (`containers` rows)                      | Wires (`wires` rows)         | §2                  | Wave 0      |
+| $A/\mathcal{C}$ (coslice)     | **L3** | Outgoing morphisms from $A$                   | Commuting triangles          | §5                  | Wave 0      |
+| $\mathcal{C}/A$ (slice)       | **L3** | Incoming morphisms to $A$                     | Commuting triangles          | §5                  | Wave 0      |
+| $\mathcal{C}_W$ (scoped)      | **L3** | $W$ + OWNS children (recursive)               | Inherited from $\mathcal{C}$ | §6                  | Wave 0      |
+| $\mathcal{C}_{\text{kernel}}$ | **L3** | = $\mathcal{C}$ (same objects, post-dispatch) | = $\mathcal{C}$ morphisms    | §9, kernel_spec §14 | Wave 0      |
 
 #### Stratum Chain
 
-| Category | Level | Objects | Morphisms | Defined In | Realized By |
-| --- | --- | --- | --- | --- | --- |
-| $\mathcal{C}_0$ (bootstrap) | **L2** | Objects where `stratum = 0` | Wires between S0 objects | strata Part 2 | Wave 0 |
-| $\mathcal{C}_1$ (authoring) | **L2** | $\mathcal{C}_0$ ∪ S1 objects | Wires between S0∪S1 objects | strata Part 2 | Wave 4 |
-| $\mathcal{C}_2$ (operational) | **L2** | $\mathcal{C}_1$ ∪ S2 objects | All wires (the working graph) | strata Part 2 | Wave 4 |
+| Category                      | Level  | Objects                      | Morphisms                     | Defined In    | Realized By |
+| ----------------------------- | ------ | ---------------------------- | ----------------------------- | ------------- | ----------- |
+| $\mathcal{C}_0$ (bootstrap)   | **L2** | Objects where `stratum = 0`  | Wires between S0 objects      | strata Part 2 | Wave 0      |
+| $\mathcal{C}_1$ (authoring)   | **L2** | $\mathcal{C}_0$ ∪ S1 objects | Wires between S0∪S1 objects   | strata Part 2 | Wave 4      |
+| $\mathcal{C}_2$ (operational) | **L2** | $\mathcal{C}_1$ ∪ S2 objects | All wires (the working graph) | strata Part 2 | Wave 4      |
 
 **Gap**: Inclusion functors $\iota_k: \mathcal{C}_k \hookrightarrow \mathcal{C}_{k+1}$ are stated but composition verification is not shown. Promote to L3 by proving $\iota_1 \circ \iota_0 = \iota_{01}$ and that each $\iota_k$ is full and faithful.
 
 #### Hydration Pipeline Categories (§19)
 
-| Category | Level | Objects | Morphisms | Defined In | Realized By |
-| --- | --- | --- | --- | --- | --- |
-| $\mathcal{A}$ (authored) | **L1** | Manifest declarations, code references | ? | hydration §3 | Wave 4 |
-| $\mathcal{V}$ (validated) | **L1** | Validated artifacts (post-schema check) | ? | hydration §3 | Wave 4 |
-| $\mathcal{P}$ (programs) | **L1** | Morphism programs (ADD;LINK;MUTATE sequences) | ? | hydration §3 | Wave 2 |
-| $\mathcal{L}_i$ (lens surfaces) | **L1** | UI projections, embeddings, metrics | ? | §19, strata Part 2 | Wave 5–6 |
+| Category                        | Level  | Objects                                       | Morphisms | Defined In         | Realized By |
+| ------------------------------- | ------ | --------------------------------------------- | --------- | ------------------ | ----------- |
+| $\mathcal{A}$ (authored)        | **L1** | Manifest declarations, code references        | ?         | hydration §3       | Wave 4      |
+| $\mathcal{V}$ (validated)       | **L1** | Validated artifacts (post-schema check)       | ?         | hydration §3       | Wave 4      |
+| $\mathcal{P}$ (programs)        | **L1** | Morphism programs (ADD;LINK;MUTATE sequences) | ?         | hydration §3       | Wave 2      |
+| $\mathcal{L}_i$ (lens surfaces) | **L1** | UI projections, embeddings, metrics           | ?         | §19, strata Part 2 | Wave 5–6    |
 
 **Gap**: These four categories carry the entire §19 pipeline but have
 no defined objects or morphisms. They are §1's "blind boxes" — labels
@@ -1274,20 +1263,20 @@ are more precisely defined than the categories they connect.
 
 #### Functor Codomains (External / Planned)
 
-| Category | Level | Objects | Morphisms | Defined In | Realized By |
-| --- | --- | --- | --- | --- | --- |
-| $\mathbb{R}^{1536}$ | **L0** | Vectors | Linear maps | Standard math | Wave 5 |
-| $\text{Manifest}$ | **L1** | `manifest.yaml` files | ? | §2, arch §3 | Wave 1 |
-| $\text{React}$ | **L1** | XYFlow component trees | ? | §2, arch §3 | FFS3 (external) |
-| $\text{DAG}$ | **L1** | Topological orderings | ? | arch §3 | Wave 6 (planned) |
+| Category            | Level  | Objects                | Morphisms   | Defined In    | Realized By      |
+| ------------------- | ------ | ---------------------- | ----------- | ------------- | ---------------- |
+| $\mathbb{R}^{1536}$ | **L0** | Vectors                | Linear maps | Standard math | Wave 5           |
+| $\text{Manifest}$   | **L1** | `manifest.yaml` files  | ?           | §2, arch §3   | Wave 1           |
+| $\text{React}$      | **L1** | XYFlow component trees | ?           | §2, arch §3   | FFS3 (external)  |
+| $\text{DAG}$        | **L1** | Topological orderings  | ?           | arch §3       | Wave 6 (planned) |
 
 #### Cross-Provider Categories (§9)
 
-| Category | Level | Objects | Morphisms | Defined In | Realized By |
-| --- | --- | --- | --- | --- | --- |
-| $\mathcal{P}_p$ (per-provider) | **L2** | Model containers owned by provider | `can_execute` wires, tool invocations | §9, kernel\_spec §14 | Wave 6 |
-| $\mathcal{C}_{\text{standard}}$ | **L1** | Scored results, capability profiles, cost metrics | Score composition, profile ordering | §9 | Wave 6 |
-| $\mathcal{C}_{\text{adapter}}$ | **L2** | CompletionRequest, CompletionResult | Complete(), Stream() | kernel\_spec §14 | Wave 1 (exists) |
+| Category                        | Level  | Objects                                           | Morphisms                             | Defined In          | Realized By     |
+| ------------------------------- | ------ | ------------------------------------------------- | ------------------------------------- | ------------------- | --------------- |
+| $\mathcal{P}_p$ (per-provider)  | **L2** | Model containers owned by provider                | `can_execute` wires, tool invocations | §9, kernel_spec §14 | Wave 6          |
+| $\mathcal{C}_{\text{standard}}$ | **L1** | Scored results, capability profiles, cost metrics | Score composition, profile ordering   | §9                  | Wave 6          |
+| $\mathcal{C}_{\text{adapter}}$  | **L2** | CompletionRequest, CompletionResult               | Complete(), Stream()                  | kernel_spec §14     | Wave 1 (exists) |
 
 **Gap**: $\mathcal{C}_{\text{standard}}$ is the benchmark target
 category — every provider functor lands here — but its morphisms
@@ -1297,11 +1286,11 @@ preservation.
 
 #### Paper-Derived Structures
 
-| Structure | Level | Type | Defined In | Status |
-| --- | --- | --- | --- | --- |
-| $\mathcal{H}$ (hypervector space) | **L3** | Algebraic (ring/field, not category) | wolfram\_hdc\_digest §B | Reference — realized in Wave 5 embedding |
-| $G_H$ (knowledge hypergraph) | **L2** | Hypergraph $(V, E_H)$ | hypergraphrag\_digest §1 | Reference — informs §4 superposition |
-| $\mathcal{P}, \mathcal{G}$ (logic) | **L1** | Propositional sets | logicgraph\_digest §1 | Reference — informs §14 neuro-symbolic |
+| Structure                          | Level  | Type                                 | Defined In              | Status                                   |
+| ---------------------------------- | ------ | ------------------------------------ | ----------------------- | ---------------------------------------- |
+| $\mathcal{H}$ (hypervector space)  | **L3** | Algebraic (ring/field, not category) | wolfram_hdc_digest §B   | Reference — realized in Wave 5 embedding |
+| $G_H$ (knowledge hypergraph)       | **L2** | Hypergraph $(V, E_H)$                | hypergraphrag_digest §1 | Reference — informs §4 superposition     |
+| $\mathcal{P}, \mathcal{G}$ (logic) | **L1** | Propositional sets                   | logicgraph_digest §1    | Reference — informs §14 neuro-symbolic   |
 
 ### Summary
 
@@ -1325,11 +1314,11 @@ not. This is the syn/sem gap applied to the knowledge base itself.
    non-identity morphism, composition rule.
 2. Verify functoriality of each functor whose domain or codomain
    becomes L2+.
-3. Record in the wave that realizes it (greenfield\_implementation\_waves.md).
+3. Record in the wave that realizes it (greenfield_implementation_waves.md).
 4. Update this registry.
 
-**Machine-readable companion**: `superset/ontology_v3.json` (+ `.csv`)
-contains the full registry in structured form. `datasets/` contains
+**Machine-readable companion**: `../knowledge_base/superset/ontology.json` (+ `.csv`)
+contains the canonical registry in structured form. `datasets/` contains
 value-layer instances (benchmarks, providers, preferences, workstation).
 
 ---

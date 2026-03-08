@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: eptcs.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+Warning--empty pages in statebox2019
+You've used 9 entries,
+            2735 wiz_defined-function locations,
+            640 strings with 6453 characters,
+and the built_in function-call counts, 3841 in all, are:
+= -- 265
+> -- 93
+< -- 2
++ -- 41
+- -- 30
+* -- 429
+:= -- 479
+add.period$ -- 18
+call.type$ -- 9
+change.case$ -- 36
+chr.to.int$ -- 0
+cite$ -- 19
+duplicate$ -- 328
+empty$ -- 350
+format.name$ -- 35
+if$ -- 754
+int.to.chr$ -- 0
+int.to.str$ -- 9
+missing$ -- 71
+newline$ -- 58
+num.names$ -- 18
+pop$ -- 82
+preamble$ -- 1
+purify$ -- 32
+quote$ -- 0
+skip$ -- 109
+stack$ -- 0
+substring$ -- 122
+swap$ -- 267
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 43
+warning$ -- 1
+while$ -- 24
+width$ -- 10
+write$ -- 104
+(There was 1 warning)

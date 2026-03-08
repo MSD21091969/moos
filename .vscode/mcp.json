@@ -10,12 +10,12 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "C:/Users/HP/cloned-repos/ffs0-factory-super/moos/platform",
-        "C:/Users/HP/cloned-repos/ffs0-factory-super/.agent/knowledge_base",
-        "C:/Users/HP/cloned-repos/ffs0-factory-super/.agent/knowledge",
-        "C:/Users/HP/cloned-repos/ffs0-factory-super/.agent/configs",
-        "C:/Users/HP/cloned-repos/ffs0-factory-super/.vscode",
-        "C:/Users/HP/cloned-repos/ffs0-factory-super/secrets"
+        "D:/FFS0_Factory/moos/moos/platform",
+        "D:/FFS0_Factory/moos/.agent/knowledge_base",
+        "D:/FFS0_Factory/moos/.agent/knowledge",
+        "D:/FFS0_Factory/moos/.agent/configs",
+        "D:/FFS0_Factory/moos/.vscode",
+        "D:/FFS0_Factory/moos/secrets"
       ]
     },
     "git-root": {
@@ -25,7 +25,7 @@
         "-y",
         "@modelcontextprotocol/server-git",
         "--repository",
-        "C:/Users/HP/cloned-repos/ffs0-factory-super"
+        "D:/FFS0_Factory/moos"
       ]
     },
     "http-fetch": {

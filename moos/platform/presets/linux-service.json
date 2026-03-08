@@ -21,6 +21,7 @@
   },
   "notes": [
     "Intended for systemd/container-style runtime environments.",
+    "Inject secret bindings such as MOOS_DB_PASSWORD at runtime; presets define launch shape, not secret truth.",
     "Installer assets should map onto this preset rather than invent hidden defaults."
   ]
 }

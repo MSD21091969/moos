@@ -20,5 +20,6 @@ It does not define domain ontology except where needed to govern ontology public
 
 - `canonicality_contract.md` — role and authority boundaries
 - `read_order.md` — normative reading order
+- `configuration_and_secret_boundary.md` — authority boundary between committed config, local secrets, and `.env` compatibility
 - `promotion_contract.md` — promotion gates from source/candidate to canon
 - `migration_map.md` — old source to new destination mapping

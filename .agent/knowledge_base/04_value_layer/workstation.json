@@ -108,7 +108,7 @@
       "protocol": "PostgreSQL wire protocol",
       "path": "docker-compose.yml",
       "env_vars": {
-        "DATABASE_URL": "postgres://moos:moos@localhost:5432/moos"
+        "DATABASE_URL": "postgres://moos:${MOOS_DB_PASSWORD}@localhost:5432/moos"
       },
       "owner": "SYS03",
       "description": "Ground truth DB — morphism_log, containers, wires, container_embeddings (pgvector)"

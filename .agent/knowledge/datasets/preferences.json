@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "layer": "values",
-  "structure_ref": "../superset/ontology_v3.json",
+  "structure_ref": "../../knowledge_base/superset/ontology.json",
   "description": "User/system preferences — VALUE entries for runtime configuration. Each pref is a key-value pair with override scope (system, workspace, user, session). These are NOT containers — they are wire_config values on existing morphisms.",
   "scopes": {
     "system": "Built-in defaults — cannot be overridden by lower scopes",
@@ -14,7 +14,11 @@
       "key": "model.default_provider",
       "type": "string",
       "default": "gemini",
-      "allowed_values": ["anthropic", "gemini", "openai"],
+      "allowed_values": [
+        "anthropic",
+        "gemini",
+        "openai"
+      ],
       "scope": "workspace",
       "description": "Default LLM provider for morphism dispatch",
       "wire_config_target": "can_execute wires on AgnosticModel"
@@ -30,7 +34,11 @@
     {
       "key": "model.fallback_order",
       "type": "string[]",
-      "default": ["gemini", "anthropic", "openai"],
+      "default": [
+        "gemini",
+        "anthropic",
+        "openai"
+      ],
       "scope": "workspace",
       "description": "Provider fallback sequence on dispatch failure"
     },
@@ -45,7 +53,12 @@
       "key": "ui.graph_layout",
       "type": "string",
       "default": "dagre",
-      "allowed_values": ["dagre", "elk", "force", "manual"],
+      "allowed_values": [
+        "dagre",
+        "elk",
+        "force",
+        "manual"
+      ],
       "scope": "user",
       "description": "XYFlow graph layout algorithm"
     },
@@ -53,7 +66,11 @@
       "key": "ui.theme",
       "type": "string",
       "default": "dark",
-      "allowed_values": ["dark", "light", "system"],
+      "allowed_values": [
+        "dark",
+        "light",
+        "system"
+      ],
       "scope": "user",
       "description": "UI theme preference"
     },

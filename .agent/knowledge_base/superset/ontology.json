@@ -123,21 +123,21 @@
         "name": "C_0",
         "latex": "\\mathcal{C}_0",
         "formalization_level": "L2",
-        "objects": "Containers where stratum = 0 (bootstrap primitives)",
-        "morphisms": "Wires between S0 objects",
+        "objects": "Authored declarations and references prior to validation",
+        "morphisms": "Authoring relations over S0 objects",
         "composition": "Inherited from C",
         "identity": "Inherited from C",
         "gap": "Inclusion functor ι_0 stated but composition verification not shown",
         "ref": "strata Part 2",
-        "realized_by": "Wave 0"
+        "realized_by": "Wave 4"
       },
       {
         "id": "CAT07",
         "name": "C_1",
         "latex": "\\mathcal{C}_1",
         "formalization_level": "L2",
-        "objects": "C_0 ∪ stratum 1 objects (authoring syntax)",
-        "morphisms": "Wires between S0∪S1 objects",
+        "objects": "C_0 ∪ validated artifacts admitted for realization",
+        "morphisms": "Validation-preserving relations over S0∪S1 objects",
         "composition": "Inherited from C",
         "identity": "Inherited from C",
         "gap": "Inclusion functor ι_1 stated but not verified full and faithful",
@@ -149,13 +149,39 @@
         "name": "C_2",
         "latex": "\\mathcal{C}_2",
         "formalization_level": "L2",
-        "objects": "C_1 ∪ stratum 2 objects (operational, the working graph)",
-        "morphisms": "All wires (= C)",
+        "objects": "C_1 ∪ materialized graph-ready programs and structures",
+        "morphisms": "Realization relations over S0∪S1∪S2 objects",
         "composition": "Inherited from C",
         "identity": "Inherited from C",
         "gap": "Same as C_0/C_1",
         "ref": "strata Part 2",
         "realized_by": "Wave 4"
+      },
+      {
+        "id": "CAT20",
+        "name": "C_3",
+        "latex": "\\mathcal{C}_3",
+        "formalization_level": "L2",
+        "objects": "C_2 ∪ evaluated contingent graph state",
+        "morphisms": "Execution and replay-preserving relations over S0..S3 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "gap": "Inclusion functor ι_3 stated but contingent-state boundaries need fuller proof",
+        "ref": "strata Part 2",
+        "realized_by": "Wave 5"
+      },
+      {
+        "id": "CAT21",
+        "name": "C_4",
+        "latex": "\\mathcal{C}_4",
+        "formalization_level": "L2",
+        "objects": "C_3 ∪ projected views and surface bindings",
+        "morphisms": "Projection-preserving relations over S0..S4 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "gap": "Projection inclusion is named but view-coherence proofs remain partial",
+        "ref": "strata Part 2",
+        "realized_by": "Wave 5–6"
       }
     ],
     "hydration_pipeline": [
@@ -183,7 +209,7 @@
       },
       {
         "id": "CAT11",
-        "name": "Programs",
+        "name": "Materialized",
         "latex": "\\mathcal{P}",
         "formalization_level": "L1",
         "objects": "Morphism programs (ADD;LINK;MUTATE sequences)",
@@ -194,14 +220,25 @@
       },
       {
         "id": "CAT12",
-        "name": "Lens_i",
+        "name": "Projected",
         "latex": "\\mathcal{L}_i",
         "formalization_level": "L1",
-        "objects": "UI projections, embeddings, metrics",
+        "objects": "Projected views in the Lens_i family: UI projections, embeddings, metrics",
         "morphisms": "?",
         "gap": "Blind box — carries functor P_i codomain but no internal structure defined",
         "ref": "§19, strata Part 2",
         "realized_by": "Wave 5–6"
+      },
+      {
+        "id": "CAT22",
+        "name": "Evaluated",
+        "latex": "\\mathcal{E}",
+        "formalization_level": "L1",
+        "objects": "Contingent graph state after execution, hydration, or replay",
+        "morphisms": "?",
+        "gap": "Blind box — execution outputs are named, but internal categorical structure is not yet defined",
+        "ref": "hydration §3, §19",
+        "realized_by": "Wave 5"
       }
     ],
     "functor_codomains": [
@@ -289,7 +326,11 @@
         "id": "SUB01",
         "name": "identity",
         "formalization_level": "L2",
-        "members": ["AuthUser", "AppAdmin", "SuperAdmin"],
+        "members": [
+          "User",
+          "ColliderAdmin",
+          "SuperAdmin"
+        ],
         "constraint_pattern": "identity.*",
         "description": "Identity objects — actors that source OWNS and CAN_HYDRATE morphisms"
       },
@@ -297,7 +338,10 @@
         "id": "SUB02",
         "name": "structure",
         "formalization_level": "L2",
-        "members": ["AppTemplate", "NodeContainer"],
+        "members": [
+          "AppTemplate",
+          "NodeContainer"
+        ],
         "constraint_pattern": "structure.*",
         "description": "Structural objects — composable graph building blocks"
       },
@@ -305,7 +349,11 @@
         "id": "SUB03",
         "name": "compute",
         "formalization_level": "L2",
-        "members": ["AgnosticModel", "SystemTool", "ComputeResource"],
+        "members": [
+          "AgnosticModel",
+          "SystemTool",
+          "ComputeResource"
+        ],
         "constraint_pattern": "compute.*, compute.ComputeResource",
         "description": "Compute objects — schedulable and executable resources"
       },
@@ -313,7 +361,10 @@
         "id": "SUB04",
         "name": "surface",
         "formalization_level": "L2",
-        "members": ["UI_Lens", "RuntimeSurface"],
+        "members": [
+          "UI_Lens",
+          "RuntimeSurface"
+        ],
         "constraint_pattern": "surface.*",
         "description": "Surface objects — rendering and execution endpoints"
       },
@@ -321,7 +372,9 @@
         "id": "SUB05",
         "name": "protocol",
         "formalization_level": "L2",
-        "members": ["ProtocolAdapter"],
+        "members": [
+          "ProtocolAdapter"
+        ],
         "constraint_pattern": "protocol.ProtocolAdapter",
         "description": "Protocol objects — routable communication containers"
       },
@@ -329,7 +382,9 @@
         "id": "SUB06",
         "name": "infra",
         "formalization_level": "L2",
-        "members": ["InfraService"],
+        "members": [
+          "InfraService"
+        ],
         "constraint_pattern": "infra.InfraService",
         "description": "Infrastructure objects — persistable storage containers"
       },
@@ -337,7 +392,9 @@
         "id": "SUB07",
         "name": "memory",
         "formalization_level": "L2",
-        "members": ["MemoryStore"],
+        "members": [
+          "MemoryStore"
+        ],
         "constraint_pattern": "memory.MemoryStore",
         "description": "Memory objects — ephemeral or persistent knowledge containers"
       },
@@ -355,29 +412,42 @@
   "objects": [
     {
       "id": "OBJ01",
-      "name": "AuthUser",
-      "type_id": "auth_user",
+      "name": "User",
+      "type_id": "user",
       "broad_category": "identity",
-      "description": "Authenticated user — container whose morphisms grant access edges. No special ontological status.",
-      "source_connections": ["OWNS", "CAN_HYDRATE"],
+      "description": "Authenticated actor — container whose morphisms grant owned-workspace access edges. No special ontological status.",
+      "source_connections": [
+        "OWNS",
+        "CAN_HYDRATE"
+      ],
       "target_connections": []
     },
     {
       "id": "OBJ02",
-      "name": "AppAdmin",
-      "type_id": "app_admin",
+      "name": "ColliderAdmin",
+      "type_id": "collider_admin",
       "broad_category": "identity",
-      "description": "Application administrator — AuthUser with elevated OWNS edges to system containers.",
-      "source_connections": ["OWNS", "CAN_HYDRATE", "PRE_FLIGHT_CONFIG"],
+      "description": "Category administrator — elevated actor with governed OWNS edges to assigned containers.",
+      "source_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "PRE_FLIGHT_CONFIG"
+      ],
       "target_connections": []
     },
     {
       "id": "OBJ03",
       "name": "SuperAdmin",
-      "type_id": "super_admin",
+      "type_id": "superadmin",
       "broad_category": "identity",
       "description": "Root administrator — transitive OWNS over all containers.",
-      "source_connections": ["OWNS", "CAN_HYDRATE", "PRE_FLIGHT_CONFIG", "CAN_SCHEDULE", "CAN_FEDERATE"],
+      "source_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "PRE_FLIGHT_CONFIG",
+        "CAN_SCHEDULE",
+        "CAN_FEDERATE"
+      ],
       "target_connections": []
     },
     {
@@ -386,8 +456,13 @@
       "type_id": "app_template",
       "broad_category": "structure",
       "description": "Template container — reusable subgraph pattern. Instantiation = ADD + LINK sequence.",
-      "source_connections": ["CAN_HYDRATE"],
-      "target_connections": ["OWNS", "PRE_FLIGHT_CONFIG"]
+      "source_connections": [
+        "CAN_HYDRATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "PRE_FLIGHT_CONFIG"
+      ]
     },
     {
       "id": "OBJ05",
@@ -395,8 +470,16 @@
       "type_id": "node_container",
       "broad_category": "structure",
       "description": "General-purpose container — default object in C. Payload in state_payload JSONB.",
-      "source_connections": ["LINK_NODES", "SYNC_ACTIVE_STATE"],
-      "target_connections": ["OWNS", "CAN_HYDRATE", "LINK_NODES", "ADD_NODE_CONTAINER"]
+      "source_connections": [
+        "LINK_NODES",
+        "SYNC_ACTIVE_STATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "LINK_NODES",
+        "ADD_NODE_CONTAINER"
+      ]
     },
     {
       "id": "OBJ06",
@@ -404,8 +487,14 @@
       "type_id": "agnostic_model",
       "broad_category": "compute",
       "description": "LLM/ML model container — provider-agnostic URN. Provider config in state_payload.",
-      "source_connections": ["CAN_HYDRATE"],
-      "target_connections": ["OWNS", "CAN_SCHEDULE", "CAN_ROUTE"]
+      "source_connections": [
+        "CAN_HYDRATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_SCHEDULE",
+        "CAN_ROUTE"
+      ]
     },
     {
       "id": "OBJ07",
@@ -414,7 +503,11 @@
       "broad_category": "compute",
       "description": "Tool container — discovered via graph traversal, exposed via MCP protocol surface.",
       "source_connections": [],
-      "target_connections": ["OWNS", "CAN_HYDRATE", "CAN_ROUTE"]
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "CAN_ROUTE"
+      ]
     },
     {
       "id": "OBJ08",
@@ -422,8 +515,13 @@
       "type_id": "ui_lens",
       "broad_category": "surface",
       "description": "UI rendering surface — functor output: containers × wires → React component tree.",
-      "source_connections": ["SYNC_ACTIVE_STATE"],
-      "target_connections": ["OWNS", "CAN_HYDRATE"]
+      "source_connections": [
+        "SYNC_ACTIVE_STATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE"
+      ]
     },
     {
       "id": "OBJ09",
@@ -432,7 +530,11 @@
       "broad_category": "surface",
       "description": "Execution surface — HTTP/WS/MCP endpoint. Tools wire here to become executable.",
       "source_connections": [],
-      "target_connections": ["OWNS", "PRE_FLIGHT_CONFIG", "CAN_ROUTE"]
+      "target_connections": [
+        "OWNS",
+        "PRE_FLIGHT_CONFIG",
+        "CAN_ROUTE"
+      ]
     },
     {
       "id": "OBJ10",
@@ -441,7 +543,10 @@
       "broad_category": "compute",
       "description": "GPU device, Docker container, thread pool, VM — schedulable resource container.",
       "source_connections": [],
-      "target_connections": ["OWNS", "CAN_SCHEDULE"]
+      "target_connections": [
+        "OWNS",
+        "CAN_SCHEDULE"
+      ]
     },
     {
       "id": "OBJ11",
@@ -449,8 +554,13 @@
       "type_id": "protocol_adapter",
       "broad_category": "protocol",
       "description": "WS channel, MCP session, gRPC stream, HTTP endpoint — routable communication container.",
-      "source_connections": ["CAN_ROUTE"],
-      "target_connections": ["OWNS", "CAN_HYDRATE"]
+      "source_connections": [
+        "CAN_ROUTE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE"
+      ]
     },
     {
       "id": "OBJ12",
@@ -459,7 +569,10 @@
       "broad_category": "infra",
       "description": "Postgres instance, disk volume, network segment — persistable infrastructure container.",
       "source_connections": [],
-      "target_connections": ["OWNS", "CAN_PERSIST"]
+      "target_connections": [
+        "OWNS",
+        "CAN_PERSIST"
+      ]
     },
     {
       "id": "OBJ13",
@@ -467,8 +580,13 @@
       "type_id": "memory_store",
       "broad_category": "memory",
       "description": "Vector embedding store, context window, conversation history — ephemeral or persistent memory container.",
-      "source_connections": ["CAN_HYDRATE"],
-      "target_connections": ["OWNS", "CAN_PERSIST"]
+      "source_connections": [
+        "CAN_HYDRATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_PERSIST"
+      ]
     }
   ],
   "morphisms": [

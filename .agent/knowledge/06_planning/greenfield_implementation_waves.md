@@ -10,7 +10,7 @@
 > `architecture.md` §12 (benchmark architecture). Realized in Wave 6.
 > **Category Registry**: `foundations.md` §21 — each wave must promote L1→L2 or L2→L3 for categories it realizes.
 > **Value Layer**: `datasets/` — benchmarks.json, providers.json, preferences.json, workstation.json.
-> **Machine-Readable Ontology**: `superset/ontology_v3.json` (+ `.csv`) — full §21 registry in structured form.
+> **Machine-Readable Ontology**: `../knowledge_base/superset/ontology.json` (+ `.csv`) — full §21 registry in structured form.
 >
 > The ACT 2026 paper workstream runs in parallel — see `act2026_and_launch.md`.
 
@@ -37,17 +37,17 @@ core/effect boundary as a proven, tested foundation.
 
 ### Deliverables
 
-| Deliverable | Package | What it proves |
-| --- | --- | --- |
-| Go module scaffold | `go.mod`, `cmd/moos/main.go` | Repo compiles, runs, responds on health endpoint |
-| Core types | `core/types.go` | URN, Kind, Port, Stratum, MorphismType as concrete Go types |
-| Envelope + validation | `core/envelope.go` | All validation rules from kernel_specification §5 pass |
-| GraphState | `core/state.go` | In-memory graph representation with WireIndex |
-| Effects | `core/effects.go` | Effect type definitions (LogAppend, ContainerWrite, etc.) |
-| Pure evaluator | `core/evaluate.go` | `Evaluate(Envelope, GraphState, Time) → (EvalResult, error)` |
-| **100% pure core tests** | `core/evaluate_test.go` | All 4 morphisms tested: ADD, LINK, MUTATE, UNLINK — zero DB |
-| Stratum protection tests | `core/evaluate_test.go` | S0 objects cannot be mutated by non-evaluator actors |
-| Version CAS tests | `core/evaluate_test.go` | MUTATE with wrong version → explicit error, correct version returned |
+| Deliverable              | Package                      | What it proves                                                       |
+| ------------------------ | ---------------------------- | -------------------------------------------------------------------- |
+| Go module scaffold       | `go.mod`, `cmd/moos/main.go` | Repo compiles, runs, responds on health endpoint                     |
+| Core types               | `core/types.go`              | URN, Kind, Port, Stratum, MorphismType as concrete Go types          |
+| Envelope + validation    | `core/envelope.go`           | All validation rules from kernel_specification §5 pass               |
+| GraphState               | `core/state.go`              | In-memory graph representation with WireIndex                        |
+| Effects                  | `core/effects.go`            | Effect type definitions (LogAppend, ContainerWrite, etc.)            |
+| Pure evaluator           | `core/evaluate.go`           | `Evaluate(Envelope, GraphState, Time) → (EvalResult, error)`         |
+| **100% pure core tests** | `core/evaluate_test.go`      | All 4 morphisms tested: ADD, LINK, MUTATE, UNLINK — zero DB          |
+| Stratum protection tests | `core/evaluate_test.go`      | S0 objects cannot be mutated by non-evaluator actors                 |
+| Version CAS tests        | `core/evaluate_test.go`      | MUTATE with wrong version → explicit error, correct version returned |
 
 ### Tests (target: 30+)
 
@@ -87,17 +87,17 @@ results.
 
 ### Deliverables
 
-| Deliverable | Package | What it proves |
-| --- | --- | --- |
-| Effect interpreter | `shell/interpreter.go` | All effect types dispatched to real infrastructure |
-| DB adapter | `shell/persistence.go` | pgx/v5 CRUD + morphism_log append |
-| Scoped GraphState loader | `shell/loader.go` | OWNS-recursive CTE loads subcategory into core.GraphState |
-| Transaction wrapper | `shell/transaction.go` | Multi-effect atomic commit (all-or-nothing) |
-| Migration: strata core | `migrate/migrations/0001_strata_core.sql` | Tables with `stratum` column, S0 seed data |
-| Migration: operational | `migrate/migrations/0002_operational_graph.sql` | Full containers/wires/morphism_log schema |
-| HTTP transport | `transport/http.go` | Chi router with morph/container/health endpoints |
-| Assembly entrypoint | `cmd/moos/main.go` | Wires core + shell + transport into running binary |
-| **Integration tests** | `shell/persistence_test.go` | Full round-trip: HTTP → pure core → effects → DB → query back |
+| Deliverable              | Package                                         | What it proves                                                |
+| ------------------------ | ----------------------------------------------- | ------------------------------------------------------------- |
+| Effect interpreter       | `shell/interpreter.go`                          | All effect types dispatched to real infrastructure            |
+| DB adapter               | `shell/persistence.go`                          | pgx/v5 CRUD + morphism_log append                             |
+| Scoped GraphState loader | `shell/loader.go`                               | OWNS-recursive CTE loads subcategory into core.GraphState     |
+| Transaction wrapper      | `shell/transaction.go`                          | Multi-effect atomic commit (all-or-nothing)                   |
+| Migration: strata core   | `migrate/migrations/0001_strata_core.sql`       | Tables with `stratum` column, S0 seed data                    |
+| Migration: operational   | `migrate/migrations/0002_operational_graph.sql` | Full containers/wires/morphism_log schema                     |
+| HTTP transport           | `transport/http.go`                             | Chi router with morph/container/health endpoints              |
+| Assembly entrypoint      | `cmd/moos/main.go`                              | Wires core + shell + transport into running binary            |
+| **Integration tests**    | `shell/persistence_test.go`                     | Full round-trip: HTTP → pure core → effects → DB → query back |
 
 ### Schema
 
@@ -157,17 +157,17 @@ atomically. Session manager submits LLM-proposed morphism programs.
 
 ### Deliverables
 
-| Deliverable | Package | What it proves |
-| --- | --- | --- |
-| Program type | `core/program.go` | `EvaluateProgram(Program, GraphState, Time) → (EvalResult, error)` |
-| Program tests | `core/program_test.go` | Multi-morphism sequences: all-or-nothing semantics |
-| LLM adapter (Anthropic) | `provider/anthropic.go` | Streaming SSE, morphism extraction from response |
-| LLM adapter (OpenAI) | `provider/openai.go` | Streaming, fallback chain |
-| Provider dispatch | `provider/dispatch.go` | Primary/fallback model selection |
-| Morphism parser | `provider/parser.go` | Extract `[]Envelope` from LLM text output |
-| Session manager | `session/manager.go` | Create session → send message → LLM responds → morphisms applied |
-| WebSocket gateway | `transport/websocket.go` | Persistent session connections, event broadcasting |
-| Session program flow | integration test | User message → LLM → morphism program → pure core → effects → DB |
+| Deliverable             | Package                  | What it proves                                                     |
+| ----------------------- | ------------------------ | ------------------------------------------------------------------ |
+| Program type            | `core/program.go`        | `EvaluateProgram(Program, GraphState, Time) → (EvalResult, error)` |
+| Program tests           | `core/program_test.go`   | Multi-morphism sequences: all-or-nothing semantics                 |
+| LLM adapter (Anthropic) | `provider/anthropic.go`  | Streaming SSE, morphism extraction from response                   |
+| LLM adapter (OpenAI)    | `provider/openai.go`     | Streaming, fallback chain                                          |
+| Provider dispatch       | `provider/dispatch.go`   | Primary/fallback model selection                                   |
+| Morphism parser         | `provider/parser.go`     | Extract `[]Envelope` from LLM text output                          |
+| Session manager         | `session/manager.go`     | Create session → send message → LLM responds → morphisms applied   |
+| WebSocket gateway       | `transport/websocket.go` | Persistent session connections, event broadcasting                 |
+| Session program flow    | integration test         | User message → LLM → morphism program → pure core → effects → DB   |
 
 ### Key Design Decision
 
@@ -206,13 +206,13 @@ the kernel via MCP and invoke tools that are graph objects.
 
 ### Deliverables
 
-| Deliverable | Package | What it proves |
-| --- | --- | --- |
-| MCP transport | `transport/mcp.go` | JSON-RPC 2.0 + SSE stream endpoints |
-| Tool registry | `tool/registry.go` | Built-in tools: echo, list_children, read_payload, search |
-| Tool as graph object | integration test | Tools are S2 containers with `can_execute` wires |
-| Tool discovery via traversal | integration test | `tools/list` returns tools reachable from session scope |
-| MCP initialize/ping/tools/list/tools/call | integration test | Full MCP protocol flow |
+| Deliverable                               | Package            | What it proves                                            |
+| ----------------------------------------- | ------------------ | --------------------------------------------------------- |
+| MCP transport                             | `transport/mcp.go` | JSON-RPC 2.0 + SSE stream endpoints                       |
+| Tool registry                             | `tool/registry.go` | Built-in tools: echo, list_children, read_payload, search |
+| Tool as graph object                      | integration test   | Tools are S2 containers with `can_execute` wires          |
+| Tool discovery via traversal              | integration test   | `tools/list` returns tools reachable from session scope   |
+| MCP initialize/ping/tools/list/tools/call | integration test   | Full MCP protocol flow                                    |
 
 ### Assumptions Killed
 
@@ -233,15 +233,15 @@ objects in itself.
 
 ### Deliverables
 
-| Deliverable | Package | What it proves |
-| --- | --- | --- |
-| S1 category declaration format | `core/strata.go` | `_S1_CATEGORY` struct + validation |
-| S1 port vocabulary format | `core/strata.go` | `_S1_PORT_VOCAB` struct + validation |
-| S1 schema format | `core/strata.go` | `_S1_SCHEMA` struct + JSON Schema validation |
-| Materialization compiler | `shell/materialize.go` | S1 declaration → morphism Program → S2 objects |
-| Mock lifecycle enforcement | `core/evaluate.go` | Mock objects require purpose + review_by fields |
-| Mock lifecycle audit | `shell/audit.go` | Query: list all mocks past review deadline |
-| Promotion flow | integration test | S1 category → materialized into S2 → S1 marked "promoted" |
+| Deliverable                    | Package                | What it proves                                            |
+| ------------------------------ | ---------------------- | --------------------------------------------------------- |
+| S1 category declaration format | `core/strata.go`       | `_S1_CATEGORY` struct + validation                        |
+| S1 port vocabulary format      | `core/strata.go`       | `_S1_PORT_VOCAB` struct + validation                      |
+| S1 schema format               | `core/strata.go`       | `_S1_SCHEMA` struct + JSON Schema validation              |
+| Materialization compiler       | `shell/materialize.go` | S1 declaration → morphism Program → S2 objects            |
+| Mock lifecycle enforcement     | `core/evaluate.go`     | Mock objects require purpose + review_by fields           |
+| Mock lifecycle audit           | `shell/audit.go`       | Query: list all mocks past review deadline                |
+| Promotion flow                 | integration test       | S1 category → materialized into S2 → S1 marked "promoted" |
 
 ### Assumptions Killed
 
@@ -252,6 +252,7 @@ objects in itself.
 ### Mock Categories Resolved
 
 All mocks from Waves 1-3 reviewed:
+
 - `SESSION` → promote (fundamental operational kind)
 - `MESSAGE` → promote (fundamental operational kind)
 - `AGENT` → promote or reclassify (depends on agent architecture decision)
@@ -266,14 +267,14 @@ auto-embed container payloads and serve vector similarity queries.
 
 ### Deliverables
 
-| Deliverable | Package | What it proves |
-| --- | --- | --- |
-| Embedding functor pipeline | `functor/embedding.go` | MUTATE → EmbeddingRecompute effect → vector stored |
-| pgvector schema | `migrate/migrations/0003_embeddings.sql` | HNSW index on `embedding` column |
-| Embedding provider adapter | `provider/embedding.go` | Configurable: OpenAI ada-002, local model, etc. |
-| Semantic search endpoint | `transport/http.go` | `GET /api/v1/search?q=...` → vector + graph hybrid results |
-| Separation principle test | integration test | Embeddings stored in `embeddings` table, NOT in `payload_json` |
-| Recompute-on-MUTATE test | integration test | MUTATE triggers embedding update for affected URN |
+| Deliverable                | Package                                  | What it proves                                                 |
+| -------------------------- | ---------------------------------------- | -------------------------------------------------------------- |
+| Embedding functor pipeline | `functor/embedding.go`                   | MUTATE → EmbeddingRecompute effect → vector stored             |
+| pgvector schema            | `migrate/migrations/0003_embeddings.sql` | HNSW index on `embedding` column                               |
+| Embedding provider adapter | `provider/embedding.go`                  | Configurable: OpenAI ada-002, local model, etc.                |
+| Semantic search endpoint   | `transport/http.go`                      | `GET /api/v1/search?q=...` → vector + graph hybrid results     |
+| Separation principle test  | integration test                         | Embeddings stored in `embeddings` table, NOT in `payload_json` |
+| Recompute-on-MUTATE test   | integration test                         | MUTATE triggers embedding update for affected URN              |
 
 ### Assumptions Killed
 
@@ -293,19 +294,19 @@ See `foundations.md` §9, `kernel_specification.md` §14, `architecture.md` §12
 
 ### Deliverables
 
-| Deliverable | Package | What it proves |
-| --- | --- | --- |
-| 7-dimension cost metrics | `shell/metrics.go` | Prometheus histograms for all 7 THC dimensions |
-| Per-subcategory labeling | `shell/metrics.go` | Metrics labeled by subcategory type |
-| Hydration context recording | `tool/context.go` | Every tool evaluation records topological context |
-| Provider category containers | `migrate/`, `shell/` | Provider + Model containers, `owns`/`can_execute` wires in graph |
-| Benchmark functor pipeline | `functor/benchmark.go` | `BenchmarkFunc` type; scores stored as graph containers with `scored_on`/`evaluates_task` wires |
-| Cross-provider comparison query | integration test | Given a task, query all provider scores via graph traversal |
-| Natural transformation detection | `functor/benchmark.go` | Verify functoriality; detect when task-t scores predict task-t′ scores |
-| Dispatcher feedback loop | `model/dispatcher.go` | `wire_config.benchmark_override` drives task-dependent provider ordering |
-| Federation wire type | `core/types.go` | `CAN_FEDERATE` as wire port with endpoint config |
-| Federation sync protocol spec | `05_moos_design/federation.md` | Design doc, not implementation |
-| Projection pipeline formalization | integration test | S2 mutation → effect → functor recompute → S3 output |
+| Deliverable                       | Package                        | What it proves                                                                                  |
+| --------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------- |
+| 7-dimension cost metrics          | `shell/metrics.go`             | Prometheus histograms for all 7 THC dimensions                                                  |
+| Per-subcategory labeling          | `shell/metrics.go`             | Metrics labeled by subcategory type                                                             |
+| Hydration context recording       | `tool/context.go`              | Every tool evaluation records topological context                                               |
+| Provider category containers      | `migrate/`, `shell/`           | Provider + Model containers, `owns`/`can_execute` wires in graph                                |
+| Benchmark functor pipeline        | `functor/benchmark.go`         | `BenchmarkFunc` type; scores stored as graph containers with `scored_on`/`evaluates_task` wires |
+| Cross-provider comparison query   | integration test               | Given a task, query all provider scores via graph traversal                                     |
+| Natural transformation detection  | `functor/benchmark.go`         | Verify functoriality; detect when task-t scores predict task-t′ scores                          |
+| Dispatcher feedback loop          | `model/dispatcher.go`          | `wire_config.benchmark_override` drives task-dependent provider ordering                        |
+| Federation wire type              | `core/types.go`                | `CAN_FEDERATE` as wire port with endpoint config                                                |
+| Federation sync protocol spec     | `05_moos_design/federation.md` | Design doc, not implementation                                                                  |
+| Projection pipeline formalization | integration test               | S2 mutation → effect → functor recompute → S3 output                                            |
 
 ### Assumptions Killed
 
@@ -365,14 +366,14 @@ Before a wave is considered complete:
 
 The paper workstream (see `act2026_and_launch.md`) runs in parallel:
 
-| Wave | Paper Section Unblocked |
-| --- | --- |
-| Wave 0 | §3 Container Category — can cite pure core evaluation |
-| Wave 1 | §7 Implementation — can cite schema + Go types |
+| Wave   | Paper Section Unblocked                                                 |
+| ------ | ----------------------------------------------------------------------- |
+| Wave 0 | §3 Container Category — can cite pure core evaluation                   |
+| Wave 1 | §7 Implementation — can cite schema + Go types                          |
 | Wave 2 | §4 Functorial Composition vs Task Decomposition — can cite Program type |
-| Wave 3 | §7 Implementation — can cite MCP interop |
-| Wave 4 | §5 Recursive Semantic Bridge — can cite self-describing graph |
-| Wave 5 | §6 System 3 — can cite embedding + search pipeline |
+| Wave 3 | §7 Implementation — can cite MCP interop                                |
+| Wave 4 | §5 Recursive Semantic Bridge — can cite self-describing graph           |
+| Wave 5 | §6 System 3 — can cite embedding + search pipeline                      |
 
 The paper abstract (March 23) can be written after Wave 0 design is
 locked, even before implementation begins. The full paper (March 30)

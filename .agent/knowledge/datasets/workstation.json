@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "layer": "values",
-  "structure_ref": "../superset/ontology_v3.json",
+  "structure_ref": "../../knowledge_base/superset/ontology.json",
   "description": "Workstation configuration — VALUE entries for active services. Seeded from CLAUDE.md port table. Each service is an InfraService (OBJ12) or RuntimeSurface (OBJ09) container.",
   "services": [
     {
@@ -108,7 +108,7 @@
       "protocol": "PostgreSQL wire protocol",
       "path": "docker-compose.yml",
       "env_vars": {
-        "DATABASE_URL": "postgres://moos:moos@localhost:5432/moos"
+        "DATABASE_URL": "postgres://moos:${MOOS_DB_PASSWORD}@localhost:5432/moos"
       },
       "owner": "SYS03",
       "description": "Ground truth DB — morphism_log, containers, wires, container_embeddings (pgvector)"

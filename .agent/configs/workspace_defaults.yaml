@@ -1,11 +1,14 @@
 schema_version: "1.0.0"
 updated_at: "2026-03-04"
 owner: "FFS0_Factory"
-description: "Workspace-wide defaults for paths, agents, and pilots."
+description: "Formal Settings surface for workspace-wide defaults."
+
+# Settings only: paths, flags, logging, UI defaults, and default ids.
+# Do not place secret names, credentials, or provider contracts in this file.
 
 # Path resolution defaults
 paths:
-  factory_root: "${FACTORY_ROOT:-D:/FFS0_Factory}"
+  factory_root: "${FACTORY_ROOT:-D:/FFS0_Factory/moos}"
   agents_dir: ".agent"
   pilots_dir: "shared/pilots"
   knowledge_dir: "knowledge"

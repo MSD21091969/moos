@@ -1,7 +1,10 @@
 schema_version: "1.0.0"
 updated_at: "2026-03-02"
 owner: "FFS0_Factory"
-description: "Central registry of AI providers and models. Secrets stored in secrets/api_keys.env."
+description: "Formal Registry surface for AI providers, auth contracts, and model catalogs. Secrets are resolved from secrets/api_keys.env."
+
+# Registry only: provider ids, base URLs, auth kinds, required secret key names,
+# and supported models. Do not place secret values or workspace defaults here.
 
 defaults:
   provider: gemini

@@ -61,16 +61,16 @@ FFS0_Factory/
 
 The canonical knowledge lives in `.agent/knowledge_base/`.
 
-| Layer               | Path                 | Description                                                                |
-| ------------------- | -------------------- | -------------------------------------------------------------------------- |
-| **governance**      | `00_governance/`     | Canonicality, promotion, migration, provenance boundary                    |
-| **foundations**     | `01_foundations/`    | Axioms, primitives, category language, invariants                          |
-| **architecture**    | `02_architecture/`   | Kernel realization, strata, functors, governance architecture              |
-| **semantics**       | `03_semantics/`      | Hydration, normalization, syntax/semantics/state/topology discipline       |
-| **value layer**     | `04_value_layer/`    | Runtime surfaces, providers, identities, workstation and contingent facts  |
-| **reference**       | `05_reference/`      | Digests and raw non-canonical source material                              |
-| **superset**        | `superset/`          | 13 objects, 16 morphisms, 5 functors, 4 NTs, 22 categories                 |
-| **legacy**          | `_legacy/`           | Archived provenance inputs, not live canon                                 |
+| Layer            | Path               | Description                                                               |
+| ---------------- | ------------------ | ------------------------------------------------------------------------- |
+| **governance**   | `00_governance/`   | Canonicality, promotion, migration, provenance boundary                   |
+| **foundations**  | `01_foundations/`  | Axioms, primitives, category language, invariants                         |
+| **architecture** | `02_architecture/` | Kernel realization, strata, functors, governance architecture             |
+| **semantics**    | `03_semantics/`    | Hydration, normalization, syntax/semantics/state/topology discipline      |
+| **value layer**  | `04_value_layer/`  | Runtime surfaces, providers, identities, workstation and contingent facts |
+| **reference**    | `05_reference/`    | Digests and raw non-canonical source material                             |
+| **superset**     | `superset/`        | 13 objects, 16 morphisms, 5 functors, 4 NTs, 22 categories                |
+| **legacy**       | `_legacy/`         | Archived provenance inputs, not live canon                                |
 
 Corrected categorical model (v3.0):
 
@@ -100,7 +100,7 @@ claude mcp add collider-tools --transport sse http://localhost:8080/mcp/sse
 
 Secrets:
 
-- `D:\FFS0_Factory\secrets\api_keys.env`
+- `D:\FFS0_Factory\moos\secrets\api_keys.env`
 
 ## Legacy Runtime Snapshot
 

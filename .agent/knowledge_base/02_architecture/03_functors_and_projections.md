@@ -16,3 +16,9 @@ Canonical for projection architecture.
 - Structure functor
 - Benchmark functor
 - anti-pattern: projection mistaken for ground truth
+
+## Clarification
+
+The superset registry may name more than four morphisms because it catalogs semantic connection types.
+Operationally, graph mutation still reduces to four invariant primitives: `ADD`, `LINK`, `MUTATE`, and `UNLINK`.
+The larger morphism inventory describes sanctioned connection forms; the four primitives describe how state changes are committed.

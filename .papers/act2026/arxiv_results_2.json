@@ -1,0 +1,48 @@
+[
+  {
+    "title": "Operads of Wiring Diagrams",
+    "authors": [
+      "Donald Yau"
+    ],
+    "summary": "This monograph is a comprehensive study of the combinatorial structure of various operads of wiring diagrams and undirected wiring diagrams. Our first main objective is to prove a finite presentation theorem for each operad of wiring diagrams, describing each one in terms of just a few operadic generators and a small number of generating relations. For example, the operad of wiring diagrams has 8 generators and 28 generating relations, while the operad of undirected wiring diagrams has 6 generators and 17 generating relations. Our second main objective is to prove a corresponding finite presentation theorem for algebras over each operad of wiring diagrams. As applications we provide finite presentations for the propagator algebra, the algebra of discrete systems, the algebra of open dynamical systems, and the (typed) relational algebra. We also provide a partial verification of Spivak's conjecture regarding the quotient-freeness of the relational algebra. Our third main objective is to construct explicit operad maps among the several operads of wiring diagrams. In particular, there is a surjective operad map from the operad of all wiring diagrams, including delay nodes, to the operad of undirected wiring diagrams.\n  This monograph is intended for graduate students, mathematicians, scientists, and engineers interested in operads and wiring diagrams. Assuming no prior knowledge of categories, operads, and wiring diagrams, this monograph is self-contained and can be used as a supplement in a graduate course and for independent study. There are over 100 graphical illustrations and a chapter with a list of problems.",
+    "pdf_url": "https://arxiv.org/pdf/1512.01602v3",
+    "published": "2015-12-05 00:39:34+00:00"
+  },
+  {
+    "title": "Brauer diagrams, modular operads, and a graphical nerve theorem for circuit algebras",
+    "authors": [
+      "Sophie Raynor"
+    ],
+    "summary": "Circuit algebras, used in the study of finite-type knot invariants, are a symmetric analogue of Jones's planar algebras. They are very closely related to circuit operads, which are a variation of modular operads admitting an extra monoidal product. This paper gives a description of circuit algebras in terms categories of Brauer diagrams. An abstract nerve theorem for circuit operads -- and hence circuit algebras -- is proved using an iterated distributive law, and an existing nerve theorem for modular operads.",
+    "pdf_url": "https://arxiv.org/pdf/2108.04557v3",
+    "published": "2021-08-10 10:09:27+00:00"
+  },
+  {
+    "title": "Functorial, operadic and modular operadic combinatorics of circuit algebras",
+    "authors": [
+      "Sophie Raynor"
+    ],
+    "summary": "Circuit algebras are a symmetric analogue of Jones's planar algebras introduced to study finite-type invariants of virtual knotted objects. Circuit algebra structures appear, in different forms, across mathematics. This paper provides a dictionary for translating between their diverse incarnations and describing their wider context. A formal definition of a broad class of circuit algebras is established and three equivalent descriptions of circuit algebras are provided: in terms of operads of wiring diagrams, modular operads and categories of Brauer diagrams. As an application, circuit algebra characterisations of algebras over the orthogonal and symplectic groups are given.",
+    "pdf_url": "https://arxiv.org/pdf/2412.20260v2",
+    "published": "2024-12-28 20:27:51+00:00"
+  },
+  {
+    "title": "Operads, clones, and distributive laws",
+    "authors": [
+      "Pierre-Louis Curien"
+    ],
+    "summary": "We show how non-symmetric operads (or multicategories), symmetric operads, and clones, arise from three suitable monads on Cat, each extending to a (pseudo-)monad on the bicategory of categories and profunctors. We also explain how other previous categorical analyses of operads (via Day's tensor products, or via analytical functors) fit with the profunctor approach.",
+    "pdf_url": "https://arxiv.org/pdf/1205.3050v1",
+    "published": "2012-05-14 14:56:08+00:00"
+  },
+  {
+    "title": "The operad of temporal wiring diagrams: formalizing a graphical language for discrete-time processes",
+    "authors": [
+      "Dylan Rupel",
+      "David I. Spivak"
+    ],
+    "summary": "We investigate the hierarchical structure of processes using the mathematical theory of operads. Information or material enters a given process as a stream of inputs, and the process converts it to a stream of outputs. Output streams can then be supplied to other processes in an organized manner, and the resulting system of interconnected processes can itself be considered a macro process. To model the inherent structure in this kind of system, we define an operad $\\mathcal{W}$ of black boxes and directed wiring diagrams, and we define a $\\mathcal{W}$-algebra $\\mathcal{P}$ of processes (which we call propagators, after Radul and Sussman). Previous operadic models of wiring diagrams use undirected wires without length, useful for modeling static systems of constraints, whereas we use directed wires with length, useful for modeling dynamic flows of information. We give multiple examples throughout to ground the ideas.",
+    "pdf_url": "https://arxiv.org/pdf/1307.6894v1",
+    "published": "2013-07-25 23:33:24+00:00"
+  }
+]

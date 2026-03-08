@@ -3,30 +3,6 @@
         {
             "name": "FFS0_Factory",
             "path": "."
-        },
-        {
-            "name": "MOOS Platform",
-            "path": "moos/platform"
-        },
-        {
-            "name": ".agent knowledge_base",
-            "path": ".agent/knowledge_base"
-        },
-        {
-            "name": ".agent knowledge",
-            "path": ".agent/knowledge"
-        },
-        {
-            "name": ".agent configs",
-            "path": ".agent/configs"
-        },
-        {
-            "name": ".vscode",
-            "path": ".vscode"
-        },
-        {
-            "name": "secrets",
-            "path": "secrets"
         }
     ],
     "settings": {
