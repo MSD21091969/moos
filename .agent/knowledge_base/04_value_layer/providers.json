@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "layer": "values",
+  "structure_ref": "../superset/ontology.json",
+  "description": "Provider instances — VALUE entries for Provider_p (CAT17) and adapter (CAT19) categories. Each provider is a container with OWNS wires to model containers. Adapter type maps to Go interface: internal/model/adapters.go.",
+  "providers": [
+    {
+      "id": "urn:moos:provider:anthropic",
+      "name": "Anthropic",
+      "adapter_type": "AnthropicAdapter",
+      "go_file": "internal/model/adapters.go",
+      "api_base_url": "https://api.anthropic.com/v1",
+      "auth_pattern": "x-api-key header",
+      "rate_limits": {
+        "requests_per_minute": 1000,
+        "tokens_per_minute": 100000,
+        "note": "Varies by tier — check dashboard"
+      },
+      "models": [
+        {
+          "id": "urn:moos:model:anthropic:claude-3-7-sonnet",
+          "name": "claude-3-7-sonnet-20250219",
+          "capabilities": ["complete", "stream", "tool_use"],
+          "context_window": 200000,
+          "max_output_tokens": 8192,
+          "cost_per_1k_input": 0.003,
+          "cost_per_1k_output": 0.015
+        }
+      ],
+      "wire_types": {
+        "owns": "provider → model",
+        "can_execute": "model → operation"
+      }
+    },
+    {
+      "id": "urn:moos:provider:gemini",
+      "name": "Google Gemini",
+      "adapter_type": "GeminiAdapter",
+      "go_file": "internal/model/adapters.go",
+      "api_base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "auth_pattern": "API key query parameter or OAuth2",
+      "rate_limits": {
+        "requests_per_minute": 1500,
+        "tokens_per_minute": 1000000,
+        "note": "Free tier limits differ — check Vertex AI for production"
+      },
+      "models": [
+        {
+          "id": "urn:moos:model:gemini:gemini-2.0-flash",
+          "name": "gemini-2.0-flash",
+          "capabilities": ["complete", "stream", "tool_use"],
+          "context_window": 1000000,
+          "max_output_tokens": 8192,
+          "cost_per_1k_input": 0.00035,
+          "cost_per_1k_output": 0.0015,
+          "note": "Default provider in MOOS dispatcher"
+        }
+      ],
+      "wire_types": {
+        "owns": "provider → model",
+        "can_execute": "model → operation"
+      }
+    },
+    {
+      "id": "urn:moos:provider:openai",
+      "name": "OpenAI",
+      "adapter_type": "OpenAIAdapter",
+      "go_file": "internal/model/adapters.go",
+      "api_base_url": "https://api.openai.com/v1",
+      "auth_pattern": "Bearer token Authorization header",
+      "rate_limits": {
+        "requests_per_minute": 500,
+        "tokens_per_minute": 200000,
+        "note": "Tier-dependent — check usage dashboard"
+      },
+      "models": [
+        {
+          "id": "urn:moos:model:openai:gpt-4o",
+          "name": "gpt-4o",
+          "capabilities": ["complete", "stream", "tool_use"],
+          "context_window": 128000,
+          "max_output_tokens": 4096,
+          "cost_per_1k_input": 0.005,
+          "cost_per_1k_output": 0.015
+        }
+      ],
+      "wire_types": {
+        "owns": "provider → model",
+        "can_execute": "model → operation"
+      }
+    }
+  ]
+}

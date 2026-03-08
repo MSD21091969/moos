@@ -5,32 +5,28 @@
             "path": "."
         },
         {
-            "name": "FFS1_ColliderDataSystems",
-            "path": "workspaces/FFS1_ColliderDataSystems"
+            "name": "MOOS Platform",
+            "path": "moos/platform"
         },
         {
-            "name": "FFS2_Backends+ChromeExt",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS2_ColliderBackends_MultiAgentChromeExtension"
+            "name": ".agent knowledge_base",
+            "path": ".agent/knowledge_base"
         },
         {
-            "name": "FFS3_Frontend",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer"
+            "name": ".agent knowledge",
+            "path": ".agent/knowledge"
         },
         {
-            "name": "ffs4",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/apps/ffs4"
+            "name": ".agent configs",
+            "path": ".agent/configs"
         },
         {
-            "name": "ffs5",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/apps/ffs5"
+            "name": ".vscode",
+            "path": ".vscode"
         },
         {
-            "name": "ffs6",
-            "path": "workspaces/FFS1_ColliderDataSystems/FFS3_ColliderApplicationsFrontendServer/apps/ffs6"
-        },
-        {
-            "name": "maassen_hochrath",
-            "path": "workspaces/maassen_hochrath"
+            "name": "secrets",
+            "path": "secrets"
         }
     ],
     "settings": {
@@ -39,17 +35,55 @@
             "**/.venv": true,
             "**/node_modules": true,
             "**/__pycache__": true,
-            "**/*.egg-info": true
+            "**/*.egg-info": true,
+            ".agent/instructions": true,
+            ".agent/rules": true,
+            ".agent/workflows": true,
+            ".agent/index.md": true,
+            ".agent/manifest.yaml": true,
+            "moos/apps": true,
+            "moos/cmd": true,
+            "moos/docs": true,
+            "moos/internal": true,
+            "moos/migrations": true,
+            "moos/packages": true,
+            "moos/proto": true,
+            "moos/scripts": true,
+            "workspaces/FFS1_ColliderDataSystems": true,
+            "workspaces/maassen_hochrath": true
         },
         "search.exclude": {
             "**/.agent": false,
             "**/node_modules": true,
-            "**/.venv": true
+            "**/.venv": true,
+            ".agent/instructions": true,
+            ".agent/rules": true,
+            ".agent/workflows": true,
+            "moos/apps": true,
+            "moos/cmd": true,
+            "moos/docs": true,
+            "moos/internal": true,
+            "moos/migrations": true,
+            "moos/packages": true,
+            "moos/proto": true,
+            "moos/scripts": true,
+            "workspaces/FFS1_ColliderDataSystems": true,
+            "workspaces/maassen_hochrath": true
         },
         "files.watcherExclude": {
             "**/.agent": false,
             "**/node_modules": true,
-            "**/.venv": true
+            "**/.venv": true,
+            "moos/apps": true,
+            "moos/cmd": true,
+            "moos/docs": true,
+            "moos/internal": true,
+            "moos/migrations": true,
+            "moos/packages": true,
+            "moos/proto": true,
+            "moos/scripts": true,
+            "workspaces/FFS1_ColliderDataSystems": true,
+            "workspaces/maassen_hochrath": true
         },
         "files.associations": {
             "**/.agent/**/*.md": "markdown",
@@ -90,10 +124,7 @@
             "charliermarsh.ruff",
             "esbenp.prettier-vscode",
             "dbaeumer.vscode-eslint",
-            "nrwl.angular-console",
-            "ms-playwright.playwright",
-            "firsttris.vscode-jest-runner",
-            "ms-vscode.live-server"
+            "ms-playwright.playwright"
         ]
     }
 }

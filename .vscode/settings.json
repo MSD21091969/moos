@@ -12,14 +12,37 @@
     "**/node_modules": true,
     "**/.nx": true,
     "**/build": true,
-    "**/.plasmo": true
+    "**/.plasmo": true,
+    ".agent/instructions": true,
+    ".agent/rules": true,
+    ".agent/workflows": true,
+    "moos/apps": true,
+    "moos/cmd": true,
+    "moos/docs": true,
+    "moos/internal": true,
+    "moos/migrations": true,
+    "moos/packages": true,
+    "moos/proto": true,
+    "moos/scripts": true,
+    "workspaces/FFS1_ColliderDataSystems": true,
+    "workspaces/maassen_hochrath": true
   },
   "files.watcherExclude": {
     "**/.venv/**": true,
     "**/__pycache__/**": true,
     "**/node_modules/**": true,
     "**/.nx/**": true,
-    "**/.plasmo/**": true
+    "**/.plasmo/**": true,
+    "moos/apps/**": true,
+    "moos/cmd/**": true,
+    "moos/docs/**": true,
+    "moos/internal/**": true,
+    "moos/migrations/**": true,
+    "moos/packages/**": true,
+    "moos/proto/**": true,
+    "moos/scripts/**": true,
+    "workspaces/FFS1_ColliderDataSystems/**": true,
+    "workspaces/maassen_hochrath/**": true
   },
   "github.copilot.enable": {
     "*": true
@@ -31,7 +54,7 @@
   ],
   "github.copilot.chat.reviewSelection.instructions": [
     {
-      "text": "Check for: missing Google docstrings, non-Ruff-compliant style, missing type annotations, any use of PostgreSQL (use SQLite/aiosqlite), any use of npm/yarn (use pnpm for FFS3), hardcoded secrets, non-async DB calls in FastAPI routes."
+      "text": "Check for: accidental edits to legacy paths, hardcoded secrets, preset/installer metadata drift, and consistency with the active surfaces (`moos/platform`, `.agent/knowledge_base`, `.agent/knowledge`, `.agent/configs`, `.vscode`, `secrets`)."
     }
   ],
   "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
@@ -39,9 +62,6 @@
     ".venv/Scripts/ruff.exe"
   ],
   "python.analysis.diagnosticMode": "openFilesOnly",
-  "python.analysis.extraPaths": [
-    "sdk"
-  ],
   "[python]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff"

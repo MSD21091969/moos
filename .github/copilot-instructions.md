@@ -6,10 +6,11 @@ Single source of truth for project instructions is `CLAUDE.md`.
 
 1. `D:\FFS0_Factory\CLAUDE.md`
 2. Workspace-local `CLAUDE.md` if present:
-   - `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\CLAUDE.md`
-   - `D:\FFS0_Factory\workspaces\FFS1_ColliderDataSystems\FFS3_ColliderApplicationsFrontendServer\CLAUDE.md`
+   - `D:\FFS0_Factory\moos\CLAUDE.md` when editing `moos\platform\**`
 
 ## Policy
 
 - Treat `CLAUDE.md` files as canonical.
 - If guidance conflicts, `CLAUDE.md` wins.
+- Treat `workspaces\FFS1_*` and non-`platform` MOOS code as legacy unless the task explicitly targets archival/reference material.
+- Treat `.vscode\` and `secrets\` as active support surfaces.

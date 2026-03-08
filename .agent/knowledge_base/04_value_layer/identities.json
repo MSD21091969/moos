@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "role": "value-layer",
+  "canonicality": "canonical-contingent",
+  "source_refs": [],
+  "identities": [],
+  "notes": "Abstract actor or user belongs to doctrine and registry; concrete userId bindings belong here."
+}
