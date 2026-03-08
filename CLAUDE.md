@@ -18,8 +18,6 @@ Everything else is currently legacy or reference-only, including:
 - `moos/` outside `moos/platform/`
 - `workspaces/FFS1_ColliderDataSystems/`
 - `workspaces/maassen_hochrath/`
-- `.agent/index.md`
-- `.agent/manifest.yaml`
 
 Legacy surfaces should not be treated as current implementation targets and should not be part of the forward commit/push set unless explicitly requested.
 
@@ -32,7 +30,7 @@ Read order for AI Agents:
 1. `D:\FFS0_Factory\CLAUDE.md` (Root / Factory conventions)
 2. `D:\FFS0_Factory\moos\CLAUDE.md` when editing `moos/platform/**`
 
-Legacy `.agent` index/manifest artifacts and workspace-local CLAUDE files are reference-only until replaced.
+Workspace-local CLAUDE files outside the active scope are reference-only until replaced.
 
 ## Workspace Map
 
@@ -51,8 +49,6 @@ FFS0_Factory/
 │       ├── 05_reference/                 Non-canonical digests and raw sources
 │       ├── superset/                     Structured canonical registry
 │       └── _legacy/                      Archived provenance inputs
-│   ├── index.md                          Legacy
-│   ├── manifest.yaml                     Legacy
 ├── moos/
 │   ├── platform/                         Active presets + installer metadata surface
 │   └── *                                 Legacy runtime snapshot / reference-only
