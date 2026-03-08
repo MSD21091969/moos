@@ -18,9 +18,6 @@ Everything else is currently legacy or reference-only, including:
 - `moos/` outside `moos/platform/`
 - `workspaces/FFS1_ColliderDataSystems/`
 - `workspaces/maassen_hochrath/`
-- `.agent/instructions/`
-- `.agent/rules/`
-- `.agent/workflows/`
 - `.agent/index.md`
 - `.agent/manifest.yaml`
 
@@ -35,7 +32,7 @@ Read order for AI Agents:
 1. `D:\FFS0_Factory\CLAUDE.md` (Root / Factory conventions)
 2. `D:\FFS0_Factory\moos\CLAUDE.md` when editing `moos/platform/**`
 
-Legacy `.agent` instructions, rules, workflows, manifests, and workspace-local CLAUDE files are reference-only until replaced.
+Legacy `.agent` index/manifest artifacts and workspace-local CLAUDE files are reference-only until replaced.
 
 ## Workspace Map
 
@@ -56,9 +53,6 @@ FFS0_Factory/
 │       └── _legacy/                      Archived provenance inputs
 │   ├── index.md                          Legacy
 │   ├── manifest.yaml                     Legacy
-│   ├── instructions/                     Legacy
-│   ├── rules/                            Legacy
-│   └── workflows/                        Legacy
 ├── moos/
 │   ├── platform/                         Active presets + installer metadata surface
 │   └── *                                 Legacy runtime snapshot / reference-only
@@ -135,7 +129,6 @@ The structured ontology registry (`.agent/knowledge_base/superset/`) defines the
 - Conventional Commits (`feat:`, `fix:`, `chore:`)
 - Keep changes inside `D:\FFS0_Factory\`
 - Only `moos/platform/`, `.agent/knowledge_base/`, `.agent/knowledge/`, `.agent/configs/`, `.vscode/`, and `secrets/` are active edit targets by default
-- Do not extend legacy `.agent/instructions`, `.agent/rules`, or `.agent/workflows`; replace them with new active equivalents when needed
 - Do not stage or promote legacy implementation trees unless the task explicitly calls for archival or migration work
 
 ## Agent Permissions
