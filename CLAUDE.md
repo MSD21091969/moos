@@ -54,7 +54,7 @@ FFS0_Factory/
 │   └── *                                 Legacy runtime snapshot / reference-only
 ├── secrets/                              Active local secret templates and credential staging
 ├── CLAUDE.md                             Root policy authority
-└── FFS0_Factory.code-workspace           Preferred workspace entry point
+└── moos.code-workspace                   Preferred workspace entry point
 ```
 
 ## Knowledge Base (vNext)

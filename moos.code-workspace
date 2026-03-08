@@ -1,7 +1,7 @@
 {
     "folders": [
         {
-            "name": "FFS0_Factory",
+            "name": "moos",
             "path": "."
         }
     ],
@@ -90,7 +90,7 @@
         "chat.tools.terminal.autoApprove": {
             "gcloud": true
         },
-        "powershell.cwd": "FFS0_Factory",
+        "powershell.cwd": "moos",
         "git.ignoreLimitWarning": true
     },
     "extensions": {
