@@ -6,13 +6,12 @@
     },
     "filesystem-workspace": {
       "type": "stdio",
-      "command": "C:/Users/HP/AppData/Local/Microsoft/WinGet/Packages/OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe/node-v24.14.0-win-x64/npx.cmd",
+      "command": "C:/Program Files/nodejs/npx.cmd",
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
         "D:/FFS0_Factory/moos/platform",
         "D:/FFS0_Factory/moos/.agent/knowledge_base",
-        "D:/FFS0_Factory/moos/.agent/knowledge",
         "D:/FFS0_Factory/moos/.agent/configs",
         "D:/FFS0_Factory/moos/.vscode",
         "D:/FFS0_Factory/moos/secrets"
@@ -20,7 +19,7 @@
     },
     "git-root": {
       "type": "stdio",
-      "command": "C:/Users/HP/AppData/Local/Microsoft/WinGet/Packages/OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe/node-v24.14.0-win-x64/npx.cmd",
+      "command": "C:/Program Files/nodejs/npx.cmd",
       "args": [
         "-y",
         "@modelcontextprotocol/server-git",
@@ -30,7 +29,7 @@
     },
     "http-fetch": {
       "type": "stdio",
-      "command": "C:/Users/HP/AppData/Local/Microsoft/WinGet/Packages/OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe/node-v24.14.0-win-x64/npx.cmd",
+      "command": "C:/Program Files/nodejs/npx.cmd",
       "args": [
         "-y",
         "@modelcontextprotocol/server-fetch"
