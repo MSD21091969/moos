@@ -4,9 +4,9 @@
         {
             "label": "Inspect platform presets",
             "type": "shell",
-            "command": "Get-ChildItem -Path moos/platform/presets",
+            "command": "Get-ChildItem -Path platform/presets",
             "options": {
-                "cwd": "${workspaceFolder:FFS0_Factory}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [],
             "group": "build"
@@ -16,7 +16,7 @@
             "type": "shell",
             "command": "Get-ChildItem -Path secrets",
             "options": {
-                "cwd": "${workspaceFolder:FFS0_Factory}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [],
             "group": "build"
@@ -24,9 +24,9 @@
         {
             "label": "Inspect active .agent surfaces",
             "type": "shell",
-            "command": "Get-ChildItem -Path .agent/knowledge_base, .agent/knowledge, .agent/configs",
+            "command": "Get-ChildItem -Path .agent/knowledge_base, .agent/configs",
             "options": {
-                "cwd": "${workspaceFolder:FFS0_Factory}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [],
             "group": "build"

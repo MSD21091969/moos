@@ -13,6 +13,9 @@ This directory contains sensitive credentials. **Never commit actual secrets.**
 ### `api_keys.env`
 
 ```env
+# mo:os local development
+MOOS_DB_PASSWORD=your-local-postgres-password
+
 # Google AI Studio
 GEMINI_API_KEY=your-key-here
 
@@ -57,6 +60,8 @@ api_key = settings.get_secret("GEMINI_API_KEY")
 ```
 
 The code path should resolve shared settings from `.agent/configs/` and confidential bindings from `secrets/`. It should not treat root `.env` as the source of truth.
+
+For the Windows local-development kernel preset, `MOOS_DB_PASSWORD` is only required if `MOOS_KERNEL_STORE=postgres` and `platform/presets/windows-local-dev.json` needs to resolve `MOOS_DATABASE_URL` without committing a literal password.
 
 For Gmail credentials:
 

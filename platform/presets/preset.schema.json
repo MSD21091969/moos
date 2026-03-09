@@ -1,0 +1,184 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "platform/presets/preset.schema.json",
+    "title": "moos Platform Preset",
+    "description": "Declarative runtime launch recipe for a moos kernel environment. Validated by this schema. See platform/README.md for full contract documentation.",
+    "type": "object",
+    "required": [
+        "schemaVersion",
+        "id",
+        "platform",
+        "description",
+        "launcher",
+        "env",
+        "services",
+        "notes"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "schemaVersion": {
+            "type": "string",
+            "description": "Schema version for compatibility checking. Increment on breaking field changes.",
+            "enum": [
+                "1.0.0"
+            ]
+        },
+        "id": {
+            "type": "string",
+            "description": "Unique kebab-case identifier for the preset.",
+            "pattern": "^[a-z0-9-]+$"
+        },
+        "platform": {
+            "type": "string",
+            "description": "Target operating system for this preset.",
+            "enum": [
+                "windows",
+                "linux",
+                "darwin"
+            ]
+        },
+        "description": {
+            "type": "string",
+            "description": "Human-readable purpose statement for the preset.",
+            "minLength": 10
+        },
+        "launcher": {
+            "type": "object",
+            "description": "Launch shape. Exactly one variant must be used: binary or service.",
+            "required": [
+                "type"
+            ],
+            "oneOf": [
+                {
+                    "title": "binary",
+                    "description": "Local workstation binary execution. Used for local development on Windows.",
+                    "required": [
+                        "type",
+                        "path"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "binary",
+                            "description": "Identifies this as a direct binary launch."
+                        },
+                        "path": {
+                            "type": "string",
+                            "description": "Relative path to the compiled binary. Windows example: .\\moos-kernel.exe"
+                        },
+                        "fallback": {
+                            "type": "string",
+                            "description": "Command to use when the compiled binary is absent. Example: go run ./cmd/kernel"
+                        }
+                    }
+                },
+                {
+                    "title": "service",
+                    "description": "Managed runtime execution. Used for systemd or container environments.",
+                    "required": [
+                        "type",
+                        "binary"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "service",
+                            "description": "Identifies this as a managed service launch."
+                        },
+                        "binary": {
+                            "type": "string",
+                            "description": "Relative path to the binary. Unix example: ./moos-kernel"
+                        },
+                        "workingDirectory": {
+                            "type": "string",
+                            "description": "Working directory for the service runtime. Example: /opt/moos"
+                        }
+                    }
+                }
+            ]
+        },
+        "env": {
+            "type": "object",
+            "description": "Environment variable bindings. Secret values MUST use ${VAR_NAME} placeholder syntax. Resolved values must never be committed.",
+            "required": [
+                "MOOS_HTTP_PORT",
+                "MOOS_AGENT_PORT",
+                "MOOS_MCP_PORT",
+                "MOOS_NANOCLAW_PORT"
+            ],
+            "additionalProperties": {
+                "type": "string"
+            },
+            "properties": {
+                "MOOS_HTTP_PORT": {
+                    "type": "string",
+                    "description": "HTTP data compatibility port. Preserved value: 8000."
+                },
+                "MOOS_AGENT_PORT": {
+                    "type": "string",
+                    "description": "Agent compatibility port. Preserved value: 8004."
+                },
+                "MOOS_MCP_PORT": {
+                    "type": "string",
+                    "description": "MCP/SSE compatibility port. Preserved value: 8080."
+                },
+                "MOOS_NANOCLAW_PORT": {
+                    "type": "string",
+                    "description": "NanoClaw bridge compatibility port. Preserved value: 18789."
+                },
+                "MOOS_DATABASE_URL": {
+                    "type": "string",
+                    "description": "Postgres connection URL. Required when MOOS_KERNEL_STORE=postgres. Password field MUST be a ${VAR} binding, not a literal value.",
+                    "pattern": "\\$\\{[A-Z_]+\\}"
+                }
+            }
+        },
+        "services": {
+            "type": "object",
+            "description": "Declarative service dependency expectations for this runtime environment.",
+            "required": [
+                "database",
+                "migrations",
+                "metrics"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "database": {
+                    "type": "string",
+                    "description": "Database provisioning model. none = no database dependency; external-postgres = must exist before launch; managed-postgres = platform provisions it.",
+                    "enum": [
+                        "none",
+                        "external-postgres",
+                        "managed-postgres"
+                    ]
+                },
+                "migrations": {
+                    "description": "Migration execution policy. true = run on every start; predeploy = run before service starts; false = never run.",
+                    "oneOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "enum": [
+                                "predeploy"
+                            ]
+                        }
+                    ]
+                },
+                "metrics": {
+                    "type": "boolean",
+                    "description": "Whether metrics collection is active for this runtime."
+                }
+            }
+        },
+        "notes": {
+            "type": "array",
+            "description": "Human-readable operational context notes. At least one is required.",
+            "minItems": 1,
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

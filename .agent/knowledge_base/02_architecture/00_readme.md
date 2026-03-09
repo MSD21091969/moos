@@ -10,5 +10,5 @@ Canonical for kernel realization, strata, functors, governance architecture, and
 
 ## Source priority
 
-Architecture provenance is recorded in `00_governance/migration_map.md`.
+Architecture provenance should be summarized locally where needed rather than delegated to a separate migration ledger.
 This layer should present sanctioned realization patterns without direct coupling to legacy source paths.

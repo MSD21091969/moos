@@ -17,14 +17,6 @@
             ".agent/workflows": true,
             ".agent/index.md": true,
             ".agent/manifest.yaml": true,
-            "moos/apps": true,
-            "moos/cmd": true,
-            "moos/docs": true,
-            "moos/internal": true,
-            "moos/migrations": true,
-            "moos/packages": true,
-            "moos/proto": true,
-            "moos/scripts": true,
             "workspaces/FFS1_ColliderDataSystems": true,
             "workspaces/maassen_hochrath": true
         },
@@ -35,14 +27,6 @@
             ".agent/instructions": true,
             ".agent/rules": true,
             ".agent/workflows": true,
-            "moos/apps": true,
-            "moos/cmd": true,
-            "moos/docs": true,
-            "moos/internal": true,
-            "moos/migrations": true,
-            "moos/packages": true,
-            "moos/proto": true,
-            "moos/scripts": true,
             "workspaces/FFS1_ColliderDataSystems": true,
             "workspaces/maassen_hochrath": true
         },
@@ -50,14 +34,6 @@
             "**/.agent": false,
             "**/node_modules": true,
             "**/.venv": true,
-            "moos/apps": true,
-            "moos/cmd": true,
-            "moos/docs": true,
-            "moos/internal": true,
-            "moos/migrations": true,
-            "moos/packages": true,
-            "moos/proto": true,
-            "moos/scripts": true,
             "workspaces/FFS1_ColliderDataSystems": true,
             "workspaces/maassen_hochrath": true
         },
@@ -90,7 +66,7 @@
         "chat.tools.terminal.autoApprove": {
             "gcloud": true
         },
-        "powershell.cwd": "moos",
+        "powershell.cwd": ".",
         "git.ignoreLimitWarning": true
     },
     "extensions": {

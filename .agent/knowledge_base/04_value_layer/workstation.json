@@ -1,128 +1,28 @@
 {
-  "schema_version": "1.0",
-  "layer": "values",
-  "structure_ref": "../superset/ontology.json",
-  "description": "Workstation configuration — VALUE entries for active services. Seeded from CLAUDE.md port table. Each service is an InfraService (OBJ12) or RuntimeSurface (OBJ09) container.",
-  "services": [
-    {
-      "name": "MOOS Data Compatibility",
-      "type": "RuntimeSurface",
-      "port": 8000,
-      "protocol": "HTTP/REST",
-      "path": "moos/apps/data-server",
-      "env_vars": {
-        "MOOS_DATA_PORT": "8000",
-        "DATABASE_URL": "postgres://..."
-      },
-      "owner": "FFS2",
-      "description": "Data/API compatibility surface — REST endpoints mirroring legacy ColliderDataServer"
+  "schema_version": "1.0.0",
+  "role": "value-layer",
+  "canonicality": "canonical-contingent",
+  "source_refs": [],
+  "workstation": {
+    "workspace_root": "D:/FFS0_Factory/moos",
+    "os": "windows",
+    "active_runtime": {
+      "kernel_module": "platform/kernel",
+      "bootstrap": "platform/windows/installers/bootstrap.ps1",
+      "default_store": "file",
+      "http_port": 8000
     },
-    {
-      "name": "MOOS Tool Server",
-      "type": "RuntimeSurface",
-      "port": 8001,
-      "protocol": "HTTP/REST",
-      "path": "moos/apps/tool-server",
-      "env_vars": {},
-      "owner": "FFS2",
-      "description": "Tool discovery and execution surface"
-    },
-    {
-      "name": "MOOS MCP/SSE Endpoint",
-      "type": "ProtocolAdapter",
-      "port": 8080,
-      "protocol": "SSE (MCP transport)",
-      "path": "moos/apps/data-server",
-      "env_vars": {},
-      "owner": "FFS2",
-      "mcp_connect": "claude mcp add collider-tools --transport sse http://localhost:8080/mcp/sse",
-      "description": "Model Context Protocol SSE endpoint for AI tool integration"
-    },
-    {
-      "name": "MOOS Agent Compatibility",
-      "type": "RuntimeSurface",
-      "port": 8004,
-      "protocol": "HTTP/REST",
-      "path": "moos/apps/data-server",
-      "env_vars": {
-        "MOOS_AGENT_PORT": "8004"
-      },
-      "owner": "FFS2",
-      "description": "Agent session compatibility surface"
-    },
-    {
-      "name": "MOOS NanoClaw WS Bridge",
-      "type": "ProtocolAdapter",
-      "port": 18789,
-      "protocol": "WebSocket (JSON-RPC)",
-      "path": "moos/apps/data-server",
-      "env_vars": {
-        "MOOS_NANOCLAW_PORT": "18789"
-      },
-      "owner": "FFS2",
-      "description": "NanoClaw-compatible WebSocket bridge for agent chat"
-    },
-    {
-      "name": "FFS3 IDE Viewer (ffs6)",
-      "type": "RuntimeSurface",
-      "port": 4200,
-      "protocol": "HTTP (Vite dev server)",
-      "path": "FFS3_ColliderApplicationsFrontendServer/apps/ffs6",
-      "env_vars": {
-        "VITE_DATA_SERVER_URL": "http://localhost:8000",
-        "VITE_AGENT_RUNNER_URL": "http://localhost:8004"
-      },
-      "owner": "FFS3",
-      "description": "IDE viewer — default frontend application"
-    },
-    {
-      "name": "FFS3 Sidepanel (ffs4)",
-      "type": "RuntimeSurface",
-      "port": 4201,
-      "protocol": "HTTP (Vite dev server)",
-      "path": "FFS3_ColliderApplicationsFrontendServer/apps/ffs4",
-      "env_vars": {
-        "VITE_DATA_SERVER_URL": "http://localhost:8000",
-        "VITE_AGENT_RUNNER_URL": "http://localhost:8004"
-      },
-      "owner": "FFS3",
-      "description": "Sidepanel app — XYFlow graph + agent chat (Chrome ext iframe)"
-    },
-    {
-      "name": "FFS3 PiP (ffs5)",
-      "type": "RuntimeSurface",
-      "port": 4202,
-      "protocol": "HTTP (Vite dev server)",
-      "path": "FFS3_ColliderApplicationsFrontendServer/apps/ffs5",
-      "env_vars": {
-        "VITE_DATA_SERVER_URL": "http://localhost:8000",
-        "VITE_AGENT_RUNNER_URL": "http://localhost:8004"
-      },
-      "owner": "FFS3",
-      "description": "Picture-in-Picture app"
-    },
-    {
-      "name": "Postgres (Resting State DB)",
-      "type": "InfraService",
-      "port": 5432,
-      "protocol": "PostgreSQL wire protocol",
-      "path": "docker-compose.yml",
-      "env_vars": {
-        "DATABASE_URL": "postgres://moos:${MOOS_DB_PASSWORD}@localhost:5432/moos"
-      },
-      "owner": "SYS03",
-      "description": "Ground truth DB — morphism_log, containers, wires, container_embeddings (pgvector)"
-    },
-    {
-      "name": "Prometheus Metrics",
-      "type": "InfraService",
-      "port": null,
-      "protocol": "HTTP scrape",
-      "path": "moos/apps/data-server/metrics",
-      "env_vars": {},
-      "owner": "FFS2",
-      "endpoint": "/metrics",
-      "description": "Prometheus instrumentation endpoint — benchmark and operational metrics"
-    }
-  ]
+    "reserved_compatibility_ports": [
+      8004,
+      8080,
+      18789
+    ],
+    "optional_local_services": [
+      {
+        "name": "postgres",
+        "port": 5432,
+        "used_when": "MOOS_KERNEL_STORE=postgres"
+      }
+    ]
+  }
 }

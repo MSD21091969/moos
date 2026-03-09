@@ -34,5 +34,5 @@ Canonical for strata realization.
 
 ## Migration source
 
-Strata-source provenance is recorded in `00_governance/migration_map.md`.
+Strata-source provenance should be captured inline when it materially clarifies doctrine.
 This file should express promoted strata doctrine without direct legacy file references.

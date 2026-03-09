@@ -16,14 +16,6 @@
     ".agent/instructions": true,
     ".agent/rules": true,
     ".agent/workflows": true,
-    "moos/apps": true,
-    "moos/cmd": true,
-    "moos/docs": true,
-    "moos/internal": true,
-    "moos/migrations": true,
-    "moos/packages": true,
-    "moos/proto": true,
-    "moos/scripts": true,
     "workspaces/FFS1_ColliderDataSystems": true,
     "workspaces/maassen_hochrath": true
   },
@@ -33,14 +25,6 @@
     "**/node_modules/**": true,
     "**/.nx/**": true,
     "**/.plasmo/**": true,
-    "moos/apps/**": true,
-    "moos/cmd/**": true,
-    "moos/docs/**": true,
-    "moos/internal/**": true,
-    "moos/migrations/**": true,
-    "moos/packages/**": true,
-    "moos/proto/**": true,
-    "moos/scripts/**": true,
     "workspaces/FFS1_ColliderDataSystems/**": true,
     "workspaces/maassen_hochrath/**": true
   },
@@ -54,7 +38,7 @@
   ],
   "github.copilot.chat.reviewSelection.instructions": [
     {
-      "text": "Check for: accidental edits to legacy paths, hardcoded secrets, preset/installer metadata drift, and consistency with the active surfaces (`moos/platform`, `.agent/knowledge_base`, `.agent/knowledge`, `.agent/configs`, `.vscode`, `secrets`)."
+      "text": "Check for: accidental edits to legacy paths, hardcoded secrets, preset/installer metadata drift, and consistency with the active surfaces (`platform`, `.agent/knowledge_base`, `.agent/knowledge`, `.agent/configs`, `.vscode`, `secrets`)."
     }
   ],
   "python.defaultInterpreterPath": ".venv/Scripts/python.exe",

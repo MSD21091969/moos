@@ -17,5 +17,5 @@ Canonical for term normalization.
 
 ## Migration source
 
-Normalization-source provenance is recorded in `00_governance/migration_map.md`.
+Normalization-source provenance should be captured inline when it materially clarifies doctrine.
 This file should preserve normalized canon without direct legacy path references.

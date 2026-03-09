@@ -4,6 +4,21 @@
   "canonicality": "canonical-contingent",
   "source_refs": [],
   "platform_distribution": {
-    "notes": "Store concrete repo, installer, OS preset, local-folder, and platform-source bindings here."
+    "workspace_root": "D:/FFS0_Factory/moos",
+    "active_platform_root": "platform/",
+    "kernel_module": "platform/kernel",
+    "windows_local_dev": {
+      "preset": "platform/presets/windows-local-dev.json",
+      "bootstrap": "platform/windows/installers/bootstrap.ps1",
+      "default_store": "file",
+      "log_path": "./platform/kernel/data/morphism-log.jsonl",
+      "registry_path": "../.agent/knowledge_base/superset/ontology.json",
+      "database_mode": "optional; only required when MOOS_KERNEL_STORE=postgres"
+    },
+    "demo_seed": {
+      "script": "platform/windows/installers/seed-explorer-demo.ps1",
+      "payload": "platform/kernel/examples/explorer-demo.materialize.json",
+      "apply_endpoint": "/hydration/materialize"
+    }
   }
 }

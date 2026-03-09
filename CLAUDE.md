@@ -1,131 +1,213 @@
-# CLAUDE.md — FFS0 Factory
+# CLAUDE.md — moos Workspace
 
-This is the root of the Collider ecosystem monorepo at `D:\FFS0_Factory`.
+This is the workspace authority for the mo:os repository rooted at `D:\FFS0_Factory\moos`.
+
+**Current wave: Wave 0 — Go kernel is live.** The pure catamorphism core,
+effect shell, HTTP API, semantic registry, hydration pipeline, and kernel
+self-seeding are all implemented and tested under `platform/kernel`.
+
+---
 
 ## Active Scope
 
 Only the following paths are active for forward work:
 
-- `moos/platform/`
+- `platform/`
 - `.agent/knowledge_base/`
-- `.agent/knowledge/`
 - `.agent/configs/`
 - `.vscode/`
 - `secrets/`
 
-Everything else is currently legacy or reference-only, including:
+Everything outside these paths is legacy or reference-only. Do not edit,
+stage, or promote legacy trees unless the task explicitly targets archival
+or migration work.
 
-- `moos/` outside `moos/platform/`
-- `workspaces/FFS1_ColliderDataSystems/`
-- `workspaces/maassen_hochrath/`
-
-Legacy surfaces should not be treated as current implementation targets and should not be part of the forward commit/push set unless explicitly requested.
+---
 
 ## Context Read Order
 
-Due to the size of the repository, we keep the active instruction chain intentionally small.
+Read order for AI Agents (intentionally minimal):
 
-Read order for AI Agents:
+1. `D:\FFS0_Factory\moos\CLAUDE.md` (this file — workspace authority)
 
-1. `D:\FFS0_Factory\CLAUDE.md` (Root / Factory conventions)
-2. `D:\FFS0_Factory\moos\CLAUDE.md` when editing `moos/platform/**`
+No workspace-local `CLAUDE.md` files exist or should be created.
 
-Workspace-local CLAUDE files outside the active scope are reference-only until replaced.
+---
 
 ## Workspace Map
 
 ```text
-FFS0_Factory/
-├── .vscode/                              Active workspace/editor/MCP configuration surface
-├── .agent/                               Active only in selected knowledge/config surfaces
-│   ├── configs/                          Active agent configuration surface
-│   ├── knowledge/                        Active auxiliary knowledge surface
-│   ├── knowledge_base/                   Canonical knowledge base (vNext, controlled provenance)
-│       ├── 00_governance/                Canonicality, promotion, migration, read order
-│       ├── 01_foundations/               Categorical model & axioms
-│       ├── 02_architecture/              Kernel, strata, functors, distribution
-│       ├── 03_semantics/                 Hydration, normalization, interpretation discipline
-│       ├── 04_value_layer/               Runtime-contingent instances and environment facts
-│       ├── 05_reference/                 Non-canonical digests and raw sources
-│       ├── superset/                     Structured canonical registry
-│       └── _legacy/                      Archived provenance inputs
-├── moos/
-│   ├── platform/                         Active presets + installer metadata surface
-│   └── *                                 Legacy runtime snapshot / reference-only
-├── secrets/                              Active local secret templates and credential staging
-├── CLAUDE.md                             Root policy authority
-└── moos.code-workspace                   Preferred workspace entry point
+moos/
+├── .agent/
+│   ├── configs/                  Active agent configuration surface
+│   └── knowledge_base/           Canonical knowledge base (vNext)
+│       ├── 00_governance/        Canonicality, promotion, provenance
+│       ├── 01_foundations/       Axioms, primitives, category language
+│       ├── 02_architecture/      Kernel, strata, functors
+│       ├── 03_semantics/         Hydration, normalization discipline
+│       ├── 04_value_layer/       Runtime instances, providers, identities
+│       ├── 05_reference/         Non-canonical digests and raw sources
+│       ├── superset/             ontology.json — machine-readable type registry
+│       │   ├── ontology.json              Semantic registry source of truth
+│       │   ├── ontology.csv               Human-readable registry digest
+│       │   ├── value_layer_schema.json    JSON Schema for value-layer artifacts
+│       │   └── promotion_log.json         Canonical promotion ledger
+│       └── _legacy/              Archived provenance inputs
+├── .vscode/                      Active workspace, editor, and MCP configuration
+├── platform/
+│   ├── kernel/                   Active Go kernel module (moos/platform/kernel)
+│   │   ├── cmd/kernel/main.go    Entrypoint: boot, seed, serve
+│   │   ├── internal/core/        Pure catamorphism: no IO, no side effects
+│   │   ├── internal/shell/       Effect shell: runtime, store, registry loader
+│   │   ├── internal/httpapi/     HTTP transport + UI_Lens explorer
+│   │   ├── internal/hydration/   Batch materialization pipeline
+│   │   ├── data/                 morphism-log.jsonl (file store, gitignored)
+│   │   └── examples/             Demo materialization payloads
+│   ├── presets/                  Declarative environment launch recipes
+│   ├── windows/installers/       bootstrap.ps1, seed-explorer-demo.ps1
+│   ├── linux/installers/
+│   └── darwin/installers/
+├── secrets/                      Local credential staging (never committed)
+├── CLAUDE.md                     This file — root policy authority
+├── README.md                     User-facing documentation
+└── moos.code-workspace           Preferred VS Code workspace entry point
 ```
+
+---
 
 ## Knowledge Base (vNext)
 
-The canonical knowledge lives in `.agent/knowledge_base/`.
+Canonical knowledge lives at `.agent/knowledge_base/`. Editing this surface
+means editing canonical facts about the categorical model and the system
+axioms — not implementation details.
 
-| Layer            | Path               | Description                                                               |
-| ---------------- | ------------------ | ------------------------------------------------------------------------- |
-| **governance**   | `00_governance/`   | Canonicality, promotion, migration, provenance boundary                   |
-| **foundations**  | `01_foundations/`  | Axioms, primitives, category language, invariants                         |
-| **architecture** | `02_architecture/` | Kernel realization, strata, functors, governance architecture             |
-| **semantics**    | `03_semantics/`    | Hydration, normalization, syntax/semantics/state/topology discipline      |
-| **value layer**  | `04_value_layer/`  | Runtime surfaces, providers, identities, workstation and contingent facts |
-| **reference**    | `05_reference/`    | Digests and raw non-canonical source material                             |
-| **superset**     | `superset/`        | 13 objects, 16 morphisms, 5 functors, 4 NTs, 22 categories                |
-| **legacy**       | `_legacy/`         | Archived provenance inputs, not live canon                                |
+| Layer            | Path               | Description                                                  |
+| ---------------- | ------------------ | ------------------------------------------------------------ |
+| **governance**   | `00_governance/`   | Canonicality rules, promotion contracts, provenance boundary |
+| **foundations**  | `01_foundations/`  | Axioms, primitives, category language, invariants            |
+| **architecture** | `02_architecture/` | Kernel realization, strata, functors, governance             |
+| **semantics**    | `03_semantics/`    | Hydration pipeline, normalization, interpretation discipline |
+| **value layer**  | `04_value_layer/`  | Runtime instances, providers, identities, contingent facts   |
+| **reference**    | `05_reference/`    | Digests and raw non-canonical source material                |
+| **superset**     | `superset/`        | Machine-readable ontology. Four artifact files only.         |
+| **legacy**       | `_legacy/`         | Archived provenance inputs — not live canon                  |
 
-Corrected categorical model (v3.0):
+The `superset/` directory is **not** a value-layer directory. Its four files
+are registry-support artifacts: `ontology.json`, `ontology.csv`,
+`value_layer_schema.json`, and `promotion_log.json`.
 
-- Connections = **morphisms** (NOT functors)
-- Fan-out = coslice, Fan-in = slice
-- Container OWNS = full subcategory
-- Σ (collapse) = catamorphism
-- Protocol = morphism-level routing (NOT a functor)
+---
 
-## Preserved Preset Defaults
+## Categorical Model (v3.0)
 
-Platform presets may preserve historical runtime values such as:
+These corrections must be applied consistently across all edits to KB content
+and code:
 
-- `8000` — data compatibility
-- `8080` — MCP/SSE compatibility
-- `8004` — agent compatibility
-- `18789` — NanoClaw bridge compatibility
-- `4200`, `4201`, `4202` — legacy frontend development ports
+- **Connections = morphisms**, not functors
+- **Fan-out = coslice category**, Fan-in = slice category
+- **Container OWNS** creates a full subcategory (not a weaker relationship)
+- **Σ (collapse) = catamorphism** — the kernel _is_ a catamorphism
+- **Protocol = morphism-level routing** — not a functor, not a category
+- **Functor outputs are never ground truth** — they are projections (S4)
+- **The four invariant NTs are**: ADD, LINK, MUTATE, UNLINK — nothing else
 
-These values are deployment metadata only; the corresponding implementations in this repository are legacy unless explicitly reactivated.
+---
 
-MCP endpoint:
+## Wave 0 Implementation Facts
+
+These are verified facts an agent can rely on without re-reading source files.
+
+| Fact                        | Detail                                                                 |
+| --------------------------- | ---------------------------------------------------------------------- |
+| Go module path              | `moos/platform/kernel`                                                 |
+| Go version                  | 1.22+                                                                  |
+| Kernel entry                | `platform/kernel/cmd/kernel/main.go`                                   |
+| Pure core boundary          | `internal/core` — no IO, no external imports                           |
+| Effect shell                | `internal/shell` — wraps pure core with RWMutex, store, registry       |
+| Self-seeding                | `seedKernel()` in main.go — 13 morphisms on first boot, 0 on replay    |
+| Actor for kernel morphisms  | `urn:moos:kernel:self`                                                 |
+| Kernel node URN             | `urn:moos:kernel:wave-0` Kind=Kernel Stratum=S2                        |
+| Feature nodes               | 6 Feature nodes at S2, linked to kernel via `implements → feature`     |
+| `SeedIfAbsent`              | In `shell.Runtime` — calls Apply, absorbs ErrNodeExists/ErrWireExists  |
+| Default store               | JSONL file at `platform/kernel/data/morphism-log.jsonl`                |
+| Postgres store              | Available via `MOOS_KERNEL_STORE=postgres` + `MOOS_DATABASE_URL`       |
+| Registry source             | `MOOS_KERNEL_REGISTRY_PATH` — relative to repo root, resolved absolute |
+| Registry default candidates | checked in order: `.agent/knowledge_base/superset/ontology.json` etc.  |
+| HTTP default port           | `8000`                                                                 |
+| Explorer                    | `GET /explorer` — UI_Lens functor; read-only; no morphism capability   |
+| Test suite                  | All green: `core`, `httpapi`, `shell` packages                         |
+| Test path depth             | 4 `..` segments from test package to repo root (not 5)                 |
+
+---
+
+## Ontology Registry
+
+Defined at `.agent/knowledge_base/superset/ontology.json`. Loaded by
+`internal/shell.LoadRegistry()` at boot to create the `SemanticRegistry`
+used by `core.EvaluateWithRegistry`.
+
+| Element                 | Count | IDs                       |
+| ----------------------- | ----- | ------------------------- |
+| Axioms                  | 5     | AX1–AX5                   |
+| Kinds (Objects)         | 13    | OBJ01–OBJ13               |
+| Morphism types          | 16    | MOR01–MOR16               |
+| Functors                | 5     | FUN01–FUN05               |
+| Natural Transformations | 4     | ADD, LINK, MUTATE, UNLINK |
+| Categories              | 22    | CAT01–CAT22               |
+
+---
+
+## Preserved Preset Port Defaults
+
+These values appear in `platform/presets/` as deployment metadata. The
+corresponding implementations are outside the active scope (legacy) unless
+explicitly reactivated.
+
+| Port        | Association                                 |
+| ----------- | ------------------------------------------- |
+| `8000`      | Data compatibility (current kernel default) |
+| `8080`      | MCP/SSE compatibility                       |
+| `8004`      | Agent compatibility                         |
+| `18789`     | NanoClaw bridge compatibility               |
+| `4200–4202` | Legacy frontend development                 |
+
+MCP endpoint (when collider-tools server is active):
 
 ```bash
 claude mcp add collider-tools --transport sse http://localhost:8080/mcp/sse
 ```
 
-Secrets:
+Secrets path: `D:\FFS0_Factory\moos\secrets\api_keys.env`
 
-- `D:\FFS0_Factory\moos\secrets\api_keys.env`
+---
 
-## Legacy Runtime Snapshot
+## Go Code Conventions
 
-The repository still contains historical backend and frontend implementations for reference, migration archaeology, and preset authoring context.
+- **Pure core**: no IO in `internal/core/`. Functions take state and return new
+  state. Never import `os`, `net`, or any persistence layer here.
+- **Effect shell**: all shared state in `internal/shell/` is guarded by
+  `sync.RWMutex`. Read paths use `RLock`; write paths use `Lock`.
+- **Tests**: table-driven, `t.Run` subtests. Test data resolved by walking `..`
+  from the package directory — currently **4 levels** to reach repo root.
+- **Error types**: `core.ErrNodeExists`, `core.ErrWireExists`, and similar
+  sentinel errors for distinguishing expected faults from unexpected ones.
+- **Idempotent seeding**: use `SeedIfAbsent`, not `Apply`, for boot-time seeds.
+- **Commits**: Conventional Commits — `feat:`, `fix:`, `chore:`, `docs:`.
 
-- Treat implementation code outside `moos/platform/` as legacy snapshot material.
-- Do not treat `workspaces/FFS1_*` or `moos/` runtime code as canonical forward-development targets.
-- Use those legacy surfaces only when extracting values, documenting prior behavior, or migrating concepts into the new active structure.
-
-## Ontology Reference
-
-The structured ontology registry (`.agent/knowledge_base/superset/`) defines the formal type system:
-
-- **5 axioms**: AX01–AX05
-- **13 objects**: OBJ01–OBJ13 (Node, Connection, Container, Port, Kind, Property, SystemTool…)
-- **13 morphisms**: MOR01–MOR13 (CAN_READ through CAN_FORK)
-- **5 functors**: FUN01–FUN05 (FileSystem, UI_Lens, Embedding, Structure, Benchmark)
-- **4 invariant natural transformations**
+---
 
 ## Rules
 
-- Conventional Commits (`feat:`, `fix:`, `chore:`)
-- Keep changes inside `D:\FFS0_Factory\`
-- Only `moos/platform/`, `.agent/knowledge_base/`, `.agent/knowledge/`, `.agent/configs/`, `.vscode/`, and `secrets/` are active edit targets by default
-- Do not stage or promote legacy implementation trees unless the task explicitly calls for archival or migration work
+- Keep all changes inside `D:\FFS0_Factory\`.
+- Only `platform/`, `.agent/knowledge_base/`, `.agent/configs/`, `.vscode/`,
+  and `secrets/` are active edit targets by default.
+- Do not stage or promote legacy trees (`workspaces/FFS1_*`, etc.) unless the
+  task explicitly requests archival or migration work.
+- All writes to the graph must go through the four invariant morphisms. Do not
+  bypass the kernel API in code or scripts.
+- Do not modify `data/morphism-log.jsonl` directly. It is a kernel-owned artifact.
+
+---
 
 ## Agent Permissions
 

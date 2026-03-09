@@ -16,12 +16,10 @@ A concept may be promoted only if all of the following hold:
 
 ## Source classes
 
-- current canonical source docs in `.agent/knowledge/01_foundations/` and `02_architecture/`
-- candidate design docs in `.agent/knowledge/05_moos_design/`
-- planning material in `.agent/knowledge/06_planning/`
-- value/config instances in `.agent/knowledge/datasets/`
-- interpreted paper and transcript digests
-- raw transcript files
+- canonical doctrine already present in `01_foundations/`, `02_architecture/`, and `03_semantics/`
+- contingent value/config instances in `04_value_layer/`
+- interpreted paper and transcript digests in `05_reference/`
+- raw transcript files and archived provenance inputs under `_legacy/`
 
 ## Anti-drift rule
 
@@ -30,5 +28,5 @@ No transcript, paper, or design note becomes canon merely by existence or persua
 ## Provenance boundary
 
 - Direct legacy-path citations belong in `00_governance/`, `05_reference/`, or `_legacy/` only.
-- Canonical doctrine and structured registries should cite canonical KB locations or `00_governance/migration_map.md` for lineage.
+- Canonical doctrine and structured registries should cite canonical KB locations or explicit provenance notes inside the destination file.
 - Promotion may use legacy material as input, but destination canon should not read as a mirror of source file layout.

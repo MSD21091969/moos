@@ -5,8 +5,6 @@ Single source of truth for project instructions is `CLAUDE.md`.
 ## Read Order
 
 1. `D:\FFS0_Factory\CLAUDE.md`
-2. Workspace-local `CLAUDE.md` if present:
-   - `D:\FFS0_Factory\moos\CLAUDE.md` when editing `moos\platform\**`
 
 ## Policy
 

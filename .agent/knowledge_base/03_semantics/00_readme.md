@@ -10,5 +10,5 @@ Canonical for the separation between syntax, semantics, state, topology, time, m
 
 ## Source priority
 
-Semantic-source provenance is recorded in `00_governance/migration_map.md`.
+Semantic-source provenance should be summarized locally where needed rather than delegated to a separate migration ledger.
 This layer should define interpretation discipline directly rather than enumerate legacy source files.

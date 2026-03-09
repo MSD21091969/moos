@@ -11,7 +11,7 @@ Architecture and semantics may consume this layer but may not redefine it.
 
 ## Source priority
 
-Foundational provenance is recorded in `00_governance/migration_map.md`.
+Foundational provenance should be summarized locally where needed rather than delegated to a separate migration ledger.
 This layer should state canon directly rather than depend on legacy path references.
 
 ## Files

@@ -10,7 +10,7 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "D:/FFS0_Factory/moos/moos/platform",
+        "D:/FFS0_Factory/moos/platform",
         "D:/FFS0_Factory/moos/.agent/knowledge_base",
         "D:/FFS0_Factory/moos/.agent/knowledge",
         "D:/FFS0_Factory/moos/.agent/configs",

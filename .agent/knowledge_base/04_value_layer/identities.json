@@ -3,6 +3,17 @@
   "role": "value-layer",
   "canonicality": "canonical-contingent",
   "source_refs": [],
-  "identities": [],
+  "identities": [
+    {
+      "id": "urn:moos:user:demo-seeder",
+      "kind": "local-dev-actor",
+      "scope": "urn:moos:scope:explorer-demo",
+      "used_by": [
+        "platform/windows/installers/seed-explorer-demo.ps1",
+        "platform/kernel/examples/explorer-demo.materialize.json"
+      ],
+      "status": "contingent-local-dev"
+    }
+  ],
   "notes": "Abstract actor or user belongs to doctrine and registry; concrete userId bindings belong here."
 }

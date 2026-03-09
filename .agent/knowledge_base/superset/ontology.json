@@ -8,7 +8,6 @@
     "cross_provider": "../02_architecture/05_provider_and_benchmark_architecture.md",
     "kernel_spec": "../02_architecture/01_kernel.md",
     "architecture": "../02_architecture/00_readme.md",
-    "waves": "../00_governance/migration_map.md",
     "value_layer": "../04_value_layer/"
   },
   "formalization_levels": {

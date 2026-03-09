@@ -3,5 +3,63 @@
   "role": "value-layer",
   "canonicality": "canonical-contingent",
   "source_refs": [],
-  "runtime_surfaces": []
+  "runtime_surfaces": [
+    {
+      "id": "urn:moos:surface:kernel-http",
+      "name": "MOOS Kernel HTTP",
+      "kind": "RuntimeSurface",
+      "port": 8000,
+      "protocol": "HTTP/REST",
+      "entrypoints": [
+        "/healthz",
+        "/state",
+        "/morphisms",
+        "/programs",
+        "/hydration/materialize"
+      ],
+      "implementation": "platform/kernel/cmd/kernel",
+      "status": "live"
+    },
+    {
+      "id": "urn:moos:surface:agent-compat",
+      "name": "MOOS Agent Compatibility",
+      "kind": "RuntimeSurface",
+      "port": 8004,
+      "protocol": "HTTP/REST",
+      "implementation": "platform/presets/windows-local-dev.json",
+      "status": "reserved-compatibility"
+    },
+    {
+      "id": "urn:moos:surface:mcp-sse",
+      "name": "MOOS MCP/SSE Compatibility",
+      "kind": "ProtocolAdapter",
+      "port": 8080,
+      "protocol": "SSE",
+      "implementation": "platform/presets/windows-local-dev.json",
+      "status": "reserved-compatibility"
+    },
+    {
+      "id": "urn:moos:surface:nanoclaw-bridge",
+      "name": "MOOS NanoClaw Compatibility",
+      "kind": "ProtocolAdapter",
+      "port": 18789,
+      "protocol": "WebSocket/JSON-RPC",
+      "implementation": "platform/presets/windows-local-dev.json",
+      "status": "reserved-compatibility"
+    },
+    {
+      "id": "urn:moos:surface:explorer-ui",
+      "name": "MOOS Runtime Explorer",
+      "kind": "UI_Lens",
+      "port": 8000,
+      "protocol": "HTTP/HTML",
+      "entrypoints": [
+        "/",
+        "/explorer",
+        "/hydration/examples/explorer-demo"
+      ],
+      "implementation": "platform/kernel/internal/httpapi/explorer.html",
+      "status": "live-projection"
+    }
+  ]
 }

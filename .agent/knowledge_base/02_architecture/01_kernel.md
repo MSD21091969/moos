@@ -18,5 +18,5 @@ Canonical for kernel realization.
 
 ## Migration source
 
-Kernel-source provenance is recorded in `00_governance/migration_map.md`.
+Kernel-source provenance should be captured inline when it materially clarifies doctrine.
 This file should express promoted kernel doctrine without direct legacy file references.

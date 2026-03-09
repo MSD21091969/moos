@@ -1,37 +1,34 @@
-# Knowledge Base vNext
+# Knowledge Base Index
 
-This directory is the clean-slate canonical destination for the Collider knowledge base.
+This directory is the canonical knowledge surface for the repository.
 
 ## Purpose
 
-`knowledge_base/` separates:
+- hold the controlled vNext canon
+- separate ontology, architecture, semantics, runtime facts, and reference material
+- preserve provenance without letting legacy inputs redefine active knowledge
 
-- doctrine from contingent runtime facts
-- semantics from syntax and projection
-- reference sources from promoted canon
-- structured registries from prose doctrine
+## Layer Summary
 
-## Canonical zones
+| Layer              | Role                                                                                                      | Canonicality                                               |
+| ------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `00_governance/`   | Canonicality rules, read order, promotion, configuration and secret boundaries, migration mapping         | Canonical for process and authority                        |
+| `01_foundations/`  | Axioms, primitives, category language, and invariant rules                                                | Canonical for foundations                                  |
+| `02_architecture/` | Kernel realization, strata, functors, governance architecture                                             | Canonical for architecture                                 |
+| `03_semantics/`    | Hydration, normalization, syntax/semantics, interpretation discipline                                     | Canonical for semantics                                    |
+| `04_value_layer/`  | Runtime-contingent graph instances, providers, preferences, identities, workstation and environment facts | Canonical for runtime and deployment facts, not ontology   |
+| `05_reference/`    | Paper digests, transcript digests, raw sources, and supporting reference material                         | Non-canonical; promotable only through governance          |
+| `superset/`        | Structured registry and derivative exports                                                                | `ontology.json` is canonical; `ontology.csv` is derivative |
+| `_legacy/`         | Pre-migration provenance snapshots and archived source structures                                         | Archive only; non-canonical                                |
 
-1. `00_governance/` — authority, read order, promotion, migration
-2. `01_foundations/` — axioms, primitives, category language, invariants
-3. `02_architecture/` — kernel, strata, functors, governance, provider and benchmark architecture
-4. `03_semantics/` — hydration, syntax vs semantics, state/topology/time, normalization, agent interpretation
-5. `04_value_layer/` — contingent instances: providers, identities, workstation, runtime, platform distribution
-6. `05_reference/` — non-canonical digests and raw sources
-7. `superset/` — machine-readable canonical registry and derivative exports
-8. `_legacy/` — archived source structure and migration inputs
+## Registry Files
+
+- `superset/ontology.json` is the canonical machine-readable registry.
+- `superset/ontology.csv` is a derivative export.
+- `superset/value_layer_schema.json` and `superset/promotion_log.json` are registry-support artifacts and therefore live in `superset/`, not `04_value_layer/`.
 
 ## Rules
 
-- Markdown is canonical for doctrine.
-- JSON is canonical for structured registries and contingent value instances.
-- CSV is derivative only.
-- Raw `.txt` and `.pdf` sources are reference-only.
-- A concept has one canonical home.
-
-## Current status
-
-This tree has been scaffolded and seeded for controlled-provenance migration.
-Provenance records belong in `00_governance/`; destination doctrine and registries should remain decoupled from legacy file paths.
-Downstream manifests and ingestion should only be switched after destination content is sufficiently populated and verified.
+- Treat this directory as the single indexed entry point for the knowledge base.
+- Do not add per-layer `README.md` files.
+- Promote material from reference or legacy layers only through governance rules in `00_governance/`.

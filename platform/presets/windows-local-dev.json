@@ -1,0 +1,37 @@
+{
+  "$schema": "./preset.schema.json",
+  "schemaVersion": "1.0.0",
+  "id": "windows-local-dev",
+  "platform": "windows",
+  "description": "Local Windows development preset for running the moos kernel with the file-backed store by default.",
+  "launcher": {
+    "type": "binary",
+    "path": ".\\moos-kernel.exe",
+    "fallback": "go -C ./platform/kernel run ./cmd/kernel"
+  },
+  "env": {
+    "MOOS_HTTP_PORT": "8000",
+    "MOOS_AGENT_PORT": "8004",
+    "MOOS_MCP_PORT": "8080",
+    "MOOS_NANOCLAW_PORT": "18789",
+    "MOOS_DATABASE_URL": "postgres://postgres:${MOOS_DB_PASSWORD}@localhost:5432/moos?sslmode=disable",
+    "MOOS_KERNEL_STORE": "file",
+    "MOOS_KERNEL_LOG_PATH": "./platform/kernel/data/morphism-log.jsonl",
+    "MOOS_KERNEL_REGISTRY_PATH": ".agent/knowledge_base/superset/ontology.json"
+  },
+  "services": {
+    "database": "none",
+    "migrations": false,
+    "metrics": true
+  },
+  "notes": [
+    "Reference preset for local Windows workstation development. Not for production use.",
+    "This preset launches the kernel against the local JSONL morphism log by default and does not require database credentials.",
+    "If you switch MOOS_KERNEL_STORE to postgres, provide MOOS_DB_PASSWORD through secrets/api_keys.env so MOOS_DATABASE_URL can be resolved at runtime.",
+    "Set MOOS_KERNEL_STORE=postgres to persist the morphism log into Postgres instead of the local JSONL file.",
+    "The semantic registry is derived from the canonical knowledge-base ontology at MOOS_KERNEL_REGISTRY_PATH and constrains allowed kinds, strata, and port link forms.",
+    "Port values are compatibility-preserved. Do not change them without an explicit recorded decision.",
+    "Bootstrap behavior for this preset is defined in platform/windows/installers/README.md.",
+    "The Go fallback command runs from the nested module root at platform/kernel."
+  ]
+}

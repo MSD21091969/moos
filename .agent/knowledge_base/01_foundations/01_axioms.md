@@ -32,5 +32,5 @@ Governance and capability are graph-structural, not external afterthoughts.
 
 ## Migration note
 
-Source lineage is tracked in `00_governance/migration_map.md`.
+Source lineage should be captured in local provenance notes when materially useful.
 This file should preserve promoted axioms without embedding legacy source filenames.
