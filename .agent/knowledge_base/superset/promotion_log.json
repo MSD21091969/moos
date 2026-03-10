@@ -1,8 +1,0 @@
-{
-  "schema_version": "1.0.0",
-  "role": "registry-log",
-  "canonicality": "canonical-structured",
-  "description": "Canonical promotion ledger for structured registry changes. It lives in superset/ because promotions are tracked at the registry level, not as contingent value-layer instances.",
-  "source_refs": [],
-  "promotions": []
-}

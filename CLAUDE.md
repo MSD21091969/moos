@@ -40,19 +40,16 @@ No workspace-local `CLAUDE.md` files exist or should be created.
 moos/
 ├── .agent/
 │   ├── configs/                  Active agent configuration surface
-│   └── knowledge_base/           Canonical knowledge base (vNext)
-│       ├── 00_governance/        Canonicality, promotion, provenance
-│       ├── 01_foundations/       Axioms, primitives, category language
-│       ├── 02_architecture/      Kernel, strata, functors
-│       ├── 03_semantics/         Hydration, normalization discipline
-│       ├── 04_value_layer/       Runtime instances, providers, identities
-│       ├── 05_reference/         Non-canonical digests and raw sources
-│       ├── superset/             ontology.json — machine-readable type registry
-│       │   ├── ontology.json              Semantic registry source of truth
-│       │   ├── ontology.csv               Human-readable registry digest
-│       │   ├── value_layer_schema.json    JSON Schema for value-layer artifacts
-│       │   └── promotion_log.json         Canonical promotion ledger
-│       └── _legacy/              Archived provenance inputs
+│   └── knowledge_base/           Canonical knowledge base
+│       ├── registry/             Machine-readable ontology + schema
+│       │   ├── ontology.json              Single source: axioms, kinds, morphisms
+│       │   ├── ontology.csv               Generated view (read-only)
+│       │   ├── schema.json                JSON Schema for instances/
+│       │   └── changelog.jsonl            Append-only registry change log
+│       ├── doctrine/             Human-readable prose (non-duplicating)
+│       ├── design/               Timestamped decision + plan documents
+│       ├── instances/            Contingent runtime facts (JSON, schema-validated)
+│       └── reference/            External papers, digests (read-only after import)
 ├── .vscode/                      Active workspace, editor, and MCP configuration
 ├── platform/
 │   ├── kernel/                   Active Go kernel module (moos/platform/kernel)
@@ -75,26 +72,21 @@ moos/
 
 ---
 
-## Knowledge Base (vNext)
+## Knowledge Base
 
-Canonical knowledge lives at `.agent/knowledge_base/`. Editing this surface
-means editing canonical facts about the categorical model and the system
-axioms — not implementation details.
+Canonical knowledge lives at `.agent/knowledge_base/`. Five directories,
+zero duplication between JSON and prose.
 
-| Layer            | Path               | Description                                                  |
-| ---------------- | ------------------ | ------------------------------------------------------------ |
-| **governance**   | `00_governance/`   | Canonicality rules, promotion contracts, provenance boundary |
-| **foundations**  | `01_foundations/`  | Axioms, primitives, category language, invariants            |
-| **architecture** | `02_architecture/` | Kernel realization, strata, functors, governance             |
-| **semantics**    | `03_semantics/`    | Hydration pipeline, normalization, interpretation discipline |
-| **value layer**  | `04_value_layer/`  | Runtime instances, providers, identities, contingent facts   |
-| **reference**    | `05_reference/`    | Digests and raw non-canonical source material                |
-| **superset**     | `superset/`        | Machine-readable ontology. Four artifact files only.         |
-| **legacy**       | `_legacy/`         | Archived provenance inputs — not live canon                  |
+| Directory      | Format    | Description                                                                                    |
+| -------------- | --------- | ---------------------------------------------------------------------------------------------- |
+| **registry/**  | JSON only | ontology.json (axioms, kinds, morphisms, categories), schema, changelog                        |
+| **doctrine/**  | MD only   | Prose that can't be structured as JSON (strata, hydration, normalization, hypergraph, secrets) |
+| **design/**    | MD only   | Timestamped decision/plan documents (YYYYMMDD-topic.md)                                        |
+| **instances/** | JSON only | Contingent runtime facts, schema-validated against registry/schema.json                        |
+| **reference/** | Mixed     | External papers + digests — read-only after import                                             |
 
-The `superset/` directory is **not** a value-layer directory. Its four files
-are registry-support artifacts: `ontology.json`, `ontology.csv`,
-`value_layer_schema.json`, and `promotion_log.json`.
+**Rule:** If ontology.json defines it, no markdown copy exists.
+If a prose file has < 10 lines of real content, it doesn't belong.
 
 ---
 
@@ -132,7 +124,7 @@ These are verified facts an agent can rely on without re-reading source files.
 | Default store               | JSONL file at `platform/kernel/data/morphism-log.jsonl`                |
 | Postgres store              | Available via `MOOS_KERNEL_STORE=postgres` + `MOOS_DATABASE_URL`       |
 | Registry source             | `MOOS_KERNEL_REGISTRY_PATH` — relative to repo root, resolved absolute |
-| Registry default candidates | checked in order: `.agent/knowledge_base/superset/ontology.json` etc.  |
+| Registry default candidates | checked in order: `.agent/knowledge_base/registry/ontology.json` etc.  |
 | HTTP default port           | `8000`                                                                 |
 | Explorer                    | `GET /explorer` — UI_Lens functor; read-only; no morphism capability   |
 | Test suite                  | All green: `core`, `httpapi`, `shell` packages                         |
@@ -142,7 +134,7 @@ These are verified facts an agent can rely on without re-reading source files.
 
 ## Ontology Registry
 
-Defined at `.agent/knowledge_base/superset/ontology.json`. Loaded by
+Defined at `.agent/knowledge_base/registry/ontology.json`. Loaded by
 `internal/shell.LoadRegistry()` at boot to create the `SemanticRegistry`
 used by `core.EvaluateWithRegistry`.
 

@@ -1,0 +1,912 @@
+{
+  "schema_version": "3.0",
+  "title": "mo:os Superset Ontology v3",
+  "description": "Complete categorical ontology for the mo:os Universal Graph Model. Single source of truth for axioms, kinds, morphisms, categories, and functors. Contingent instances live in ../instances/.",
+  "date": "2026-03-09",
+  "references": {
+    "doctrine": "../doctrine/",
+    "instances": "../instances/",
+    "reference": "../reference/"
+  },
+  "formalization_levels": {
+    "L3": "Fully modeled — objects, morphisms, composition, identity all explicit",
+    "L2": "Partially modeled — objects named, some morphisms described, composition implicit",
+    "L1": "Named only — appears in functor signatures or prose, no internal structure",
+    "L0": "External — standard mathematical category inherited from mathematics"
+  },
+  "axioms": [
+    {
+      "id": "AX1",
+      "name": "No_Meta_Only_Recursive",
+      "statement": "Every entity is a container identified by URN. No metadata layer — only containers referencing containers via wires.",
+      "formal": "∀ x ∈ System, x = (urn, Σ morphisms)",
+      "ref": "§1"
+    },
+    {
+      "id": "AX2",
+      "name": "Code_Is_Axiomatic",
+      "statement": "Code loaded as atomic morphisms into semantic folders. Code never stored in state_payload. Binding code to metadata = structural binding loss.",
+      "formal": "state_payload ∩ executable_code = ∅",
+      "ref": "§1"
+    },
+    {
+      "id": "AX3",
+      "name": "DB_Is_Truth",
+      "statement": "morphism_log is single source of truth. containers and wires tables are materialized caches. State reconstructible by replay.",
+      "formal": "state(x, t) = fold(morphism_log(x, 0..t))",
+      "ref": "§1, §15"
+    },
+    {
+      "id": "AX4",
+      "name": "Hypergraph_Superposition",
+      "statement": "DB stores THE graph — superposition of all projected graphs. Multiple wires between same (A,B) via different ports. UNIQUE on 4-tuple. Query collapses superposition.",
+      "formal": "G_stored = ⋃_{p ∈ Ports} G_p; UNIQUE(source_urn, source_port, target_urn, target_port)",
+      "ref": "§4"
+    },
+    {
+      "id": "AX5",
+      "name": "Discovery_Retrieval_Duality",
+      "statement": "Gap between n²×|P_s|×|P_t| potential edges and k actual edges IS knowledge. D/R ratio per sub-category is first-class optimization metric.",
+      "formal": "Knowledge = n²×|P_s|×|P_t| - k; D/R = Cost_discovery / Cost_retrieval",
+      "ref": "§7"
+    }
+  ],
+  "categories": {
+    "core": [
+      {
+        "id": "CAT01",
+        "name": "C",
+        "latex": "\\mathcal{C}",
+        "formalization_level": "L3",
+        "objects": "URNs — rows in containers table",
+        "morphisms": "Wires — rows in wires table",
+        "composition": "SQL join on target_urn = source_urn",
+        "identity": "Virtual self-state (no explicit self-wire)",
+        "ref": "§2",
+        "realized_by": "Wave 0"
+      },
+      {
+        "id": "CAT02",
+        "name": "Coslice(A)",
+        "latex": "A/\\mathcal{C}",
+        "formalization_level": "L3",
+        "objects": "Outgoing morphisms from A (f_i: A → B_i)",
+        "morphisms": "Commuting triangles",
+        "composition": "Triangle composition",
+        "identity": "Identity on each outgoing morphism",
+        "ref": "§5",
+        "realized_by": "Wave 0"
+      },
+      {
+        "id": "CAT03",
+        "name": "Slice(A)",
+        "latex": "\\mathcal{C}/A",
+        "formalization_level": "L3",
+        "objects": "Incoming morphisms to A (g_i: B_i → A)",
+        "morphisms": "Commuting triangles",
+        "composition": "Triangle composition",
+        "identity": "Identity on each incoming morphism",
+        "ref": "§5",
+        "realized_by": "Wave 0"
+      },
+      {
+        "id": "CAT04",
+        "name": "Scoped(W)",
+        "latex": "\\mathcal{C}_W",
+        "formalization_level": "L3",
+        "objects": "W + OWNS children (recursive CTE)",
+        "morphisms": "Inherited from C — all wires between scoped objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "ref": "§6",
+        "realized_by": "Wave 0"
+      },
+      {
+        "id": "CAT05",
+        "name": "Kernel",
+        "latex": "\\mathcal{C}_{\\text{kernel}}",
+        "formalization_level": "L3",
+        "objects": "= C objects (post-dispatch view)",
+        "morphisms": "= C morphisms (CompletionResult received from any provider)",
+        "composition": "= C composition",
+        "identity": "= C identity",
+        "ref": "§9, kernel_spec §14",
+        "realized_by": "Wave 0"
+      }
+    ],
+    "stratum_chain": [
+      {
+        "id": "CAT06",
+        "name": "C_0",
+        "latex": "\\mathcal{C}_0",
+        "formalization_level": "L2",
+        "objects": "Authored declarations and references prior to validation",
+        "morphisms": "Authoring relations over S0 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "gap": "Inclusion functor ι_0 stated but composition verification not shown",
+        "ref": "strata Part 2",
+        "realized_by": "Wave 4"
+      },
+      {
+        "id": "CAT07",
+        "name": "C_1",
+        "latex": "\\mathcal{C}_1",
+        "formalization_level": "L2",
+        "objects": "C_0 ∪ validated artifacts admitted for realization",
+        "morphisms": "Validation-preserving relations over S0∪S1 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "gap": "Inclusion functor ι_1 stated but not verified full and faithful",
+        "ref": "strata Part 2",
+        "realized_by": "Wave 4"
+      },
+      {
+        "id": "CAT08",
+        "name": "C_2",
+        "latex": "\\mathcal{C}_2",
+        "formalization_level": "L2",
+        "objects": "C_1 ∪ materialized graph-ready programs and structures",
+        "morphisms": "Realization relations over S0∪S1∪S2 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "gap": "Same as C_0/C_1",
+        "ref": "strata Part 2",
+        "realized_by": "Wave 4"
+      },
+      {
+        "id": "CAT20",
+        "name": "C_3",
+        "latex": "\\mathcal{C}_3",
+        "formalization_level": "L2",
+        "objects": "C_2 ∪ evaluated contingent graph state",
+        "morphisms": "Execution and replay-preserving relations over S0..S3 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "gap": "Inclusion functor ι_3 stated but contingent-state boundaries need fuller proof",
+        "ref": "strata Part 2",
+        "realized_by": "Wave 5"
+      },
+      {
+        "id": "CAT21",
+        "name": "C_4",
+        "latex": "\\mathcal{C}_4",
+        "formalization_level": "L2",
+        "objects": "C_3 ∪ projected views and surface bindings",
+        "morphisms": "Projection-preserving relations over S0..S4 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "gap": "Projection inclusion is named but view-coherence proofs remain partial",
+        "ref": "strata Part 2",
+        "realized_by": "Wave 5–6"
+      }
+    ],
+    "hydration_pipeline": [
+      {
+        "id": "CAT09",
+        "name": "Authored",
+        "latex": "\\mathcal{A}",
+        "formalization_level": "L1",
+        "objects": "Manifest declarations, code references",
+        "morphisms": "?",
+        "gap": "Blind box — carries functor V domain but no internal structure defined",
+        "ref": "hydration §3, §19",
+        "realized_by": "Wave 4"
+      },
+      {
+        "id": "CAT10",
+        "name": "Validated",
+        "latex": "\\mathcal{V}",
+        "formalization_level": "L1",
+        "objects": "Validated artifacts (post-schema check)",
+        "morphisms": "?",
+        "gap": "Blind box — carries functor M domain but no internal structure defined",
+        "ref": "hydration §3, §19",
+        "realized_by": "Wave 4"
+      },
+      {
+        "id": "CAT11",
+        "name": "Materialized",
+        "latex": "\\mathcal{P}",
+        "formalization_level": "L1",
+        "objects": "Morphism programs (ADD;LINK;MUTATE sequences)",
+        "morphisms": "?",
+        "gap": "Blind box — carries functor E domain but no internal structure defined",
+        "ref": "hydration §3, §19",
+        "realized_by": "Wave 2"
+      },
+      {
+        "id": "CAT12",
+        "name": "Projected",
+        "latex": "\\mathcal{L}_i",
+        "formalization_level": "L1",
+        "objects": "Projected views in the Lens_i family: UI projections, embeddings, metrics",
+        "morphisms": "?",
+        "gap": "Blind box — carries functor P_i codomain but no internal structure defined",
+        "ref": "§19, strata Part 2",
+        "realized_by": "Wave 5–6"
+      },
+      {
+        "id": "CAT22",
+        "name": "Evaluated",
+        "latex": "\\mathcal{E}",
+        "formalization_level": "L1",
+        "objects": "Contingent graph state after execution, hydration, or replay",
+        "morphisms": "?",
+        "gap": "Blind box — execution outputs are named, but internal categorical structure is not yet defined",
+        "ref": "hydration §3, §19",
+        "realized_by": "Wave 5"
+      }
+    ],
+    "functor_codomains": [
+      {
+        "id": "CAT13",
+        "name": "R_1536",
+        "latex": "\\mathbb{R}^{1536}",
+        "formalization_level": "L0",
+        "objects": "Vectors in R^1536",
+        "morphisms": "Linear maps",
+        "ref": "Standard mathematics",
+        "realized_by": "Wave 5"
+      },
+      {
+        "id": "CAT14",
+        "name": "Manifest",
+        "latex": "\\text{Manifest}",
+        "formalization_level": "L1",
+        "objects": "manifest.yaml files",
+        "morphisms": "?",
+        "gap": "Functor F_fs domain — no categorical structure defined",
+        "ref": "§2, arch §3",
+        "realized_by": "Wave 1"
+      },
+      {
+        "id": "CAT15",
+        "name": "React",
+        "latex": "\\text{React}",
+        "formalization_level": "L1",
+        "objects": "XYFlow component trees",
+        "morphisms": "?",
+        "gap": "Functor F_ui codomain — no categorical structure defined",
+        "ref": "§2, arch §3",
+        "realized_by": "FFS3 (external)"
+      },
+      {
+        "id": "CAT16",
+        "name": "DAG",
+        "latex": "\\text{DAG}",
+        "formalization_level": "L1",
+        "objects": "Topological orderings",
+        "morphisms": "?",
+        "gap": "Functor F_struct codomain — no categorical structure defined",
+        "ref": "arch §3",
+        "realized_by": "Wave 6 (planned)"
+      }
+    ],
+    "cross_provider": [
+      {
+        "id": "CAT17",
+        "name": "Provider_p",
+        "latex": "\\mathcal{P}_p",
+        "formalization_level": "L2",
+        "objects": "Model containers owned by provider (e.g. claude-3-7-sonnet, gemini-2.0-flash, gpt-4o)",
+        "morphisms": "can_execute wires, tool invocations, Complete/Stream operations",
+        "gap": "Composition of provider morphisms not formally verified",
+        "ref": "§9, kernel_spec §14",
+        "realized_by": "Wave 6"
+      },
+      {
+        "id": "CAT18",
+        "name": "Standard",
+        "latex": "\\mathcal{C}_{\\text{standard}}",
+        "formalization_level": "L1",
+        "objects": "Scored results, capability profiles, cost metrics",
+        "morphisms": "Score composition, profile ordering, cost composition",
+        "gap": "Objects described in prose, morphisms have no formal definition. Every provider benchmark functor lands here but cannot verify structure preservation.",
+        "ref": "§9",
+        "realized_by": "Wave 6"
+      },
+      {
+        "id": "CAT19",
+        "name": "Adapter",
+        "latex": "\\mathcal{C}_{\\text{adapter}}",
+        "formalization_level": "L2",
+        "objects": "CompletionRequest, CompletionResult",
+        "morphisms": "Complete(), Stream()",
+        "gap": "Composition of Complete/Stream not explicitly defined as morphism composition",
+        "ref": "kernel_spec §14",
+        "realized_by": "Wave 1 (exists in Go)"
+      }
+    ],
+    "broad_category_subcategories": [
+      {
+        "id": "SUB01",
+        "name": "identity",
+        "formalization_level": "L2",
+        "members": [
+          "User",
+          "ColliderAdmin",
+          "SuperAdmin"
+        ],
+        "constraint_pattern": "identity.*",
+        "description": "Identity objects — actors that source OWNS and CAN_HYDRATE morphisms"
+      },
+      {
+        "id": "SUB02",
+        "name": "structure",
+        "formalization_level": "L2",
+        "members": [
+          "AppTemplate",
+          "NodeContainer"
+        ],
+        "constraint_pattern": "structure.*",
+        "description": "Structural objects — composable graph building blocks"
+      },
+      {
+        "id": "SUB03",
+        "name": "compute",
+        "formalization_level": "L2",
+        "members": [
+          "AgnosticModel",
+          "SystemTool",
+          "ComputeResource"
+        ],
+        "constraint_pattern": "compute.*, compute.ComputeResource",
+        "description": "Compute objects — schedulable and executable resources"
+      },
+      {
+        "id": "SUB04",
+        "name": "surface",
+        "formalization_level": "L2",
+        "members": [
+          "UI_Lens",
+          "RuntimeSurface"
+        ],
+        "constraint_pattern": "surface.*",
+        "description": "Surface objects — rendering and execution endpoints"
+      },
+      {
+        "id": "SUB05",
+        "name": "protocol",
+        "formalization_level": "L2",
+        "members": [
+          "ProtocolAdapter"
+        ],
+        "constraint_pattern": "protocol.ProtocolAdapter",
+        "description": "Protocol objects — routable communication containers"
+      },
+      {
+        "id": "SUB06",
+        "name": "infra",
+        "formalization_level": "L2",
+        "members": [
+          "InfraService"
+        ],
+        "constraint_pattern": "infra.InfraService",
+        "description": "Infrastructure objects — persistable storage containers"
+      },
+      {
+        "id": "SUB07",
+        "name": "memory",
+        "formalization_level": "L2",
+        "members": [
+          "MemoryStore"
+        ],
+        "constraint_pattern": "memory.MemoryStore",
+        "description": "Memory objects — ephemeral or persistent knowledge containers"
+      },
+      {
+        "id": "SUB08",
+        "name": "evaluation",
+        "formalization_level": "L1",
+        "members": [],
+        "constraint_pattern": "evaluation.*",
+        "description": "Evaluation objects — benchmark scores, capability profiles, cost metrics. Instances of C_standard. New in v3.",
+        "gap": "No objects yet — populated when C_standard is promoted to L2+"
+      }
+    ]
+  },
+  "objects": [
+    {
+      "id": "OBJ01",
+      "name": "User",
+      "type_id": "user",
+      "broad_category": "identity",
+      "description": "Authenticated actor — container whose morphisms grant owned-workspace access edges. No special ontological status.",
+      "source_connections": [
+        "OWNS",
+        "CAN_HYDRATE"
+      ],
+      "target_connections": []
+    },
+    {
+      "id": "OBJ02",
+      "name": "ColliderAdmin",
+      "type_id": "collider_admin",
+      "broad_category": "identity",
+      "description": "Category administrator — elevated actor with governed OWNS edges to assigned containers.",
+      "source_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "PRE_FLIGHT_CONFIG"
+      ],
+      "target_connections": []
+    },
+    {
+      "id": "OBJ03",
+      "name": "SuperAdmin",
+      "type_id": "superadmin",
+      "broad_category": "identity",
+      "description": "Root administrator — transitive OWNS over all containers.",
+      "source_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "PRE_FLIGHT_CONFIG",
+        "CAN_SCHEDULE",
+        "CAN_FEDERATE"
+      ],
+      "target_connections": []
+    },
+    {
+      "id": "OBJ04",
+      "name": "AppTemplate",
+      "type_id": "app_template",
+      "broad_category": "structure",
+      "description": "Template container — reusable subgraph pattern. Instantiation = ADD + LINK sequence.",
+      "source_connections": [
+        "CAN_HYDRATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "PRE_FLIGHT_CONFIG"
+      ]
+    },
+    {
+      "id": "OBJ05",
+      "name": "NodeContainer",
+      "type_id": "node_container",
+      "broad_category": "structure",
+      "description": "General-purpose container — default object in C. Payload in state_payload JSONB.",
+      "source_connections": [
+        "LINK_NODES",
+        "SYNC_ACTIVE_STATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "LINK_NODES",
+        "ADD_NODE_CONTAINER"
+      ]
+    },
+    {
+      "id": "OBJ06",
+      "name": "AgnosticModel",
+      "type_id": "agnostic_model",
+      "broad_category": "compute",
+      "description": "LLM/ML model container — provider-agnostic URN. Provider config in state_payload.",
+      "source_connections": [
+        "CAN_HYDRATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_SCHEDULE",
+        "CAN_ROUTE"
+      ]
+    },
+    {
+      "id": "OBJ07",
+      "name": "SystemTool",
+      "type_id": "system_tool",
+      "broad_category": "compute",
+      "description": "Tool container — discovered via graph traversal, exposed via MCP protocol surface.",
+      "source_connections": [],
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "CAN_ROUTE"
+      ]
+    },
+    {
+      "id": "OBJ08",
+      "name": "UI_Lens",
+      "type_id": "ui_lens",
+      "broad_category": "surface",
+      "description": "UI rendering surface — functor output: containers × wires → React component tree.",
+      "source_connections": [
+        "SYNC_ACTIVE_STATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE"
+      ]
+    },
+    {
+      "id": "OBJ09",
+      "name": "RuntimeSurface",
+      "type_id": "runtime_surface",
+      "broad_category": "surface",
+      "description": "Execution surface — HTTP/WS/MCP endpoint. Tools wire here to become executable.",
+      "source_connections": [],
+      "target_connections": [
+        "OWNS",
+        "PRE_FLIGHT_CONFIG",
+        "CAN_ROUTE"
+      ]
+    },
+    {
+      "id": "OBJ10",
+      "name": "ComputeResource",
+      "type_id": "compute_resource",
+      "broad_category": "compute",
+      "description": "GPU device, Docker container, thread pool, VM — schedulable resource container.",
+      "source_connections": [],
+      "target_connections": [
+        "OWNS",
+        "CAN_SCHEDULE"
+      ]
+    },
+    {
+      "id": "OBJ11",
+      "name": "ProtocolAdapter",
+      "type_id": "protocol_adapter",
+      "broad_category": "protocol",
+      "description": "WS channel, MCP session, gRPC stream, HTTP endpoint — routable communication container.",
+      "source_connections": [
+        "CAN_ROUTE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_HYDRATE"
+      ]
+    },
+    {
+      "id": "OBJ12",
+      "name": "InfraService",
+      "type_id": "infra_service",
+      "broad_category": "infra",
+      "description": "Postgres instance, disk volume, network segment — persistable infrastructure container.",
+      "source_connections": [],
+      "target_connections": [
+        "OWNS",
+        "CAN_PERSIST"
+      ]
+    },
+    {
+      "id": "OBJ13",
+      "name": "MemoryStore",
+      "type_id": "memory_store",
+      "broad_category": "memory",
+      "description": "Vector embedding store, context window, conversation history — ephemeral or persistent memory container.",
+      "source_connections": [
+        "CAN_HYDRATE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "CAN_PERSIST"
+      ]
+    }
+  ],
+  "morphisms": [
+    {
+      "id": "MOR01",
+      "name": "OWNS",
+      "decomposition": "LINK(owner, 'owns', target, 'child')",
+      "source": "identity.*",
+      "target": "any",
+      "transitivity": "automatic",
+      "description": "Ownership edge — automatic transitive propagation."
+    },
+    {
+      "id": "MOR02",
+      "name": "CAN_HYDRATE",
+      "decomposition": "LINK(actor, 'can_hydrate', target, 'hydrate')",
+      "source": "identity.* | structure.* | memory.*",
+      "target": "any",
+      "transitivity": "declared_per_edge",
+      "description": "Hydration permission — declared transitivity controlled by manifest/wire_config."
+    },
+    {
+      "id": "MOR03",
+      "name": "PRE_FLIGHT_CONFIG",
+      "decomposition": "MUTATE(surface, config_payload)",
+      "source": "identity.admin+",
+      "target": "surface.* | structure.*",
+      "transitivity": "none",
+      "description": "Runtime configuration — sets initial state before activation."
+    },
+    {
+      "id": "MOR04",
+      "name": "SYNC_ACTIVE_STATE",
+      "decomposition": "MUTATE(container, current_state)",
+      "source": "surface.*",
+      "target": "structure.*",
+      "transitivity": "none",
+      "description": "State synchronization — surface pushes current state to container."
+    },
+    {
+      "id": "MOR05",
+      "name": "ADD_NODE_CONTAINER",
+      "decomposition": "ADD(container) ; LINK(parent, 'owns', container, 'child')",
+      "source": "identity.* | structure.*",
+      "target": "structure.*",
+      "transitivity": "inherits_parent_owns",
+      "description": "Create + wire container into ownership tree."
+    },
+    {
+      "id": "MOR06",
+      "name": "LINK_NODES",
+      "decomposition": "LINK(source, port_s, target, port_t)",
+      "source": "structure.*",
+      "target": "structure.*",
+      "transitivity": "none",
+      "description": "General-purpose wiring — creates edge with specified port types."
+    },
+    {
+      "id": "MOR07",
+      "name": "UPDATE_NODE_KERNEL",
+      "decomposition": "MUTATE(container, kernel_state)",
+      "source": "identity.* | compute.*",
+      "target": "structure.*",
+      "transitivity": "none",
+      "description": "Kernel-level state update."
+    },
+    {
+      "id": "MOR08",
+      "name": "UNLINK_EDGE",
+      "decomposition": "UNLINK(source, port_s, target, port_t)",
+      "source": "any",
+      "target": "any",
+      "transitivity": "cascades_orphan_check",
+      "description": "Remove wire. Container persists. May create orphan nodes. (Renamed from DELETE_EDGE in v2 to align with §3 canonical NT name.)"
+    },
+    {
+      "id": "MOR09",
+      "name": "CAN_SCHEDULE",
+      "decomposition": "LINK(kernel, 'can_schedule', resource, 'workload')",
+      "source": "identity.admin+ | compute.*",
+      "target": "compute.ComputeResource",
+      "transitivity": "none",
+      "description": "Workload allocation — kernel/admin schedules work to compute resource."
+    },
+    {
+      "id": "MOR10",
+      "name": "CAN_ROUTE",
+      "decomposition": "LINK(adapter, 'can_route', target, 'transport')",
+      "source": "protocol.ProtocolAdapter",
+      "target": "any",
+      "transitivity": "none",
+      "description": "Transport selection — protocol adapter routes traffic."
+    },
+    {
+      "id": "MOR11",
+      "name": "CAN_PERSIST",
+      "decomposition": "LINK(source, 'can_persist', infra, 'storage')",
+      "source": "any",
+      "target": "infra.InfraService | memory.MemoryStore",
+      "transitivity": "none",
+      "description": "Storage routing — container persists state through infra."
+    },
+    {
+      "id": "MOR12",
+      "name": "CAN_FEDERATE",
+      "decomposition": "LINK(kernel_a, 'can_federate', kernel_b, 'peer')",
+      "source": "identity.SuperAdmin",
+      "target": "surface.RuntimeSurface",
+      "transitivity": "none",
+      "description": "Cross-instance communication — morphism bundle exchange between mo:os instances."
+    },
+    {
+      "id": "MOR13",
+      "name": "CAN_FORK",
+      "decomposition": "LINK(active_state, 'can_fork', compute_gpu, 'vram_branch')",
+      "source": "compute.* | identity.admin+",
+      "target": "compute.ComputeResource",
+      "transitivity": "none",
+      "status": "planned",
+      "mock_purpose": "Validate parallel DAG scoring architecture on GPU VRAM",
+      "mock_review_by": "Wave 6",
+      "description": "Branch parallel exploration — fork active state graph into GPU VRAM for parallel DAG scoring."
+    },
+    {
+      "id": "MOR14",
+      "name": "SCORED_ON",
+      "decomposition": "LINK(model, 'scored_on', benchmark_score, 'result')",
+      "source": "compute.AgnosticModel",
+      "target": "evaluation.*",
+      "transitivity": "none",
+      "status": "planned",
+      "description": "Model achieved this benchmark score. New in v3 — cross-provider mapping (§9).",
+      "ref": "§9, arch §12"
+    },
+    {
+      "id": "MOR15",
+      "name": "EVALUATES_TASK",
+      "decomposition": "LINK(benchmark_score, 'evaluates_task', task, 'evaluation')",
+      "source": "evaluation.*",
+      "target": "structure.*",
+      "transitivity": "none",
+      "status": "planned",
+      "description": "Score applies to this task definition. New in v3 — cross-provider mapping (§9).",
+      "ref": "§9, arch §12"
+    },
+    {
+      "id": "MOR16",
+      "name": "BENCHMARKED_BY",
+      "decomposition": "LINK(benchmark_score, 'benchmarked_by', suite, 'membership')",
+      "source": "evaluation.*",
+      "target": "evaluation.*",
+      "transitivity": "none",
+      "status": "planned",
+      "description": "Score belongs to this benchmark suite. New in v3 — cross-provider mapping (§9).",
+      "ref": "§9, arch §12"
+    }
+  ],
+  "invariant_morphisms": {
+    "note": "All 16 superset morphisms above decompose into these 4 invariant natural transformations (§3).",
+    "morphisms": [
+      {
+        "name": "ADD",
+        "signature": "∅ → Container",
+        "description": "Create container — URN enters Ob(C)"
+      },
+      {
+        "name": "LINK",
+        "signature": "C × C → Wire",
+        "description": "Create wire — edge enters Hom(C)"
+      },
+      {
+        "name": "MUTATE",
+        "signature": "C → C",
+        "description": "Update container state — endomorphism"
+      },
+      {
+        "name": "UNLINK",
+        "signature": "Wire → ∅",
+        "description": "Remove wire — edge leaves Hom(C)"
+      }
+    ]
+  },
+  "functors": [
+    {
+      "id": "FUN01",
+      "name": "FileSystem",
+      "signature": "F_fs: Manifest → C",
+      "direction": "codebase → graph",
+      "status": "active",
+      "description": "Import functor — reads manifest.yaml and creates/reconciles LINK morphisms.",
+      "domain": "CAT14",
+      "codomain": "CAT01"
+    },
+    {
+      "id": "FUN02",
+      "name": "UI_Lens",
+      "signature": "F_ui: C → React",
+      "direction": "graph → browser",
+      "status": "active",
+      "description": "Render functor — maps containers and wires to XYFlow component tree.",
+      "domain": "CAT01",
+      "codomain": "CAT15"
+    },
+    {
+      "id": "FUN03",
+      "name": "Embedding",
+      "signature": "F_embed: state_payload → R^1536",
+      "direction": "graph → vector space",
+      "status": "active",
+      "description": "Embed functor — maps container payloads to pgvector embeddings.",
+      "domain": "CAT01",
+      "codomain": "CAT13"
+    },
+    {
+      "id": "FUN04",
+      "name": "Structure",
+      "signature": "F_struct: subgraph → DAG",
+      "direction": "graph → compressed representation",
+      "status": "planned",
+      "description": "GPU pre-analysis functor — adjacency matrix ops, spectral analysis, DAG compression.",
+      "domain": "CAT01",
+      "codomain": "CAT16"
+    },
+    {
+      "id": "FUN05",
+      "name": "Benchmark",
+      "signature": "B: P_p → C_standard",
+      "direction": "provider → standard evaluation",
+      "status": "planned",
+      "description": "Cross-provider comparison functor — structure-preserving map from provider categories to standard evaluation category.",
+      "domain": "CAT17",
+      "codomain": "CAT18"
+    }
+  ],
+  "systems": [
+    {
+      "id": "SYS01",
+      "name": "RootContainer",
+      "type_id": "root_container",
+      "description": "Top-level container — root of all ownership trees."
+    },
+    {
+      "id": "SYS02",
+      "name": "MainLoop",
+      "type_id": "main_loop",
+      "description": "Kernel event loop — Event→Route→Dispatch→Transform→Commit. No business logic."
+    },
+    {
+      "id": "SYS03",
+      "name": "RestingStateDB",
+      "type_id": "resting_state_db",
+      "description": "Postgres ground truth — morphism_log (truth), containers/wires (caches), container_embeddings (functor output)."
+    },
+    {
+      "id": "SYS04",
+      "name": "ActiveStateGraph",
+      "type_id": "active_state_graph",
+      "description": "Live hypergraph superposition — queries collapse by port type selection."
+    }
+  ],
+  "paper_structures": [
+    {
+      "id": "EXT01",
+      "name": "H",
+      "latex": "\\mathcal{H}",
+      "formalization_level": "L3",
+      "type": "symmetric monoidal, semiadditive",
+      "objects": "Hypervectors in {-1, +1}^d",
+      "monoidal_product": "bind ⊗ (element-wise XOR for BSC)",
+      "coproduct": "bundle ⊕ (element-wise addition, biproduct)",
+      "endofunctor": "permute π (circular shift)",
+      "unit": "identity hypervector 1",
+      "hom_computation": "cosine similarity",
+      "vsa_model": "BSC (Binary Spatter Codes); alternatives: MAP, HRR, FHRR",
+      "ref": "../reference/papers/wolfram_hdc_digest.md §B, ../doctrine/",
+      "status": "Theory complete, schema deployed (embeddings table), zero Go runtime — Wave 5 target",
+      "three_pillars_role": "Pillar 3: Representation layer (Kanerva VSA)",
+      "codomain_note": "GPU residence is implementation detail of codomain, not categorical property"
+    },
+    {
+      "id": "EXT02",
+      "name": "G_H",
+      "formalization_level": "L2",
+      "type": "hypergraph (V, E_H)",
+      "ref": "papers/hypergraphrag_digest.md §1",
+      "status": "Reference — informs §4 superposition"
+    },
+    {
+      "id": "EXT03",
+      "name": "P, G (logic)",
+      "formalization_level": "L1",
+      "type": "propositional sets",
+      "ref": "papers/logicgraph_digest.md §1",
+      "status": "Reference — informs §14 neuro-symbolic"
+    }
+  ],
+  "summary": {
+    "categories": {
+      "L3": 5,
+      "L2": 7,
+      "L1": 9,
+      "L0": 1,
+      "total": 22
+    },
+    "broad_category_subcategories": 8,
+    "objects": 13,
+    "morphisms": 16,
+    "invariant_nts": 4,
+    "functors": 5,
+    "systems": 4,
+    "paper_structures": 3,
+    "changes_from_v2": [
+      "MOR08 renamed: DELETE_EDGE → UNLINK_EDGE (align with §3 canonical NT)",
+      "MOR14–MOR16 added: SCORED_ON, EVALUATES_TASK, BENCHMARKED_BY (§9 cross-provider)",
+      "MOR13 CAN_FORK: added mock_purpose and mock_review_by (§18 compliance)",
+      "invariant_morphisms.note: '12' → '16' (correct count)",
+      "categories section: added full §21 registry (19 CAT entries + 8 SUB entries)",
+      "SUB08 evaluation: new broad_category for benchmark result objects",
+      "formalization_levels: added to all category entries",
+      "realized_by: added to all category entries (wave linkage)",
+      "gap annotations: added to L1/L2 categories identifying what's missing",
+      "functor domain/codomain: now reference CAT IDs for traceability",
+      "references section: links back to §21, §9, §14, §12, waves, datasets"
+    ]
+  }
+}

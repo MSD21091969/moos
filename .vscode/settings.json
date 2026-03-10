@@ -55,5 +55,17 @@
   },
   "[typescriptreact]": {
     "editor.formatOnSave": true
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        ".agent/knowledge_base/instances/*.json"
+      ],
+      "url": "./.agent/knowledge_base/registry/schema.json"
+    }
+  ],
+  "files.readonlyInclude": {
+    "**/.agent/knowledge_base/reference/**": true,
+    "**/.agent/knowledge_base/registry/ontology.csv": true
   }
 }
