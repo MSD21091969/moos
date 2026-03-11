@@ -1,14 +1,14 @@
 {
-  "schema_version": "1.0",
-  "layer": "values",
-  "structure_ref": "../registry/ontology.json",
+  "$schema": "../superset/schemas/instance.schema.json",
+  "schema_version": "3.0",
+  "domain": "benchmarks",
   "description": "Benchmark scores — VALUE instances of the evaluation broad_category (SUB08). Each entry is a BenchmarkScore container that links to a Model (via SCORED_ON MOR14), a Task (via EVALUATES_TASK MOR15), and a Suite (via BENCHMARKED_BY MOR16).",
   "scoring_dimensions": {
     "accuracy": {
       "unit": "ratio",
       "range": [
-        0.0,
-        1.0
+        0,
+        1
       ],
       "metric": "moos_benchmark_morphism_accuracy",
       "description": "% valid envelopes in CompletionResult.Morphisms"
@@ -16,8 +16,8 @@
     "compositionality": {
       "unit": "deviation",
       "range": [
-        0.0,
-        1.0
+        0,
+        1
       ],
       "metric": "moos_benchmark_compositionality_deviation",
       "description": "B(g∘f) vs B(g)∘B(f) — pipeline consistency"
@@ -25,7 +25,7 @@
     "latency_seconds": {
       "unit": "seconds",
       "range": [
-        0.0,
+        0,
         null
       ],
       "metric": "moos_cost_execution_seconds",
@@ -43,8 +43,8 @@
     "robustness": {
       "unit": "ratio",
       "range": [
-        0.0,
-        1.0
+        0,
+        1
       ],
       "metric": "moos_benchmark_error_class",
       "description": "Error rate classification per LogicGraph taxonomy"
@@ -52,29 +52,29 @@
     "tool_fidelity": {
       "unit": "ratio",
       "range": [
-        0.0,
-        1.0
+        0,
+        1
       ],
       "metric": "moos_benchmark_tool_accuracy",
       "description": "Correct tool invocations from graph context"
     }
   },
-  "suites": [
+  "entries": [
     {
-      "id": "suite:morphism-extraction-v1",
+      "id": "urn:moos:benchmark:suite:morphism-extraction-v1",
+      "type_id": "benchmark_suite",
       "name": "Morphism Extraction Baseline",
       "description": "Core benchmark — can the provider extract valid ADD/LINK/MUTATE/UNLINK envelopes from natural language?",
       "tasks": [
-        "task:single-add",
-        "task:multi-link",
-        "task:mutate-chain",
-        "task:unlink-cascade"
+        "urn:moos:benchmark:task:single-add",
+        "urn:moos:benchmark:task:multi-link",
+        "urn:moos:benchmark:task:mutate-chain",
+        "urn:moos:benchmark:task:unlink-cascade"
       ]
-    }
-  ],
-  "tasks": [
+    },
     {
-      "id": "task:single-add",
+      "id": "urn:moos:benchmark:task:single-add",
+      "type_id": "benchmark_task",
       "name": "Single ADD extraction",
       "prompt_template": "Create a new {kind} container named '{name}'.",
       "expected_morphisms": [
@@ -83,7 +83,8 @@
       "difficulty": "trivial"
     },
     {
-      "id": "task:multi-link",
+      "id": "urn:moos:benchmark:task:multi-link",
+      "type_id": "benchmark_task",
       "name": "Multi-LINK extraction",
       "prompt_template": "Connect {source} to {target_1} and {target_2} via {port_type} ports.",
       "expected_morphisms": [
@@ -93,7 +94,8 @@
       "difficulty": "moderate"
     },
     {
-      "id": "task:mutate-chain",
+      "id": "urn:moos:benchmark:task:mutate-chain",
+      "type_id": "benchmark_task",
       "name": "MUTATE chain extraction",
       "prompt_template": "Update {container} state_payload to include {field}: {value}, then rename it to '{new_name}'.",
       "expected_morphisms": [
@@ -103,35 +105,35 @@
       "difficulty": "moderate"
     },
     {
-      "id": "task:unlink-cascade",
+      "id": "urn:moos:benchmark:task:unlink-cascade",
+      "type_id": "benchmark_task",
       "name": "UNLINK with cascade check",
       "prompt_template": "Remove the connection between {source} and {target}. Check for orphaned nodes.",
       "expected_morphisms": [
         "UNLINK"
       ],
       "difficulty": "hard"
-    }
-  ],
-  "scores": [
+    },
     {
+      "id": "urn:moos:benchmark:score:example-001",
+      "type_id": "benchmark_score",
       "_comment": "EXAMPLE ENTRY — replace with real benchmark run results",
-      "id": "score:example-001",
       "model": "urn:moos:model:anthropic:claude-3-7-sonnet",
-      "task": "task:single-add",
-      "suite": "suite:morphism-extraction-v1",
+      "task": "urn:moos:benchmark:task:single-add",
+      "suite": "urn:moos:benchmark:suite:morphism-extraction-v1",
       "timestamp": "2026-03-07T00:00:00Z",
       "dimensions": {
         "accuracy": 0.95,
         "compositionality": 0.88,
         "latency_seconds": 1.2,
         "token_cost": 45,
-        "robustness": 0.90,
+        "robustness": 0.9,
         "tool_fidelity": 0.92
       },
       "wire_types_created": {
-        "scored_on": "score:example-001 → urn:moos:model:anthropic:claude-3-7-sonnet",
-        "evaluates_task": "score:example-001 → task:single-add",
-        "benchmarked_by": "score:example-001 → suite:morphism-extraction-v1"
+        "scored_on": "urn:moos:benchmark:score:example-001 → urn:moos:model:anthropic:claude-3-7-sonnet",
+        "evaluates_task": "urn:moos:benchmark:score:example-001 → urn:moos:benchmark:task:single-add",
+        "benchmarked_by": "urn:moos:benchmark:score:example-001 → urn:moos:benchmark:suite:morphism-extraction-v1"
       }
     }
   ]

@@ -1,1 +1,0 @@
-{"ts":"2026-03-09T00:00:00Z","action":"restructure","description":"KB restructured: superset→registry, 00-03→doctrine (survivors only), 04_value_layer→instances, 05_reference→reference, session files→design. Eliminated ~25 empty scaffold files.","actor":"urn:moos:kernel:self"}

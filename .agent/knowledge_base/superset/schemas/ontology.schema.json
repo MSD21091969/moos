@@ -1,0 +1,149 @@
+{
+    "$id": "https://moos.factory/schemas/ontology.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Mo:os Abstract Ontology Schema",
+    "description": "Defines the grammar of the Universal Graph Model.",
+    "type": "object",
+    "required": [
+        "schema_version",
+        "objects",
+        "morphisms",
+        "invariant_morphisms"
+    ],
+    "properties": {
+        "schema_version": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "objects": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "type_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^OBJ[0-9]{2,}$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type_id": {
+                        "type": "string",
+                        "description": "The deterministic graph discriminator"
+                    },
+                    "broad_category": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "mutable": {
+                        "type": "boolean",
+                        "description": "Whether the container's state_payload can be mutated after creation"
+                    },
+                    "allowed_strata": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "S0",
+                                "S1",
+                                "S2",
+                                "S3",
+                                "S4"
+                            ]
+                        },
+                        "description": "Strata at which this object kind can exist"
+                    },
+                    "source_connections": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "target_connections": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "morphisms": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "source",
+                    "target"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^MOR[0-9]{2,}$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "decomposition": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "target": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "invariant_morphisms": {
+            "type": "object",
+            "required": [
+                "morphisms"
+            ],
+            "properties": {
+                "morphisms": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "name",
+                            "signature"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "enum": [
+                                    "ADD",
+                                    "LINK",
+                                    "MUTATE",
+                                    "UNLINK"
+                                ]
+                            },
+                            "signature": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

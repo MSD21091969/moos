@@ -1,0 +1,127 @@
+{
+    "$schema": "schema.json",
+    "domain": "industry_protocols",
+    "description": "Curated API and communication protocol landscape. Each entry is an industry entity classified by the superset as OBJ11 (ProtocolAdapter) or OBJ09 (RuntimeSurface).",
+    "last_curated": "2026-03-11",
+    "entries": [
+        {
+            "id": "ind:protocol:http-rest",
+            "name": "HTTP/REST",
+            "transport": "TCP/TLS",
+            "pattern": "request-response",
+            "standard_ref": "RFC 7231, RFC 9110",
+            "description": "Stateless request-response over HTTP. Foundation of web APIs and the MOOS kernel surface.",
+            "related_skills": [
+                "rest-api-design-patterns",
+                "api-designer",
+                "api-gateway-patterns"
+            ]
+        },
+        {
+            "id": "ind:protocol:grpc",
+            "name": "gRPC",
+            "transport": "HTTP/2",
+            "pattern": "request-response, server-stream, client-stream, bidi-stream",
+            "standard_ref": "https://grpc.io/docs/",
+            "description": "Binary RPC over HTTP/2 with Protobuf serialization. High-performance inter-service communication.",
+            "related_skills": [
+                "microservices-architect"
+            ]
+        },
+        {
+            "id": "ind:protocol:websocket",
+            "name": "WebSocket",
+            "transport": "TCP/TLS (upgrade from HTTP)",
+            "pattern": "bidirectional-stream",
+            "standard_ref": "RFC 6455",
+            "description": "Full-duplex persistent connection. Used for real-time agent communication and NanoClaw bridge.",
+            "related_skills": [
+                "websocket-engineer"
+            ]
+        },
+        {
+            "id": "ind:protocol:sse",
+            "name": "Server-Sent Events (SSE)",
+            "transport": "HTTP/1.1+",
+            "pattern": "server-push",
+            "standard_ref": "W3C EventSource",
+            "description": "Unidirectional server-to-client event stream. Used by MCP and LLM streaming endpoints.",
+            "related_skills": [
+                "mcp-integration-expert"
+            ]
+        },
+        {
+            "id": "ind:protocol:graphql",
+            "name": "GraphQL",
+            "transport": "HTTP",
+            "pattern": "query-response, subscription",
+            "standard_ref": "https://spec.graphql.org/",
+            "description": "Client-driven query language over HTTP. Alternative surface for complex graph reads.",
+            "related_skills": [
+                "graphql-api-development",
+                "graphql-architect"
+            ]
+        },
+        {
+            "id": "ind:protocol:mcp",
+            "name": "Model Context Protocol (MCP)",
+            "transport": "stdio, SSE, HTTP+SSE",
+            "pattern": "request-response (JSON-RPC 2.0)",
+            "standard_ref": "https://modelcontextprotocol.io/",
+            "description": "Standardized AI tool/resource discovery protocol. Primary mechanism for SystemTool exposure in MOOS.",
+            "related_skills": [
+                "mcp-integration-expert",
+                "mcp-developer"
+            ]
+        },
+        {
+            "id": "ind:protocol:a2a",
+            "name": "Agent-to-Agent (A2A)",
+            "transport": "HTTP",
+            "pattern": "task-oriented JSON-RPC",
+            "standard_ref": "https://google.github.io/A2A/",
+            "description": "Google's agent interoperability protocol. Task cards, streaming, push notifications.",
+            "related_skills": []
+        },
+        {
+            "id": "ind:protocol:json-rpc",
+            "name": "JSON-RPC 2.0",
+            "transport": "any (HTTP, WebSocket, stdio)",
+            "pattern": "request-response",
+            "standard_ref": "https://www.jsonrpc.org/specification",
+            "description": "Lightweight RPC encoding. Foundation for MCP and NanoClaw bridge.",
+            "related_skills": []
+        },
+        {
+            "id": "ind:protocol:mqtt",
+            "name": "MQTT",
+            "transport": "TCP/TLS",
+            "pattern": "publish-subscribe",
+            "standard_ref": "OASIS MQTT v5.0",
+            "description": "Lightweight pub/sub for IoT and edge. Potential future edge-kernel transport.",
+            "related_skills": [
+                "embedded-systems"
+            ]
+        },
+        {
+            "id": "ind:protocol:nats",
+            "name": "NATS",
+            "transport": "TCP/TLS",
+            "pattern": "publish-subscribe, request-response, queue-groups",
+            "standard_ref": "https://nats.io/",
+            "description": "Cloud-native messaging. JetStream for persistence. Candidate for kernel federation.",
+            "related_skills": [
+                "microservices-architect"
+            ]
+        },
+        {
+            "id": "ind:protocol:webrtc",
+            "name": "WebRTC",
+            "transport": "UDP (DTLS/SRTP)",
+            "pattern": "peer-to-peer, bidirectional-stream",
+            "standard_ref": "W3C WebRTC",
+            "description": "Real-time peer-to-peer communication. Audio/video/data channels.",
+            "related_skills": []
+        }
+    ]
+}

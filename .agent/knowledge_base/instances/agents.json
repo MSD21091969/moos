@@ -1,0 +1,47 @@
+{
+    "$schema": "../superset/schemas/instance.schema.json",
+    "schema_version": "3.0",
+    "domain": "agents",
+    "role": "value-layer",
+    "canonicality": "canonical-contingent",
+    "description": "Agent specification instances — OBJ21 (AgentSpec) containers. Each agent binds a model, routes to tools, and syncs state. The configured persona that acts on behalf of a User.",
+    "entries": [
+        {
+            "id": "urn:moos:agent:copilot-interim",
+            "type_id": "agent_spec",
+            "name": "Copilot Interim Agent",
+            "description": "Default agent for local development. Uses Gemini Flash as default model with fallback chain. Routes to active tools via CAN_ROUTE morphisms.",
+            "model_binding": {
+                "default_provider": "gemini",
+                "default_model": "gemini-2.0-flash",
+                "fallback_order": [
+                    "gemini",
+                    "anthropic",
+                    "openai"
+                ],
+                "temperature": 0.7,
+                "max_tokens": 4096
+            },
+            "tool_routing": [
+                "urn:moos:tool:category-master",
+                "urn:moos:tool:mcp-integration-expert",
+                "urn:moos:tool:golang-backend-development",
+                "urn:moos:tool:rest-api-design-patterns",
+                "urn:moos:tool:architecture-designer",
+                "urn:moos:tool:code-reviewer",
+                "urn:moos:tool:secure-code-guardian"
+            ],
+            "morphisms": {
+                "source": [
+                    "CAN_HYDRATE",
+                    "CAN_ROUTE",
+                    "SYNC_ACTIVE_STATE"
+                ],
+                "target": [
+                    "OWNS"
+                ]
+            },
+            "status": "active"
+        }
+    ]
+}

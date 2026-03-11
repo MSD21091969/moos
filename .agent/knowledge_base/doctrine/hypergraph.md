@@ -5,11 +5,11 @@
 
 ---
 
-## AX4 already says it
+## The stored graph is a superposition
 
-Axiom AX4 — `Hypergraph_Superposition` — states:
+The kernel stores one graph that is the superposition of all port-typed subgraphs:
 
-> "DB stores THE graph — superposition of all projected graphs. Multiple wires between same (A,B) via different ports. UNIQUE on 4-tuple. **Query collapses superposition.**"
+> Multiple wires between the same (A,B) are distinguished by ports. UNIQUE on 4-tuple. **Query collapses superposition.**
 
 The formal statement: $G_{\text{stored}} = \bigcup_{p \in \text{Ports}} G_p$
 
@@ -92,7 +92,7 @@ So the kernel IS a hypergraph rewriting system. The catamorphism IS the sequenti
 
 Where the moos kernel diverges from Wolfram is that it **serializes** rule application. The `sync.RWMutex` forces a total order on morphisms — there is exactly one evolution path, not a branching multiway system.
 
-This is a design choice, not a limitation of the model. AX3 says `state(x, t) = fold(morphism\_log(x, 0..t))` — the fold requires a linear sequence. But categorically, nothing prevents:
+This is a design choice, not a limitation of the model. The fold `state(x, t) = fold(morphism_log(x, 0..t))` requires a linear sequence. But categorically, nothing prevents:
 
 1. A **branching log** where concurrent morphisms from different actors produce multiple candidate states
 2. A **confluence check** — do the branches produce the same result regardless of order? (this is the Church-Rosser property from term rewriting)
@@ -163,7 +163,7 @@ The category of presheaves $[\mathcal{O}^{\text{op}}, \mathbf{Set}]$ is an **ele
 **Functors FUN01–FUN05 are geometric morphisms** between toposes:
 
 - $F_{\text{ui}}: [\mathcal{O}^{\text{op}}, \mathbf{Set}] \to [\mathcal{R}^{\text{op}}, \mathbf{Set}]$ where $\mathcal{R}$ is the React component category
-- These are structure-preserving but information-losing (S4 projections) — exactly as AX2 and AX4 require
+- These are structure-preserving but information-losing (S4 projections) — functor outputs are never ground truth
 
 ---
 

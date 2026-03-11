@@ -1,11 +1,12 @@
 {
-  "schema_version": "1.0",
-  "layer": "values",
-  "structure_ref": "../registry/ontology.json",
+  "$schema": "../superset/schemas/instance.schema.json",
+  "schema_version": "3.0",
+  "domain": "providers",
   "description": "Provider instances — VALUE entries for Provider_p (CAT17) and adapter (CAT19) categories. Each provider is a container with OWNS wires to model containers. Adapter type maps to Go interface: internal/model/adapters.go.",
-  "providers": [
+  "entries": [
     {
       "id": "urn:moos:provider:anthropic",
+      "type_id": "provider",
       "name": "Anthropic",
       "adapter_type": "AnthropicAdapter",
       "go_file": "internal/model/adapters.go",
@@ -30,14 +31,11 @@
           "cost_per_1k_input": 0.003,
           "cost_per_1k_output": 0.015
         }
-      ],
-      "wire_types": {
-        "owns": "provider → model",
-        "can_execute": "model → operation"
-      }
+      ]
     },
     {
       "id": "urn:moos:provider:gemini",
+      "type_id": "provider",
       "name": "Google Gemini",
       "adapter_type": "GeminiAdapter",
       "go_file": "internal/model/adapters.go",
@@ -63,14 +61,11 @@
           "cost_per_1k_output": 0.0015,
           "note": "Default provider in MOOS dispatcher"
         }
-      ],
-      "wire_types": {
-        "owns": "provider → model",
-        "can_execute": "model → operation"
-      }
+      ]
     },
     {
       "id": "urn:moos:provider:openai",
+      "type_id": "provider",
       "name": "OpenAI",
       "adapter_type": "OpenAIAdapter",
       "go_file": "internal/model/adapters.go",
@@ -95,11 +90,7 @@
           "cost_per_1k_input": 0.005,
           "cost_per_1k_output": 0.015
         }
-      ],
-      "wire_types": {
-        "owns": "provider → model",
-        "can_execute": "model → operation"
-      }
+      ]
     }
   ]
 }

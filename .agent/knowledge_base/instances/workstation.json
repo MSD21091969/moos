@@ -1,5 +1,5 @@
 {
-  "$schema": "../registry/schemas/instance.schema.json",
+  "$schema": "../superset/schemas/instance.schema.json",
   "schema_version": "3.0",
   "domain": "workstation",
   "role": "value-layer",
@@ -11,7 +11,7 @@
       "workspace_root": "D:/FFS0_Factory/moos",
       "os": "windows",
       "active_runtime": {
-        "kernel_module": "kernel",
+        "kernel_module": "platform/kernel",
         "default_store": "file",
         "http_port": 8000
       },

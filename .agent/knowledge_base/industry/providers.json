@@ -1,0 +1,284 @@
+{
+    "$schema": "schema.json",
+    "domain": "industry_providers",
+    "description": "Curated LLM/AI provider landscape. Each entry is an industry entity classified by the superset as OBJ17 (Provider) or OBJ06 (AgnosticModel). Updated independently of superset evolution.",
+    "last_curated": "2026-03-11",
+    "entries": [
+        {
+            "id": "ind:provider:anthropic",
+            "name": "Anthropic",
+            "api_style": "REST/SSE",
+            "auth_pattern": "x-api-key header",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "vision",
+                "extended_thinking"
+            ],
+            "known_models": [
+                "claude-3-7-sonnet-20250219",
+                "claude-3-5-haiku-20241022",
+                "claude-3-opus-20240229"
+            ],
+            "status": "active",
+            "notes": "Primary provider for complex reasoning tasks"
+        },
+        {
+            "id": "ind:provider:google",
+            "name": "Google (Gemini)",
+            "api_style": "REST/SSE",
+            "auth_pattern": "API key or OAuth2",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "vision",
+                "audio",
+                "video",
+                "grounding"
+            ],
+            "known_models": [
+                "gemini-2.0-flash",
+                "gemini-2.0-flash-lite",
+                "gemini-1.5-pro"
+            ],
+            "status": "active",
+            "notes": "Default provider in MOOS — 1M context window on flash models"
+        },
+        {
+            "id": "ind:provider:openai",
+            "name": "OpenAI",
+            "api_style": "REST/SSE",
+            "auth_pattern": "Bearer token",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "vision",
+                "audio",
+                "embeddings",
+                "fine_tuning"
+            ],
+            "known_models": [
+                "gpt-4o",
+                "gpt-4o-mini",
+                "o1",
+                "o3-mini"
+            ],
+            "status": "active",
+            "notes": "Largest ecosystem — de facto standard API shape"
+        },
+        {
+            "id": "ind:provider:meta",
+            "name": "Meta (Llama)",
+            "api_style": "open-weights",
+            "auth_pattern": "self-hosted or via provider",
+            "capabilities": [
+                "complete",
+                "tool_use"
+            ],
+            "known_models": [
+                "llama-3.3-70b",
+                "llama-3.1-405b",
+                "llama-3.2-vision"
+            ],
+            "status": "active",
+            "notes": "Open-weights leader — hosted via Ollama, vLLM, or cloud providers"
+        },
+        {
+            "id": "ind:provider:mistral",
+            "name": "Mistral AI",
+            "api_style": "REST/SSE",
+            "auth_pattern": "Bearer token",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "vision"
+            ],
+            "known_models": [
+                "mistral-large-2",
+                "mistral-small-3",
+                "codestral"
+            ],
+            "status": "active",
+            "notes": "European frontier lab — strong code models"
+        },
+        {
+            "id": "ind:provider:cohere",
+            "name": "Cohere",
+            "api_style": "REST",
+            "auth_pattern": "Bearer token",
+            "capabilities": [
+                "complete",
+                "stream",
+                "embeddings",
+                "rerank",
+                "tool_use"
+            ],
+            "known_models": [
+                "command-r-plus",
+                "command-r",
+                "embed-v3"
+            ],
+            "status": "active",
+            "notes": "Enterprise RAG focus — strong embedding/rerank pipeline"
+        },
+        {
+            "id": "ind:provider:xai",
+            "name": "xAI (Grok)",
+            "api_style": "REST (OpenAI-compatible)",
+            "auth_pattern": "Bearer token",
+            "capabilities": [
+                "complete",
+                "stream",
+                "vision"
+            ],
+            "known_models": [
+                "grok-2",
+                "grok-2-vision"
+            ],
+            "status": "active",
+            "notes": "OpenAI-compatible API — real-time data access"
+        },
+        {
+            "id": "ind:provider:deepseek",
+            "name": "DeepSeek",
+            "api_style": "REST (OpenAI-compatible)",
+            "auth_pattern": "Bearer token",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "reasoning"
+            ],
+            "known_models": [
+                "deepseek-v3",
+                "deepseek-r1"
+            ],
+            "status": "active",
+            "notes": "High-efficiency architecture — MoE + multi-head latent attention"
+        },
+        {
+            "id": "ind:provider:amazon",
+            "name": "Amazon (Bedrock/Nova)",
+            "api_style": "AWS SDK / REST",
+            "auth_pattern": "AWS IAM / Signature V4",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "vision",
+                "embeddings"
+            ],
+            "known_models": [
+                "nova-pro",
+                "nova-lite",
+                "nova-micro"
+            ],
+            "status": "active",
+            "notes": "Multi-provider gateway via Bedrock — also hosts Anthropic, Meta, Mistral"
+        },
+        {
+            "id": "ind:provider:microsoft",
+            "name": "Microsoft (Phi / Azure OpenAI)",
+            "api_style": "REST (OpenAI-compatible)",
+            "auth_pattern": "API key or Azure AD",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "vision"
+            ],
+            "known_models": [
+                "phi-4",
+                "phi-3.5-moe"
+            ],
+            "status": "active",
+            "notes": "Small model leader (Phi) + Azure OpenAI enterprise gateway"
+        },
+        {
+            "id": "ind:provider:ai21",
+            "name": "AI21 Labs",
+            "api_style": "REST",
+            "auth_pattern": "Bearer token",
+            "capabilities": [
+                "complete",
+                "stream"
+            ],
+            "known_models": [
+                "jamba-1.5-large",
+                "jamba-1.5-mini"
+            ],
+            "status": "active",
+            "notes": "SSM-Transformer hybrid architecture (Jamba)"
+        },
+        {
+            "id": "ind:provider:huggingface",
+            "name": "Hugging Face",
+            "api_style": "REST / Inference API",
+            "auth_pattern": "Bearer token",
+            "capabilities": [
+                "complete",
+                "embeddings",
+                "vision",
+                "audio"
+            ],
+            "known_models": [
+                "(hub — 500k+ models)"
+            ],
+            "status": "active",
+            "notes": "Open model hub — inference endpoints, model cards, datasets"
+        },
+        {
+            "id": "ind:provider:ollama",
+            "name": "Ollama",
+            "api_style": "REST (OpenAI-compatible)",
+            "auth_pattern": "none (local)",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use",
+                "vision",
+                "embeddings"
+            ],
+            "known_models": [
+                "(runs any GGUF model)"
+            ],
+            "status": "active",
+            "notes": "Local inference runtime — primary self-hosted option for MOOS"
+        },
+        {
+            "id": "ind:provider:vllm",
+            "name": "vLLM",
+            "api_style": "REST (OpenAI-compatible)",
+            "auth_pattern": "none (self-hosted)",
+            "capabilities": [
+                "complete",
+                "stream",
+                "tool_use"
+            ],
+            "known_models": [
+                "(any HF model with PagedAttention)"
+            ],
+            "status": "active",
+            "notes": "High-throughput serving engine — PagedAttention, continuous batching"
+        },
+        {
+            "id": "ind:provider:tensorrt-llm",
+            "name": "NVIDIA TensorRT-LLM",
+            "api_style": "gRPC / REST (Triton)",
+            "auth_pattern": "none (self-hosted)",
+            "capabilities": [
+                "complete",
+                "stream"
+            ],
+            "known_models": [
+                "(optimized NVIDIA GPU inference)"
+            ],
+            "status": "active",
+            "notes": "NVIDIA-optimized inference — FP8/INT4 quantization, KV-cache reuse"
+        }
+    ]
+}

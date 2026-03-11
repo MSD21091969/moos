@@ -1,0 +1,44 @@
+{
+    "$id": "https://moos.factory/schemas/instance.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Mo:os Instance Schema",
+    "description": "Defines valid populations of nodes mapped to the ontology.",
+    "type": "object",
+    "required": [
+        "schema_version",
+        "domain",
+        "entries"
+    ],
+    "properties": {
+        "schema_version": {
+            "type": "string"
+        },
+        "domain": {
+            "type": "string"
+        },
+        "entries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "type_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^urn:moos:"
+                    },
+                    "type_id": {
+                        "type": "string",
+                        "description": "Foreign key to ontology.json objects[].type_id"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": true
+            }
+        }
+    }
+}

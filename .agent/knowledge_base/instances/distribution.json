@@ -1,5 +1,5 @@
 {
-  "$schema": "../registry/schemas/instance.schema.json",
+  "$schema": "../superset/schemas/instance.schema.json",
   "schema_version": "3.0",
   "domain": "distribution",
   "role": "value-layer",
@@ -9,16 +9,16 @@
       "id": "urn:moos:distribution:platform_distribution",
       "type_id": "distribution_config",
       "workspace_root": "D:/FFS0_Factory/moos",
-      "active_platform_root": "kernel/",
-      "kernel_module": "kernel",
+      "active_platform_root": "platform/kernel/",
+      "kernel_module": "platform/kernel",
       "windows_local_dev": {
         "default_store": "file",
-        "log_path": "./kernel/data/morphism-log.jsonl",
-        "registry_path": "../.agent/knowledge_base/registry/ontology.json",
+        "log_path": "./platform/kernel/data/morphism-log.jsonl",
+        "registry_path": "../.agent/knowledge_base/superset/ontology.json",
         "database_mode": "optional; only required when MOOS_KERNEL_STORE=postgres"
       },
       "demo_seed": {
-        "payload": "kernel/cmd/moos/main.go",
+        "payload": "platform/kernel/cmd/kernel/main.go",
         "apply_endpoint": "/hydration/materialize"
       }
     }

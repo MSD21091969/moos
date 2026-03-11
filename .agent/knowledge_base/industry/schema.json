@@ -1,0 +1,71 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://moos.factory/schemas/industry.schema.json",
+    "title": "Mo:os Industry Layer Schema",
+    "description": "Validates industry layer files. Industry data is raw curated tech landscape — NOT superset types, NOT mo:os instances.",
+    "type": "object",
+    "required": [
+        "domain",
+        "description"
+    ],
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "domain": {
+            "type": "string",
+            "pattern": "^industry_",
+            "description": "Industry domain identifier, prefixed with 'industry_'"
+        },
+        "description": {
+            "type": "string"
+        },
+        "last_curated": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            "description": "ISO date of last curation pass"
+        },
+        "entries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^ind:",
+                        "description": "Industry entity ID, prefixed with 'ind:'"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "categories": {
+            "type": "object",
+            "description": "Grouped entries by subcategory",
+            "additionalProperties": {
+                "type": "array"
+            }
+        },
+        "domains": {
+            "type": "object",
+            "description": "Grouped entries by domain",
+            "additionalProperties": {
+                "type": "array"
+            }
+        },
+        "paradigms": {
+            "type": "array",
+            "description": "Tool paradigm entries"
+        },
+        "skills": {
+            "type": "array",
+            "description": "Skill capability entries"
+        }
+    }
+}

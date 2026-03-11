@@ -1,0 +1,1053 @@
+{
+    "$schema": "schema.json",
+    "domain": "industry_tools",
+    "description": "Curated tool paradigms and the 100 skill capabilities. Each entry is an industry entity classified by the superset as OBJ07 (SystemTool). Skills represent domain-specific capabilities that can be activated as tools.",
+    "last_curated": "2026-03-11",
+    "paradigms": [
+        {
+            "id": "ind:paradigm:function-calling",
+            "name": "Function Calling (OpenAI-style)",
+            "description": "LLM generates structured JSON function calls. Provider-specific schemas.",
+            "providers": [
+                "openai",
+                "anthropic",
+                "google",
+                "mistral"
+            ]
+        },
+        {
+            "id": "ind:paradigm:mcp-tool-server",
+            "name": "MCP Tool Server",
+            "description": "Standardized tool discovery and execution via Model Context Protocol.",
+            "providers": [
+                "any (protocol-level)"
+            ]
+        },
+        {
+            "id": "ind:paradigm:code-interpreter",
+            "name": "Code Interpreter / Sandbox",
+            "description": "Sandboxed code execution environment. Python, JS, or multi-language.",
+            "providers": [
+                "openai",
+                "anthropic"
+            ]
+        },
+        {
+            "id": "ind:paradigm:browser-automation",
+            "name": "Browser Automation",
+            "description": "Headless browser control for web interaction and testing.",
+            "providers": [
+                "playwright",
+                "puppeteer",
+                "selenium"
+            ]
+        },
+        {
+            "id": "ind:paradigm:retrieval-tool",
+            "name": "RAG / Retrieval Tool",
+            "description": "Vector search + reranking for context injection.",
+            "providers": [
+                "any (embedding + vector DB)"
+            ]
+        }
+    ],
+    "skills": [
+        {
+            "id": "ind:skill:ai-vision",
+            "name": "ai-vision",
+            "domain": "ai",
+            "tags": [
+                "vision",
+                "multimodal",
+                "image-analysis"
+            ]
+        },
+        {
+            "id": "ind:skill:android-adb",
+            "name": "android-adb",
+            "domain": "mobile",
+            "tags": [
+                "android",
+                "device-control",
+                "adb"
+            ]
+        },
+        {
+            "id": "ind:skill:angular-architect",
+            "name": "angular-architect",
+            "domain": "frontend",
+            "tags": [
+                "angular",
+                "typescript",
+                "spa"
+            ]
+        },
+        {
+            "id": "ind:skill:api-designer",
+            "name": "api-designer",
+            "domain": "architecture",
+            "tags": [
+                "api",
+                "design",
+                "openapi"
+            ]
+        },
+        {
+            "id": "ind:skill:api-gateway-patterns",
+            "name": "api-gateway-patterns",
+            "domain": "architecture",
+            "tags": [
+                "api",
+                "gateway",
+                "routing"
+            ]
+        },
+        {
+            "id": "ind:skill:architecture-designer",
+            "name": "architecture-designer",
+            "domain": "architecture",
+            "tags": [
+                "system-design",
+                "patterns"
+            ]
+        },
+        {
+            "id": "ind:skill:atlassian-mcp",
+            "name": "atlassian-mcp",
+            "domain": "devtools",
+            "tags": [
+                "jira",
+                "confluence",
+                "mcp"
+            ]
+        },
+        {
+            "id": "ind:skill:category-master",
+            "name": "category-master",
+            "domain": "mathematics",
+            "tags": [
+                "category-theory",
+                "functors",
+                "monads"
+            ]
+        },
+        {
+            "id": "ind:skill:chaos-engineer",
+            "name": "chaos-engineer",
+            "domain": "reliability",
+            "tags": [
+                "chaos",
+                "resilience",
+                "fault-injection"
+            ]
+        },
+        {
+            "id": "ind:skill:cli-developer",
+            "name": "cli-developer",
+            "domain": "development",
+            "tags": [
+                "cli",
+                "terminal",
+                "command-line"
+            ]
+        },
+        {
+            "id": "ind:skill:cloud-architect",
+            "name": "cloud-architect",
+            "domain": "infrastructure",
+            "tags": [
+                "cloud",
+                "aws",
+                "gcp",
+                "azure"
+            ]
+        },
+        {
+            "id": "ind:skill:code-documenter",
+            "name": "code-documenter",
+            "domain": "development",
+            "tags": [
+                "documentation",
+                "comments",
+                "api-docs"
+            ]
+        },
+        {
+            "id": "ind:skill:code-reviewer",
+            "name": "code-reviewer",
+            "domain": "development",
+            "tags": [
+                "review",
+                "quality",
+                "best-practices"
+            ]
+        },
+        {
+            "id": "ind:skill:cpp-pro",
+            "name": "cpp-pro",
+            "domain": "language",
+            "tags": [
+                "cpp",
+                "systems",
+                "performance"
+            ]
+        },
+        {
+            "id": "ind:skill:csharp-developer",
+            "name": "csharp-developer",
+            "domain": "language",
+            "tags": [
+                "csharp",
+                "dotnet",
+                "blazor"
+            ]
+        },
+        {
+            "id": "ind:skill:database-optimizer",
+            "name": "database-optimizer",
+            "domain": "data",
+            "tags": [
+                "sql",
+                "optimization",
+                "indexing"
+            ]
+        },
+        {
+            "id": "ind:skill:debugging-wizard",
+            "name": "debugging-wizard",
+            "domain": "development",
+            "tags": [
+                "debugging",
+                "troubleshooting"
+            ]
+        },
+        {
+            "id": "ind:skill:devops-engineer",
+            "name": "devops-engineer",
+            "domain": "infrastructure",
+            "tags": [
+                "ci-cd",
+                "pipelines",
+                "automation"
+            ]
+        },
+        {
+            "id": "ind:skill:django-expert",
+            "name": "django-expert",
+            "domain": "backend",
+            "tags": [
+                "django",
+                "python",
+                "orm"
+            ]
+        },
+        {
+            "id": "ind:skill:docker-compose-orchestration",
+            "name": "docker-compose-orchestration",
+            "domain": "infrastructure",
+            "tags": [
+                "docker",
+                "compose",
+                "containers"
+            ]
+        },
+        {
+            "id": "ind:skill:dotnet-core-expert",
+            "name": "dotnet-core-expert",
+            "domain": "backend",
+            "tags": [
+                "dotnet",
+                "aspnet",
+                "csharp"
+            ]
+        },
+        {
+            "id": "ind:skill:embedded-systems",
+            "name": "embedded-systems",
+            "domain": "hardware",
+            "tags": [
+                "embedded",
+                "iot",
+                "firmware"
+            ]
+        },
+        {
+            "id": "ind:skill:fastapi-customer-support-tech-enablement",
+            "name": "fastapi-customer-support-tech-enablement",
+            "domain": "backend",
+            "tags": [
+                "fastapi",
+                "support",
+                "tech-enablement"
+            ]
+        },
+        {
+            "id": "ind:skill:fastapi-development",
+            "name": "fastapi-development",
+            "domain": "backend",
+            "tags": [
+                "fastapi",
+                "python",
+                "async"
+            ]
+        },
+        {
+            "id": "ind:skill:fastapi-expert",
+            "name": "fastapi-expert",
+            "domain": "backend",
+            "tags": [
+                "fastapi",
+                "python",
+                "pydantic"
+            ]
+        },
+        {
+            "id": "ind:skill:fastapi-microservices-development",
+            "name": "fastapi-microservices-development",
+            "domain": "backend",
+            "tags": [
+                "fastapi",
+                "microservices",
+                "python"
+            ]
+        },
+        {
+            "id": "ind:skill:feature-forge",
+            "name": "feature-forge",
+            "domain": "development",
+            "tags": [
+                "feature-development",
+                "tdd"
+            ]
+        },
+        {
+            "id": "ind:skill:feishu-bitable-task-manager",
+            "name": "feishu-bitable-task-manager",
+            "domain": "devtools",
+            "tags": [
+                "feishu",
+                "task-management",
+                "bitable"
+            ]
+        },
+        {
+            "id": "ind:skill:fine-tuning-expert",
+            "name": "fine-tuning-expert",
+            "domain": "ai",
+            "tags": [
+                "fine-tuning",
+                "training",
+                "lora"
+            ]
+        },
+        {
+            "id": "ind:skill:flutter-expert",
+            "name": "flutter-expert",
+            "domain": "mobile",
+            "tags": [
+                "flutter",
+                "dart",
+                "cross-platform"
+            ]
+        },
+        {
+            "id": "ind:skill:fp-ts",
+            "name": "fp-ts",
+            "domain": "language",
+            "tags": [
+                "fp-ts",
+                "typescript",
+                "functional"
+            ]
+        },
+        {
+            "id": "ind:skill:fullstack-guardian",
+            "name": "fullstack-guardian",
+            "domain": "development",
+            "tags": [
+                "fullstack",
+                "quality",
+                "integration"
+            ]
+        },
+        {
+            "id": "ind:skill:functional-programming",
+            "name": "functional-programming",
+            "domain": "paradigm",
+            "tags": [
+                "fp",
+                "immutability",
+                "composition"
+            ]
+        },
+        {
+            "id": "ind:skill:game-developer",
+            "name": "game-developer",
+            "domain": "gaming",
+            "tags": [
+                "game-dev",
+                "unity",
+                "unreal"
+            ]
+        },
+        {
+            "id": "ind:skill:go-installer",
+            "name": "go-installer",
+            "domain": "tooling",
+            "tags": [
+                "go",
+                "installation",
+                "setup"
+            ]
+        },
+        {
+            "id": "ind:skill:golang-backend-development",
+            "name": "golang-backend-development",
+            "domain": "backend",
+            "tags": [
+                "go",
+                "backend",
+                "concurrency"
+            ]
+        },
+        {
+            "id": "ind:skill:golang-pro",
+            "name": "golang-pro",
+            "domain": "language",
+            "tags": [
+                "go",
+                "systems",
+                "performance"
+            ]
+        },
+        {
+            "id": "ind:skill:graphql-api-development",
+            "name": "graphql-api-development",
+            "domain": "backend",
+            "tags": [
+                "graphql",
+                "api",
+                "schema"
+            ]
+        },
+        {
+            "id": "ind:skill:graphql-architect",
+            "name": "graphql-architect",
+            "domain": "architecture",
+            "tags": [
+                "graphql",
+                "federation",
+                "schema-design"
+            ]
+        },
+        {
+            "id": "ind:skill:harmony-hdc",
+            "name": "harmony-hdc",
+            "domain": "mobile",
+            "tags": [
+                "harmonyos",
+                "hdc",
+                "device-control"
+            ]
+        },
+        {
+            "id": "ind:skill:java-architect",
+            "name": "java-architect",
+            "domain": "backend",
+            "tags": [
+                "java",
+                "spring",
+                "enterprise"
+            ]
+        },
+        {
+            "id": "ind:skill:javascript-pro",
+            "name": "javascript-pro",
+            "domain": "language",
+            "tags": [
+                "javascript",
+                "es2024",
+                "node"
+            ]
+        },
+        {
+            "id": "ind:skill:jest-react-testing",
+            "name": "jest-react-testing",
+            "domain": "testing",
+            "tags": [
+                "jest",
+                "react",
+                "testing-library"
+            ]
+        },
+        {
+            "id": "ind:skill:kotlin-specialist",
+            "name": "kotlin-specialist",
+            "domain": "language",
+            "tags": [
+                "kotlin",
+                "android",
+                "coroutines"
+            ]
+        },
+        {
+            "id": "ind:skill:kubernetes-specialist",
+            "name": "kubernetes-specialist",
+            "domain": "infrastructure",
+            "tags": [
+                "kubernetes",
+                "k8s",
+                "orchestration"
+            ]
+        },
+        {
+            "id": "ind:skill:laravel-specialist",
+            "name": "laravel-specialist",
+            "domain": "backend",
+            "tags": [
+                "laravel",
+                "php",
+                "eloquent"
+            ]
+        },
+        {
+            "id": "ind:skill:legacy-modernizer",
+            "name": "legacy-modernizer",
+            "domain": "development",
+            "tags": [
+                "modernization",
+                "migration",
+                "refactoring"
+            ]
+        },
+        {
+            "id": "ind:skill:mcp-developer",
+            "name": "mcp-developer",
+            "domain": "ai",
+            "tags": [
+                "mcp",
+                "tool-server",
+                "protocol"
+            ]
+        },
+        {
+            "id": "ind:skill:mcp-integration-expert",
+            "name": "mcp-integration-expert",
+            "domain": "ai",
+            "tags": [
+                "mcp",
+                "integration",
+                "tool-discovery"
+            ]
+        },
+        {
+            "id": "ind:skill:microservices-architect",
+            "name": "microservices-architect",
+            "domain": "architecture",
+            "tags": [
+                "microservices",
+                "distributed",
+                "patterns"
+            ]
+        },
+        {
+            "id": "ind:skill:ml-pipeline",
+            "name": "ml-pipeline",
+            "domain": "ai",
+            "tags": [
+                "ml",
+                "pipeline",
+                "training"
+            ]
+        },
+        {
+            "id": "ind:skill:monitoring-expert",
+            "name": "monitoring-expert",
+            "domain": "observability",
+            "tags": [
+                "monitoring",
+                "alerting",
+                "dashboards"
+            ]
+        },
+        {
+            "id": "ind:skill:n8n-mcp-orchestrator",
+            "name": "n8n-mcp-orchestrator",
+            "domain": "automation",
+            "tags": [
+                "n8n",
+                "workflows",
+                "mcp"
+            ]
+        },
+        {
+            "id": "ind:skill:nestjs-expert",
+            "name": "nestjs-expert",
+            "domain": "backend",
+            "tags": [
+                "nestjs",
+                "typescript",
+                "node"
+            ]
+        },
+        {
+            "id": "ind:skill:nextjs-developer",
+            "name": "nextjs-developer",
+            "domain": "frontend",
+            "tags": [
+                "nextjs",
+                "react",
+                "ssr"
+            ]
+        },
+        {
+            "id": "ind:skill:nodejs-development",
+            "name": "nodejs-development",
+            "domain": "backend",
+            "tags": [
+                "node",
+                "javascript",
+                "async"
+            ]
+        },
+        {
+            "id": "ind:skill:pandas-pro",
+            "name": "pandas-pro",
+            "domain": "data",
+            "tags": [
+                "pandas",
+                "python",
+                "dataframes"
+            ]
+        },
+        {
+            "id": "ind:skill:php-pro",
+            "name": "php-pro",
+            "domain": "language",
+            "tags": [
+                "php",
+                "web",
+                "laravel"
+            ]
+        },
+        {
+            "id": "ind:skill:playwright-expert",
+            "name": "playwright-expert",
+            "domain": "testing",
+            "tags": [
+                "playwright",
+                "e2e",
+                "browser"
+            ]
+        },
+        {
+            "id": "ind:skill:playwright-visual-testing",
+            "name": "playwright-visual-testing",
+            "domain": "testing",
+            "tags": [
+                "playwright",
+                "visual",
+                "screenshots"
+            ]
+        },
+        {
+            "id": "ind:skill:postgres-pro",
+            "name": "postgres-pro",
+            "domain": "data",
+            "tags": [
+                "postgres",
+                "sql",
+                "optimization"
+            ]
+        },
+        {
+            "id": "ind:skill:practical-react-query",
+            "name": "practical-react-query",
+            "domain": "frontend",
+            "tags": [
+                "react-query",
+                "tanstack",
+                "caching"
+            ]
+        },
+        {
+            "id": "ind:skill:prompt-engineer",
+            "name": "prompt-engineer",
+            "domain": "ai",
+            "tags": [
+                "prompting",
+                "instruction-design",
+                "few-shot"
+            ]
+        },
+        {
+            "id": "ind:skill:pytest",
+            "name": "pytest",
+            "domain": "testing",
+            "tags": [
+                "pytest",
+                "python",
+                "fixtures"
+            ]
+        },
+        {
+            "id": "ind:skill:pytest-patterns",
+            "name": "pytest-patterns",
+            "domain": "testing",
+            "tags": [
+                "pytest",
+                "patterns",
+                "mocking"
+            ]
+        },
+        {
+            "id": "ind:skill:python-pro",
+            "name": "python-pro",
+            "domain": "language",
+            "tags": [
+                "python",
+                "typing",
+                "async"
+            ]
+        },
+        {
+            "id": "ind:skill:rag-architect",
+            "name": "rag-architect",
+            "domain": "ai",
+            "tags": [
+                "rag",
+                "retrieval",
+                "embeddings"
+            ]
+        },
+        {
+            "id": "ind:skill:rails-expert",
+            "name": "rails-expert",
+            "domain": "backend",
+            "tags": [
+                "rails",
+                "ruby",
+                "activerecord"
+            ]
+        },
+        {
+            "id": "ind:skill:react-expert",
+            "name": "react-expert",
+            "domain": "frontend",
+            "tags": [
+                "react",
+                "hooks",
+                "components"
+            ]
+        },
+        {
+            "id": "ind:skill:react-native-expert",
+            "name": "react-native-expert",
+            "domain": "mobile",
+            "tags": [
+                "react-native",
+                "mobile",
+                "cross-platform"
+            ]
+        },
+        {
+            "id": "ind:skill:resolve-kwai-cdn-url",
+            "name": "resolve-kwai-cdn-url",
+            "domain": "media",
+            "tags": [
+                "kwai",
+                "video",
+                "cdn"
+            ]
+        },
+        {
+            "id": "ind:skill:rest-api-design-patterns",
+            "name": "rest-api-design-patterns",
+            "domain": "architecture",
+            "tags": [
+                "rest",
+                "api",
+                "patterns"
+            ]
+        },
+        {
+            "id": "ind:skill:result-bitable-reporter",
+            "name": "result-bitable-reporter",
+            "domain": "automation",
+            "tags": [
+                "reporting",
+                "bitable",
+                "results"
+            ]
+        },
+        {
+            "id": "ind:skill:result-supabase-reporter",
+            "name": "result-supabase-reporter",
+            "domain": "automation",
+            "tags": [
+                "reporting",
+                "supabase",
+                "results"
+            ]
+        },
+        {
+            "id": "ind:skill:rust-engineer",
+            "name": "rust-engineer",
+            "domain": "language",
+            "tags": [
+                "rust",
+                "systems",
+                "safety"
+            ]
+        },
+        {
+            "id": "ind:skill:salesforce-developer",
+            "name": "salesforce-developer",
+            "domain": "platform",
+            "tags": [
+                "salesforce",
+                "apex",
+                "crm"
+            ]
+        },
+        {
+            "id": "ind:skill:secure-code-guardian",
+            "name": "secure-code-guardian",
+            "domain": "security",
+            "tags": [
+                "security",
+                "owasp",
+                "vulnerabilities"
+            ]
+        },
+        {
+            "id": "ind:skill:security-reviewer",
+            "name": "security-reviewer",
+            "domain": "security",
+            "tags": [
+                "security",
+                "review",
+                "audit"
+            ]
+        },
+        {
+            "id": "ind:skill:shell-testing-framework",
+            "name": "shell-testing-framework",
+            "domain": "testing",
+            "tags": [
+                "shell",
+                "bash",
+                "testing"
+            ]
+        },
+        {
+            "id": "ind:skill:shopify-expert",
+            "name": "shopify-expert",
+            "domain": "platform",
+            "tags": [
+                "shopify",
+                "ecommerce",
+                "liquid"
+            ]
+        },
+        {
+            "id": "ind:skill:spark-engineer",
+            "name": "spark-engineer",
+            "domain": "data",
+            "tags": [
+                "spark",
+                "big-data",
+                "distributed"
+            ]
+        },
+        {
+            "id": "ind:skill:spec-miner",
+            "name": "spec-miner",
+            "domain": "development",
+            "tags": [
+                "specifications",
+                "extraction",
+                "analysis"
+            ]
+        },
+        {
+            "id": "ind:skill:spring-boot-engineer",
+            "name": "spring-boot-engineer",
+            "domain": "backend",
+            "tags": [
+                "spring-boot",
+                "java",
+                "microservices"
+            ]
+        },
+        {
+            "id": "ind:skill:sql-pro",
+            "name": "sql-pro",
+            "domain": "data",
+            "tags": [
+                "sql",
+                "queries",
+                "optimization"
+            ]
+        },
+        {
+            "id": "ind:skill:sre-engineer",
+            "name": "sre-engineer",
+            "domain": "reliability",
+            "tags": [
+                "sre",
+                "reliability",
+                "incident-response"
+            ]
+        },
+        {
+            "id": "ind:skill:supabase-mcp-integration",
+            "name": "supabase-mcp-integration",
+            "domain": "backend",
+            "tags": [
+                "supabase",
+                "mcp",
+                "postgres"
+            ]
+        },
+        {
+            "id": "ind:skill:swift-expert",
+            "name": "swift-expert",
+            "domain": "mobile",
+            "tags": [
+                "swift",
+                "ios",
+                "swiftui"
+            ]
+        },
+        {
+            "id": "ind:skill:terraform-engineer",
+            "name": "terraform-engineer",
+            "domain": "infrastructure",
+            "tags": [
+                "terraform",
+                "iac",
+                "hcl"
+            ]
+        },
+        {
+            "id": "ind:skill:test-master",
+            "name": "test-master",
+            "domain": "testing",
+            "tags": [
+                "testing",
+                "strategy",
+                "coverage"
+            ]
+        },
+        {
+            "id": "ind:skill:the-fool",
+            "name": "the-fool",
+            "domain": "meta",
+            "tags": [
+                "creative",
+                "unconventional"
+            ]
+        },
+        {
+            "id": "ind:skill:typescript-fp",
+            "name": "typescript-fp",
+            "domain": "language",
+            "tags": [
+                "typescript",
+                "fp",
+                "type-safety"
+            ]
+        },
+        {
+            "id": "ind:skill:typescript-pro",
+            "name": "typescript-pro",
+            "domain": "language",
+            "tags": [
+                "typescript",
+                "types",
+                "generics"
+            ]
+        },
+        {
+            "id": "ind:skill:vsa-boundary-modeler",
+            "name": "vsa-boundary-modeler",
+            "domain": "architecture",
+            "tags": [
+                "vsa",
+                "boundary",
+                "blazor"
+            ]
+        },
+        {
+            "id": "ind:skill:vsa-implementation-guard",
+            "name": "vsa-implementation-guard",
+            "domain": "architecture",
+            "tags": [
+                "vsa",
+                "guard",
+                "blazor"
+            ]
+        },
+        {
+            "id": "ind:skill:vsa-pattern-selector",
+            "name": "vsa-pattern-selector",
+            "domain": "architecture",
+            "tags": [
+                "vsa",
+                "patterns",
+                "blazor"
+            ]
+        },
+        {
+            "id": "ind:skill:vsa-ui-enhancer",
+            "name": "vsa-ui-enhancer",
+            "domain": "frontend",
+            "tags": [
+                "vsa",
+                "mudblazor",
+                "ui"
+            ]
+        },
+        {
+            "id": "ind:skill:vue-expert",
+            "name": "vue-expert",
+            "domain": "frontend",
+            "tags": [
+                "vue",
+                "composition-api",
+                "spa"
+            ]
+        },
+        {
+            "id": "ind:skill:vue-expert-js",
+            "name": "vue-expert-js",
+            "domain": "frontend",
+            "tags": [
+                "vue",
+                "javascript",
+                "options-api"
+            ]
+        },
+        {
+            "id": "ind:skill:websocket-engineer",
+            "name": "websocket-engineer",
+            "domain": "backend",
+            "tags": [
+                "websocket",
+                "realtime",
+                "streaming"
+            ]
+        },
+        {
+            "id": "ind:skill:wordpress-pro",
+            "name": "wordpress-pro",
+            "domain": "platform",
+            "tags": [
+                "wordpress",
+                "php",
+                "cms"
+            ]
+        }
+    ]
+}

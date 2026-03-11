@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.0",
-  "layer": "values",
-  "structure_ref": "../registry/ontology.json",
+  "$schema": "../superset/schemas/instance.schema.json",
+  "schema_version": "3.0",
+  "domain": "preferences",
   "description": "User/system preferences — VALUE entries for runtime configuration. Each pref is a key-value pair with override scope (system, workspace, user, session). These are NOT containers — they are wire_config values on existing morphisms.",
   "scopes": {
     "system": "Built-in defaults — cannot be overridden by lower scopes",
@@ -9,8 +9,10 @@
     "user": "Per-user override — stored in user profile container",
     "session": "Per-session override — ephemeral, lost on disconnect"
   },
-  "preferences": [
+  "entries": [
     {
+      "id": "urn:moos:preference:model:default_provider",
+      "type_id": "preference",
       "key": "model.default_provider",
       "type": "string",
       "default": "gemini",
@@ -24,6 +26,8 @@
       "wire_config_target": "can_execute wires on AgnosticModel"
     },
     {
+      "id": "urn:moos:preference:model:default_model",
+      "type_id": "preference",
       "key": "model.default_model",
       "type": "string",
       "default": "gemini-2.0-flash",
@@ -32,6 +36,8 @@
       "wire_config_target": "can_execute wires on AgnosticModel"
     },
     {
+      "id": "urn:moos:preference:model:fallback_order",
+      "type_id": "preference",
       "key": "model.fallback_order",
       "type": "string[]",
       "default": [
@@ -43,6 +49,8 @@
       "description": "Provider fallback sequence on dispatch failure"
     },
     {
+      "id": "urn:moos:preference:model:benchmark_override",
+      "type_id": "preference",
       "key": "model.benchmark_override",
       "type": "boolean",
       "default": false,
@@ -50,6 +58,8 @@
       "description": "When true, dispatcher uses benchmark scores to select provider per-task instead of default"
     },
     {
+      "id": "urn:moos:preference:ui:graph_layout",
+      "type_id": "preference",
       "key": "ui.graph_layout",
       "type": "string",
       "default": "dagre",
@@ -63,6 +73,8 @@
       "description": "XYFlow graph layout algorithm"
     },
     {
+      "id": "urn:moos:preference:ui:theme",
+      "type_id": "preference",
       "key": "ui.theme",
       "type": "string",
       "default": "dark",
@@ -75,6 +87,8 @@
       "description": "UI theme preference"
     },
     {
+      "id": "urn:moos:preference:ui:sidebar_width",
+      "type_id": "preference",
       "key": "ui.sidebar_width",
       "type": "number",
       "default": 400,
@@ -82,6 +96,8 @@
       "description": "Agent chat sidebar width in pixels"
     },
     {
+      "id": "urn:moos:preference:agent:auto_execute_morphisms",
+      "type_id": "preference",
       "key": "agent.auto_execute_morphisms",
       "type": "boolean",
       "default": false,
@@ -89,6 +105,8 @@
       "description": "When true, agent commits ADD/LINK/MUTATE/UNLINK without confirmation"
     },
     {
+      "id": "urn:moos:preference:agent:max_morphisms_per_turn",
+      "type_id": "preference",
       "key": "agent.max_morphisms_per_turn",
       "type": "number",
       "default": 10,
@@ -96,6 +114,8 @@
       "description": "Maximum morphisms the agent can produce in a single turn"
     },
     {
+      "id": "urn:moos:preference:agent:streaming_enabled",
+      "type_id": "preference",
       "key": "agent.streaming_enabled",
       "type": "boolean",
       "default": true,
@@ -103,6 +123,8 @@
       "description": "Use Stream() instead of Complete() for agent responses"
     },
     {
+      "id": "urn:moos:preference:graph:auto_embed",
+      "type_id": "preference",
       "key": "graph.auto_embed",
       "type": "boolean",
       "default": true,
@@ -110,6 +132,8 @@
       "description": "Automatically run F_embed on new containers"
     },
     {
+      "id": "urn:moos:preference:graph:max_scope_depth",
+      "type_id": "preference",
       "key": "graph.max_scope_depth",
       "type": "number",
       "default": 5,

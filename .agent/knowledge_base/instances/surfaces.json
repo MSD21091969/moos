@@ -1,11 +1,11 @@
 {
-  "$schema": "../registry/schemas/instance.schema.json",
-  "schema_version": "1.0.0",
+  "$schema": "../superset/schemas/instance.schema.json",
+  "schema_version": "3.0",
   "role": "value-layer",
   "domain": "runtime_surfaces",
   "canonicality": "canonical-contingent",
   "source_refs": [
-    "../registry/ontology.json"
+    "../superset/ontology.json"
   ],
   "entries": [
     {
@@ -21,7 +21,7 @@
         "/programs",
         "/hydration/materialize"
       ],
-      "implementation": "kernel/cmd/moos",
+      "implementation": "platform/kernel/cmd/kernel",
       "status": "live"
     },
     {
@@ -62,7 +62,7 @@
         "/explorer",
         "/hydration/examples/explorer-demo"
       ],
-      "implementation": "kernel/internal/transport/explorer.go",
+      "implementation": "platform/kernel/internal/transport/explorer.go",
       "status": "live-projection"
     }
   ]
