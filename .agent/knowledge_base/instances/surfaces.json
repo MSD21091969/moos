@@ -1,13 +1,17 @@
 {
+  "$schema": "../registry/schemas/instance.schema.json",
   "schema_version": "1.0.0",
   "role": "value-layer",
+  "domain": "runtime_surfaces",
   "canonicality": "canonical-contingent",
-  "source_refs": [],
-  "runtime_surfaces": [
+  "source_refs": [
+    "../registry/ontology.json"
+  ],
+  "entries": [
     {
       "id": "urn:moos:surface:kernel-http",
       "name": "MOOS Kernel HTTP",
-      "kind": "RuntimeSurface",
+      "type_id": "runtime_surface",
       "port": 8000,
       "protocol": "HTTP/REST",
       "entrypoints": [
@@ -17,40 +21,40 @@
         "/programs",
         "/hydration/materialize"
       ],
-      "implementation": "platform/kernel/cmd/kernel",
+      "implementation": "kernel/cmd/moos",
       "status": "live"
     },
     {
       "id": "urn:moos:surface:agent-compat",
       "name": "MOOS Agent Compatibility",
-      "kind": "RuntimeSurface",
+      "type_id": "runtime_surface",
       "port": 8004,
       "protocol": "HTTP/REST",
-      "implementation": "platform/presets/windows-local-dev.json",
+      "implementation": null,
       "status": "reserved-compatibility"
     },
     {
       "id": "urn:moos:surface:mcp-sse",
       "name": "MOOS MCP/SSE Compatibility",
-      "kind": "ProtocolAdapter",
+      "type_id": "protocol_adapter",
       "port": 8080,
       "protocol": "SSE",
-      "implementation": "platform/presets/windows-local-dev.json",
+      "implementation": null,
       "status": "reserved-compatibility"
     },
     {
       "id": "urn:moos:surface:nanoclaw-bridge",
       "name": "MOOS NanoClaw Compatibility",
-      "kind": "ProtocolAdapter",
+      "type_id": "protocol_adapter",
       "port": 18789,
       "protocol": "WebSocket/JSON-RPC",
-      "implementation": "platform/presets/windows-local-dev.json",
+      "implementation": null,
       "status": "reserved-compatibility"
     },
     {
       "id": "urn:moos:surface:explorer-ui",
       "name": "MOOS Runtime Explorer",
-      "kind": "UI_Lens",
+      "type_id": "ui_lens",
       "port": 8000,
       "protocol": "HTTP/HTML",
       "entrypoints": [
@@ -58,7 +62,7 @@
         "/explorer",
         "/hydration/examples/explorer-demo"
       ],
-      "implementation": "platform/kernel/internal/httpapi/explorer.html",
+      "implementation": "kernel/internal/transport/explorer.go",
       "status": "live-projection"
     }
   ]

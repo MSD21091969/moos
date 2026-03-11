@@ -1,28 +1,32 @@
 {
-  "schema_version": "1.0.0",
+  "$schema": "../registry/schemas/instance.schema.json",
+  "schema_version": "3.0",
+  "domain": "workstation",
   "role": "value-layer",
   "canonicality": "canonical-contingent",
-  "source_refs": [],
-  "workstation": {
-    "workspace_root": "D:/FFS0_Factory/moos",
-    "os": "windows",
-    "active_runtime": {
-      "kernel_module": "platform/kernel",
-      "bootstrap": "platform/windows/installers/bootstrap.ps1",
-      "default_store": "file",
-      "http_port": 8000
-    },
-    "reserved_compatibility_ports": [
-      8004,
-      8080,
-      18789
-    ],
-    "optional_local_services": [
-      {
-        "name": "postgres",
-        "port": 5432,
-        "used_when": "MOOS_KERNEL_STORE=postgres"
-      }
-    ]
-  }
+  "entries": [
+    {
+      "id": "urn:moos:workstation:local_dev",
+      "type_id": "workstation_config",
+      "workspace_root": "D:/FFS0_Factory/moos",
+      "os": "windows",
+      "active_runtime": {
+        "kernel_module": "kernel",
+        "default_store": "file",
+        "http_port": 8000
+      },
+      "reserved_compatibility_ports": [
+        8004,
+        8080,
+        18789
+      ],
+      "optional_local_services": [
+        {
+          "name": "postgres",
+          "port": 5432,
+          "used_when": "MOOS_KERNEL_STORE=postgres"
+        }
+      ]
+    }
+  ]
 }
