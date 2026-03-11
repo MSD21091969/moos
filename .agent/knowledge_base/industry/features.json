@@ -2,7 +2,7 @@
     "$schema": "schema.json",
     "domain": "industry_features",
     "description": "Curated AI/tech capability landscape. Cross-cutting features that apply across providers, tools, and frameworks. These inform what morphism Programs need to support.",
-    "last_curated": "2026-03-11",
+    "last_curated": "2026-03-14",
     "categories": {
         "model_capabilities": [
             {
@@ -47,6 +47,21 @@
                 "related_skills": [
                     "rag-architect"
                 ]
+            },
+            {
+                "id": "ind:feat:moe",
+                "name": "Mixture of Experts (MoE)",
+                "description": "Sparse MoE transformer architecture — activates subset of parameters per token. DeepSeek, Llama 4, Phi-3.5-MoE"
+            },
+            {
+                "id": "ind:feat:million-token-context",
+                "name": "Million-Token Context",
+                "description": "2M+ token context windows (Gemini 3.x). Enables full-codebase and document-set processing"
+            },
+            {
+                "id": "ind:feat:edge-inference",
+                "name": "Edge Inference",
+                "description": "On-device model serving via GGML/llama.cpp, Granite 1B Speech, quantized models. GGML joined HuggingFace (Mar 2026)"
             }
         ],
         "rag_retrieval": [
@@ -142,6 +157,26 @@
                 "id": "ind:feat:code-execution",
                 "name": "Code Execution",
                 "description": "Sandboxed runtime for generated code verification"
+            },
+            {
+                "id": "ind:feat:context-engineering",
+                "name": "Context Engineering",
+                "description": "Structured context window management — prompt composition, memory injection, retrieval orchestration (PRECEPT framework)"
+            },
+            {
+                "id": "ind:feat:agent-rl",
+                "name": "Agent Reinforcement Learning",
+                "description": "RL-based agent training for tool use and task completion. Forge (MiniMax), OpenAI RL approaches"
+            },
+            {
+                "id": "ind:feat:multi-agent-orchestration",
+                "name": "Multi-Agent Orchestration",
+                "description": "Framework-level coordination of multiple agents with A2A protocol, delegation, state sharing"
+            },
+            {
+                "id": "ind:feat:identity-protocol",
+                "name": "Identity Protocol",
+                "description": "Agent identity and authentication standards (LDP-based, EPOCH protocol)"
             }
         ],
         "observability": [

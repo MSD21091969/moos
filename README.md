@@ -280,15 +280,14 @@ explorer UI. To load from a script:
 moos/
 ├── .agent/
 │   ├── configs/                  Runtime agent configuration
-│   └── knowledge_base/           Canonical vNext knowledge base
-│       ├── 00_governance/        Canonicality rules and promotion contracts
-│       ├── 01_foundations/       Axioms, primitives, category language
-│       ├── 02_architecture/      Kernel, strata, functors
-│       ├── 03_semantics/         Hydration pipeline, normalization rules
-│       ├── 04_value_layer/       Runtime instances, providers, identities
-│       ├── 05_reference/         Paper digests and raw sources (non-canonical)
+│   └── knowledge_base/           Canonical knowledge base
 │       ├── superset/             ontology.json — machine-readable type registry
-│       └── _legacy/              Archived provenance inputs
+│       ├── doctrine/             Human-readable prose (strata, hydration, secrets)
+│       ├── design/               Timestamped decision + plan documents
+│       ├── instances/            Contingent runtime facts (JSON, schema-validated)
+│       ├── industry/             Curated industry landscape (providers, frameworks)
+│       ├── reference/            Paper digests and raw sources (read-only)
+│       └── archive/              Retired KB material (provenance only)
 ├── platform/
 │   ├── kernel/                   Active Go kernel module
 │   │   ├── cmd/kernel/main.go    Entry point
@@ -302,6 +301,7 @@ moos/
 │   ├── windows/installers/       bootstrap.ps1 and seed scripts
 │   ├── linux/installers/
 │   └── darwin/installers/
+├── archive/                      Retired code (Wave 0 kernel)
 ├── secrets/                      Local credential staging (never committed)
 ├── CLAUDE.md                     AI agent workspace authority
 ├── moos.code-workspace           VS Code workspace entry
@@ -339,7 +339,7 @@ at boot to construct the `SemanticRegistry`.
 | Element                      | Count | Registry IDs                                 |
 | ---------------------------- | ----- | -------------------------------------------- |
 | Axioms                       | 5     | AX1–AX5                                      |
-| Objects (Kinds)              | 13    | OBJ01–OBJ13                                  |
+| Objects (Kinds)              | 21    | OBJ01–OBJ21                                  |
 | Morphisms (connection types) | 16    | MOR01–MOR16 (decompose into 4 invariant NTs) |
 | Functors                     | 5     | FUN01–FUN05                                  |
 | Natural Transformations      | 4     | ADD, LINK, MUTATE, UNLINK                    |

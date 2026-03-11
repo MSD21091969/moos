@@ -41,7 +41,7 @@ moos/
 ├── .agent/
 │   ├── configs/                  Active agent configuration surface
 │   └── knowledge_base/           Canonical knowledge base
-│       ├── registry/             Machine-readable ontology + schema
+│       ├── superset/             Machine-readable ontology + schema
 │       │   ├── ontology.json              Single source: axioms, kinds, morphisms
 │       │   ├── ontology.csv               Generated view (read-only)
 │       │   ├── schema.json                JSON Schema for instances/
@@ -49,7 +49,9 @@ moos/
 │       ├── doctrine/             Human-readable prose (non-duplicating)
 │       ├── design/               Timestamped decision + plan documents
 │       ├── instances/            Contingent runtime facts (JSON, schema-validated)
-│       └── reference/            External papers, digests (read-only after import)
+│       ├── industry/             Curated industry landscape (providers, frameworks, compute)
+│       ├── reference/            External papers, digests (read-only after import)
+│       └── archive/              Retired KB material (provenance only)
 ├── .vscode/                      Active workspace, editor, and MCP configuration
 ├── platform/
 │   ├── kernel/                   Active Go kernel module (moos/platform/kernel)
@@ -64,6 +66,7 @@ moos/
 │   ├── windows/installers/       bootstrap.ps1, seed-explorer-demo.ps1
 │   ├── linux/installers/
 │   └── darwin/installers/
+├── archive/                      Retired code (Wave 0 kernel, provenance only)
 ├── secrets/                      Local credential staging (never committed)
 ├── CLAUDE.md                     This file — root policy authority
 ├── README.md                     User-facing documentation
@@ -74,16 +77,18 @@ moos/
 
 ## Knowledge Base
 
-Canonical knowledge lives at `.agent/knowledge_base/`. Five directories,
+Canonical knowledge lives at `.agent/knowledge_base/`. Seven directories,
 zero duplication between JSON and prose.
 
 | Directory      | Format    | Description                                                                                    |
 | -------------- | --------- | ---------------------------------------------------------------------------------------------- |
-| **registry/**  | JSON only | ontology.json (axioms, kinds, morphisms, categories), schema, changelog                        |
+| **superset/**  | JSON only | ontology.json (axioms, kinds, morphisms, categories), schema, changelog                        |
 | **doctrine/**  | MD only   | Prose that can't be structured as JSON (strata, hydration, normalization, hypergraph, secrets) |
 | **design/**    | MD only   | Timestamped decision/plan documents (YYYYMMDD-topic.md)                                        |
-| **instances/** | JSON only | Contingent runtime facts, schema-validated against registry/schema.json                        |
+| **instances/** | JSON only | Contingent runtime facts, schema-validated against superset/schema.json                        |
+| **industry/**  | JSON only | Curated industry landscape: providers, protocols, frameworks, tools, compute, features         |
 | **reference/** | Mixed     | External papers + digests — read-only after import                                             |
+| **archive/**   | Mixed     | Retired KB material — provenance only, not active                                              |
 
 **Rule:** If ontology.json defines it, no markdown copy exists.
 If a prose file has < 10 lines of real content, it doesn't belong.
@@ -124,7 +129,7 @@ These are verified facts an agent can rely on without re-reading source files.
 | Default store               | JSONL file at `platform/kernel/data/morphism-log.jsonl`                |
 | Postgres store              | Available via `MOOS_KERNEL_STORE=postgres` + `MOOS_DATABASE_URL`       |
 | Registry source             | `MOOS_KERNEL_REGISTRY_PATH` — relative to repo root, resolved absolute |
-| Registry default candidates | checked in order: `.agent/knowledge_base/registry/ontology.json` etc.  |
+| Registry default candidates | checked in order: `.agent/knowledge_base/superset/ontology.json` etc.  |
 | HTTP default port           | `8000`                                                                 |
 | Explorer                    | `GET /explorer` — UI_Lens functor; read-only; no morphism capability   |
 | Test suite                  | All green: `core`, `httpapi`, `shell` packages                         |
@@ -134,14 +139,14 @@ These are verified facts an agent can rely on without re-reading source files.
 
 ## Ontology Registry
 
-Defined at `.agent/knowledge_base/registry/ontology.json`. Loaded by
+Defined at `.agent/knowledge_base/superset/ontology.json`. Loaded by
 `internal/shell.LoadRegistry()` at boot to create the `SemanticRegistry`
 used by `core.EvaluateWithRegistry`.
 
 | Element                 | Count | IDs                       |
 | ----------------------- | ----- | ------------------------- |
 | Axioms                  | 5     | AX1–AX5                   |
-| Kinds (Objects)         | 13    | OBJ01–OBJ13               |
+| Kinds (Objects)         | 21    | OBJ01–OBJ21               |
 | Morphism types          | 16    | MOR01–MOR16               |
 | Functors                | 5     | FUN01–FUN05               |
 | Natural Transformations | 4     | ADD, LINK, MUTATE, UNLINK |

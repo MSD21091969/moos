@@ -2,7 +2,7 @@
     "$schema": "schema.json",
     "domain": "industry_tools",
     "description": "Curated tool paradigms and the 100 skill capabilities. Each entry is an industry entity classified by the superset as OBJ07 (SystemTool). Skills represent domain-specific capabilities that can be activated as tools.",
-    "last_curated": "2026-03-11",
+    "last_curated": "2026-03-14",
     "paradigms": [
         {
             "id": "ind:paradigm:function-calling",
@@ -48,6 +48,23 @@
             "description": "Vector search + reranking for context injection.",
             "providers": [
                 "any (embedding + vector DB)"
+            ]
+        },
+        {
+            "id": "ind:paradigm:agent-rl",
+            "name": "Agent Reinforcement Learning",
+            "description": "RL-based agent training for tool use and task completion. Forge framework (MiniMax, Mar 2026).",
+            "providers": [
+                "forge-minimax",
+                "openai"
+            ]
+        },
+        {
+            "id": "ind:paradigm:context-engineering",
+            "name": "Context Engineering",
+            "description": "Structured context window management — prompt composition, memory injection, retrieval orchestration. PRECEPT framework.",
+            "providers": [
+                "any (framework-level)"
             ]
         }
     ],

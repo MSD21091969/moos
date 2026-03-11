@@ -89,11 +89,12 @@ needs persistent, queryable graph state, not just a JSONL file.
 
 ## Forward Implementation Layers
 
-### Layer A — Ontology Completion (prerequisite)
+### Layer A — Ontology Completion ✓ DONE (2026-03-11 curation)
 
-- Add OBJ14-20 to ontology.json
-- Add `mutable` and `allowed_strata` fields per-object (remove hardcoding from loader.go)
-- Make ontology self-describing for ALL instance data
+- OBJ14-21 added to ontology.json (21 objects total)
+- `mutable` and `allowed_strata` fields added per-object
+- Ontology self-describing for ALL instance data
+- ontology.csv synced
 
 ### Layer B — KB-Aware Boot (`--kb <path>`)
 
@@ -135,11 +136,11 @@ needs persistent, queryable graph state, not just a JSONL file.
 
 ---
 
-## Current kernel_v2 Package Map
+## Current platform/kernel Package Map
 
 ```
-kernel_v2/
-├── go.mod                    (module moos/kernel_v2, go 1.23)
+platform/kernel/
+├── go.mod                    (module moos/platform/kernel, go 1.23)
 ├── cmd/moos/main.go          (boot: --config → store → replay → seed → HTTP)
 ├── internal/
 │   ├── cat/                   (pure types: URN, TypeID, Node, Wire, GraphState, Envelope, Program)
@@ -162,17 +163,18 @@ hydration→cat,operad; transport→shell,cat,hydration
 
 ## SOT File Status
 
-| File                        | Domain                   | Status                                         |
-| --------------------------- | ------------------------ | ---------------------------------------------- |
-| superset/ontology.json      | Type system (13 objects) | Needs OBJ14-21                                 |
-| superset/ontology.csv       | Flat export              | Needs sync after ontology.json update          |
-| instances/distribution.json | Platform config          | Points to kernel/ (v1), needs kernel_v2 update |
-| instances/surfaces.json     | Runtime surfaces         | Points to kernel/ (v1), needs update           |
-| instances/workstation.json  | Local dev config         | Points to kernel/ (v1), needs update           |
-| instances/identities.json   | Actors                   | Stale ref: `src/cmd/kernel/main.go`            |
-| instances/benchmarks.json   | Evaluation               | Ready (has scoring_dimensions)                 |
-| instances/preferences.json  | User/system prefs        | Ready (10 entries)                             |
-| instances/providers.json    | LLM providers            | Ready (3 providers with costs)                 |
+| File                        | Domain                   | Status                                                |
+| --------------------------- | ------------------------ | ----------------------------------------------------- |
+| superset/ontology.json      | Type system (21 objects) | Done — OBJ14-21 added (2026-03-11 curation)           |
+| superset/ontology.csv       | Flat export              | Synced with ontology.json                             |
+| instances/distribution.json | Platform config          | Done — type_id fixed, paths point to platform/kernel  |
+| instances/surfaces.json     | Runtime surfaces         | Done — updated (2026-03-11 curation)                  |
+| instances/workstation.json  | Local dev config         | Done — real hardware specs, toolchain updated          |
+| instances/identities.json   | Actors                   | Done — updated (2026-03-11 curation)                  |
+| instances/benchmarks.json   | Evaluation               | Ready (has scoring_dimensions)                        |
+| instances/preferences.json  | User/system prefs        | Ready (10 entries)                                    |
+| instances/providers.json    | LLM providers            | Done — 5 providers, 2026 models, config_source links  |
+| instances/agents.json       | Agent specification      | Done — model_binding synced to gemini-3.1-pro          |
 
 ---
 

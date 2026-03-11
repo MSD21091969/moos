@@ -2,7 +2,7 @@
     "$schema": "schema.json",
     "domain": "industry_compute",
     "description": "Curated compute resource landscape. Each entry is an industry entity classified by the superset as OBJ10 (ComputeResource). Covers GPU, cloud, edge, and orchestration platforms.",
-    "last_curated": "2026-03-11",
+    "last_curated": "2026-03-14",
     "categories": {
         "gpu": [
             {
@@ -30,7 +30,8 @@
                 "architecture": "Blackwell",
                 "vram_gb": 192,
                 "fp16_tflops": 2250,
-                "status": "upcoming"
+                "status": "current",
+                "notes": "Shipping since late 2025; dominant datacenter training/inference GPU"
             },
             {
                 "id": "ind:gpu:nvidia-a100",
@@ -58,6 +59,16 @@
                 "vram_gb": 16,
                 "fp16_tflops": 197,
                 "status": "current"
+            },
+            {
+                "id": "ind:gpu:google-tpuv6e",
+                "name": "Google TPU v6e (Trillium)",
+                "vendor": "Google",
+                "architecture": "TPU",
+                "vram_gb": 32,
+                "fp16_tflops": 918,
+                "status": "current",
+                "notes": "4.7x improvement over v5e; available in GCP since late 2025"
             }
         ],
         "cloud_compute": [
@@ -80,7 +91,7 @@
                 "name": "GCP Cloud Run",
                 "provider": "GCP",
                 "type": "container-serverless",
-                "notes": "Autoscaling containers, GPU support coming"
+                "notes": "Autoscaling containers, GPU support GA (L4, A100)"
             },
             {
                 "id": "ind:cloud:gcp-vertex",

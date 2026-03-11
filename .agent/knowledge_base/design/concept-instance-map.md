@@ -13,7 +13,7 @@ Maps each formal concept to concrete instances, showing how superset types relat
 | Root Admin         | OBJ03 SuperAdmin        | instances/identities.json         | (future)                                          | —                        | (future)                 | —                                                    |
 | App Template       | OBJ04 AppTemplate       | (none yet)                        | (future)                                          | industry/frameworks.json | (future)                 | react-expert, nextjs-developer, vue-expert           |
 | Container          | OBJ05 NodeContainer     | (implicit — root, kernel)         | `urn:moos:root`                                   | —                        | Programs 1, 3 (Tier 1)   | —                                                    |
-| AI Model           | OBJ06 AgnosticModel     | instances/providers.json (nested) | `urn:moos:model:anthropic:claude-3-7-sonnet`      | industry/providers.json  | Program 5 (Tier 2)       | —                                                    |
+| AI Model           | OBJ06 AgnosticModel     | instances/providers.json (nested) | `urn:moos:model:gemini:gemini-3.1-pro`            | industry/providers.json  | Program 5 (Tier 2)       | —                                                    |
 | Tool               | OBJ07 SystemTool        | instances/tools.json              | `urn:moos:tool:category-master`                   | industry/tools.json      | Program 8 (Tier 2)       | (each skill IS a tool)                               |
 | UI Surface         | OBJ08 UI_Lens           | instances/surfaces.json           | `urn:moos:surface:explorer-ui`                    | —                        | Program 6 (Tier 2)       | —                                                    |
 | Runtime Surface    | OBJ09 RuntimeSurface    | instances/surfaces.json           | `urn:moos:surface:kernel-http`                    | industry/protocols.json  | Programs 2, 6 (Tier 1+2) | rest-api-design-patterns, golang-backend-development |
@@ -29,6 +29,20 @@ Maps each formal concept to concrete instances, showing how superset types relat
 | Benchmark Task     | OBJ19 BenchmarkTask     | instances/benchmarks.json         | `urn:moos:benchmark:task:single-add`              | —                        | Program 10 (Tier 2)      | —                                                    |
 | Benchmark Score    | OBJ20 BenchmarkScore    | instances/benchmarks.json         | `urn:moos:benchmark:score:example-001`            | —                        | Program 10 (Tier 2)      | —                                                    |
 | Agent Spec         | OBJ21 AgentSpec         | instances/agents.json             | `urn:moos:agent:copilot-interim`                  | —                        | Program 9 (Tier 2)       | —                                                    |
+
+---
+
+## Operational Binding Layer: .agent/configs/
+
+The `.agent/configs/` surface is the **human-edited operational binding layer** — YAML files that provide runtime settings, auth contracts, and identity governance. It is NOT classified by the ontology (not an OBJ), but serves as the authoritative source for contingent operational data that instances/ entries reference.
+
+| Config File                    | Binds To Instance(s)                           | Authority Over                                        |
+| ------------------------------ | ---------------------------------------------- | ----------------------------------------------------- |
+| api_providers.yaml             | instances/providers.json (config_source field)  | Provider registry, auth contracts, model catalogs     |
+| workspace_defaults.yaml        | instances/agents.json (config_source field)     | Agent defaults (model, temperature), feature flags    |
+| users.yaml                     | instances/identities.json                       | Identity archetypes, auth profiles, access morphisms  |
+
+**Relationship**: configs/ → (classifying functor) → instances/ → (hydration) → kernel graph state.
 
 ---
 

@@ -39,3 +39,23 @@ Define the authority boundary between committed configuration, local secret mate
 - This document does not define ontology.
 - This document does not redefine runtime semantics.
 - This document does not require a specific secret manager for production deployment.
+
+## Three-Surface Authority Model
+
+```
+.agent/configs/          instances/               secrets/
+(operational YAML)       (typed graph JSON)        (credentials)
+┌─────────────────┐   ┌───────────────────┐    ┌─────────────┐
+│ api_providers    │──▶│ providers.json     │    │ api_keys.env│
+│ workspace_defaults│──▶│ agents.json       │    │ gcp-sa.json │
+│ users            │──▶│ identities.json   │    └──────┬──────┘
+└────────┬────────┘   └────────┬──────────┘           │
+         │                     │                      │
+    human-edits           classifying            env_key refs
+    auth contracts        functor output         resolved at
+    model catalogs        ontology-typed         runtime only
+                          config_source links
+```
+
+**Flow**: configs/ → (classifying functor) → instances/ → (hydration Programs) → kernel graph state.
+Secret resolution happens at runtime only, never committed to instances/.

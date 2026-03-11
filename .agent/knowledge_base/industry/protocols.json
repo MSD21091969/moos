@@ -2,7 +2,7 @@
     "$schema": "schema.json",
     "domain": "industry_protocols",
     "description": "Curated API and communication protocol landscape. Each entry is an industry entity classified by the superset as OBJ11 (ProtocolAdapter) or OBJ09 (RuntimeSurface).",
-    "last_curated": "2026-03-11",
+    "last_curated": "2026-03-14",
     "entries": [
         {
             "id": "ind:protocol:http-rest",
@@ -65,10 +65,10 @@
         {
             "id": "ind:protocol:mcp",
             "name": "Model Context Protocol (MCP)",
-            "transport": "stdio, SSE, HTTP+SSE",
+            "transport": "stdio, SSE, Streamable HTTP",
             "pattern": "request-response (JSON-RPC 2.0)",
             "standard_ref": "https://modelcontextprotocol.io/",
-            "description": "Standardized AI tool/resource discovery protocol. Primary mechanism for SystemTool exposure in MOOS.",
+            "description": "Mainstream AI tool/resource discovery protocol. Primary mechanism for SystemTool exposure in MOOS. HuggingFace integration (Mar 2026). Streamable HTTP transport added.",
             "related_skills": [
                 "mcp-integration-expert",
                 "mcp-developer"
@@ -80,7 +80,7 @@
             "transport": "HTTP",
             "pattern": "task-oriented JSON-RPC",
             "standard_ref": "https://google.github.io/A2A/",
-            "description": "Google's agent interoperability protocol. Task cards, streaming, push notifications.",
+            "description": "Google's agent interoperability protocol. Task cards, streaming, push notifications. Widely adopted by Mar 2026.",
             "related_skills": []
         },
         {

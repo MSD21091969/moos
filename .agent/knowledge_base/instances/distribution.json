@@ -7,7 +7,7 @@
   "entries": [
     {
       "id": "urn:moos:distribution:platform_distribution",
-      "type_id": "distribution_config",
+      "type_id": "platform_config",
       "workspace_root": "D:/FFS0_Factory/moos",
       "active_platform_root": "platform/kernel/",
       "kernel_module": "platform/kernel",
@@ -18,7 +18,7 @@
         "database_mode": "optional; only required when MOOS_KERNEL_STORE=postgres"
       },
       "demo_seed": {
-        "payload": "platform/kernel/cmd/kernel/main.go",
+        "payload": "platform/kernel/examples/explorer-demo.materialize.json",
         "apply_endpoint": "/hydration/materialize"
       }
     }

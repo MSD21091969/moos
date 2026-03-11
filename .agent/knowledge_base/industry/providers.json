@@ -2,7 +2,7 @@
     "$schema": "schema.json",
     "domain": "industry_providers",
     "description": "Curated LLM/AI provider landscape. Each entry is an industry entity classified by the superset as OBJ17 (Provider) or OBJ06 (AgnosticModel). Updated independently of superset evolution.",
-    "last_curated": "2026-03-11",
+    "last_curated": "2026-03-14",
     "entries": [
         {
             "id": "ind:provider:anthropic",
@@ -17,12 +17,13 @@
                 "extended_thinking"
             ],
             "known_models": [
+                "claude-opus-4-6",
+                "claude-sonnet-4-6",
                 "claude-3-7-sonnet-20250219",
-                "claude-3-5-haiku-20241022",
-                "claude-3-opus-20240229"
+                "claude-3-5-haiku-20241022"
             ],
             "status": "active",
-            "notes": "Primary provider for complex reasoning tasks"
+            "notes": "Primary provider for complex reasoning tasks. Opus 4.6 flagship (Mar 2026)"
         },
         {
             "id": "ind:provider:google",
@@ -39,12 +40,15 @@
                 "grounding"
             ],
             "known_models": [
-                "gemini-2.0-flash",
-                "gemini-2.0-flash-lite",
-                "gemini-1.5-pro"
+                "gemini-3.1-pro",
+                "gemini-3-pro",
+                "gemini-3-flash",
+                "gemini-2.5-pro",
+                "gemini-2.5-flash",
+                "gemini-2.5-flash-lite"
             ],
             "status": "active",
-            "notes": "Default provider in MOOS — 1M context window on flash models"
+            "notes": "Default provider in MOOS — 2M context window on 3.x models. gemini-3.1-pro flagship"
         },
         {
             "id": "ind:provider:openai",
@@ -61,13 +65,14 @@
                 "fine_tuning"
             ],
             "known_models": [
+                "gpt-5.3-codex",
+                "gpt-5.3-mini",
+                "o3",
                 "gpt-4o",
-                "gpt-4o-mini",
-                "o1",
                 "o3-mini"
             ],
             "status": "active",
-            "notes": "Largest ecosystem — de facto standard API shape"
+            "notes": "Largest ecosystem — de facto standard API shape. GPT-5.3 Codex flagship (Mar 2026)"
         },
         {
             "id": "ind:provider:meta",
@@ -79,12 +84,13 @@
                 "tool_use"
             ],
             "known_models": [
+                "llama-4-maverick",
+                "llama-4-scout",
                 "llama-3.3-70b",
-                "llama-3.1-405b",
                 "llama-3.2-vision"
             ],
             "status": "active",
-            "notes": "Open-weights leader — hosted via Ollama, vLLM, or cloud providers"
+            "notes": "Open-weights leader — Llama 4 Maverick/Scout (MoE architecture). Hosted via Ollama, vLLM, or cloud"
         },
         {
             "id": "ind:provider:mistral",
@@ -98,12 +104,13 @@
                 "vision"
             ],
             "known_models": [
-                "mistral-large-2",
+                "mistral-large-3",
                 "mistral-small-3",
-                "codestral"
+                "codestral-2",
+                "pixtral-large"
             ],
             "status": "active",
-            "notes": "European frontier lab — strong code models"
+            "notes": "European frontier lab — strong code and vision models. Pixtral for multimodal"
         },
         {
             "id": "ind:provider:cohere",
@@ -136,11 +143,12 @@
                 "vision"
             ],
             "known_models": [
-                "grok-2",
-                "grok-2-vision"
+                "grok-3",
+                "grok-3-vision",
+                "grok-3-mini"
             ],
             "status": "active",
-            "notes": "OpenAI-compatible API — real-time data access"
+            "notes": "OpenAI-compatible API — Grok-3 with 1M context, real-time data access"
         },
         {
             "id": "ind:provider:deepseek",
@@ -154,11 +162,12 @@
                 "reasoning"
             ],
             "known_models": [
+                "deepseek-v4",
                 "deepseek-v3",
                 "deepseek-r1"
             ],
             "status": "active",
-            "notes": "High-efficiency architecture — MoE + multi-head latent attention"
+            "notes": "High-efficiency architecture — MoE + multi-head latent attention. V4 (Mar 2026)"
         },
         {
             "id": "ind:provider:amazon",

@@ -10,17 +10,19 @@
             "id": "urn:moos:agent:copilot-interim",
             "type_id": "agent_spec",
             "name": "Copilot Interim Agent",
-            "description": "Default agent for local development. Uses Gemini Flash as default model with fallback chain. Routes to active tools via CAN_ROUTE morphisms.",
+            "description": "Default agent for local development. Uses Gemini 3.1 Pro as default model with fallback chain. Routes to active tools via CAN_ROUTE morphisms.",
             "model_binding": {
                 "default_provider": "gemini",
-                "default_model": "gemini-2.0-flash",
+                "default_model": "gemini-3.1-pro",
                 "fallback_order": [
                     "gemini",
                     "anthropic",
-                    "openai"
+                    "openai",
+                    "ollama"
                 ],
                 "temperature": 0.7,
-                "max_tokens": 4096
+                "max_tokens": 4096,
+                "config_source": ".agent/configs/workspace_defaults.yaml#agent_defaults"
             },
             "tool_routing": [
                 "urn:moos:tool:category-master",

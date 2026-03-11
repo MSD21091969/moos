@@ -1,0 +1,14 @@
+{
+  "name": "windows-local-dev",
+  "description": "Default local development preset for Windows. File-based store, ontology from KB superset.",
+  "environment": {
+    "MOOS_KERNEL_STORE": "file",
+    "MOOS_KERNEL_LOG_PATH": "platform/kernel/data/morphism-log.jsonl",
+    "MOOS_KERNEL_REGISTRY_PATH": ".agent/knowledge_base/superset/ontology.json",
+    "MOOS_KERNEL_LISTEN_ADDR": ":8000"
+  },
+  "optional": {
+    "MOOS_DATABASE_URL": "postgres://moos:moos@localhost:5432/moos?sslmode=disable",
+    "note": "Only required when MOOS_KERNEL_STORE=postgres"
+  }
+}

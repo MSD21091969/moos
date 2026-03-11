@@ -1,0 +1,78 @@
+{
+    "actor": "urn:moos:kernel:self",
+    "nodes": [
+        {
+            "urn": "urn:moos:identity:root",
+            "kind": "SuperAdmin",
+            "stratum": "S2",
+            "payload": {
+                "label": "Root Identity"
+            }
+        },
+        {
+            "urn": "urn:moos:surface:http",
+            "kind": "RuntimeSurface",
+            "stratum": "S2",
+            "payload": {
+                "label": "Kernel HTTP Surface"
+            }
+        },
+        {
+            "urn": "urn:moos:protocol:http3",
+            "kind": "ProtocolAdapter",
+            "stratum": "S2",
+            "payload": {
+                "label": "HTTP3 Adapter"
+            }
+        },
+        {
+            "urn": "urn:moos:infra:log-store",
+            "kind": "InfraService",
+            "stratum": "S2",
+            "payload": {
+                "label": "Log Store"
+            }
+        },
+        {
+            "urn": "urn:moos:memory:session",
+            "kind": "MemoryStore",
+            "stratum": "S2",
+            "payload": {
+                "label": "Session Memory"
+            }
+        },
+        {
+            "urn": "urn:moos:workspace:alice",
+            "kind": "NodeContainer",
+            "stratum": "S2",
+            "payload": {
+                "label": "Alice Workspace"
+            }
+        },
+        {
+            "urn": "urn:moos:model:default",
+            "kind": "AgnosticModel",
+            "stratum": "S2",
+            "payload": {
+                "label": "Default Model"
+            }
+        },
+        {
+            "urn": "urn:moos:tool:graph-query",
+            "kind": "SystemTool",
+            "stratum": "S2",
+            "payload": {
+                "label": "Graph Query Tool"
+            }
+        },
+        {
+            "urn": "urn:moos:ui:explorer",
+            "kind": "UI_Lens",
+            "stratum": "S4",
+            "payload": {
+                "label": "Explorer Lens"
+            }
+        }
+    ],
+    "wires": []
+}

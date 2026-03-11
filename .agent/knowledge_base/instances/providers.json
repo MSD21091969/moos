@@ -2,16 +2,16 @@
   "$schema": "../superset/schemas/instance.schema.json",
   "schema_version": "3.0",
   "domain": "providers",
-  "description": "Provider instances — VALUE entries for Provider_p (CAT17) and adapter (CAT19) categories. Each provider is a container with OWNS wires to model containers. Adapter type maps to Go interface: internal/model/adapters.go.",
+  "description": "Provider instances — VALUE entries for Provider_p (CAT17) and adapter (CAT19) categories. Each provider is a container with OWNS wires to model containers. Adapter type maps to Go interface. Config source: .agent/configs/api_providers.yaml",
   "entries": [
     {
       "id": "urn:moos:provider:anthropic",
       "type_id": "provider",
       "name": "Anthropic",
       "adapter_type": "AnthropicAdapter",
-      "go_file": "internal/model/adapters.go",
       "api_base_url": "https://api.anthropic.com/v1",
       "auth_pattern": "x-api-key header",
+      "config_source": ".agent/configs/api_providers.yaml#providers.anthropic",
       "rate_limits": {
         "requests_per_minute": 1000,
         "tokens_per_minute": 100000,
@@ -19,28 +19,29 @@
       },
       "models": [
         {
-          "id": "urn:moos:model:anthropic:claude-3-7-sonnet",
-          "name": "claude-3-7-sonnet-20250219",
-          "capabilities": [
-            "complete",
-            "stream",
-            "tool_use"
-          ],
+          "id": "urn:moos:model:anthropic:claude-opus-4-6",
+          "name": "claude-opus-4-6",
+          "capabilities": ["complete", "stream", "tool_use", "extended_thinking"],
           "context_window": 200000,
-          "max_output_tokens": 8192,
-          "cost_per_1k_input": 0.003,
-          "cost_per_1k_output": 0.015
+          "max_output_tokens": 32768
+        },
+        {
+          "id": "urn:moos:model:anthropic:claude-sonnet-4-6",
+          "name": "claude-sonnet-4-6",
+          "capabilities": ["complete", "stream", "tool_use"],
+          "context_window": 200000,
+          "max_output_tokens": 16384
         }
       ]
     },
     {
       "id": "urn:moos:provider:gemini",
       "type_id": "provider",
-      "name": "Google Gemini",
+      "name": "Google AI Studio",
       "adapter_type": "GeminiAdapter",
-      "go_file": "internal/model/adapters.go",
       "api_base_url": "https://generativelanguage.googleapis.com/v1beta",
-      "auth_pattern": "API key query parameter or OAuth2",
+      "auth_pattern": "API key query parameter",
+      "config_source": ".agent/configs/api_providers.yaml#providers.gemini",
       "rate_limits": {
         "requests_per_minute": 1500,
         "tokens_per_minute": 1000000,
@@ -48,18 +49,63 @@
       },
       "models": [
         {
-          "id": "urn:moos:model:gemini:gemini-2.0-flash",
-          "name": "gemini-2.0-flash",
-          "capabilities": [
-            "complete",
-            "stream",
-            "tool_use"
-          ],
+          "id": "urn:moos:model:gemini:gemini-2.5-flash",
+          "name": "gemini-2.5-flash",
+          "capabilities": ["complete", "stream", "tool_use"],
           "context_window": 1000000,
-          "max_output_tokens": 8192,
-          "cost_per_1k_input": 0.00035,
-          "cost_per_1k_output": 0.0015,
-          "note": "Default provider in MOOS dispatcher"
+          "max_output_tokens": 8192
+        },
+        {
+          "id": "urn:moos:model:gemini:gemini-2.5-pro",
+          "name": "gemini-2.5-pro",
+          "capabilities": ["complete", "stream", "tool_use"],
+          "context_window": 2000000,
+          "max_output_tokens": 16384
+        },
+        {
+          "id": "urn:moos:model:gemini:gemini-3-flash",
+          "name": "gemini-3-flash",
+          "capabilities": ["complete", "stream", "tool_use"],
+          "context_window": 2000000,
+          "max_output_tokens": 16384
+        },
+        {
+          "id": "urn:moos:model:gemini:gemini-3-pro",
+          "name": "gemini-3-pro",
+          "capabilities": ["complete", "stream", "tool_use", "extended_thinking"],
+          "context_window": 2000000,
+          "max_output_tokens": 32768
+        },
+        {
+          "id": "urn:moos:model:gemini:gemini-3.1-pro",
+          "name": "gemini-3.1-pro",
+          "is_default": true,
+          "capabilities": ["complete", "stream", "tool_use", "extended_thinking"],
+          "context_window": 2000000,
+          "max_output_tokens": 32768
+        }
+      ]
+    },
+    {
+      "id": "urn:moos:provider:google-vertex",
+      "type_id": "provider",
+      "name": "Google Vertex AI",
+      "adapter_type": "VertexAdapter",
+      "api_base_url": null,
+      "auth_pattern": "Google Application Default Credentials",
+      "config_source": ".agent/configs/api_providers.yaml#providers.google-vertex",
+      "models": [
+        {
+          "id": "urn:moos:model:vertex:gemini-3-pro",
+          "name": "gemini-3-pro",
+          "capabilities": ["complete", "stream", "tool_use"]
+        },
+        {
+          "id": "urn:moos:model:vertex:claude-opus-4-6",
+          "name": "claude-opus-4-6",
+          "is_default": true,
+          "capabilities": ["complete", "stream", "tool_use"],
+          "note": "Anthropic models via Vertex AI Model Garden"
         }
       ]
     },
@@ -68,9 +114,9 @@
       "type_id": "provider",
       "name": "OpenAI",
       "adapter_type": "OpenAIAdapter",
-      "go_file": "internal/model/adapters.go",
       "api_base_url": "https://api.openai.com/v1",
       "auth_pattern": "Bearer token Authorization header",
+      "config_source": ".agent/configs/api_providers.yaml#providers.openai",
       "rate_limits": {
         "requests_per_minute": 500,
         "tokens_per_minute": 200000,
@@ -78,17 +124,41 @@
       },
       "models": [
         {
-          "id": "urn:moos:model:openai:gpt-4o",
-          "name": "gpt-4o",
-          "capabilities": [
-            "complete",
-            "stream",
-            "tool_use"
-          ],
+          "id": "urn:moos:model:openai:gpt-5.3-codex",
+          "name": "gpt-5.3-codex",
+          "is_default": true,
+          "capabilities": ["complete", "stream", "tool_use"],
           "context_window": 128000,
-          "max_output_tokens": 4096,
-          "cost_per_1k_input": 0.005,
-          "cost_per_1k_output": 0.015
+          "max_output_tokens": 16384
+        },
+        {
+          "id": "urn:moos:model:openai:gpt-5.3-mini",
+          "name": "gpt-5.3-mini",
+          "capabilities": ["complete", "stream", "tool_use"],
+          "context_window": 128000,
+          "max_output_tokens": 8192
+        }
+      ]
+    },
+    {
+      "id": "urn:moos:provider:ollama",
+      "type_id": "provider",
+      "name": "Ollama (Local)",
+      "adapter_type": "OllamaAdapter",
+      "api_base_url": "http://localhost:11434",
+      "auth_pattern": "none",
+      "config_source": ".agent/configs/api_providers.yaml#providers.ollama",
+      "models": [
+        {
+          "id": "urn:moos:model:ollama:llama3.2",
+          "name": "llama3.2:latest",
+          "capabilities": ["complete", "stream"],
+          "note": "Local inference via GGML/llama.cpp"
+        },
+        {
+          "id": "urn:moos:model:ollama:codellama",
+          "name": "codellama:latest",
+          "capabilities": ["complete", "stream"]
         }
       ]
     }
