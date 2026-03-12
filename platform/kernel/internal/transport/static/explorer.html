@@ -170,6 +170,21 @@
             color: #8b949e;
         }
 
+        .search-box {
+            width: 100%;
+            box-sizing: border-box;
+            background: #0d1117;
+            border: 1px solid #27364f;
+            color: #c9d1d9;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .search-box::placeholder { color: #484f58; }
+        .search-box:focus { outline: none; border-color: #388bfd; }
+
         .activity-panel {
             width: 300px;
             overflow-y: auto;
@@ -261,6 +276,7 @@
                 <label><input id="toggle-cat" type="checkbox"> show glossary urn:moos:cat:*</label>
                 <label><input id="toggle-system" type="checkbox"> show kernel/feature nodes</label>
             </div>
+            <input type="text" id="search" class="search-box" placeholder="Filter nodes…" autocomplete="off">
             <h2>Nodes</h2>
             <div id="node-list">
                 <div class="loading">Loading graph...</div>
@@ -318,6 +334,7 @@
         var svg = document.getElementById('graph');
         var toggleCat = document.getElementById('toggle-cat');
         var toggleSystem = document.getElementById('toggle-system');
+        var searchInput = document.getElementById('search');
 
         toggleCat.checked = false;
         toggleSystem.checked = false;
@@ -327,7 +344,9 @@
         }
 
         function isKernelNode(n) {
-            return n.kind === 'kernel' || n.kind === 'feature';
+            return typeof n.id === 'string' &&
+                   (n.id.indexOf('urn:moos:kernel:') === 0 ||
+                    n.id.indexOf('urn:moos:feature:') === 0);
         }
 
         function nodeVisible(n) {
@@ -350,11 +369,19 @@
             while (nodeList.firstChild) nodeList.removeChild(nodeList.firstChild);
             while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-            var nodes = data.nodes.filter(nodeVisible);
+            var allVisible = data.nodes.filter(nodeVisible);
+            var q = (searchInput.value || '').trim().toLowerCase();
+            var nodes = q ? allVisible.filter(function (n) {
+                return (n.id || '').toLowerCase().indexOf(q) >= 0 ||
+                       (n.label || '').toLowerCase().indexOf(q) >= 0 ||
+                       (n.kind || '').toLowerCase().indexOf(q) >= 0;
+            }) : allVisible;
             var vis = new Set(nodes.map(function (n) { return n.id; }));
             var edges = data.edges.filter(function (e) { return edgeVisible(e, vis); });
 
-            stats.textContent = nodes.length + ' nodes, ' + edges.length + ' edges';
+            stats.textContent = q
+                ? nodes.length + ' of ' + allVisible.length + ' nodes'
+                : nodes.length + ' nodes, ' + edges.length + ' edges';
 
             /* ── sidebar cards ── */
             nodes.forEach(function (n) {
@@ -454,6 +481,7 @@
 
         toggleCat.addEventListener('change', render);
         toggleSystem.addEventListener('change', render);
+        searchInput.addEventListener('input', render);
     </script>
 </body>
 
