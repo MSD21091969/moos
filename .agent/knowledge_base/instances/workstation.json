@@ -28,7 +28,11 @@
         "default_store": "file",
         "http_port": 8000
       },
-      "reserved_compatibility_ports": [8004, 8080, 18789],
+      "reserved_compatibility_ports": [
+        8004,
+        8080,
+        18789
+      ],
       "optional_local_services": [
         {
           "name": "postgres",

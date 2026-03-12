@@ -25,9 +25,9 @@ Maps each formal concept to concrete instances, showing how superset types relat
 | Workstation Config | OBJ15 WorkstationConfig | instances/workstation.json        | `urn:moos:config:workstation`                     | —                        | Program 11 (Tier 2)      | —                                                    |
 | Preference         | OBJ16 Preference        | instances/preferences.json        | `urn:moos:pref:model.default_provider`            | —                        | Program 7 (Tier 2)       | —                                                    |
 | Provider           | OBJ17 Provider          | instances/providers.json          | `urn:moos:provider:anthropic`                     | industry/providers.json  | Program 5 (Tier 2)       | —                                                    |
-| Benchmark Suite    | OBJ18 BenchmarkSuite    | instances/benchmarks.json         | `urn:moos:benchmark:suite:morphism-extraction-v1` | —                        | Program 10 (Tier 2)      | —                                                    |
-| Benchmark Task     | OBJ19 BenchmarkTask     | instances/benchmarks.json         | `urn:moos:benchmark:task:single-add`              | —                        | Program 10 (Tier 2)      | —                                                    |
-| Benchmark Score    | OBJ20 BenchmarkScore    | instances/benchmarks.json         | `urn:moos:benchmark:score:example-001`            | —                        | Program 10 (Tier 2)      | —                                                    |
+| Benchmark Suite    | OBJ18 BenchmarkSuite    | instances/benchmarks.json         | `urn:moos:benchmark:suite:morphism-extraction-v1` | industry/benchmarks.json | Program 10 (Tier 2)      | —                                                    |
+| Benchmark Task     | OBJ19 BenchmarkTask     | instances/benchmarks.json         | `urn:moos:benchmark:task:single-add`              | industry/benchmarks.json | Program 10 (Tier 2)      | —                                                    |
+| Benchmark Score    | OBJ20 BenchmarkScore    | instances/benchmarks.json         | `urn:moos:benchmark:score:example-001`            | industry/benchmarks.json | Program 10 (Tier 2)      | —                                                    |
 | Agent Spec         | OBJ21 AgentSpec         | instances/agents.json             | `urn:moos:agent:copilot-interim`                  | —                        | Program 9 (Tier 2)       | —                                                    |
 
 ---
@@ -36,11 +36,11 @@ Maps each formal concept to concrete instances, showing how superset types relat
 
 The `.agent/configs/` surface is the **human-edited operational binding layer** — YAML files that provide runtime settings, auth contracts, and identity governance. It is NOT classified by the ontology (not an OBJ), but serves as the authoritative source for contingent operational data that instances/ entries reference.
 
-| Config File                    | Binds To Instance(s)                           | Authority Over                                        |
-| ------------------------------ | ---------------------------------------------- | ----------------------------------------------------- |
-| api_providers.yaml             | instances/providers.json (config_source field)  | Provider registry, auth contracts, model catalogs     |
-| workspace_defaults.yaml        | instances/agents.json (config_source field)     | Agent defaults (model, temperature), feature flags    |
-| users.yaml                     | instances/identities.json                       | Identity archetypes, auth profiles, access morphisms  |
+| Config File             | Binds To Instance(s)                           | Authority Over                                       |
+| ----------------------- | ---------------------------------------------- | ---------------------------------------------------- |
+| api_providers.yaml      | instances/providers.json (config_source field) | Provider registry, auth contracts, model catalogs    |
+| workspace_defaults.yaml | instances/agents.json (config_source field)    | Agent defaults (model, temperature), feature flags   |
+| users.yaml              | instances/identities.json                      | Identity archetypes, auth profiles, access morphisms |
 
 **Relationship**: configs/ → (classifying functor) → instances/ → (hydration) → kernel graph state.
 
@@ -63,7 +63,7 @@ The `.agent/configs/` surface is the **human-edited operational binding layer** 
 | CAN_PERSIST        | MOR11 | (future — container → postgres)                                    | —                   |
 | CAN_FEDERATE       | MOR12 | (future — kernel_a → kernel_b)                                     | —                   |
 | CAN_FORK           | MOR13 | (future — state → GPU VRAM)                                        | —                   |
-| SCORED_ON          | MOR14 | `score:example-001 → model:anthropic:claude-3-7-sonnet`            | Program 10          |
+| SCORED_ON          | MOR14 | `score:example-001 → model:anthropic:claude-sonnet-4-6`            | Program 10          |
 | EVALUATES_TASK     | MOR15 | `score:example-001 → task:single-add`                              | Program 10          |
 | BENCHMARKED_BY     | MOR16 | `score:example-001 → suite:morphism-extraction-v1`                 | Program 10          |
 
@@ -79,6 +79,7 @@ The `.agent/configs/` surface is the **human-edited operational binding layer** 
 | industry/frameworks.json | 30+ frameworks                    | AppTemplate                      | OBJ04         |
 | industry/compute.json    | 6 GPU + 6 cloud + 3 edge + 3 orch | ComputeResource                  | OBJ10         |
 | industry/features.json   | 25+ capabilities                  | (cross-cutting)                  | —             |
+| industry/benchmarks.json | 5 suites + 13 scores              | BenchmarkSuite + BenchmarkScore  | OBJ18, OBJ20  |
 
 ---
 

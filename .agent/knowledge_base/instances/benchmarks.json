@@ -57,6 +57,51 @@
       ],
       "metric": "moos_benchmark_tool_accuracy",
       "description": "Correct tool invocations from graph context"
+    },
+    "intelligence_index": {
+      "unit": "index",
+      "range": [
+        0,
+        100
+      ],
+      "metric": "industry_intelligence_index",
+      "description": "Composite capability score (Artificial Analysis). Functor FUN05 primary dimension."
+    },
+    "output_speed_tps": {
+      "unit": "tokens/s",
+      "range": [
+        0,
+        null
+      ],
+      "metric": "industry_output_speed",
+      "description": "Output tokens per second — throughput dimension."
+    },
+    "latency_ttft_s": {
+      "unit": "seconds",
+      "range": [
+        0,
+        null
+      ],
+      "metric": "industry_latency_ttft",
+      "description": "Time to first token — responsiveness dimension."
+    },
+    "price_per_m_tokens": {
+      "unit": "USD",
+      "range": [
+        0,
+        null
+      ],
+      "metric": "industry_price_per_m_tokens",
+      "description": "Blended price per million tokens — cost dimension."
+    },
+    "context_window": {
+      "unit": "tokens",
+      "range": [
+        0,
+        null
+      ],
+      "metric": "industry_context_window",
+      "description": "Maximum context window size — capacity dimension."
     }
   },
   "entries": [
@@ -71,6 +116,14 @@
         "urn:moos:benchmark:task:mutate-chain",
         "urn:moos:benchmark:task:unlink-cascade"
       ]
+    },
+    {
+      "id": "urn:moos:benchmark:suite:industry-intelligence-v1",
+      "type_id": "benchmark_suite",
+      "name": "Industry Intelligence Index",
+      "description": "Published benchmark suite — Artificial Analysis composite scoring. Functor FUN05 primary domain. Scores are declared S2 facts (immutable published values), not mo:os-computed.",
+      "industry_source": "industry/benchmarks.json",
+      "tasks": []
     },
     {
       "id": "urn:moos:benchmark:task:single-add",
@@ -118,7 +171,7 @@
       "id": "urn:moos:benchmark:score:example-001",
       "type_id": "benchmark_score",
       "_comment": "EXAMPLE ENTRY — replace with real benchmark run results",
-      "model": "urn:moos:model:anthropic:claude-3-7-sonnet",
+      "model": "urn:moos:model:anthropic:claude-sonnet-4-6",
       "task": "urn:moos:benchmark:task:single-add",
       "suite": "urn:moos:benchmark:suite:morphism-extraction-v1",
       "timestamp": "2026-03-07T00:00:00Z",
@@ -131,7 +184,7 @@
         "tool_fidelity": 0.92
       },
       "wire_types_created": {
-        "scored_on": "urn:moos:benchmark:score:example-001 → urn:moos:model:anthropic:claude-3-7-sonnet",
+        "scored_on": "urn:moos:benchmark:score:example-001 → urn:moos:model:anthropic:claude-sonnet-4-6",
         "evaluates_task": "urn:moos:benchmark:score:example-001 → urn:moos:benchmark:task:single-add",
         "benchmarked_by": "urn:moos:benchmark:score:example-001 → urn:moos:benchmark:suite:morphism-extraction-v1"
       }

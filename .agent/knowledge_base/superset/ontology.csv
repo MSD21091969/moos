@@ -1,91 +1,69 @@
-entity_type,id,name,broad_category,mutable,allowed_strata,formalization_level,realized_by_wave,source,target,decomposition,gap,description
-axiom,AX1,No_Meta_Only_Recursive,,,,,,,,,"Every entity is a container identified by URN"
-axiom,AX2,Code_Is_Axiomatic,,,,,,,,,"Code loaded as atomic morphisms into semantic folders"
-axiom,AX3,DB_Is_Truth,,,,,,,,,"morphism_log is single source of truth"
-axiom,AX4,Hypergraph_Superposition,,,,,,,,,"DB stores THE graph - superposition of all projected graphs"
-axiom,AX5,Discovery_Retrieval_Duality,,,,,,,,,"Gap between potential and actual edges IS knowledge"
-category,CAT01,C,,,,L3,Wave 0,,,,,"Universal graph - objects=URNs morphisms=wires"
-category,CAT02,Coslice(A),,,,L3,Wave 0,,,,,"Fan-out from A - outgoing morphisms"
-category,CAT03,Slice(A),,,,L3,Wave 0,,,,,"Fan-in to A - incoming morphisms"
-category,CAT04,Scoped(W),,,,L3,Wave 0,,,,,"Full subcategory - W + OWNS children"
-category,CAT05,Kernel,,,,L3,Wave 0,,,,,"Post-dispatch unified view - all providers merge here"
-category,CAT06,C_0,,,,L2,Wave 4,,,,Inclusion functor not verified,"Stratum 0 authored declarations and references"
-category,CAT07,C_1,,,,L2,Wave 4,,,,Inclusion functor not verified,"Stratum 1 validated artifacts admitted for realization"
-category,CAT08,C_2,,,,L2,Wave 4,,,,Inclusion functor not verified,"Stratum 2 materialized graph-ready programs and structures"
-category,CAT09,Authored,,,,L1,Wave 4,,,,"Blind box","Manifest declarations"
-category,CAT10,Validated,,,,L1,Wave 4,,,,"Blind box","Post-schema-check artifacts"
-category,CAT11,Materialized,,,,L1,Wave 2,,,,,"Blind box","Morphism programs (ADD;LINK;MUTATE)"
-category,CAT12,Projected,,,,L1,Wave 5-6,,,,,"Blind box","Projected views in the Lens_i family"
-category,CAT13,R_1536,,,,L0,Wave 5,,,,,"Standard R^1536 vector space"
-category,CAT14,Manifest,,,,L1,Wave 1,,,,"No categorical structure defined","FileSystem functor domain"
-category,CAT15,React,,,,L1,FFS3 external,,,,"No categorical structure defined","UI_Lens functor codomain"
-category,CAT16,DAG,,,,L1,Wave 6 planned,,,,"No categorical structure defined","Structure functor codomain"
-category,CAT17,Provider_p,,,,L2,Wave 6,,,,"Composition not verified","Per-provider model category"
-category,CAT18,Standard,,,,L1,Wave 6,,,,"Objects in prose only","Cross-provider evaluation target"
-category,CAT19,Adapter,,,,L2,Wave 1 (Go),,,,"Composition implicit","CompletionRequest/Result types"
-category,CAT20,C_3,,,,L2,Wave 5,,,,Inclusion functor not verified,"Stratum 3 evaluated contingent graph state"
-category,CAT21,C_4,,,,L2,Wave 5-6,,,,Projection inclusion not fully verified,"Stratum 4 projected views and surface bindings"
-category,CAT22,Evaluated,,,,L1,Wave 5,,,,,"Blind box","Contingent graph state after execution or replay"
-broad_cat,SUB01,identity,,,,L2,,,,,,Identity objects - actors
-broad_cat,SUB02,structure,,,,L2,,,,,,Structural objects - graph blocks
-broad_cat,SUB03,compute,,,,L2,,,,,,Compute objects - schedulable
-broad_cat,SUB04,surface,,,,L2,,,,,,Surface objects - rendering
-broad_cat,SUB05,protocol,,,,L2,,,,,,Protocol objects - communication
-broad_cat,SUB06,infra,,,,L2,,,,,,Infrastructure objects - storage
-broad_cat,SUB07,memory,,,,L2,,,,,,Memory objects - knowledge
-broad_cat,SUB08,evaluation,,,,L1,,,,,Awaiting C_standard L2+,Evaluation objects - benchmarks (new v3)
-broad_cat,SUB09,platform,,,,L2,,,,,,Platform objects - distribution and workstation config
-broad_cat,SUB10,config,,,,L2,,,,,,Configuration objects - runtime preferences
-object,OBJ01,User,identity,true,S2;S3,,,OWNS CAN_HYDRATE,,,,Authenticated actor — container whose morphisms grant owned-workspace access edges. No special ontological status.
-object,OBJ02,ColliderAdmin,identity,true,S2;S3,,,OWNS CAN_HYDRATE PRE_FLIGHT_CONFIG,,,,Category administrator — elevated actor with governed OWNS edges to assigned containers.
-object,OBJ03,SuperAdmin,identity,true,S2;S3,,,OWNS CAN_HYDRATE PRE_FLIGHT_CONFIG CAN_SCHEDULE CAN_FEDERATE,,,,Root administrator — transitive OWNS over all containers.
-object,OBJ04,AppTemplate,structure,false,S1;S2,,,CAN_HYDRATE,OWNS PRE_FLIGHT_CONFIG,,,Template container — reusable subgraph pattern. Instantiation = ADD + LINK sequence.
-object,OBJ05,NodeContainer,structure,true,S2;S3,,,LINK_NODES SYNC_ACTIVE_STATE,OWNS CAN_HYDRATE LINK_NODES ADD_NODE_CONTAINER,,,General-purpose container — default object in C. Payload in state_payload JSONB.
-object,OBJ06,AgnosticModel,compute,true,S2;S3,,,CAN_HYDRATE,OWNS CAN_SCHEDULE CAN_ROUTE,,,LLM/ML model container — provider-agnostic URN. Provider config in state_payload.
-object,OBJ07,SystemTool,compute,true,S2;S3,,,,OWNS CAN_HYDRATE CAN_ROUTE,,,Tool container — discovered via graph traversal; exposed via MCP protocol surface.
-object,OBJ08,UI_Lens,surface,false,S4,,,SYNC_ACTIVE_STATE,OWNS CAN_HYDRATE,,,UI rendering surface — functor output: containers × wires → React component tree.
-object,OBJ09,RuntimeSurface,surface,true,S2;S3,,,,OWNS PRE_FLIGHT_CONFIG CAN_ROUTE,,,Execution surface — HTTP/WS/MCP endpoint. Tools wire here to become executable.
-object,OBJ10,ComputeResource,compute,true,S2;S3,,,,OWNS CAN_SCHEDULE,,,GPU device; Docker container; thread pool; VM — schedulable resource container.
-object,OBJ11,ProtocolAdapter,protocol,true,S2;S3,,,CAN_ROUTE,OWNS CAN_HYDRATE,,,WS channel; MCP session; gRPC stream; HTTP endpoint — routable communication container.
-object,OBJ12,InfraService,infra,true,S2;S3,,,,OWNS CAN_PERSIST,,,Postgres instance; disk volume; network segment — persistable infrastructure container.
-object,OBJ13,MemoryStore,memory,true,S2;S3;S4,,,CAN_HYDRATE,OWNS CAN_PERSIST,,,Vector embedding store; context window; conversation history — ephemeral or persistent memory container.
-object,OBJ14,PlatformConfig,platform,true,S2;S3,,,,OWNS PRE_FLIGHT_CONFIG,,,Platform distribution configuration — paths; store mode; build targets. Typed representation of distribution.json entries.
-object,OBJ15,WorkstationConfig,platform,true,S2;S3,,,,OWNS PRE_FLIGHT_CONFIG,,,Workstation environment descriptor — OS; runtime ports; optional services. Typed representation of workstation.json entries.
-object,OBJ16,Preference,config,true,S2;S3,,,,OWNS,,,Runtime preference — key-value wire_config with scope (system/workspace/user/session). Typed representation of preferences.json entries.
-object,OBJ17,Provider,compute,true,S2;S3,,,OWNS,OWNS,,,LLM/AI provider container — adapter_type; API config; rate limits. OWNS model containers (OBJ06). Typed representation of providers.json entries.
-object,OBJ18,BenchmarkSuite,evaluation,false,S2,,,,OWNS BENCHMARKED_BY,,,Named benchmark collection — groups BenchmarkTask entries. Definition object; immutable after creation.
-object,OBJ19,BenchmarkTask,evaluation,false,S2,,,,OWNS EVALUATES_TASK,,,Individual benchmark task definition — prompt template; expected morphisms; difficulty. Immutable after creation.
-object,OBJ20,BenchmarkScore,evaluation,false,S3,,,SCORED_ON EVALUATES_TASK BENCHMARKED_BY,OWNS,,,Benchmark result record — model’s scores on a task within a suite. Immutable once recorded. Sources MOR14/15/16.
-object,OBJ21,AgentSpec,identity,true,S2;S3,,,CAN_HYDRATE CAN_ROUTE SYNC_ACTIVE_STATE,OWNS,,,Agent specification container — model binding; tool routing; state sync. The configured persona that acts on behalf of a User.
-morphism,MOR01,OWNS,,,,,,,identity.*,any,LINK(owner; 'owns'; target; 'child'),,Ownership edge — automatic transitive propagation.
-morphism,MOR02,CAN_HYDRATE,,,,,,,identity.* | structure.* | memory.*,any,LINK(actor; 'can_hydrate'; target; 'hydrate'),,Hydration permission — declared transitivity controlled by manifest/wire_config.
-morphism,MOR03,PRE_FLIGHT_CONFIG,,,,,,,identity.admin+,surface.* | structure.*,MUTATE(surface; config_payload),,Runtime configuration — sets initial state before activation.
-morphism,MOR04,SYNC_ACTIVE_STATE,,,,,,,surface.*,structure.*,MUTATE(container; current_state),,State synchronization — surface pushes current state to container.
-morphism,MOR05,ADD_NODE_CONTAINER,,,,,,,identity.* | structure.*,structure.*,ADD(container) ; LINK(parent; 'owns'; container; 'child'),,Create + wire container into ownership tree.
-morphism,MOR06,LINK_NODES,,,,,,,structure.*,structure.*,LINK(source; port_s; target; port_t),,General-purpose wiring — creates edge with specified port types.
-morphism,MOR07,UPDATE_NODE_KERNEL,,,,,,,identity.* | compute.*,structure.*,MUTATE(container; kernel_state),,Kernel-level state update.
-morphism,MOR08,UNLINK_EDGE,,,,,,,any,any,UNLINK(source; port_s; target; port_t),,Remove wire. Container persists. May create orphan nodes. (Renamed from DELETE_EDGE in v2 to align with §3 canonical NT name.)
-morphism,MOR09,CAN_SCHEDULE,,,,,,,identity.admin+ | compute.*,compute.ComputeResource,LINK(kernel; 'can_schedule'; resource; 'workload'),,Workload allocation — kernel/admin schedules work to compute resource.
-morphism,MOR10,CAN_ROUTE,,,,,,,protocol.ProtocolAdapter,any,LINK(adapter; 'can_route'; target; 'transport'),,Transport selection — protocol adapter routes traffic.
-morphism,MOR11,CAN_PERSIST,,,,,,,any,infra.InfraService | memory.MemoryStore,LINK(source; 'can_persist'; infra; 'storage'),,Storage routing — container persists state through infra.
-morphism,MOR12,CAN_FEDERATE,,,,,,,identity.SuperAdmin,surface.RuntimeSurface,LINK(kernel_a; 'can_federate'; kernel_b; 'peer'),,Cross-instance communication — morphism bundle exchange between mo:os instances.
-morphism,MOR13,CAN_FORK,,,,,,,compute.* | identity.admin+,compute.ComputeResource,LINK(active_state; 'can_fork'; compute_gpu; 'vram_branch'),,Branch parallel exploration — fork active state graph into GPU VRAM for parallel DAG scoring.
-morphism,MOR14,SCORED_ON,,,,,,,compute.AgnosticModel,evaluation.*,LINK(model; 'scored_on'; benchmark_score; 'result'),,Model achieved this benchmark score. New in v3 — cross-provider mapping (§9).
-morphism,MOR15,EVALUATES_TASK,,,,,,,evaluation.*,structure.*,LINK(benchmark_score; 'evaluates_task'; task; 'evaluation'),,Score applies to this task definition. New in v3 — cross-provider mapping (§9).
-morphism,MOR16,BENCHMARKED_BY,,,,,,,evaluation.*,evaluation.*,LINK(benchmark_score; 'benchmarked_by'; suite; 'membership'),,Score belongs to this benchmark suite. New in v3 — cross-provider mapping (§9).
-invariant_nt,,ADD,,,,,,,∅ → Container,,,Create container — URN enters Ob(C)
-invariant_nt,,LINK,,,,,,,C × C → Wire,,,Create wire — edge enters Hom(C)
-invariant_nt,,MUTATE,,,,,,,C → C,,,Update container state — endomorphism
-invariant_nt,,UNLINK,,,,,,,Wire → ∅,,,Remove wire — edge leaves Hom(C)
-functor,FUN01,FileSystem,,,,,,Manifest (CAT14),C (CAT01),,,"Import functor - manifest.yaml -> graph"
-functor,FUN02,UI_Lens,,,,,,C (CAT01),React (CAT15),,,"Render functor - graph -> XYFlow"
-functor,FUN03,Embedding,,,,,,C (CAT01),R^1536 (CAT13),,,"Embed functor - payloads -> vectors"
-functor,FUN04,Structure,,,,,,C (CAT01),DAG (CAT16),,planned,"GPU pre-analysis functor"
-functor,FUN05,Benchmark,,,,,,Provider_p (CAT17),Standard (CAT18),,planned,"Cross-provider comparison functor"
-system,SYS01,RootContainer,,,,,,,,,,Top-level ownership root
-system,SYS02,MainLoop,,,,,,,,,,Kernel event loop
-system,SYS03,RestingStateDB,,,,,,,,,,Postgres ground truth
-system,SYS04,ActiveStateGraph,,,,,,,,,,Live hypergraph superposition
-paper_ref,EXT01,H (HDC algebra),,,,L3,,,,,,"Hypervectors {-1 +1}^d - bind bundle permute"
-paper_ref,EXT02,G_H (HyperGraphRAG),,,,L2,,,,,,"Hypergraph (V E_H)"
-paper_ref,EXT03,P G (LogicGraph),,,,L1,,,,,,"Propositional sets"
+entity_type,id,name,broad_category,mutable,allowed_strata,source,target,decomposition,description
+object,OBJ01,User,identity,true,S2;S3,OWNS;CAN_HYDRATE,,,Authenticated actor — container whose morphisms grant owned-workspace access edges. No special ontological status.
+object,OBJ02,ColliderAdmin,identity,true,S2;S3,OWNS;CAN_HYDRATE;PRE_FLIGHT_CONFIG,,,Category administrator — elevated actor with governed OWNS edges to assigned containers.
+object,OBJ03,SuperAdmin,identity,true,S2;S3,OWNS;CAN_HYDRATE;PRE_FLIGHT_CONFIG;CAN_SCHEDULE;CAN_FEDERATE,,,Root administrator — transitive OWNS over all containers.
+object,OBJ04,AppTemplate,structure,false,S1;S2,CAN_HYDRATE,OWNS;PRE_FLIGHT_CONFIG,,Template container — reusable subgraph pattern. Instantiation = ADD + LINK sequence.
+object,OBJ05,NodeContainer,structure,true,S2;S3,LINK_NODES;SYNC_ACTIVE_STATE,OWNS;CAN_HYDRATE;LINK_NODES;ADD_NODE_CONTAINER,,General-purpose container — default object in C. Payload in state_payload JSONB.
+object,OBJ06,AgnosticModel,compute,true,S2;S3,CAN_HYDRATE,OWNS;CAN_SCHEDULE;CAN_ROUTE,,LLM/ML model container — provider-agnostic URN. Provider config in state_payload.
+object,OBJ07,SystemTool,compute,true,S2;S3,,OWNS;CAN_HYDRATE;CAN_ROUTE,,"Tool container — discovered via graph traversal, exposed via MCP protocol surface."
+object,OBJ08,UI_Lens,surface,false,S4,SYNC_ACTIVE_STATE,OWNS;CAN_HYDRATE,,UI rendering surface — functor output: containers × wires → React component tree.
+object,OBJ09,RuntimeSurface,surface,true,S2;S3,,OWNS;PRE_FLIGHT_CONFIG;CAN_ROUTE,,Execution surface — HTTP/WS/MCP endpoint. Tools wire here to become executable.
+object,OBJ10,ComputeResource,compute,true,S2;S3,,OWNS;CAN_SCHEDULE,,"GPU device, Docker container, thread pool, VM — schedulable resource container."
+object,OBJ11,ProtocolAdapter,protocol,true,S2;S3,CAN_ROUTE,OWNS;CAN_HYDRATE,,"WS channel, MCP session, gRPC stream, HTTP endpoint — routable communication container."
+object,OBJ12,InfraService,infra,true,S2;S3,,OWNS;CAN_PERSIST,,"Postgres instance, disk volume, network segment — persistable infrastructure container."
+object,OBJ13,MemoryStore,memory,true,S2;S3;S4,CAN_HYDRATE,OWNS;CAN_PERSIST,,"Vector embedding store, context window, conversation history — ephemeral or persistent memory container."
+object,OBJ14,PlatformConfig,platform,true,S2;S3,,OWNS;PRE_FLIGHT_CONFIG,,"Platform distribution configuration — paths, store mode, build targets. Typed representation of distribution.json entries."
+object,OBJ15,WorkstationConfig,platform,true,S2;S3,,OWNS;PRE_FLIGHT_CONFIG,,"Workstation environment descriptor — OS, runtime ports, optional services. Typed representation of workstation.json entries."
+object,OBJ16,Preference,config,true,S2;S3,,OWNS,,Runtime preference — key-value wire_config with scope (system/workspace/user/session). Typed representation of preferences.json entries.
+object,OBJ17,Provider,compute,true,S2;S3,OWNS,OWNS,,"LLM/AI provider container — adapter_type, API config, rate limits. OWNS model containers (OBJ06). Typed representation of providers.json entries."
+object,OBJ18,BenchmarkSuite,evaluation,false,S2,,OWNS;BENCHMARKED_BY,,"Named benchmark collection — groups BenchmarkTask entries. Definition object, immutable after creation."
+object,OBJ19,BenchmarkTask,evaluation,false,S2,,OWNS;EVALUATES_TASK,,"Individual benchmark task definition — prompt template, expected morphisms, difficulty. Immutable after creation."
+object,OBJ20,BenchmarkScore,evaluation,false,S3,SCORED_ON;EVALUATES_TASK;BENCHMARKED_BY,OWNS,,Benchmark result record — model’s scores on a task within a suite. Immutable once recorded. Sources MOR14/15/16.
+object,OBJ21,AgentSpec,identity,true,S2;S3,CAN_HYDRATE;CAN_ROUTE;SYNC_ACTIVE_STATE,OWNS,,"Agent specification container — model binding, tool routing, state sync. The configured persona that acts on behalf of a User."
+morphism,MOR01,OWNS,,,,identity.*,any,"LINK(owner, 'owns', target, 'child')",Ownership edge — automatic transitive propagation.
+morphism,MOR02,CAN_HYDRATE,,,,identity.* | structure.* | memory.*,any,"LINK(actor, 'can_hydrate', target, 'hydrate')",Hydration permission — declared transitivity controlled by manifest/wire_config.
+morphism,MOR03,PRE_FLIGHT_CONFIG,,,,identity.admin+,surface.* | structure.*,"MUTATE(surface, config_payload)",Runtime configuration — sets initial state before activation.
+morphism,MOR04,SYNC_ACTIVE_STATE,,,,surface.*,structure.*,"MUTATE(container, current_state)",State synchronization — surface pushes current state to container.
+morphism,MOR05,ADD_NODE_CONTAINER,,,,identity.* | structure.*,structure.*,"ADD(container) ; LINK(parent, 'owns', container, 'child')",Create + wire container into ownership tree.
+morphism,MOR06,LINK_NODES,,,,structure.*,structure.*,"LINK(source, port_s, target, port_t)",General-purpose wiring — creates edge with specified port types.
+morphism,MOR07,UPDATE_NODE_KERNEL,,,,identity.* | compute.*,structure.*,"MUTATE(container, kernel_state)",Kernel-level state update.
+morphism,MOR08,UNLINK_EDGE,,,,any,any,"UNLINK(source, port_s, target, port_t)",Remove wire. Container persists. May create orphan nodes. (Renamed from DELETE_EDGE in v2 to align with §3 canonical NT name.)
+morphism,MOR09,CAN_SCHEDULE,,,,identity.admin+ | compute.*,compute.ComputeResource,"LINK(kernel, 'can_schedule', resource, 'workload')",Workload allocation — kernel/admin schedules work to compute resource.
+morphism,MOR10,CAN_ROUTE,,,,protocol.ProtocolAdapter,any,"LINK(adapter, 'can_route', target, 'transport')",Transport selection — protocol adapter routes traffic.
+morphism,MOR11,CAN_PERSIST,,,,any,infra.InfraService | memory.MemoryStore,"LINK(source, 'can_persist', infra, 'storage')",Storage routing — container persists state through infra.
+morphism,MOR12,CAN_FEDERATE,,,,identity.SuperAdmin,surface.RuntimeSurface,"LINK(kernel_a, 'can_federate', kernel_b, 'peer')",Cross-instance communication — morphism bundle exchange between mo:os instances.
+morphism,MOR13,CAN_FORK,,,,compute.* | identity.admin+,compute.ComputeResource,"LINK(active_state, 'can_fork', compute_gpu, 'vram_branch')",Branch parallel exploration — fork active state graph into GPU VRAM for parallel DAG scoring.
+morphism,MOR14,SCORED_ON,,,,compute.AgnosticModel,evaluation.*,"LINK(model, 'scored_on', benchmark_score, 'result')",Model achieved this benchmark score. New in v3 — cross-provider mapping (§9).
+morphism,MOR15,EVALUATES_TASK,,,,evaluation.*,structure.*,"LINK(benchmark_score, 'evaluates_task', task, 'evaluation')",Score applies to this task definition. New in v3 — cross-provider mapping (§9).
+morphism,MOR16,BENCHMARKED_BY,,,,evaluation.*,evaluation.*,"LINK(benchmark_score, 'benchmarked_by', suite, 'membership')",Score belongs to this benchmark suite. New in v3 — cross-provider mapping (§9).
+invariant_nt,,ADD,,,,,,,∅ → Container
+invariant_nt,,LINK,,,,,,,C × C → Wire
+invariant_nt,,MUTATE,,,,,,,C → C
+invariant_nt,,UNLINK,,,,,,,Wire → ∅
+functor,FUN01,FileSystem,,,,CAT14,CAT01,,Import functor — reads manifest.yaml and creates/reconciles LINK morphisms.
+functor,FUN02,UI_Lens,,,,CAT01,CAT15,,Render functor — maps containers and wires to XYFlow component tree.
+functor,FUN03,Embedding,,,,CAT01,CAT13,,Embed functor — maps container payloads to pgvector embeddings.
+functor,FUN04,Structure,,,,CAT01,CAT16,,"GPU pre-analysis functor — adjacency matrix ops, spectral analysis, DAG compression."
+functor,FUN05,Benchmark,,,,CAT17,CAT18,,"Classifying functor — maps providers to points in metric space via published benchmark values. Pre-image F⁻¹(threshold) yields equivalence classes of interchangeable providers. Multiple benchmark lenses (intelligence, speed, price) compose as product functor ∏_i F_i defining provider identity."
+category,CAT01,C,core,,,,,,Universal graph category — all containers and wires.
+category,CAT02,Coslice(A),core,,,,,,Fan-out from A — coslice category of outgoing morphisms.
+category,CAT03,Slice(A),core,,,,,,Fan-in to A — slice category of incoming morphisms.
+category,CAT04,Scoped(W),core,,,,,,Full subcategory — W and its OWNS-transitive closure.
+category,CAT05,Kernel,core,,,,,,Kernel post-dispatch unified view — all providers merge here.
+category,CAT06,C_0,stratum_chain,,,,,,"Stratum S0 subcategory — authored, pre-validation."
+category,CAT07,C_1,stratum_chain,,,,,,"Stratum S1 subcategory — validated, admissible."
+category,CAT08,C_2,stratum_chain,,,,,,"Stratum S2 subcategory — materialized, graph-ready."
+category,CAT20,C_3,stratum_chain,,,,,,"Stratum S3 subcategory — evaluated, contingent."
+category,CAT21,C_4,stratum_chain,,,,,,"Stratum S4 subcategory — projected, never ground truth."
+category,CAT09,Authored,hydration_pipeline,,,,,,Hydration stage 0 — authored input domain.
+category,CAT10,Validated,hydration_pipeline,,,,,,"Hydration stage 1 — validated, schema-checked."
+category,CAT11,Materialized,hydration_pipeline,,,,,,Hydration stage 2 — materialized morphism programs.
+category,CAT12,Projected,hydration_pipeline,,,,,,Hydration stage 4 — projected views and surface bindings.
+category,CAT22,Evaluated,hydration_pipeline,,,,,,Hydration stage 3 — evaluated contingent state.
+category,CAT13,R_1536,functor_codomains,,,,,,Embedding vector space — codomain of FUN03.
+category,CAT14,Manifest,functor_codomains,,,,,,Manifest file category — domain of FUN01.
+category,CAT15,React,functor_codomains,,,,,,React component category — codomain of FUN02.
+category,CAT16,DAG,functor_codomains,,,,,,DAG category — codomain of FUN04.
+category,CAT17,Provider_p,cross_provider,,,,,,Per-provider subcategory — domain of benchmark functor FUN05.
+category,CAT18,Met,cross_provider,,,,,,Metric space category — codomain of benchmark functor FUN05. Each model maps to a point; equivalence classes [P]_F partition providers by capability profile.
+category,CAT19,Adapter,cross_provider,,,,,,Protocol adapter category — request/response transport.

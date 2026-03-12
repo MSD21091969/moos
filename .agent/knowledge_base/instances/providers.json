@@ -21,14 +21,23 @@
         {
           "id": "urn:moos:model:anthropic:claude-opus-4-6",
           "name": "claude-opus-4-6",
-          "capabilities": ["complete", "stream", "tool_use", "extended_thinking"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use",
+            "extended_thinking"
+          ],
           "context_window": 200000,
           "max_output_tokens": 32768
         },
         {
           "id": "urn:moos:model:anthropic:claude-sonnet-4-6",
           "name": "claude-sonnet-4-6",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 200000,
           "max_output_tokens": 16384
         }
@@ -51,28 +60,45 @@
         {
           "id": "urn:moos:model:gemini:gemini-2.5-flash",
           "name": "gemini-2.5-flash",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 1000000,
           "max_output_tokens": 8192
         },
         {
           "id": "urn:moos:model:gemini:gemini-2.5-pro",
           "name": "gemini-2.5-pro",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 2000000,
           "max_output_tokens": 16384
         },
         {
           "id": "urn:moos:model:gemini:gemini-3-flash",
           "name": "gemini-3-flash",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 2000000,
           "max_output_tokens": 16384
         },
         {
           "id": "urn:moos:model:gemini:gemini-3-pro",
           "name": "gemini-3-pro",
-          "capabilities": ["complete", "stream", "tool_use", "extended_thinking"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use",
+            "extended_thinking"
+          ],
           "context_window": 2000000,
           "max_output_tokens": 32768
         },
@@ -80,7 +106,12 @@
           "id": "urn:moos:model:gemini:gemini-3.1-pro",
           "name": "gemini-3.1-pro",
           "is_default": true,
-          "capabilities": ["complete", "stream", "tool_use", "extended_thinking"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use",
+            "extended_thinking"
+          ],
           "context_window": 2000000,
           "max_output_tokens": 32768
         }
@@ -98,13 +129,21 @@
         {
           "id": "urn:moos:model:vertex:gemini-3-pro",
           "name": "gemini-3-pro",
-          "capabilities": ["complete", "stream", "tool_use"]
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ]
         },
         {
           "id": "urn:moos:model:vertex:claude-opus-4-6",
           "name": "claude-opus-4-6",
           "is_default": true,
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "note": "Anthropic models via Vertex AI Model Garden"
         }
       ]
@@ -127,14 +166,22 @@
           "id": "urn:moos:model:openai:gpt-5.3-codex",
           "name": "gpt-5.3-codex",
           "is_default": true,
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 128000,
           "max_output_tokens": 16384
         },
         {
           "id": "urn:moos:model:openai:gpt-5.3-mini",
           "name": "gpt-5.3-mini",
-          "capabilities": ["complete", "stream", "tool_use"],
+          "capabilities": [
+            "complete",
+            "stream",
+            "tool_use"
+          ],
           "context_window": 128000,
           "max_output_tokens": 8192
         }
@@ -152,13 +199,19 @@
         {
           "id": "urn:moos:model:ollama:llama3.2",
           "name": "llama3.2:latest",
-          "capabilities": ["complete", "stream"],
+          "capabilities": [
+            "complete",
+            "stream"
+          ],
           "note": "Local inference via GGML/llama.cpp"
         },
         {
           "id": "urn:moos:model:ollama:codellama",
           "name": "codellama:latest",
-          "capabilities": ["complete", "stream"]
+          "capabilities": [
+            "complete",
+            "stream"
+          ]
         }
       ]
     }

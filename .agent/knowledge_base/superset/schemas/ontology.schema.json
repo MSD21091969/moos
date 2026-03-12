@@ -144,6 +144,93 @@
                     }
                 }
             }
+        },
+        "functors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "signature",
+                    "domain",
+                    "codomain"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^FUN[0-9]{2,}$"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "signature": {
+                        "type": "string"
+                    },
+                    "direction": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "planned"
+                        ]
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "domain": {
+                        "type": "string"
+                    },
+                    "codomain": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "categories": {
+            "type": "object",
+            "description": "Categories grouped by role: core, stratum_chain, hydration_pipeline, functor_codomains, cross_provider",
+            "patternProperties": {
+                "^[a-z_]+$": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "name"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "pattern": "^CAT[0-9]{2,}$"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "latex": {
+                                "type": "string"
+                            },
+                            "objects": {
+                                "type": "string"
+                            },
+                            "morphisms": {
+                                "type": "string"
+                            },
+                            "composition": {
+                                "type": "string"
+                            },
+                            "identity": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

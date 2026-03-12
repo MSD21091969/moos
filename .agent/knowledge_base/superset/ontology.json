@@ -540,5 +540,265 @@
         "description": "Remove wire — edge leaves Hom(C)"
       }
     ]
+  },
+  "functors": [
+    {
+      "id": "FUN01",
+      "name": "FileSystem",
+      "signature": "F_fs: Manifest → C",
+      "direction": "codebase → graph",
+      "status": "active",
+      "description": "Import functor — reads manifest.yaml and creates/reconciles LINK morphisms.",
+      "domain": "CAT14",
+      "codomain": "CAT01"
+    },
+    {
+      "id": "FUN02",
+      "name": "UI_Lens",
+      "signature": "F_ui: C → React",
+      "direction": "graph → browser",
+      "status": "active",
+      "description": "Render functor — maps containers and wires to XYFlow component tree.",
+      "domain": "CAT01",
+      "codomain": "CAT15"
+    },
+    {
+      "id": "FUN03",
+      "name": "Embedding",
+      "signature": "F_embed: state_payload → R^1536",
+      "direction": "graph → vector space",
+      "status": "active",
+      "description": "Embed functor — maps container payloads to pgvector embeddings.",
+      "domain": "CAT01",
+      "codomain": "CAT13"
+    },
+    {
+      "id": "FUN04",
+      "name": "Structure",
+      "signature": "F_struct: subgraph → DAG",
+      "direction": "graph → compressed representation",
+      "status": "planned",
+      "description": "GPU pre-analysis functor — adjacency matrix ops, spectral analysis, DAG compression.",
+      "domain": "CAT01",
+      "codomain": "CAT16"
+    },
+    {
+      "id": "FUN05",
+      "name": "Benchmark",
+      "signature": "F_bench: C_Provider → Met",
+      "direction": "provider → metric space",
+      "status": "planned",
+      "description": "Classifying functor — maps providers to points in metric space via published benchmark values. Pre-image F⁻¹(threshold) yields equivalence classes of interchangeable providers. Multiple benchmark lenses (intelligence, speed, price) compose as product functor ∏_i F_i defining provider identity.",
+      "domain": "CAT17",
+      "codomain": "CAT18"
+    }
+  ],
+  "categories": {
+    "core": [
+      {
+        "id": "CAT01",
+        "name": "C",
+        "latex": "\\mathcal{C}",
+        "objects": "URNs — rows in containers table",
+        "morphisms": "Wires — rows in wires table",
+        "composition": "SQL join on target_urn = source_urn",
+        "identity": "Virtual self-state (no explicit self-wire)",
+        "description": "Universal graph category — all containers and wires."
+      },
+      {
+        "id": "CAT02",
+        "name": "Coslice(A)",
+        "latex": "A/\\mathcal{C}",
+        "objects": "Outgoing morphisms from A (f_i: A → B_i)",
+        "morphisms": "Commuting triangles",
+        "composition": "Triangle composition",
+        "identity": "Identity on each outgoing morphism",
+        "description": "Fan-out from A — coslice category of outgoing morphisms."
+      },
+      {
+        "id": "CAT03",
+        "name": "Slice(A)",
+        "latex": "\\mathcal{C}/A",
+        "objects": "Incoming morphisms to A (g_i: B_i → A)",
+        "morphisms": "Commuting triangles",
+        "composition": "Triangle composition",
+        "identity": "Identity on each incoming morphism",
+        "description": "Fan-in to A — slice category of incoming morphisms."
+      },
+      {
+        "id": "CAT04",
+        "name": "Scoped(W)",
+        "latex": "\\mathcal{C}_W",
+        "objects": "W + OWNS children (recursive CTE)",
+        "morphisms": "Inherited from C — all wires between scoped objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "description": "Full subcategory — W and its OWNS-transitive closure."
+      },
+      {
+        "id": "CAT05",
+        "name": "Kernel",
+        "latex": "\\mathcal{C}_{\\text{kernel}}",
+        "objects": "= C objects (post-dispatch view)",
+        "morphisms": "= C morphisms (CompletionResult received from any provider)",
+        "composition": "= C composition",
+        "identity": "= C identity",
+        "description": "Kernel post-dispatch unified view — all providers merge here."
+      }
+    ],
+    "stratum_chain": [
+      {
+        "id": "CAT06",
+        "name": "C_0",
+        "latex": "\\mathcal{C}_0",
+        "objects": "Authored declarations and references prior to validation",
+        "morphisms": "Authoring relations over S0 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "description": "Stratum S0 subcategory — authored, pre-validation."
+      },
+      {
+        "id": "CAT07",
+        "name": "C_1",
+        "latex": "\\mathcal{C}_1",
+        "objects": "C_0 ∪ validated artifacts admitted for realization",
+        "morphisms": "Validation-preserving relations over S0∪S1 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "description": "Stratum S1 subcategory — validated, admissible."
+      },
+      {
+        "id": "CAT08",
+        "name": "C_2",
+        "latex": "\\mathcal{C}_2",
+        "objects": "C_1 ∪ materialized graph-ready programs and structures",
+        "morphisms": "Realization relations over S0∪S1∪S2 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "description": "Stratum S2 subcategory — materialized, graph-ready."
+      },
+      {
+        "id": "CAT20",
+        "name": "C_3",
+        "latex": "\\mathcal{C}_3",
+        "objects": "C_2 ∪ evaluated contingent graph state",
+        "morphisms": "Execution and replay-preserving relations over S0..S3 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "description": "Stratum S3 subcategory — evaluated, contingent."
+      },
+      {
+        "id": "CAT21",
+        "name": "C_4",
+        "latex": "\\mathcal{C}_4",
+        "objects": "C_3 ∪ projected views and surface bindings",
+        "morphisms": "Projection-preserving relations over S0..S4 objects",
+        "composition": "Inherited from C",
+        "identity": "Inherited from C",
+        "description": "Stratum S4 subcategory — projected, never ground truth."
+      }
+    ],
+    "hydration_pipeline": [
+      {
+        "id": "CAT09",
+        "name": "Authored",
+        "latex": "\\mathcal{A}",
+        "objects": "Manifest declarations, code references",
+        "morphisms": "Authoring relations",
+        "description": "Hydration stage 0 — authored input domain."
+      },
+      {
+        "id": "CAT10",
+        "name": "Validated",
+        "latex": "\\mathcal{V}",
+        "objects": "Validated artifacts (post-schema check)",
+        "morphisms": "Validation-preserving relations",
+        "description": "Hydration stage 1 — validated, schema-checked."
+      },
+      {
+        "id": "CAT11",
+        "name": "Materialized",
+        "latex": "\\mathcal{P}",
+        "objects": "Morphism programs (ADD;LINK;MUTATE sequences)",
+        "morphisms": "Program composition",
+        "description": "Hydration stage 2 — materialized morphism programs."
+      },
+      {
+        "id": "CAT12",
+        "name": "Projected",
+        "latex": "\\mathcal{L}_i",
+        "objects": "Projected views in the Lens_i family: UI projections, embeddings, metrics",
+        "morphisms": "Projection-preserving maps",
+        "description": "Hydration stage 4 — projected views and surface bindings."
+      },
+      {
+        "id": "CAT22",
+        "name": "Evaluated",
+        "latex": "\\mathcal{E}",
+        "objects": "Contingent graph state after execution, hydration, or replay",
+        "morphisms": "Execution-preserving relations",
+        "description": "Hydration stage 3 — evaluated contingent state."
+      }
+    ],
+    "functor_codomains": [
+      {
+        "id": "CAT13",
+        "name": "R_1536",
+        "latex": "\\mathbb{R}^{1536}",
+        "objects": "Vectors in R^1536",
+        "morphisms": "Linear maps",
+        "description": "Embedding vector space — codomain of FUN03."
+      },
+      {
+        "id": "CAT14",
+        "name": "Manifest",
+        "latex": "\\text{Manifest}",
+        "objects": "manifest.yaml files",
+        "morphisms": "File inclusion/reference",
+        "description": "Manifest file category — domain of FUN01."
+      },
+      {
+        "id": "CAT15",
+        "name": "React",
+        "latex": "\\text{React}",
+        "objects": "XYFlow component trees",
+        "morphisms": "Component composition",
+        "description": "React component category — codomain of FUN02."
+      },
+      {
+        "id": "CAT16",
+        "name": "DAG",
+        "latex": "\\text{DAG}",
+        "objects": "Topological orderings",
+        "morphisms": "Order-preserving maps",
+        "description": "DAG category — codomain of FUN04."
+      }
+    ],
+    "cross_provider": [
+      {
+        "id": "CAT17",
+        "name": "Provider_p",
+        "latex": "\\mathcal{P}_p",
+        "objects": "Model containers owned by provider (e.g. claude-opus-4-6, gemini-3.1-pro, gpt-5.4)",
+        "morphisms": "can_execute wires, tool invocations, Complete/Stream operations, SCORED_ON edges",
+        "description": "Per-provider subcategory — domain of benchmark functor FUN05."
+      },
+      {
+        "id": "CAT18",
+        "name": "Met",
+        "latex": "\\text{Met}",
+        "objects": "Benchmark score vectors — points in ℝ^n where n = number of scoring dimensions",
+        "morphisms": "Non-expansive maps (metric-preserving, score ordering)",
+        "description": "Metric space category — codomain of benchmark functor FUN05. Each model maps to a point; equivalence classes [P]_F partition providers by capability profile."
+      },
+      {
+        "id": "CAT19",
+        "name": "Adapter",
+        "latex": "\\mathcal{C}_{\\text{adapter}}",
+        "objects": "CompletionRequest, CompletionResult",
+        "morphisms": "Complete(), Stream()",
+        "description": "Protocol adapter category — request/response transport."
+      }
+    ]
   }
 }

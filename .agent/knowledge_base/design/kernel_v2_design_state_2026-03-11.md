@@ -134,24 +134,35 @@ needs persistent, queryable graph state, not just a JSONL file.
 - AI assistant (IDE Copilot) serves as interim agent via HTTP API
 - Real agent = UI lens + model dispatch + morphism generation
 
+### Layer H — Benchmark Functor Activation (FUN05)
+
+- FUN05 `F_bench: C_Provider → Met` is a classifying functor — maps providers to
+  metric space points via published benchmark scores
+- Equivalence classes: `A ~F B ⟺ F(A) = F(B)` — providers with identical scores
+  are equivalent under that functor
+- Product functor `∏_i F_i` across all scoring dimensions defines provider identity
+  in the evaluation category
+- industry/benchmarks.json holds the published landscape; instances/benchmarks.json
+  holds the typed graph instances
+- Activation = implement functor evaluation in Go that reads scoring dimensions and
+  computes metric-space distances between providers
+
 ---
 
 ## Current platform/kernel Package Map
 
 ```
 platform/kernel/
-├── go.mod                    (module moos/platform/kernel, go 1.23)
-├── cmd/moos/main.go          (boot: --config → store → replay → seed → HTTP)
+├── go.mod                    (module moos/platform/kernel, go 1.22)
+├── cmd/kernel/main.go        (boot: config → store → replay → seed → HTTP)
 ├── internal/
-│   ├── cat/                   (pure types: URN, TypeID, Node, Wire, GraphState, Envelope, Program)
-│   ├── fold/                  (Σ-catamorphism: Evaluate, EvaluateProgram, Replay)
-│   ├── operad/                (colored operad: Registry{Types}, TypeOf, Validate, DeriveFromOntology)
+│   ├── core/                  (pure types + Σ-catamorphism: no IO, no side effects)
 │   ├── shell/                 (effect boundary: Runtime, LogStore, MemStore, SeedIfAbsent)
 │   ├── hydration/             (materialization: MaterializeRequest → Program)
-│   ├── transport/             (HTTP API: 12 routes, no functor dependency)
-│   └── config/                (JSON config loader, Seed struct)
+│   ├── httpapi/               (HTTP API + UI_Lens explorer)
+│   └── config/                (JSON config loader)
 ├── data/                      (empty — JSONL log created at runtime)
-└── registry/                  (empty — ontology comes from KB via superset/)
+└── examples/                  (demo materialization payloads)
 ```
 
 Import discipline: cat→stdlib; fold→cat,operad; operad→cat; shell→cat,fold,operad;
@@ -163,18 +174,18 @@ hydration→cat,operad; transport→shell,cat,hydration
 
 ## SOT File Status
 
-| File                        | Domain                   | Status                                                |
-| --------------------------- | ------------------------ | ----------------------------------------------------- |
-| superset/ontology.json      | Type system (21 objects) | Done — OBJ14-21 added (2026-03-11 curation)           |
-| superset/ontology.csv       | Flat export              | Synced with ontology.json                             |
-| instances/distribution.json | Platform config          | Done — type_id fixed, paths point to platform/kernel  |
-| instances/surfaces.json     | Runtime surfaces         | Done — updated (2026-03-11 curation)                  |
-| instances/workstation.json  | Local dev config         | Done — real hardware specs, toolchain updated          |
-| instances/identities.json   | Actors                   | Done — updated (2026-03-11 curation)                  |
-| instances/benchmarks.json   | Evaluation               | Ready (has scoring_dimensions)                        |
-| instances/preferences.json  | User/system prefs        | Ready (10 entries)                                    |
-| instances/providers.json    | LLM providers            | Done — 5 providers, 2026 models, config_source links  |
-| instances/agents.json       | Agent specification      | Done — model_binding synced to gemini-3.1-pro          |
+| File                        | Domain                   | Status                                                   |
+| --------------------------- | ------------------------ | -------------------------------------------------------- |
+| superset/ontology.json      | Type system (21 objects) | Done — OBJ14-21, functors (5), categories (22) restored  |
+| superset/ontology.csv       | Flat export              | Needs regeneration (functors+categories added)           |
+| instances/distribution.json | Platform config          | Done — type_id fixed, paths point to platform/kernel     |
+| instances/surfaces.json     | Runtime surfaces         | Done — updated (2026-03-11 curation)                     |
+| instances/workstation.json  | Local dev config         | Done — real hardware specs, toolchain updated            |
+| instances/identities.json   | Actors                   | Done — updated (2026-03-11 curation)                     |
+| instances/benchmarks.json   | Evaluation               | Done — dual suites (mo:os-internal + published), 11 dims |
+| instances/preferences.json  | User/system prefs        | Ready (10 entries)                                       |
+| instances/providers.json    | LLM providers            | Done — 5 providers, 2026 models, config_source links     |
+| instances/agents.json       | Agent specification      | Done — model_binding synced to gemini-3.1-pro            |
 
 ---
 
