@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 \providecommand{\bibitemdeclare}[2]{}
 \providecommand{\surnamestart}{}
 \providecommand{\surnameend}{}
@@ -20,14 +20,14 @@
 \bibitemdeclare{misc}{mcp2024}
 \bibitem{mcp2024}
 \bibinfo{author}{\surnamestart Anthropic\surnameend} (\bibinfo{year}{2024}):
-  \emph{\bibinfo{title}{Model Context Protocol (MCP)}}.
+  \emph{\bibinfo{title}{Model Context Protocol ({MCP})}}.
 \newblock \bibinfo{howpublished}{\url{https://modelcontextprotocol.io}}.
 
 \bibitemdeclare{inproceedings}{statebox2019}
 \bibitem{statebox2019}
 \bibinfo{author}{Jelle~Herold \surnamestart Boer\surnameend} et~al.
   (\bibinfo{year}{2019}): \emph{\bibinfo{title}{Mathematical Specification of
-  the Statebox Language}}.
+  the {Statebox} Language}}.
 \newblock In: {\slshape \bibinfo{booktitle}{Proceedings of ACT 2019}}.
 
 \bibitemdeclare{article}{bonchi2017functorial}
@@ -46,6 +46,16 @@
   (\bibinfo{year}{2018}): \emph{\bibinfo{title}{Seven Sketches in
   Compositionality: An Invitation to Applied Category Theory}}.
 \newblock \bibinfo{publisher}{Cambridge University Press}.
+
+\bibitemdeclare{article}{gavranovic2024categorical}
+\bibitem{gavranovic2024categorical}
+\bibinfo{author}{Bruno \surnamestart Gavranovi{\'c}\surnameend},
+  \bibinfo{author}{Paul \surnamestart Lessard\surnameend},
+  \bibinfo{author}{Andrew \surnamestart Duber\surnameend} \&
+  \bibinfo{author}{Daniel \surnamestart Murfet\surnameend}
+  (\bibinfo{year}{2024}): \emph{\bibinfo{title}{Categorical Deep Learning: An
+  Algebraic Theory of Architectures}}.
+\newblock {\slshape \bibinfo{journal}{arXiv preprint arXiv:2402.15332}}.
 
 \bibitemdeclare{inproceedings}{gu2021functorial}
 \bibitem{gu2021functorial}
@@ -67,6 +77,32 @@
   Sciences}} \bibinfo{volume}{50}(\bibinfo{number}{5}), pp.
   \bibinfo{pages}{869--872}.
 
+\bibitemdeclare{inproceedings}{lynch2023nested}
+\bibitem{lynch2023nested}
+\bibinfo{author}{Owen \surnamestart Lynch\surnameend} \&
+  \bibinfo{author}{Spencer \surnamestart Breiner\surnameend}
+  (\bibinfo{year}{2023}): \emph{\bibinfo{title}{Nested wiring diagrams in
+  {Semagrams}}}.
+\newblock In: {\slshape \bibinfo{booktitle}{Proceedings of ACT 2023}},
+  {\slshape \bibinfo{series}{EPTCS}} \bibinfo{volume}{397}.
+
+\bibitemdeclare{article}{pan2024token}
+\bibitem{pan2024token}
+\bibinfo{author}{Wuming \surnamestart Pan\surnameend} (\bibinfo{year}{2024}):
+  \emph{\bibinfo{title}{Token Space: A Category Theory Framework for {AI}
+  Computations}}.
+\newblock {\slshape \bibinfo{journal}{arXiv preprint arXiv:2404.11624}}.
+
+\bibitemdeclare{misc}{catlab2024}
+\bibitem{catlab2024}
+\bibinfo{author}{Evan \surnamestart Patterson\surnameend},
+  \bibinfo{author}{Andrew \surnamestart Baas\surnameend} \&
+  \bibinfo{author}{James \surnamestart Fairbanks\surnameend}
+  (\bibinfo{year}{2024}): \emph{\bibinfo{title}{Catlab.jl: A Framework for
+  Applied Category Theory in {Julia}}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/AlgebraicJulia/Catlab.jl}}.
+
 \bibitemdeclare{article}{spivak2013operad}
 \bibitem{spivak2013operad}
 \bibinfo{author}{Dylan \surnamestart Rupel\surnameend} \&
@@ -75,6 +111,14 @@
   diagrams: formalizing a graphical language for discrete-time processes}}.
 \newblock {\slshape \bibinfo{journal}{arXiv preprint arXiv:1307.6894}}.
 
+\bibitemdeclare{article}{shapiro2022}
+\bibitem{shapiro2022}
+\bibinfo{author}{Brandon~T \surnamestart Shapiro\surnameend} \&
+  \bibinfo{author}{David~I \surnamestart Spivak\surnameend}
+  (\bibinfo{year}{2022}): \emph{\bibinfo{title}{Dynamic Operads, Dynamic
+  Categories: From Deep Learning to Prediction Markets}}.
+\newblock {\slshape \bibinfo{journal}{arXiv preprint arXiv:2205.03906}}.
+
 \bibitemdeclare{article}{spivak2013}
 \bibitem{spivak2013}
 \bibinfo{author}{David~I \surnamestart Spivak\surnameend}
@@ -82,5 +126,13 @@
   formalizing a graphical language for databases, plug-ins, and concurrent
   routing}}.
 \newblock {\slshape \bibinfo{journal}{arXiv preprint arXiv:1305.0297}}.
+
+\bibitemdeclare{book}{yau2018}
+\bibitem{yau2018}
+\bibinfo{author}{Donald \surnamestart Yau\surnameend} (\bibinfo{year}{2018}):
+  \emph{\bibinfo{title}{Operads of Wiring Diagrams}}.
+\newblock {\slshape \bibinfo{series}{Lecture Notes in Mathematics}}
+  \bibinfo{volume}{2192}, \bibinfo{publisher}{Springer}.
+\newblock \bibinfo{note}{ArXiv:1512.01602}.
 
 \end{thebibliography}

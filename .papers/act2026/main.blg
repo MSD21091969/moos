@@ -6,45 +6,46 @@ The style file: eptcs.bst
 Reallocating 'name_of_file' (item size: 1) to 11 items.
 Database file #1: references.bib
 Warning--empty pages in statebox2019
-You've used 9 entries,
+Warning--empty pages in lynch2023nested
+You've used 15 entries,
             2735 wiz_defined-function locations,
-            640 strings with 6453 characters,
-and the built_in function-call counts, 3841 in all, are:
-= -- 265
-> -- 93
-< -- 2
-+ -- 41
-- -- 30
-* -- 429
-:= -- 479
-add.period$ -- 18
-call.type$ -- 9
-change.case$ -- 36
+            671 strings with 7321 characters,
+and the built_in function-call counts, 6302 in all, are:
+= -- 419
+> -- 170
+< -- 4
++ -- 73
+- -- 56
+* -- 736
+:= -- 789
+add.period$ -- 31
+call.type$ -- 15
+change.case$ -- 64
 chr.to.int$ -- 0
-cite$ -- 19
-duplicate$ -- 328
-empty$ -- 350
-format.name$ -- 35
-if$ -- 754
+cite$ -- 32
+duplicate$ -- 539
+empty$ -- 569
+format.name$ -- 65
+if$ -- 1223
 int.to.chr$ -- 0
-int.to.str$ -- 9
-missing$ -- 71
-newline$ -- 58
-num.names$ -- 18
-pop$ -- 82
+int.to.str$ -- 15
+missing$ -- 125
+newline$ -- 89
+num.names$ -- 30
+pop$ -- 137
 preamble$ -- 1
-purify$ -- 32
+purify$ -- 57
 quote$ -- 0
-skip$ -- 109
+skip$ -- 162
 stack$ -- 0
-substring$ -- 122
-swap$ -- 267
-text.length$ -- 2
+substring$ -- 154
+swap$ -- 449
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 43
-warning$ -- 1
-while$ -- 24
-width$ -- 10
-write$ -- 104
-(There was 1 warning)
+type$ -- 71
+warning$ -- 2
+while$ -- 36
+width$ -- 17
+write$ -- 168
+(There were 2 warnings)
