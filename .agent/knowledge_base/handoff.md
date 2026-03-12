@@ -14,6 +14,7 @@ Newest message at top. Check `git log` for push timestamps.
 Created open-source-audience collateral for the kernel.
 
 **Deliverables:**
+
 - `platform/kernel/README.md` — Quick-start guide: prerequisites, 8-step walkthrough, 16 HTTP routes table, MCP bridge reference (3 routes + 5 tools), Explorer UI, configuration, architecture diagram
 - `platform/kernel/examples/demo.ps1` — Interactive PowerShell walkthrough (8 steps, coloured banners, `Invoke-RestMethod`, MCP JSON-RPC, `--non-interactive` flag)
 - `platform/kernel/examples/demo.sh` — Bash equivalent using `curl + python3 -m json.tool` (no `jq` dependency; `--non-interactive`, `--base`, `--mcp` flags)
