@@ -22,7 +22,7 @@ func newTestServer(t *testing.T) *transport.Server {
 	if err != nil {
 		t.Fatalf("NewRuntime: %v", err)
 	}
-	return transport.NewServer(rt)
+	return transport.NewServer(rt, "")
 }
 
 func doRequest(t *testing.T, handler http.Handler, method, path string, body any) *httptest.ResponseRecorder {

@@ -22,6 +22,7 @@ import (
 
 	"moos/platform/kernel/internal/cat"
 	"moos/platform/kernel/internal/config"
+	"moos/platform/kernel/internal/hydration"
 	"moos/platform/kernel/internal/operad"
 	"moos/platform/kernel/internal/shell"
 	"moos/platform/kernel/internal/transport"
@@ -30,6 +31,7 @@ import (
 func main() {
 	configPath := flag.String("config", "", "path to config.json")
 	kbPath := flag.String("kb", "", "path to knowledge base root (derives registry + config)")
+	hydrateFlag := flag.Bool("hydrate", false, "auto-apply Tier-2 instance hydration on boot (requires --kb)")
 	flag.Parse()
 
 	var (
@@ -87,8 +89,15 @@ func main() {
 	// 4. Apply seed
 	seedKernel(rt, cfg)
 
-	// 5. Start HTTP server
-	srv := transport.NewServer(rt)
+	// 5. Optionally hydrate Tier-2 instance files from the KB.
+	if *hydrateFlag && *kbPath != "" {
+		if err := hydration.HydrateAll(*kbPath, "", rt); err != nil {
+			log.Printf("[boot] hydration warning: %v", err)
+		}
+	}
+
+	// 6. Start HTTP server
+	srv := transport.NewServer(rt, *kbPath)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

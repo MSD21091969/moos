@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -20,14 +21,18 @@ import (
 // Server is the HTTP transport layer.
 type Server struct {
 	runtime *shell.Runtime
+	kbRoot  string // path to knowledge-base root; empty when --kb not supplied
 	mux     *http.ServeMux
 	srv     *http.Server
 }
 
 // NewServer creates a new HTTP server bound to the given runtime.
-func NewServer(runtime *shell.Runtime) *Server {
+// kbRoot is the path to the knowledge-base root directory; pass "" when
+// the --kb flag was not supplied (source-based materialize will return 501).
+func NewServer(runtime *shell.Runtime, kbRoot string) *Server {
 	s := &Server{
 		runtime: runtime,
+		kbRoot:  kbRoot,
 		mux:     http.NewServeMux(),
 	}
 	s.registerRoutes()
@@ -172,8 +177,25 @@ func (s *Server) handleRegistry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleMaterialize(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("read body: %v", err))
+		return
+	}
+
+	// Source-based dispatch: {"source": "providers.json"} delegates to the
+	// KB loader so callers can hydrate a single instance file by name.
+	var probe struct {
+		Source string `json:"source"`
+	}
+	if probErr := json.Unmarshal(body, &probe); probErr == nil && probe.Source != "" {
+		s.handleMaterializeSource(w, r, probe.Source)
+		return
+	}
+
+	// Standard path: caller supplies a full MaterializeRequest body.
 	var req hydration.MaterializeRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.Unmarshal(body, &req); err != nil {
 		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid JSON: %v", err))
 		return
 	}
@@ -204,6 +226,51 @@ func (s *Server) handleMaterialize(w http.ResponseWriter, r *http.Request) {
 		"materialized": result,
 		"result":       progResult.Summary,
 		"nodes_added":  len(result.Program.Envelopes),
+	})
+}
+
+// handleMaterializeSource loads a single KB instance file by name and
+// materializes it via ApplyProgram. kbRoot must be configured (--kb flag).
+func (s *Server) handleMaterializeSource(w http.ResponseWriter, r *http.Request, source string) {
+	if s.kbRoot == "" {
+		writeError(w, http.StatusNotImplemented,
+			"no KB root configured; restart with --kb flag to enable source-based hydration")
+		return
+	}
+
+	dryRun := r.URL.Query().Get("dry_run") == "true"
+
+	req, err := hydration.LoadInstanceFile(s.kbRoot, source, "")
+	if err != nil {
+		writeError(w, http.StatusUnprocessableEntity, fmt.Sprintf("load %s: %v", source, err))
+		return
+	}
+
+	reg := s.runtime.Registry()
+	result, err := hydration.Materialize(req, reg, dryRun)
+	if err != nil {
+		writeError(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	if len(result.Errors) > 0 {
+		writeJSON(w, http.StatusUnprocessableEntity, result)
+		return
+	}
+	if dryRun {
+		writeJSON(w, http.StatusOK, result)
+		return
+	}
+
+	progResult, err := s.runtime.ApplyProgram(result.Program)
+	if err != nil {
+		writeError(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	log.Printf("[transport] materialize source=%s applied", source)
+	writeJSON(w, http.StatusOK, map[string]any{
+		"source":       source,
+		"materialized": result,
+		"result":       progResult.Summary,
 	})
 }
 
