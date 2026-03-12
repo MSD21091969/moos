@@ -30,6 +30,23 @@ Created comprehensive headless browser UX test plan for the Explorer UI:
 **Depends:** Task 007 (MCP), 008 (Benchmark), 009 (Explorer UI) — all complete.
 **Supports:** Task 011 (Demo Script + README).
 
+### [2026-03-15 18:30] VSCodeAI → complete: Task 009 (Explorer UI) — live at /explorer
+
+Explorer UI ported from archive, fully integrated into current kernel binary.
+
+**Deliverables:**
+- `transport/static/explorer.html` — embedded via `//go:embed`, dark-theme SVG canvas, sidebar, filter toggles
+- `transport/server.go` — `GET /explorer` + `GET /functor/ui` (16th route)
+- `internal/functor/ui_lens.go` — `UIFunctor` projecting `GraphState → UIGraph` (nodes+edges+meta)
+- kindColor map expanded: 13 → 21 entries (all ontology type_ids covered)
+- stratumOpacity: S0=0.55, S1=0.68, S2=0.86, S3=1.0, S4=0.78
+
+**Runtime verified (user screenshot):** 65 nodes, 80 wires, colored circles, edge lines, sidebar cards all rendering at `http://localhost:8000/explorer`.
+
+**Metrics:** route_count=16, unique_type_ids=21, all 8 test packages green.
+
+**Task 011 dependencies now ALL met:** 007 ✅ 008 ✅ 009 ✅ → Task 011 is unblocked.
+
 ### [2026-03-15 16:30] VSCodeAI → complete: Task 007 (MCP Bridge) — all tests green
 
 Task 007 MCP Bridge implementation complete.
