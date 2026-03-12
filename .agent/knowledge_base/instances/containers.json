@@ -1,0 +1,49 @@
+{
+  "$schema": "../superset/schemas/instance.schema.json",
+  "schema_version": "3.0",
+  "role": "value-layer",
+  "domain": "containers",
+  "canonicality": "canonical-contingent",
+  "source_refs": [
+    "../superset/ontology.json"
+  ],
+  "description": "NodeContainer (OBJ05) instances — scoped graph partitions that own, link, and synchronise node subgraphs. Stratum S2 (structural) or S3 (runtime). Source morphisms: LINK_NODES, SYNC_ACTIVE_STATE. Target morphisms: OWNS, CAN_HYDRATE, LINK_NODES, ADD_NODE_CONTAINER.",
+  "entries": [
+    {
+      "id": "urn:moos:container:workspace-root",
+      "type_id": "node_container",
+      "stratum": "S2",
+      "label": "Workspace Root Container",
+      "description": "Top-level NodeContainer scoping the entire moos workspace graph. Owns all top-level nodes seeded at boot. Links to kernel, template, tool, and identity subgraphs via LINK_NODES morphisms.",
+      "owns": [
+        "urn:moos:kernel:wave-0"
+      ],
+      "can_contain": [
+        "node_container",
+        "app_template",
+        "system_tool",
+        "compute_resource",
+        "infra_service",
+        "memory_store"
+      ],
+      "status": "contingent-local-dev"
+    },
+    {
+      "id": "urn:moos:container:kernel-runtime",
+      "type_id": "node_container",
+      "stratum": "S3",
+      "label": "Kernel Runtime Container",
+      "description": "Runtime NodeContainer for active kernel morphism state. Holds the live catamorphism fold context and the morphism-log store. Child of workspace-root.",
+      "parent": "urn:moos:container:workspace-root",
+      "owns": [
+        "urn:moos:kernel:wave-0"
+      ],
+      "can_contain": [
+        "memory_store",
+        "infra_service"
+      ],
+      "status": "contingent-local-dev"
+    }
+  ],
+  "notes": "NodeContainer is often implicit in kernel boot (kernel node at S2 acts as root). These explicit entries allow hydration programs targeting OBJ05. The 'owns' and 'can_contain' fields are informational — actual graph wires are asserted by kernel morphisms."
+}

@@ -1,6 +1,6 @@
 # Task: Fill Instance Gaps (21/21 Kind Coverage)
 
-**Status:** pending
+**Status:** done
 **Priority:** p1
 **Delegated:** 2026-03-12
 
