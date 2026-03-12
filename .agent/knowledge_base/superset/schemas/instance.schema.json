@@ -1,23 +1,24 @@
 {
     "$id": "https://moos.factory/schemas/instance.schema.json",
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Mo:os Instance Schema",
-    "description": "Defines valid populations of nodes mapped to the ontology.",
+    "description": "Validates instances/*.json files. Requires domain and entries[]. Each entry must have id (URN) and type_id (from ontology enum). stratum is optional; when present must be S0-S4 and within allowed_strata for the type_id per ontology.json.",
     "type": "object",
     "required": [
-        "schema_version",
         "domain",
         "entries"
     ],
     "properties": {
-        "schema_version": {
-            "type": "string"
-        },
+        "$schema": { "type": "string" },
+        "schema_version": { "type": "string" },
         "domain": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
         },
+        "description": { "type": "string" },
         "entries": {
             "type": "array",
+            "minItems": 1,
             "items": {
                 "type": "object",
                 "required": [
@@ -27,18 +28,48 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "pattern": "^urn:moos:"
+                        "pattern": "^urn:moos:",
+                        "description": "Canonical URN for this instance, e.g. urn:moos:provider:anthropic"
                     },
                     "type_id": {
                         "type": "string",
-                        "description": "Foreign key to ontology.json objects[].type_id"
+                        "description": "Foreign key to ontology.json objects[].type_id — must be one of the 21 canonical values",
+                        "enum": [
+                            "user",
+                            "collider_admin",
+                            "superadmin",
+                            "app_template",
+                            "node_container",
+                            "agnostic_model",
+                            "system_tool",
+                            "ui_lens",
+                            "runtime_surface",
+                            "compute_resource",
+                            "protocol_adapter",
+                            "infra_service",
+                            "memory_store",
+                            "platform_config",
+                            "workstation_config",
+                            "preference",
+                            "provider",
+                            "benchmark_suite",
+                            "benchmark_task",
+                            "benchmark_score",
+                            "agent_spec"
+                        ]
                     },
-                    "status": {
-                        "type": "string"
-                    }
+                    "stratum": {
+                        "type": "string",
+                        "enum": ["S0", "S1", "S2", "S3", "S4"],
+                        "description": "Optional stratum hint. When present must be within allowed_strata for this type_id per ontology.json."
+                    },
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "status": { "type": "string" }
                 },
                 "additionalProperties": true
             }
         }
-    }
+    },
+    "additionalProperties": true
 }
