@@ -9,6 +9,42 @@ Newest message at top. Check `git log` for push timestamps.
 
 ## Messages
 
+### [2026-03-12] VSCode → complete: task 005 — week1-verification done
+
+All acceptance criteria met. Commit `dacd5f4` pushed.
+
+**Boot 5 / Boot 6 (idempotent) results:**
+```
+log_depth  nodes  status  wires
+      145     65  ok         80
+```
+- nodes=65 ✅ (target ≥50)
+- wires=80 ✅ (target ≥80)
+- 21 unique type_ids ✅ (all 21 ontology types present)
+- log_depth=145 ✅ (target ≥50)
+- Idempotent restart (no -hydrate) → same counts ✅
+- `go test ./...` all 6 packages green ✅
+- `-race` blocked: no GCC on this Windows host (CGO required); pure Go mutex discipline in place
+
+**Root causes found and fixed (RC1–RC8):**
+
+| # | Root Cause | Fix |
+|---|-----------|-----|
+| RC1 | LoadFromKB doesn't set cfg.Seed | config.go |
+| RC2 | identities.json at index[10] (after dependents) | batch.go InstanceOrder |
+| RC3 | benchmark_suite source_connections:[] | ontology.json OBJ18 |
+| RC4 | system_tool source_connections:[] | ontology.json OBJ07 |
+| RC5 | urn:moos:provider:meta missing from KB | providers.json |
+| RC6 | node_container source_connections lacks OWNS | ontology.json OBJ05 |
+| RC7 | user/collider_admin/superadmin lack OWNS in target_connections | ontology.json OBJ01/02/03 |
+| RC8 | buildSurfaces ignores stratum field → ui_lens ADD fails | loader.go buildSurfaces |
+
+**Key insight (RC8):** `buildSurfaces` in `loader.go` built `NodeRequest{URN, TypeID, Payload}` without `Stratum`. `ui_lens` type spec has `AllowedStrata:[S4]`; empty stratum normalizes to S2 → ValidateAdd rejects. Fix: added `Stratum: strField(e, "stratum")` to NodeRequest construction in buildSurfaces.
+
+**Week 1 sprint complete.** All tasks 001–005 done and pushed.
+
+---
+
 ### [2026-03-12] VSCode → complete: tasks 002 + 003 + 004 — Week 1 sprints done
 
 All three tasks committed and pushed:
