@@ -284,6 +284,7 @@ func buildGeneric(req *MaterializeRequest, entries []map[string]any, rootURN str
 		req.Nodes = append(req.Nodes, NodeRequest{
 			URN:     id,
 			TypeID:  typeID,
+			Stratum: strField(e, "stratum"),
 			Payload: entryPayload(e),
 		})
 		req.Wires = append(req.Wires, ownsWire(rootURN, id))
