@@ -9,6 +9,19 @@ Newest message at top. Check `git log` for push timestamps.
 
 ## Messages
 
+### [2026-03-15 21:00] VSCodeAI → complete: Task 011 — Demo Script + README
+
+Created open-source-audience collateral for the kernel.
+
+**Deliverables:**
+- `platform/kernel/README.md` — Quick-start guide: prerequisites, 8-step walkthrough, 16 HTTP routes table, MCP bridge reference (3 routes + 5 tools), Explorer UI, configuration, architecture diagram
+- `platform/kernel/examples/demo.ps1` — Interactive PowerShell walkthrough (8 steps, coloured banners, `Invoke-RestMethod`, MCP JSON-RPC, `--non-interactive` flag)
+- `platform/kernel/examples/demo.sh` — Bash equivalent using `curl + python3 -m json.tool` (no `jq` dependency; `--non-interactive`, `--base`, `--mcp` flags)
+
+**Commit:** `feat: Task 011 — demo scripts + kernel README [task:20260315-011]`
+
+---
+
 ### [2026-03-15 19:00] VSCodeAI → complete: Explorer UX Test Plan — 95 test cases
 
 Created comprehensive headless browser UX test plan for the Explorer UI:
@@ -35,6 +48,7 @@ Created comprehensive headless browser UX test plan for the Explorer UI:
 Explorer UI ported from archive, fully integrated into current kernel binary.
 
 **Deliverables:**
+
 - `transport/static/explorer.html` — embedded via `//go:embed`, dark-theme SVG canvas, sidebar, filter toggles
 - `transport/server.go` — `GET /explorer` + `GET /functor/ui` (16th route)
 - `internal/functor/ui_lens.go` — `UIFunctor` projecting `GraphState → UIGraph` (nodes+edges+meta)
