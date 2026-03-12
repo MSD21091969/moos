@@ -72,7 +72,10 @@
             "provider_ref": "urn:moos:provider:openai",
             "model_family": "gpt",
             "context_window_tokens": 128000,
-            "modalities": ["text", "vision"],
+            "modalities": [
+                "text",
+                "vision"
+            ],
             "status": "available"
         },
         {
@@ -82,7 +85,9 @@
             "provider_ref": "urn:moos:provider:openai",
             "model_family": "gpt",
             "context_window_tokens": 128000,
-            "modalities": ["text"],
+            "modalities": [
+                "text"
+            ],
             "status": "available"
         },
         {
@@ -92,7 +97,10 @@
             "provider_ref": "urn:moos:provider:gemini",
             "model_family": "gemini",
             "context_window_tokens": 1000000,
-            "modalities": ["text", "vision"],
+            "modalities": [
+                "text",
+                "vision"
+            ],
             "status": "available"
         },
         {
@@ -102,7 +110,10 @@
             "provider_ref": "urn:moos:provider:gemini",
             "model_family": "gemini",
             "context_window_tokens": 2000000,
-            "modalities": ["text", "vision"],
+            "modalities": [
+                "text",
+                "vision"
+            ],
             "status": "available"
         },
         {
@@ -112,7 +123,9 @@
             "provider_ref": "urn:moos:provider:anthropic",
             "model_family": "claude",
             "context_window_tokens": 200000,
-            "modalities": ["text"],
+            "modalities": [
+                "text"
+            ],
             "status": "available"
         },
         {
@@ -122,7 +135,10 @@
             "provider_ref": "urn:moos:provider:anthropic",
             "model_family": "claude",
             "context_window_tokens": 200000,
-            "modalities": ["text", "vision"],
+            "modalities": [
+                "text",
+                "vision"
+            ],
             "status": "available"
         },
         {
@@ -132,7 +148,10 @@
             "provider_ref": "urn:moos:provider:google-vertex",
             "model_family": "gemini",
             "context_window_tokens": 2000000,
-            "modalities": ["text", "vision"],
+            "modalities": [
+                "text",
+                "vision"
+            ],
             "status": "available"
         }
     ],

@@ -9,13 +9,19 @@
         "entries"
     ],
     "properties": {
-        "$schema": { "type": "string" },
-        "schema_version": { "type": "string" },
+        "$schema": {
+            "type": "string"
+        },
+        "schema_version": {
+            "type": "string"
+        },
         "domain": {
             "type": "string",
             "minLength": 1
         },
-        "description": { "type": "string" },
+        "description": {
+            "type": "string"
+        },
         "entries": {
             "type": "array",
             "minItems": 1,
@@ -60,12 +66,24 @@
                     },
                     "stratum": {
                         "type": "string",
-                        "enum": ["S0", "S1", "S2", "S3", "S4"],
+                        "enum": [
+                            "S0",
+                            "S1",
+                            "S2",
+                            "S3",
+                            "S4"
+                        ],
                         "description": "Optional stratum hint. When present must be within allowed_strata for this type_id per ontology.json."
                     },
-                    "name": { "type": "string" },
-                    "description": { "type": "string" },
-                    "status": { "type": "string" }
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
                 },
                 "additionalProperties": true
             }

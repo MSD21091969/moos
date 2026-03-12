@@ -19,7 +19,9 @@
         "OWNS",
         "CAN_HYDRATE"
       ],
-      "target_connections": ["OWNS"]
+      "target_connections": [
+        "OWNS"
+      ]
     },
     {
       "id": "OBJ02",
@@ -37,7 +39,9 @@
         "CAN_HYDRATE",
         "PRE_FLIGHT_CONFIG"
       ],
-      "target_connections": ["OWNS"]
+      "target_connections": [
+        "OWNS"
+      ]
     },
     {
       "id": "OBJ03",
@@ -57,7 +61,9 @@
         "CAN_SCHEDULE",
         "CAN_FEDERATE"
       ],
-      "target_connections": ["OWNS"]
+      "target_connections": [
+        "OWNS"
+      ]
     },
     {
       "id": "OBJ04",
@@ -132,7 +138,9 @@
         "S2",
         "S3"
       ],
-      "source_connections": ["CAN_ROUTE"],
+      "source_connections": [
+        "CAN_ROUTE"
+      ],
       "target_connections": [
         "OWNS",
         "CAN_HYDRATE",
@@ -326,7 +334,9 @@
       "allowed_strata": [
         "S2"
       ],
-      "source_connections": ["OWNS"],
+      "source_connections": [
+        "OWNS"
+      ],
       "target_connections": [
         "OWNS",
         "BENCHMARKED_BY"
