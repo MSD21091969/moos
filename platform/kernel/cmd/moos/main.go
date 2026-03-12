@@ -1,8 +1,8 @@
 // Entrypoint for the mo:os kernel v2.
 //
 // Boot sequence:
-//  1. Parse --config flag
-//  2. Load config from JSON file
+//  1. Parse --config or --kb flag (--config wins if both provided)
+//  2. Load config (from file or derived from KB root)
 //  3. Load operad registry (if configured)
 //  4. Open store (file or memory)
 //  5. Create runtime (replay morphism log → reconstruct state)
@@ -28,17 +28,29 @@ import (
 )
 
 func main() {
-	configPath := flag.String("config", "", "path to config.json (required)")
+	configPath := flag.String("config", "", "path to config.json")
+	kbPath := flag.String("kb", "", "path to knowledge base root (derives registry + config)")
 	flag.Parse()
 
-	if *configPath == "" {
-		fmt.Fprintln(os.Stderr, "usage: moos --config <path>")
+	var (
+		cfg *config.Config
+		err error
+	)
+	switch {
+	case *configPath != "":
+		cfg, err = config.LoadFromFile(*configPath)
+		if err != nil {
+			log.Fatalf("[boot] config: %v", err)
+		}
+	case *kbPath != "":
+		cfg, err = config.LoadFromKB(*kbPath)
+		if err != nil {
+			log.Fatalf("[boot] kb: %v", err)
+		}
+		log.Printf("[boot] kb=%s", *kbPath)
+	default:
+		fmt.Fprintln(os.Stderr, "usage: moos --config <path> | --kb <kb-root>")
 		os.Exit(1)
-	}
-
-	cfg, err := config.LoadFromFile(*configPath)
-	if err != nil {
-		log.Fatalf("[boot] config: %v", err)
 	}
 	log.Printf("[boot] store=%s addr=%s", cfg.StoreType, cfg.ListenAddr)
 
