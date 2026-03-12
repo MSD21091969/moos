@@ -77,12 +77,9 @@ nul
 # Claude Code session state
 .claude/
 
-# Copilot skills generated locally
-.agent/skills/
-.agents/skills/
-**/.agent/skills/
-**/.agents/skills/
-skills/
+# Agent workspace (KB, configs, skills — external to repo)
+.agent/
+.agents/
 
 # IDE / Editor
 .idea/

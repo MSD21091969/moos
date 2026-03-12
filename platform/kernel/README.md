@@ -43,8 +43,10 @@ Push-Location platform\kernel
 go build -o moos.exe .\cmd\moos
 Pop-Location
 
-# 3. Boot with the bundled knowledge base
-.\platform\kernel\moos.exe --kb .agent\knowledge_base --hydrate
+# 3. Point to a knowledge base and boot
+# For a minimal starting point, copy examples\kb-starter\ to an external directory:
+# cp -r platform\kernel\examples\kb-starter C:\my-kb
+.\platform\kernel\moos.exe --kb C:\my-kb --hydrate
 ```
 
 The kernel starts on **`:8000`** (HTTP API) and **`:8080`** (MCP SSE bridge).

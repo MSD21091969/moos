@@ -1,252 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>mo:os — Explorer (FUN02 UI_Lens)</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: "Segoe UI", "Calibri", sans-serif; background: #0b1220; color: #dbe7ff; }
-  header { padding: 12px 20px; background: #161b22; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 12px; }
-  header h1 { font-size: 16px; font-weight: 600; }
-  header .badge { font-size: 11px; background: #238636; padding: 2px 8px; border-radius: 12px; }
-  .container { display: flex; height: calc(100vh - 48px); }
-  .sidebar { width: 340px; overflow-y: auto; border-right: 1px solid #27364f; padding: 12px; background: #101a2d; }
-  .sidebar h2 { font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .node-card { background: #172238; border: 1px solid #30415f; border-radius: 6px; padding: 10px; margin-bottom: 8px; cursor: pointer; }
-  .node-card:hover { border-color: #58a6ff; }
-  .node-card .urn { font-size: 12px; font-family: monospace; color: #58a6ff; word-break: break-all; }
-  .node-meta { display:flex; gap:8px; align-items:center; margin-top: 6px; flex-wrap: wrap; }
-  .kind-pill { font-size: 10px; font-weight: 600; border-radius: 999px; padding: 2px 8px; color: #0d1117; }
-  .stratum-pill { font-size: 10px; color: #9fb4d7; border: 1px solid #3a5277; border-radius: 999px; padding: 2px 8px; }
-  .category-pill { font-size: 9px; color: #9fb4d7; border: 1px solid #3a5277; border-radius: 999px; padding: 1px 6px; }
-  .controls { margin-bottom: 12px; display: grid; gap: 8px; }
-  .controls label { display: flex; gap: 8px; font-size: 12px; color: #9fb4d7; align-items: center; }
-  .canvas-area { flex: 1; position: relative; overflow: hidden; }
-  svg { width: 100%; height: 100%; }
-  .node circle { stroke-width: 2; }
-  .node text { fill: #c9d1d9; font-size: 10px; font-family: monospace; }
-  .edge line { stroke: #4a5f83; stroke-width: 1.5; }
-  .edge text { fill: #7f9cc7; font-size: 9px; font-family: monospace; }
-  .stats { font-size: 11px; color: #8b949e; margin-bottom: 12px; }
-  .loading { text-align: center; padding: 40px; color: #8b949e; }
-  .activity-panel { width: 300px; overflow-y: auto; border-left: 1px solid #27364f; padding: 12px; background: #0e1724; display: flex; flex-direction: column; }
-  .activity-panel h2 { font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; flex-shrink: 0; }
-  .activity-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-  .activity-item { background: #112131; border: 1px solid #1e3050; border-radius: 4px; padding: 6px 8px; font-size: 10px; font-family: monospace; word-break: break-all; animation: fadein 0.3s ease; }
-  .activity-item .mt { font-weight: 700; margin-right: 4px; }
-  .activity-item .mt-ADD      { color: #3fb950; }
-  .activity-item .mt-LINK     { color: #58a6ff; }
-  .activity-item .mt-MUTATE   { color: #e3b341; }
-  .activity-item .mt-UNLINK   { color: #f85149; }
-  .activity-ts { color: #5a7399; margin-left: 4px; }
-  @keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mo:os — Explorer (FUN02 UI_Lens)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", "Calibri", sans-serif;
+            background: #0b1220;
+            color: #dbe7ff;
+        }
+
+        header {
+            padding: 12px 20px;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        header .badge {
+            font-size: 11px;
+            background: #238636;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 48px);
+        }
+
+        .sidebar {
+            width: 340px;
+            overflow-y: auto;
+            border-right: 1px solid #27364f;
+            padding: 12px;
+            background: #101a2d;
+        }
+
+        .sidebar h2 {
+            font-size: 13px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .node-card {
+            background: #172238;
+            border: 1px solid #30415f;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .node-card:hover {
+            border-color: #58a6ff;
+        }
+
+        .node-card .urn {
+            font-size: 12px;
+            font-family: monospace;
+            color: #58a6ff;
+            word-break: break-all;
+        }
+
+        .node-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .kind-pill {
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 2px 8px;
+            color: #0d1117;
+        }
+
+        .stratum-pill {
+            font-size: 10px;
+            color: #9fb4d7;
+            border: 1px solid #3a5277;
+            border-radius: 999px;
+            padding: 2px 8px;
+        }
+
+        .category-pill {
+            font-size: 9px;
+            color: #9fb4d7;
+            border: 1px solid #3a5277;
+            border-radius: 999px;
+            padding: 1px 6px;
+        }
+
+        .controls {
+            margin-bottom: 12px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .controls label {
+            display: flex;
+            gap: 8px;
+            font-size: 12px;
+            color: #9fb4d7;
+            align-items: center;
+        }
+
+        .canvas-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .node circle {
+            stroke-width: 2;
+        }
+
+        .node text {
+            fill: #c9d1d9;
+            font-size: 10px;
+            font-family: monospace;
+        }
+
+        .edge line {
+            stroke: #4a5f83;
+            stroke-width: 1.5;
+        }
+
+        .edge text {
+            fill: #7f9cc7;
+            font-size: 9px;
+            font-family: monospace;
+        }
+
+        .stats {
+            font-size: 11px;
+            color: #8b949e;
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8b949e;
+        }
+
+        .activity-panel {
+            width: 300px;
+            overflow-y: auto;
+            border-left: 1px solid #27364f;
+            padding: 12px;
+            background: #0e1724;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-panel h2 {
+            font-size: 13px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .activity-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .activity-item {
+            background: #112131;
+            border: 1px solid #1e3050;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 10px;
+            font-family: monospace;
+            word-break: break-all;
+            animation: fadein 0.3s ease;
+        }
+
+        .activity-item .mt {
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        .activity-item .mt-ADD {
+            color: #3fb950;
+        }
+
+        .activity-item .mt-LINK {
+            color: #58a6ff;
+        }
+
+        .activity-item .mt-MUTATE {
+            color: #e3b341;
+        }
+
+        .activity-item .mt-UNLINK {
+            color: #f85149;
+        }
+
+        .activity-ts {
+            color: #5a7399;
+            margin-left: 4px;
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
+
 <body>
-<header>
-  <h1>mo:os Explorer</h1>
-  <span class="badge">FUN02 UI_Lens</span>
-  <span class="badge" style="background:#1f6feb">S4 read-only</span>
-</header>
-<div class="container">
-  <div class="sidebar" id="sidebar">
-    <div class="stats" id="stats"></div>
-    <div class="controls">
-      <label><input id="toggle-cat" type="checkbox"> show glossary urn:moos:cat:*</label>
-      <label><input id="toggle-system" type="checkbox"> show kernel/feature nodes</label>
+    <header>
+        <h1>mo:os Explorer</h1>
+        <span class="badge">FUN02 UI_Lens</span>
+        <span class="badge" style="background:#1f6feb">S4 read-only</span>
+    </header>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="stats" id="stats"></div>
+            <div class="controls">
+                <label><input id="toggle-cat" type="checkbox"> show glossary urn:moos:cat:*</label>
+                <label><input id="toggle-system" type="checkbox"> show kernel/feature nodes</label>
+            </div>
+            <h2>Nodes</h2>
+            <div id="node-list">
+                <div class="loading">Loading graph...</div>
+            </div>
+        </div>
+        <div class="canvas-area">
+            <svg id="graph"></svg>
+        </div>
+        <div class="activity-panel">
+            <h2>Live Morphisms</h2>
+            <div class="activity-list" id="activity-list"></div>
+        </div>
     </div>
-    <h2>Nodes</h2>
-    <div id="node-list"><div class="loading">Loading graph...</div></div>
-  </div>
-  <div class="canvas-area">
-    <svg id="graph"></svg>
-  </div>
-  <div class="activity-panel">
-    <h2>Live Morphisms</h2>
-    <div class="activity-list" id="activity-list"></div>
-  </div>
-</div>
-<script>
-/* ── ontology-derived color map (21 type_ids, grouped by broad_category) ── */
-var kindColor = {
-  /* identity */
-  user:                '#ffd166',
-  collider_admin:      '#f4a261',
-  superadmin:          '#e76f51',
-  agent_spec:          '#ef476f',
-  /* structure */
-  app_template:        '#2a9d8f',
-  node_container:      '#4cc9f0',
-  /* compute */
-  agnostic_model:      '#72efdd',
-  system_tool:         '#90be6d',
-  compute_resource:    '#5bc0be',
-  provider:            '#83c5be',
-  /* surface */
-  ui_lens:             '#f7b267',
-  runtime_surface:     '#f4845f',
-  /* protocol */
-  protocol_adapter:    '#9d4edd',
-  /* infra */
-  infra_service:       '#577590',
-  /* memory */
-  memory_store:        '#b8de6f',
-  /* platform */
-  platform_config:     '#a5b4fc',
-  workstation_config:  '#818cf8',
-  /* config */
-  preference:          '#c4b5fd',
-  /* evaluation */
-  benchmark_suite:     '#fb923c',
-  benchmark_task:      '#fdba74',
-  benchmark_score:     '#fed7aa'
-};
+    <script>
+        /* ── ontology-derived color map (21 type_ids, grouped by broad_category) ── */
+        var kindColor = {
+            /* identity */
+            user: '#ffd166',
+            collider_admin: '#f4a261',
+            superadmin: '#e76f51',
+            agent_spec: '#ef476f',
+            /* structure */
+            app_template: '#2a9d8f',
+            node_container: '#4cc9f0',
+            /* compute */
+            agnostic_model: '#72efdd',
+            system_tool: '#90be6d',
+            compute_resource: '#5bc0be',
+            provider: '#83c5be',
+            /* surface */
+            ui_lens: '#f7b267',
+            runtime_surface: '#f4845f',
+            /* protocol */
+            protocol_adapter: '#9d4edd',
+            /* infra */
+            infra_service: '#577590',
+            /* memory */
+            memory_store: '#b8de6f',
+            /* platform */
+            platform_config: '#a5b4fc',
+            workstation_config: '#818cf8',
+            /* config */
+            preference: '#c4b5fd',
+            /* evaluation */
+            benchmark_suite: '#fb923c',
+            benchmark_task: '#fdba74',
+            benchmark_score: '#fed7aa'
+        };
 
-var stratumOpacity = { S0: 0.55, S1: 0.68, S2: 0.86, S3: 1.0, S4: 0.78 };
+        var stratumOpacity = { S0: 0.55, S1: 0.68, S2: 0.86, S3: 1.0, S4: 0.78 };
 
-var data = { nodes: [], edges: [] };
-var stats = document.getElementById('stats');
-var nodeList = document.getElementById('node-list');
-var svg = document.getElementById('graph');
-var toggleCat = document.getElementById('toggle-cat');
-var toggleSystem = document.getElementById('toggle-system');
+        var data = { nodes: [], edges: [] };
+        var stats = document.getElementById('stats');
+        var nodeList = document.getElementById('node-list');
+        var svg = document.getElementById('graph');
+        var toggleCat = document.getElementById('toggle-cat');
+        var toggleSystem = document.getElementById('toggle-system');
 
-toggleCat.checked = false;
-toggleSystem.checked = false;
+        toggleCat.checked = false;
+        toggleSystem.checked = false;
 
-function isGlossaryNode(n) {
-  return typeof n.id === 'string' && n.id.indexOf('urn:moos:cat:') === 0;
-}
+        function isGlossaryNode(n) {
+            return typeof n.id === 'string' && n.id.indexOf('urn:moos:cat:') === 0;
+        }
 
-function isKernelNode(n) {
-  return n.kind === 'kernel' || n.kind === 'feature';
-}
+        function isKernelNode(n) {
+            return n.kind === 'kernel' || n.kind === 'feature';
+        }
 
-function nodeVisible(n) {
-  if (!toggleCat.checked && isGlossaryNode(n)) return false;
-  if (!toggleSystem.checked && isKernelNode(n)) return false;
-  return true;
-}
+        function nodeVisible(n) {
+            if (!toggleCat.checked && isGlossaryNode(n)) return false;
+            if (!toggleSystem.checked && isKernelNode(n)) return false;
+            return true;
+        }
 
-function edgeVisible(e, vis) {
-  return vis.has(e.source) && vis.has(e.target);
-}
+        function edgeVisible(e, vis) {
+            return vis.has(e.source) && vis.has(e.target);
+        }
 
-function escapeHtml(s) {
-  var div = document.createElement('div');
-  div.appendChild(document.createTextNode(s));
-  return div.innerHTML;
-}
+        function escapeHtml(s) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(s));
+            return div.innerHTML;
+        }
 
-function render() {
-  while (nodeList.firstChild) nodeList.removeChild(nodeList.firstChild);
-  while (svg.firstChild) svg.removeChild(svg.firstChild);
+        function render() {
+            while (nodeList.firstChild) nodeList.removeChild(nodeList.firstChild);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  var nodes = data.nodes.filter(nodeVisible);
-  var vis = new Set(nodes.map(function(n) { return n.id; }));
-  var edges = data.edges.filter(function(e) { return edgeVisible(e, vis); });
+            var nodes = data.nodes.filter(nodeVisible);
+            var vis = new Set(nodes.map(function (n) { return n.id; }));
+            var edges = data.edges.filter(function (e) { return edgeVisible(e, vis); });
 
-  stats.textContent = nodes.length + ' nodes, ' + edges.length + ' edges';
+            stats.textContent = nodes.length + ' nodes, ' + edges.length + ' edges';
 
-  /* ── sidebar cards ── */
-  nodes.forEach(function(n) {
-    var color = kindColor[n.kind] || '#3fb950';
-    var card = document.createElement('div');
-    card.className = 'node-card';
-    card.innerHTML =
-      '<div class="urn">' + escapeHtml(n.label || n.id) + '</div>' +
-      '<div class="node-meta">' +
-        '<span class="kind-pill" style="background:' + color + '">' + escapeHtml(n.kind || '?') + '</span>' +
-        '<span class="stratum-pill">' + escapeHtml(n.stratum || 'S?') + '</span>' +
-        '<span class="category-pill">' + escapeHtml(n.broad_category || '') + '</span>' +
-      '</div>';
-    nodeList.appendChild(card);
-  });
+            /* ── sidebar cards ── */
+            nodes.forEach(function (n) {
+                var color = kindColor[n.kind] || '#3fb950';
+                var card = document.createElement('div');
+                card.className = 'node-card';
+                card.innerHTML =
+                    '<div class="urn">' + escapeHtml(n.label || n.id) + '</div>' +
+                    '<div class="node-meta">' +
+                    '<span class="kind-pill" style="background:' + color + '">' + escapeHtml(n.kind || '?') + '</span>' +
+                    '<span class="stratum-pill">' + escapeHtml(n.stratum || 'S?') + '</span>' +
+                    '<span class="category-pill">' + escapeHtml(n.broad_category || '') + '</span>' +
+                    '</div>';
+                nodeList.appendChild(card);
+            });
 
-  /* ── SVG edges ── */
-  edges.forEach(function(e) {
-    var src = nodes.find(function(n) { return n.id === e.source; });
-    var tgt = nodes.find(function(n) { return n.id === e.target; });
-    if (!src || !tgt) return;
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', 'edge');
-    var x1 = src.x + 200, y1 = src.y + 60;
-    var x2 = tgt.x + 200, y2 = tgt.y + 60;
-    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-    g.appendChild(line);
-    var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    label.setAttribute('x', (x1 + x2) / 2 + 4);
-    label.setAttribute('y', (y1 + y2) / 2 - 4);
-    label.textContent = e.label || '';
-    g.appendChild(label);
-    svg.appendChild(g);
-  });
+            /* ── SVG edges ── */
+            edges.forEach(function (e) {
+                var src = nodes.find(function (n) { return n.id === e.source; });
+                var tgt = nodes.find(function (n) { return n.id === e.target; });
+                if (!src || !tgt) return;
+                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'edge');
+                var x1 = src.x + 200, y1 = src.y + 60;
+                var x2 = tgt.x + 200, y2 = tgt.y + 60;
+                var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+                g.appendChild(line);
+                var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', (x1 + x2) / 2 + 4);
+                label.setAttribute('y', (y1 + y2) / 2 - 4);
+                label.textContent = e.label || '';
+                g.appendChild(label);
+                svg.appendChild(g);
+            });
 
-  /* ── SVG nodes ── */
-  nodes.forEach(function(n) {
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', 'node');
-    g.setAttribute('transform', 'translate(' + (n.x + 200) + ',' + (n.y + 60) + ')');
-    var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('r', 8);
-    circle.setAttribute('fill', kindColor[n.kind] || '#3fb950');
-    circle.setAttribute('fill-opacity', stratumOpacity[n.stratum] || 0.85);
-    circle.setAttribute('stroke', '#c7d2fe');
-    g.appendChild(circle);
-    var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('dx', 12); text.setAttribute('dy', 4);
-    text.textContent = n.id.split(':').pop();
-    g.appendChild(text);
-    svg.appendChild(g);
-  });
-}
+            /* ── SVG nodes ── */
+            nodes.forEach(function (n) {
+                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'node');
+                g.setAttribute('transform', 'translate(' + (n.x + 200) + ',' + (n.y + 60) + ')');
+                var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('r', 8);
+                circle.setAttribute('fill', kindColor[n.kind] || '#3fb950');
+                circle.setAttribute('fill-opacity', stratumOpacity[n.stratum] || 0.85);
+                circle.setAttribute('stroke', '#c7d2fe');
+                g.appendChild(circle);
+                var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('dx', 12); text.setAttribute('dy', 4);
+                text.textContent = n.id.split(':').pop();
+                g.appendChild(text);
+                svg.appendChild(g);
+            });
+        }
 
-/* ── fetch projection from FUN02 endpoint ── */
-function fetchAndRender() {
-  fetch('/functor/ui')
-    .then(function(r) { return r.json(); })
-    .then(function(d) { data = d; render(); })
-    .catch(function(err) {
-      nodeList.innerHTML = '<div class="loading" style="color:#f85149">Failed to load: ' + escapeHtml(String(err)) + '</div>';
-    });
-}
+        /* ── fetch projection from FUN02 endpoint ── */
+        function fetchAndRender() {
+            fetch('/functor/ui')
+                .then(function (r) { return r.json(); })
+                .then(function (d) { data = d; render(); })
+                .catch(function (err) {
+                    nodeList.innerHTML = '<div class="loading" style="color:#f85149">Failed to load: ' + escapeHtml(String(err)) + '</div>';
+                });
+        }
 
-function appendToActivityLog(env) {
-  var list = document.getElementById('activity-list');
-  if (!list) { return; }
-  var item = document.createElement('div');
-  item.className = 'activity-item';
-  var type = env.type || env.Type || '?';
-  var actor = env.actor || env.Actor || '';
-  var ts = env.applied_at || env.AppliedAt || '';
-  var tsShort = ts ? new Date(ts).toISOString().replace('T', ' ').slice(11, 19) : '';
-  item.innerHTML = '<span class="mt mt-' + escapeHtml(type) + '">' + escapeHtml(type) + '</span>' +
-    escapeHtml(actor.split(':').pop() || actor) +
-    '<span class="activity-ts">' + escapeHtml(tsShort) + '</span>';
-  list.insertBefore(item, list.firstChild);
-  // Keep last 20 entries
-  while (list.children.length > 20) {
-    list.removeChild(list.lastChild);
-  }
-}
+        function appendToActivityLog(env) {
+            var list = document.getElementById('activity-list');
+            if (!list) { return; }
+            var item = document.createElement('div');
+            item.className = 'activity-item';
+            var type = env.type || env.Type || '?';
+            var actor = env.actor || env.Actor || '';
+            var ts = env.applied_at || env.AppliedAt || '';
+            var tsShort = ts ? new Date(ts).toISOString().replace('T', ' ').slice(11, 19) : '';
+            item.innerHTML = '<span class="mt mt-' + escapeHtml(type) + '">' + escapeHtml(type) + '</span>' +
+                escapeHtml(actor.split(':').pop() || actor) +
+                '<span class="activity-ts">' + escapeHtml(tsShort) + '</span>';
+            list.insertBefore(item, list.firstChild);
+            // Keep last 20 entries
+            while (list.children.length > 20) {
+                list.removeChild(list.lastChild);
+            }
+        }
 
-/* ── SSE live update ── */
-var es = new EventSource('/log/stream');
-es.addEventListener('morphism', function(e) {
-  try {
-    var env = JSON.parse(e.data);
-    appendToActivityLog(env);
-    fetchAndRender();
-  } catch (_) {}
-});
+        /* ── SSE live update ── */
+        var es = new EventSource('/log/stream');
+        es.addEventListener('morphism', function (e) {
+            try {
+                var env = JSON.parse(e.data);
+                appendToActivityLog(env);
+                fetchAndRender();
+            } catch (_) { }
+        });
 
-fetchAndRender();
+        fetchAndRender();
 
-toggleCat.addEventListener('change', render);
-toggleSystem.addEventListener('change', render);
-</script>
+        toggleCat.addEventListener('change', render);
+        toggleSystem.addEventListener('change', render);
+    </script>
 </body>
+
 </html>

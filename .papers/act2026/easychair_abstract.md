@@ -1,9 +1,0 @@
-# Abstract: Functorial Composition over Task Decomposition: A Categorical Kernel for AI-Human Computation
-
-Current multi-agent AI frameworks decompose tasks in a top-down manner (e.g., LangGraph, CrewAI), producing fragile orchestrations that lack formal structural guarantees. As large language models fragment tasks into sub-routines, the recombination of these tasks relies on ad-hoc aggregation or string-based prompting, brittle to hallucination and context-window overload.
-
-We present `mo:os`, a runtime kernel functioning as a symmetric monoidal category where all computational entities—prompts, models, tools, data, and user interface elements—are modeled uniformly as objects ("Containers"). State changes and capability executions are strictly defined as morphisms (ADD, LINK, MUTATE, UNLINK) over this graph topology.
-
-Applying Lawvere's functorial semantics, `mo:os` separates the syntax of the system (a JSON-schema-validated graph ontology) from its runtime semantics (a deterministic Go execution engine). By restricting the role of LLMs to "Fuzzy Processing Units" that emit strictly typed morphisms rather than natural language orchestration plans, complex behavior emerges from bottom-up, mathematically proven functorial composition rather than unstructured decomposition.
-
-This paper introduces the category of recursive Containers, demonstrates closure under parallel and sequential wiring operations, and presents the "Recursive Semantic Bridge"—a functorial projection that flawlessly translates graph state across the database, the Active State reasoning cache, and the React UI frontend without introducing intermediate business logic. We conclude with a practical benchmark showing how this categorical architecture naturally supports multi-path (DAG) neuro-symbolic reasoning environments natively outperforming linear chain-of-thought orchestration.
