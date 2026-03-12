@@ -5,6 +5,16 @@
 Claude Code (strategic layer) writes task files to `.agent/configs/tasks/`.
 VS Code AI (execution layer) picks them up, implements, commits, pushes.
 
+## Handoff Channel
+
+`.agent/configs/handoff.md` — bidirectional message board.
+
+- **VS Code AI:** After completing a task or hitting a blocker, append a
+  message under `## Messages` (newest on top), commit, and push.
+- **Claude Code:** Checks on `git pull`. Responds by appending below.
+- Format: `### [YYYY-MM-DD HH:MM] Source: subject` then body.
+- Keep messages short — status, blockers, questions only.
+
 ## Task File Format
 
 File: `.agent/configs/tasks/YYYYMMDD-NNN-short-name.md`
