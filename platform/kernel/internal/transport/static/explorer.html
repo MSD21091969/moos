@@ -30,6 +30,17 @@
   .edge text { fill: #7f9cc7; font-size: 9px; font-family: monospace; }
   .stats { font-size: 11px; color: #8b949e; margin-bottom: 12px; }
   .loading { text-align: center; padding: 40px; color: #8b949e; }
+  .activity-panel { width: 300px; overflow-y: auto; border-left: 1px solid #27364f; padding: 12px; background: #0e1724; display: flex; flex-direction: column; }
+  .activity-panel h2 { font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; flex-shrink: 0; }
+  .activity-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .activity-item { background: #112131; border: 1px solid #1e3050; border-radius: 4px; padding: 6px 8px; font-size: 10px; font-family: monospace; word-break: break-all; animation: fadein 0.3s ease; }
+  .activity-item .mt { font-weight: 700; margin-right: 4px; }
+  .activity-item .mt-ADD      { color: #3fb950; }
+  .activity-item .mt-LINK     { color: #58a6ff; }
+  .activity-item .mt-MUTATE   { color: #e3b341; }
+  .activity-item .mt-UNLINK   { color: #f85149; }
+  .activity-ts { color: #5a7399; margin-left: 4px; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -50,6 +61,10 @@
   </div>
   <div class="canvas-area">
     <svg id="graph"></svg>
+  </div>
+  <div class="activity-panel">
+    <h2>Live Morphisms</h2>
+    <div class="activity-list" id="activity-list"></div>
   </div>
 </div>
 <script>
@@ -190,12 +205,45 @@ function render() {
 }
 
 /* ── fetch projection from FUN02 endpoint ── */
-fetch('/functor/ui')
-  .then(function(r) { return r.json(); })
-  .then(function(d) { data = d; render(); })
-  .catch(function(err) {
-    nodeList.innerHTML = '<div class="loading" style="color:#f85149">Failed to load: ' + escapeHtml(String(err)) + '</div>';
-  });
+function fetchAndRender() {
+  fetch('/functor/ui')
+    .then(function(r) { return r.json(); })
+    .then(function(d) { data = d; render(); })
+    .catch(function(err) {
+      nodeList.innerHTML = '<div class="loading" style="color:#f85149">Failed to load: ' + escapeHtml(String(err)) + '</div>';
+    });
+}
+
+function appendToActivityLog(env) {
+  var list = document.getElementById('activity-list');
+  if (!list) { return; }
+  var item = document.createElement('div');
+  item.className = 'activity-item';
+  var type = env.type || env.Type || '?';
+  var actor = env.actor || env.Actor || '';
+  var ts = env.applied_at || env.AppliedAt || '';
+  var tsShort = ts ? new Date(ts).toISOString().replace('T', ' ').slice(11, 19) : '';
+  item.innerHTML = '<span class="mt mt-' + escapeHtml(type) + '">' + escapeHtml(type) + '</span>' +
+    escapeHtml(actor.split(':').pop() || actor) +
+    '<span class="activity-ts">' + escapeHtml(tsShort) + '</span>';
+  list.insertBefore(item, list.firstChild);
+  // Keep last 20 entries
+  while (list.children.length > 20) {
+    list.removeChild(list.lastChild);
+  }
+}
+
+/* ── SSE live update ── */
+var es = new EventSource('/log/stream');
+es.addEventListener('morphism', function(e) {
+  try {
+    var env = JSON.parse(e.data);
+    appendToActivityLog(env);
+    fetchAndRender();
+  } catch (_) {}
+});
+
+fetchAndRender();
 
 toggleCat.addEventListener('change', render);
 toggleSystem.addEventListener('change', render);

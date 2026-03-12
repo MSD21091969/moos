@@ -15,11 +15,14 @@ import (
 // Runtime is the effect shell wrapping the pure catamorphism.
 // All shared state is guarded by RWMutex. Read paths use RLock; writes use Lock.
 type Runtime struct {
-	mu       sync.RWMutex
-	state    cat.GraphState
-	store    Store
-	registry *operad.Registry
-	log      []cat.PersistedEnvelope
+	mu           sync.RWMutex
+	state        cat.GraphState
+	store        Store
+	registry     *operad.Registry
+	log          []cat.PersistedEnvelope
+	subscriberMu sync.Mutex // separate from state RWMutex to avoid deadlock
+	subscribers  map[string]chan cat.PersistedEnvelope
+	nextSubID    int
 }
 
 // NewRuntime constructs a Runtime by replaying the morphism log from the store.
@@ -39,50 +42,59 @@ func NewRuntime(store Store, registry *operad.Registry) (*Runtime, error) {
 		len(entries), len(state.Nodes), len(state.Wires))
 
 	return &Runtime{
-		state:    state,
-		store:    store,
-		registry: registry,
-		log:      entries,
+		state:       state,
+		store:       store,
+		registry:    registry,
+		log:         entries,
+		subscribers: make(map[string]chan cat.PersistedEnvelope),
 	}, nil
 }
 
 // Apply evaluates a single envelope, persists it, and updates the runtime state.
 func (r *Runtime) Apply(envelope cat.Envelope) (cat.EvalResult, error) {
 	r.mu.Lock()
-	defer r.mu.Unlock()
 
 	now := time.Now().UTC()
 	result, err := fold.EvaluateWithRegistry(r.state, envelope, now, r.registry)
 	if err != nil {
+		r.mu.Unlock()
 		return cat.EvalResult{}, err
 	}
 
 	if err := r.store.Append([]cat.PersistedEnvelope{result.Persisted}); err != nil {
+		r.mu.Unlock()
 		return cat.EvalResult{}, fmt.Errorf("persisting morphism: %w", err)
 	}
 
 	r.state = result.State
 	r.log = append(r.log, result.Persisted)
+	r.mu.Unlock()
+
+	r.broadcast(result.Persisted)
 	return result, nil
 }
 
 // ApplyProgram evaluates an atomic batch of envelopes.
 func (r *Runtime) ApplyProgram(program cat.Program) (cat.ProgramResult, error) {
 	r.mu.Lock()
-	defer r.mu.Unlock()
 
 	now := time.Now().UTC()
 	result, err := fold.EvaluateProgramWithRegistry(r.state, program, now, r.registry)
 	if err != nil {
+		r.mu.Unlock()
 		return cat.ProgramResult{}, err
 	}
 
 	if err := r.store.Append(result.Persisted); err != nil {
+		r.mu.Unlock()
 		return cat.ProgramResult{}, fmt.Errorf("persisting program: %w", err)
 	}
 
 	r.state = result.State
 	r.log = append(r.log, result.Persisted...)
+	r.mu.Unlock()
+
+	r.broadcast(result.Persisted...)
 	return result, nil
 }
 
@@ -223,4 +235,41 @@ func (r *Runtime) ScopedSubgraph(actor cat.URN) cat.GraphState {
 // Registry returns the operad registry (may be nil).
 func (r *Runtime) Registry() *operad.Registry {
 	return r.registry
+}
+
+// Subscribe registers a new observer and returns its id and receive-only channel.
+// The channel is buffered (64) so brief bursts don't block the kernel.
+func (r *Runtime) Subscribe() (string, <-chan cat.PersistedEnvelope) {
+	r.subscriberMu.Lock()
+	defer r.subscriberMu.Unlock()
+	r.nextSubID++
+	id := fmt.Sprintf("sub-%d", r.nextSubID)
+	ch := make(chan cat.PersistedEnvelope, 64)
+	r.subscribers[id] = ch
+	return id, ch
+}
+
+// Unsubscribe closes and removes a subscriber channel.
+func (r *Runtime) Unsubscribe(id string) {
+	r.subscriberMu.Lock()
+	defer r.subscriberMu.Unlock()
+	if ch, ok := r.subscribers[id]; ok {
+		close(ch)
+		delete(r.subscribers, id)
+	}
+}
+
+// broadcast delivers entries to all subscriber channels using non-blocking sends.
+// A slow or unresponsive subscriber is silently dropped for that entry.
+func (r *Runtime) broadcast(entries ...cat.PersistedEnvelope) {
+	r.subscriberMu.Lock()
+	defer r.subscriberMu.Unlock()
+	for _, entry := range entries {
+		for _, ch := range r.subscribers {
+			select {
+			case ch <- entry:
+			default:
+			}
+		}
+	}
 }

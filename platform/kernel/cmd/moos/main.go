@@ -89,6 +89,7 @@ func main() {
 
 	// 4. Apply seed
 	seedKernel(rt, cfg)
+	seedAgentNodes(rt)
 
 	// 5. Optionally hydrate Tier-2 instance files from the KB.
 	if *hydrateFlag && *kbPath != "" {
@@ -162,4 +163,30 @@ func seedKernel(rt *shell.Runtime, cfg *config.Config) {
 		return
 	}
 	log.Printf("[seed] kernel seeded: %s (type=%s)", cfg.Seed.URN, cfg.Seed.TypeID)
+}
+
+// seedAgentNodes seeds the three canonical agent nodes idempotently.
+// Errors are non-fatal; the kernel continues without them.
+func seedAgentNodes(rt *shell.Runtime) {
+	const actor = cat.URN("urn:moos:identity:kernel")
+	agents := []struct{ urn, label string }{
+		{"urn:moos:agent:claude-code", "Claude Code (strategic AI)"},
+		{"urn:moos:agent:vscode-ai", "VS Code AI — Sonnet 4.6 (execution AI)"},
+		{"urn:moos:agent:antigraviti", "Antigraviti — Gemini 3.1 Pro (UX testing AI)"},
+	}
+	for _, a := range agents {
+		env := cat.Envelope{
+			Type:  cat.ADD,
+			Actor: actor,
+			Add: &cat.AddPayload{
+				URN:      cat.URN(a.urn),
+				TypeID:   "agent_spec",
+				Metadata: map[string]any{"label": a.label},
+			},
+		}
+		if err := rt.SeedIfAbsent(env); err != nil {
+			log.Printf("[seed] agent %s: %v", a.urn, err)
+		}
+	}
+	log.Printf("[seed] agent nodes seeded")
 }

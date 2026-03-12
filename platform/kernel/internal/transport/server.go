@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -55,6 +56,7 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /morphisms", s.handlePostMorphism)
 	s.mux.HandleFunc("POST /programs", s.handlePostProgram)
 	s.mux.HandleFunc("GET /log", s.handleLog)
+	s.mux.HandleFunc("GET /log/stream", s.handleLogStream)
 	s.mux.HandleFunc("GET /semantics/registry", s.handleRegistry)
 	s.mux.HandleFunc("POST /hydration/materialize", s.handleMaterialize)
 	s.mux.HandleFunc("GET /state/scope/", s.handleScope)
@@ -182,7 +184,99 @@ func (s *Server) handlePostProgram(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleLog(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.runtime.Log())
+	entries := s.runtime.Log()
+	q := r.URL.Query()
+
+	// ?after=<RFC3339>
+	if afterStr := q.Get("after"); afterStr != "" {
+		t, err := time.Parse(time.RFC3339, afterStr)
+		if err != nil {
+			http.Error(w, "invalid after param: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		filtered := entries[:0]
+		for _, e := range entries {
+			if e.IssuedAt.After(t) {
+				filtered = append(filtered, e)
+			}
+		}
+		entries = filtered
+	}
+
+	// ?actor=<urn>
+	if actor := q.Get("actor"); actor != "" {
+		filtered := entries[:0]
+		for _, e := range entries {
+			if string(e.Envelope.Actor) == actor {
+				filtered = append(filtered, e)
+			}
+		}
+		entries = filtered
+	}
+
+	// ?type=<ADD|LINK|MUTATE|UNLINK>
+	if typeStr := q.Get("type"); typeStr != "" {
+		upper := strings.ToUpper(typeStr)
+		filtered := entries[:0]
+		for _, e := range entries {
+			if strings.ToUpper(string(e.Envelope.Type)) == upper {
+				filtered = append(filtered, e)
+			}
+		}
+		entries = filtered
+	}
+
+	// ?limit=<n>
+	if limitStr := q.Get("limit"); limitStr != "" {
+		n, err := strconv.Atoi(limitStr)
+		if err != nil || n < 0 {
+			http.Error(w, "invalid limit param", http.StatusBadRequest)
+			return
+		}
+		if n < len(entries) {
+			entries = entries[len(entries)-n:]
+		}
+	}
+
+	writeJSON(w, http.StatusOK, entries)
+}
+
+// handleLogStream streams new morphisms over SSE as they are applied.
+// Clients receive events of type "morphism" with JSON-encoded PersistedEnvelope data.
+func (s *Server) handleLogStream(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	fl, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "streaming unsupported", http.StatusInternalServerError)
+		return
+	}
+
+	id, ch := s.runtime.Subscribe()
+	defer s.runtime.Unsubscribe(id)
+
+	// Send a comment as heartbeat to confirm stream opened.
+	fmt.Fprintf(w, ": connected\n\n")
+	fl.Flush()
+
+	for {
+		select {
+		case entry, ok := <-ch:
+			if !ok {
+				return
+			}
+			data, err := json.Marshal(entry)
+			if err != nil {
+				continue
+			}
+			fmt.Fprintf(w, "event: morphism\ndata: %s\n\n", data)
+			fl.Flush()
+		case <-r.Context().Done():
+			return
+		}
+	}
 }
 
 func (s *Server) handleRegistry(w http.ResponseWriter, r *http.Request) {
