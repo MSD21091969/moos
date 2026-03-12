@@ -55,6 +55,7 @@
       "id": "urn:moos:surface:explorer-ui",
       "name": "MOOS Runtime Explorer",
       "type_id": "ui_lens",
+      "stratum": "S4",
       "port": 8000,
       "protocol": "HTTP/HTML",
       "entrypoints": [

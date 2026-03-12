@@ -25,7 +25,11 @@
       "stratum": "S2",
       "system_profile": "local-dev-admin",
       "scope": "urn:moos:scope:explorer-demo",
-      "allowed_morphism_roles": ["OWNS", "CAN_HYDRATE", "PRE_FLIGHT_CONFIG"],
+      "allowed_morphism_roles": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "PRE_FLIGHT_CONFIG"
+      ],
       "used_by": [
         "platform/kernel/cmd/kernel/main.go"
       ],
@@ -37,7 +41,13 @@
       "stratum": "S2",
       "system_profile": "root-superadmin",
       "scope": "urn:moos:scope:global",
-      "allowed_morphism_roles": ["OWNS", "CAN_HYDRATE", "PRE_FLIGHT_CONFIG", "CAN_SCHEDULE", "CAN_FEDERATE"],
+      "allowed_morphism_roles": [
+        "OWNS",
+        "CAN_HYDRATE",
+        "PRE_FLIGHT_CONFIG",
+        "CAN_SCHEDULE",
+        "CAN_FEDERATE"
+      ],
       "notes": "Transitive OWNS over all containers. Only one superadmin per kernel instance.",
       "status": "contingent-local-dev"
     }

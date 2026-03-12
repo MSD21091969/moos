@@ -214,6 +214,16 @@
           ]
         }
       ]
+    },
+    {
+      "id": "urn:moos:provider:meta",
+      "type_id": "provider",
+      "name": "Meta AI (Llama)",
+      "adapter_type": "MetaAdapter",
+      "api_base_url": "https://api.llama.com/v1",
+      "auth_pattern": "Bearer token Authorization header",
+      "config_source": ".agent/configs/api_providers.yaml#providers.meta",
+      "models": []
     }
   ]
 }

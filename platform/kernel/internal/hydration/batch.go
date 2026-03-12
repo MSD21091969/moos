@@ -13,6 +13,7 @@ import (
 // InstanceOrder defines the canonical processing order for KB instance files.
 // Providers must precede models; surfaces before tools; tools before agents.
 var InstanceOrder = []string{
+	"identities.json",
 	"providers.json",
 	"surfaces.json",
 	"preferences.json",
@@ -23,7 +24,6 @@ var InstanceOrder = []string{
 	"workstation.json",
 	"compute.json",
 	"containers.json",
-	"identities.json",
 	"infra.json",
 	"memory.json",
 	"models.json",

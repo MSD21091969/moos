@@ -12,14 +12,14 @@ across `instances/`.
 
 ## Current Gaps
 
-| type_id | Kind | Needs |
-|---------|------|-------|
-| `collider_admin` | OBJ02 | Add to identities.json |
-| `app_template` | OBJ04 | New file or add to existing |
-| `node_container` | OBJ05 | Exemplar container |
-| `compute_resource` | OBJ10 | GPU + cloud exemplars |
-| `infra_service` | OBJ12 | Postgres + filesystem exemplars |
-| `memory_store` | OBJ13 | Vector store + conversation buffer |
+| type_id            | Kind  | Needs                              |
+| ------------------ | ----- | ---------------------------------- |
+| `collider_admin`   | OBJ02 | Add to identities.json             |
+| `app_template`     | OBJ04 | New file or add to existing        |
+| `node_container`   | OBJ05 | Exemplar container                 |
+| `compute_resource` | OBJ10 | GPU + cloud exemplars              |
+| `infra_service`    | OBJ12 | Postgres + filesystem exemplars    |
+| `memory_store`     | OBJ13 | Vector store + conversation buffer |
 
 ## SOT References
 

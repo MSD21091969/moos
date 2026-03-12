@@ -1,38 +1,38 @@
 {
-  "$schema": "../superset/schemas/instance.schema.json",
-  "schema_version": "3.0",
-  "role": "value-layer",
-  "domain": "templates",
-  "canonicality": "canonical-contingent",
-  "source_refs": [
-    "../superset/ontology.json",
-    "../industry/frameworks.json"
-  ],
-  "description": "AppTemplate (OBJ04) instances — immutable scaffold definitions that CAN_HYDRATE into deployed containers. Stratum S1 (schema) or S2 (deployed config). mutable:false per ontology.",
-  "entries": [
-    {
-      "id": "urn:moos:template:kernel-go-service",
-      "type_id": "app_template",
-      "stratum": "S1",
-      "label": "mo:os Go Kernel Service",
-      "description": "Canonical Wave-0 Go kernel template. Pure catamorphism core + effect shell + HTTP transport. Materialized from this template to produce platform/kernel.",
-      "source_framework": "ind:framework:go-chi",
-      "language": "go",
-      "module_path": "moos/platform/kernel",
-      "entry_point": "cmd/kernel/main.go",
-      "capabilities": [
-        "catamorphism-fold",
-        "morphism-log",
-        "semantic-registry",
-        "hydration-pipeline",
-        "http-explorer"
-      ],
-      "source_refs": [
-        "../industry/frameworks.json",
-        "../../platform/kernel"
-      ],
-      "status": "active"
-    }
-  ],
-  "notes": "AppTemplate instances are mutable:false (ontology constraint). Enrichment via MUTATE requires ontology waiver. Add new templates as new entries — do not mutate existing ones."
+    "$schema": "../superset/schemas/instance.schema.json",
+    "schema_version": "3.0",
+    "role": "value-layer",
+    "domain": "templates",
+    "canonicality": "canonical-contingent",
+    "source_refs": [
+        "../superset/ontology.json",
+        "../industry/frameworks.json"
+    ],
+    "description": "AppTemplate (OBJ04) instances — immutable scaffold definitions that CAN_HYDRATE into deployed containers. Stratum S1 (schema) or S2 (deployed config). mutable:false per ontology.",
+    "entries": [
+        {
+            "id": "urn:moos:template:kernel-go-service",
+            "type_id": "app_template",
+            "stratum": "S1",
+            "label": "mo:os Go Kernel Service",
+            "description": "Canonical Wave-0 Go kernel template. Pure catamorphism core + effect shell + HTTP transport. Materialized from this template to produce platform/kernel.",
+            "source_framework": "ind:framework:go-chi",
+            "language": "go",
+            "module_path": "moos/platform/kernel",
+            "entry_point": "cmd/kernel/main.go",
+            "capabilities": [
+                "catamorphism-fold",
+                "morphism-log",
+                "semantic-registry",
+                "hydration-pipeline",
+                "http-explorer"
+            ],
+            "source_refs": [
+                "../industry/frameworks.json",
+                "../../platform/kernel"
+            ],
+            "status": "active"
+        }
+    ],
+    "notes": "AppTemplate instances are mutable:false (ontology constraint). Enrichment via MUTATE requires ontology waiver. Add new templates as new entries — do not mutate existing ones."
 }

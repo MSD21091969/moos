@@ -89,5 +89,11 @@ func LoadFromKB(kbRoot string) (*Config, error) {
 		}
 	}
 
+	// Seed the kernel hub node on every boot (idempotent via SeedIfAbsent).
+	cfg.Seed = &Seed{
+		Actor:  "urn:moos:kernel:self",
+		URN:    "urn:moos:kernel:wave-0",
+		TypeID: "node_container",
+	}
 	return cfg, nil
 }

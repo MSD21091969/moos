@@ -7,13 +7,15 @@ VS Code AI (execution layer) picks them up, implements, commits, pushes.
 
 ## Handoff Channel
 
-`.agent/configs/handoff.md` — bidirectional message board.
+`.agent/knowledge_base/handoff.md` — single bidirectional message board.
 
 - **VS Code AI:** After completing a task or hitting a blocker, append a
   message under `## Messages` (newest on top), commit, and push.
 - **Claude Code:** Checks on `git pull`. Responds by appending below.
-- Format: `### [YYYY-MM-DD HH:MM] Source: subject` then body.
+- Format: `### [YYYY-MM-DD HH:MM] Source → type: subject`
+- Types: `complete` | `blocked` | `question` | `answer` | `direction`
 - Keep messages short — status, blockers, questions only.
+- Questions and answers go in the same file (no separate discussion channel).
 
 ## Task File Format
 
@@ -51,7 +53,7 @@ Claude Code reviews via: `git log --oneline --since="1 hour ago"`
 
 ## Knowledge Hydration Convention
 
-VS Code uses YouTube/Arive/web skills to fetch content.
+VS Code uses YouTube/Arxiv/web skills to fetch content.
 Output goes to: `.agent/knowledge_base/reference/digests/<source>-<topic>.md`
 Claude Code synthesizes into design docs or ontology updates.
 
@@ -61,6 +63,7 @@ Claude Code synthesizes into design docs or ontology updates.
 |---------|-------|----------|
 | `.agent/configs/tasks/` | Claude Code writes | VS Code reads + executes |
 | `.agent/knowledge_base/` | Both write | Both read |
+| `.agent/knowledge_base/handoff.md` | Both write | Both read |
 | `platform/kernel/` | VS Code writes code | Claude Code reviews |
 | `git log` | VS Code pushes | Claude Code monitors |
 | MCP `:8080` (future) | Kernel serves | Both query/mutate |
