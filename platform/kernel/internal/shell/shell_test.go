@@ -196,3 +196,104 @@ func TestLogStore_Cleanup(t *testing.T) {
 		t.Error("expected log file to exist")
 	}
 }
+
+func TestRuntime_ScopedSubgraph(t *testing.T) {
+	tests := []struct {
+		name         string
+		setup        func(rt *shell.Runtime)
+		actor        cat.URN
+		wantNodes    int
+		wantWires    int
+		wantContains []cat.URN
+		wantExcludes []cat.URN
+	}{
+		{
+			name:      "empty graph returns empty",
+			setup:     func(rt *shell.Runtime) {},
+			actor:     "urn:nobody",
+			wantNodes: 0,
+			wantWires: 0,
+		},
+		{
+			name: "actor with no OWNS wires returns just actor",
+			setup: func(rt *shell.Runtime) {
+				rt.Apply(cat.Envelope{Type: cat.ADD, Actor: testActor, Add: &cat.AddPayload{URN: "urn:solo", TypeID: "node_container"}})
+			},
+			actor:        "urn:solo",
+			wantNodes:    1,
+			wantWires:    0,
+			wantContains: []cat.URN{"urn:solo"},
+		},
+		{
+			name: "actor owns child and grandchild",
+			setup: func(rt *shell.Runtime) {
+				prog := cat.Program{
+					Actor: testActor,
+					Envelopes: []cat.Envelope{
+						{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:root", TypeID: "node_container"}},
+						{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:child", TypeID: "node_container"}},
+						{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:grandchild", TypeID: "node_container"}},
+						{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:unrelated", TypeID: "node_container"}},
+						{Type: cat.LINK, Link: &cat.LinkPayload{SourceURN: "urn:root", SourcePort: "OWNS", TargetURN: "urn:child", TargetPort: "OWNS"}},
+						{Type: cat.LINK, Link: &cat.LinkPayload{SourceURN: "urn:child", SourcePort: "OWNS", TargetURN: "urn:grandchild", TargetPort: "OWNS"}},
+						// Non-OWNS wire between owned nodes — should be included
+						{Type: cat.LINK, Link: &cat.LinkPayload{SourceURN: "urn:child", SourcePort: "SYNC_ACTIVE_STATE", TargetURN: "urn:grandchild", TargetPort: "SYNC_ACTIVE_STATE"}},
+						// Wire from owned to unrelated — should NOT be included
+						{Type: cat.LINK, Link: &cat.LinkPayload{SourceURN: "urn:child", SourcePort: "out", TargetURN: "urn:unrelated", TargetPort: "in"}},
+					},
+				}
+				rt.ApplyProgram(prog)
+			},
+			actor:        "urn:root",
+			wantNodes:    3,
+			wantWires:    3, // 2 OWNS + 1 SYNC_ACTIVE_STATE (both endpoints in set)
+			wantContains: []cat.URN{"urn:root", "urn:child", "urn:grandchild"},
+			wantExcludes: []cat.URN{"urn:unrelated"},
+		},
+		{
+			name: "non-OWNS wires do not expand scope",
+			setup: func(rt *shell.Runtime) {
+				prog := cat.Program{
+					Actor: testActor,
+					Envelopes: []cat.Envelope{
+						{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:a", TypeID: "node_container"}},
+						{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:b", TypeID: "node_container"}},
+						{Type: cat.LINK, Link: &cat.LinkPayload{SourceURN: "urn:a", SourcePort: "CAN_HYDRATE", TargetURN: "urn:b", TargetPort: "CAN_HYDRATE"}},
+					},
+				}
+				rt.ApplyProgram(prog)
+			},
+			actor:        "urn:a",
+			wantNodes:    1,
+			wantWires:    0,
+			wantContains: []cat.URN{"urn:a"},
+			wantExcludes: []cat.URN{"urn:b"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rt := newTestRuntime(t)
+			tt.setup(rt)
+
+			got := rt.ScopedSubgraph(tt.actor)
+
+			if len(got.Nodes) != tt.wantNodes {
+				t.Errorf("nodes: want %d, got %d", tt.wantNodes, len(got.Nodes))
+			}
+			if len(got.Wires) != tt.wantWires {
+				t.Errorf("wires: want %d, got %d", tt.wantWires, len(got.Wires))
+			}
+			for _, urn := range tt.wantContains {
+				if _, ok := got.Nodes[urn]; !ok {
+					t.Errorf("expected node %s in subgraph", urn)
+				}
+			}
+			for _, urn := range tt.wantExcludes {
+				if _, ok := got.Nodes[urn]; ok {
+					t.Errorf("unexpected node %s in subgraph", urn)
+				}
+			}
+		})
+	}
+}

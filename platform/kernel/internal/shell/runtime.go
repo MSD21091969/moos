@@ -178,6 +178,48 @@ func (r *Runtime) LogLen() int {
 	return len(r.log)
 }
 
+// ScopedSubgraph returns the full subcategory owned by actor.
+// BFS follows outgoing wires where SourcePort == "OWNS", collecting all
+// transitively owned nodes and any wires whose both endpoints are in the set.
+// Returns an empty GraphState if actor is not found.
+func (r *Runtime) ScopedSubgraph(actor cat.URN) cat.GraphState {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	result := cat.NewGraphState()
+	if _, ok := r.state.Nodes[actor]; !ok {
+		return result
+	}
+
+	// BFS from actor following OWNS wires
+	visited := map[cat.URN]bool{actor: true}
+	queue := []cat.URN{actor}
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+		result.Nodes[current] = r.state.Nodes[current]
+
+		for _, w := range r.state.Wires {
+			if w.SourceURN == current && w.SourcePort == "OWNS" && !visited[w.TargetURN] {
+				if _, exists := r.state.Nodes[w.TargetURN]; exists {
+					visited[w.TargetURN] = true
+					queue = append(queue, w.TargetURN)
+				}
+			}
+		}
+	}
+
+	// Collect wires where both endpoints are in the visited set
+	for key, w := range r.state.Wires {
+		if visited[w.SourceURN] && visited[w.TargetURN] {
+			result.Wires[key] = w
+		}
+	}
+
+	return result
+}
+
 // Registry returns the operad registry (may be nil).
 func (r *Runtime) Registry() *operad.Registry {
 	return r.registry

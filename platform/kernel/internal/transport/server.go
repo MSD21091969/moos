@@ -5,6 +5,7 @@ package transport
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,9 +15,13 @@ import (
 	"time"
 
 	"moos/platform/kernel/internal/cat"
+	"moos/platform/kernel/internal/functor"
 	"moos/platform/kernel/internal/hydration"
 	"moos/platform/kernel/internal/shell"
 )
+
+//go:embed static/explorer.html
+var explorerHTML []byte
 
 // Server is the HTTP transport layer.
 type Server struct {
@@ -52,6 +57,10 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /log", s.handleLog)
 	s.mux.HandleFunc("GET /semantics/registry", s.handleRegistry)
 	s.mux.HandleFunc("POST /hydration/materialize", s.handleMaterialize)
+	s.mux.HandleFunc("GET /state/scope/", s.handleScope)
+	s.mux.HandleFunc("GET /functor/benchmark/", s.handleBenchmarkFunctor)
+	s.mux.HandleFunc("GET /explorer", s.handleExplorer)
+	s.mux.HandleFunc("GET /functor/ui", s.handleUIFunctor)
 }
 
 // ListenAndServe starts the HTTP server on the given address.
@@ -133,6 +142,15 @@ func (s *Server) handleIncomingWires(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, s.runtime.IncomingWires(urn))
+}
+
+func (s *Server) handleScope(w http.ResponseWriter, r *http.Request) {
+	urn := cat.URN(strings.TrimPrefix(r.URL.Path, "/state/scope/"))
+	if urn == "" {
+		writeError(w, http.StatusBadRequest, "missing actor URN")
+		return
+	}
+	writeJSON(w, http.StatusOK, s.runtime.ScopedSubgraph(urn))
 }
 
 func (s *Server) handlePostMorphism(w http.ResponseWriter, r *http.Request) {
@@ -272,6 +290,43 @@ func (s *Server) handleMaterializeSource(w http.ResponseWriter, r *http.Request,
 		"materialized": result,
 		"result":       progResult.Summary,
 	})
+}
+
+func (s *Server) handleBenchmarkFunctor(w http.ResponseWriter, r *http.Request) {
+	suiteURN := strings.TrimPrefix(r.URL.Path, "/functor/benchmark/")
+	if suiteURN == "" {
+		// Return all suites.
+		b := functor.Benchmark{}
+		result, err := b.Project(s.runtime.State())
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		writeJSON(w, http.StatusOK, result)
+		return
+	}
+	b := functor.Benchmark{}
+	result, err := b.ProjectSuite(s.runtime.State(), suiteURN)
+	if err != nil {
+		writeError(w, http.StatusNotFound, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, result)
+}
+
+func (s *Server) handleExplorer(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(explorerHTML)
+}
+
+func (s *Server) handleUIFunctor(w http.ResponseWriter, r *http.Request) {
+	lens := functor.UILens{}
+	result, err := lens.Project(s.runtime.State())
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, result)
 }
 
 // --- Helpers ---

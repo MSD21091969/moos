@@ -208,3 +208,44 @@ func TestGetWires(t *testing.T) {
 		t.Errorf("expected 200, got %d", w.Code)
 	}
 }
+
+func TestGetScope(t *testing.T) {
+	srv := newTestServer(t)
+	// Build: actor -> OWNS -> child
+	prog := cat.Program{
+		Actor: testActor,
+		Envelopes: []cat.Envelope{
+			{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:actor", TypeID: "node_container"}},
+			{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:owned", TypeID: "node_container"}},
+			{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:other", TypeID: "node_container"}},
+			{Type: cat.LINK, Link: &cat.LinkPayload{SourceURN: "urn:actor", SourcePort: "OWNS", TargetURN: "urn:owned", TargetPort: "OWNS"}},
+		},
+	}
+	doRequest(t, srv.Handler(), "POST", "/programs", prog)
+
+	w := doRequest(t, srv.Handler(), "GET", "/state/scope/urn:actor", nil)
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var state cat.GraphState
+	json.Unmarshal(w.Body.Bytes(), &state)
+	if len(state.Nodes) != 2 {
+		t.Errorf("expected 2 nodes in scope, got %d", len(state.Nodes))
+	}
+	if _, ok := state.Nodes["urn:other"]; ok {
+		t.Error("urn:other should not be in scoped subgraph")
+	}
+}
+
+func TestGetScope_Empty(t *testing.T) {
+	srv := newTestServer(t)
+	w := doRequest(t, srv.Handler(), "GET", "/state/scope/urn:nonexistent", nil)
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
+	var state cat.GraphState
+	json.Unmarshal(w.Body.Bytes(), &state)
+	if len(state.Nodes) != 0 {
+		t.Errorf("expected 0 nodes for missing actor, got %d", len(state.Nodes))
+	}
+}

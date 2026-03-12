@@ -23,6 +23,7 @@ import (
 	"moos/platform/kernel/internal/cat"
 	"moos/platform/kernel/internal/config"
 	"moos/platform/kernel/internal/hydration"
+	"moos/platform/kernel/internal/mcp"
 	"moos/platform/kernel/internal/operad"
 	"moos/platform/kernel/internal/shell"
 	"moos/platform/kernel/internal/transport"
@@ -99,6 +100,9 @@ func main() {
 	// 6. Start HTTP server
 	srv := transport.NewServer(rt, *kbPath)
 
+	// 7. Start MCP bridge
+	mcpSrv := mcp.NewServer(rt)
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -107,12 +111,18 @@ func main() {
 			log.Fatalf("[transport] %v", err)
 		}
 	}()
+	go func() {
+		if err := mcpSrv.ListenAndServe(":8080"); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("[mcp] %v", err)
+		}
+	}()
 
 	<-ctx.Done()
 	log.Printf("[boot] shutting down...")
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5e9) // 5s
 	defer cancel()
 	srv.Shutdown(shutdownCtx)
+	mcpSrv.Shutdown(shutdownCtx)
 	log.Printf("[boot] done")
 }
 
