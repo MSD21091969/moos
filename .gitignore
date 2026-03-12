@@ -1,91 +1,42 @@
-# Go kernel runtime artifacts
+# ── Kernel runtime ──
 platform/kernel/moos.exe
 platform/kernel/moos.exe~
 platform/kernel/moos.pid
-platform/kernel/boot*.log
-platform/kernel/boot*.err
 platform/kernel/data/
-*.vtt
 
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
-
-# Virtual environments
-.venv
-
-# Local DB
-*.db
-vector_data/
-
-# Environment files (secrets)
-.env
-.env.local
-.env.development
-.env.production
-**/.env
-**/.env.local
-**/.env.development
-**/.env.production
-!.env.example
-!**/.env.example
-
-# Explicit local secret paths
-/secrets/api_keys.env
-/secrets/gmail_credentials.json
-/secrets/gmail_token.json
-/secrets/mailmind-ai-djbuw-ee3ee7ff8368.json
-/workspaces/maassen_hochrath/_legacy/legacy_container_UX/frontend/.env.development
-/workspaces/maassen_hochrath/_legacy/legacy_container_UX/frontend/.env.production
-/workspaces/maassen_hochrath/_legacy/legacy_container_UX/backend/.env
-
-# GCP service account credentials (must live in secrets/)
-*-service-account*.json
-mailmind-ai-djbuw-*.json
-secrets/*.json
-secrets/*.env
-!secrets/*.example
-
-# Node.js
-node_modules/
-package-lock.json
-
-# Nx runtime artifacts
-.nx/
-**/.nx/
-**/.nx/workspace-data/
-**/.nx/workspace-data/**
-
-# Plasmo build artifacts (Chrome extension framework)
-.plasmo/
-
-# Pytest / Hypothesis test artifacts
-.hypothesis/
-.pytest_cache/
-
-# Temporary files
-*.log
-*.tmp
-git_status_full.txt
-tmpclaude-*-cwd
-nul
-
-# Claude Code session state
+# ── Local workspace (never tracked) ──
+CLAUDE.md
+*.code-workspace
+.vscode/
 .claude/
-
-# Agent workspace (KB, configs, skills — external to repo)
 .agent/
 .agents/
+skills/
+.papers/
+archive/
+secrets/
 
-# IDE / Editor
+# ── IDE instructions (local paths) ──
+.github/copilot-instructions.md
+
+# ── Environment & credentials ──
+.env
+.env.*
+!.env.example
+secrets/
+*-service-account*.json
+
+# ── Build / temp ──
+*.log
+*.tmp
+*.exe~
+*.pid
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── IDE ──
 .idea/
 *.swp
 *.swo
-
-# OS files
-.DS_Store
-Thumbs.db
