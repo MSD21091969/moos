@@ -41,7 +41,7 @@ target_port)` — so multiple typed edges coexist between the same node pair.
 This is König incidence encoding: binary wires that carry hypergraph semantics.
 
 Wolfram's hypergraph rewriting program gives the computational model. The stored
-graph *is* program state. Morphism applications are rewriting rules. Independent
+graph _is_ program state. Morphism applications are rewriting rules. Independent
 morphisms commute — `LINK(A→B) ; LINK(C→D) = LINK(C→D) ; LINK(A→B)` — because
 they touch disjoint hyperedge structure. Causal invariance is the consistency
 guarantee: the order in which independent rewrites are applied does not change
@@ -80,12 +80,12 @@ is plumbing in an effect shell around this pure function.
 
 Five non-negotiable constraints. Not open to per-feature overrides.
 
-| ID  | Axiom                                 | What it rules out                                        |
-| --- | ------------------------------------- | -------------------------------------------------------- |
-| AX1 | Primary substrate is a typed graph    | No flat key-value stores, no blob storage as truth       |
-| AX2 | Meaning is not projection             | UI, embeddings, and prompts are lenses, not ground truth |
-| AX3 | Structural truth is replayable        | No mutable state that cannot be derived from the log     |
-| AX4 | Evaluation does not redefine ontology | Runtime views never update the canonical type system     |
+| ID  | Axiom                                 | What it rules out                                         |
+| --- | ------------------------------------- | --------------------------------------------------------- |
+| AX1 | Primary substrate is a typed graph    | No flat key-value stores, no blob storage as truth        |
+| AX2 | Meaning is not projection             | UI, embeddings, and prompts are lenses, not ground truth  |
+| AX3 | Structural truth is replayable        | No mutable state that cannot be derived from the log      |
+| AX4 | Evaluation does not redefine ontology | Runtime views never update the canonical type system      |
 | AX5 | Governance is structural              | Access control is a graph morphism, not a middleware flag |
 
 ---
@@ -96,12 +96,12 @@ The only operations that can change graph state. All sixteen morphism types
 in the ontology decompose from these four natural transformations. Queries,
 projections, and embeddings are read-only — they never appear in the log.
 
-| NT         | Signature          | What it does                                |
-| ---------- | ------------------ | ------------------------------------------- |
-| **ADD**    | $\emptyset \to C$  | Create a typed container with a URN         |
-| **LINK**   | $C \times C \to W$ | Wire two containers through named ports     |
-| **MUTATE** | $C \to C$          | Update a container's payload (version-CAS)  |
-| **UNLINK** | $W \to \emptyset$  | Remove a wire by its 4-tuple key            |
+| NT         | Signature          | What it does                               |
+| ---------- | ------------------ | ------------------------------------------ |
+| **ADD**    | $\emptyset \to C$  | Create a typed container with a URN        |
+| **LINK**   | $C \times C \to W$ | Wire two containers through named ports    |
+| **MUTATE** | $C \to C$          | Update a container's payload (version-CAS) |
+| **UNLINK** | $W \to \emptyset$  | Remove a wire by its 4-tuple key           |
 
 Every envelope in the log carries exactly one of these four, plus an actor URN
 (who issued it) and an optional scope URN (which sub-graph it targets).
@@ -138,7 +138,7 @@ subgraph traversals with different cost profiles:
 
 - **Knowledge discovery** is edge-heavy: finding what exists, mapping
   relationships, resolving transitive ownership. Cost scales with the number
-  of edges explored. Creating edges *is* the discovery itself.
+  of edges explored. Creating edges _is_ the discovery itself.
 - **Information retrieval** is node-heavy: locating a known container by URN
   or kind, reading its payload. Cost scales with the number of nodes indexed.
 - **Tool execution** is morphism-heavy: composing a program of envelopes,
@@ -160,13 +160,13 @@ category. **Functor outputs are never ground truth** — they are projections
 over evaluated state. Treating any functor output as ontology is an explicit
 violation of AX2 and AX4.
 
-| ID    | Functor     | Signature                    | Codomain    | Status  |
-| ----- | ----------- | ---------------------------- | ----------- | ------- |
-| FUN01 | FileSystem  | $F_{fs}$: Manifest → C      | Manifest    | Active  |
-| FUN02 | UI_Lens     | $F_{ui}$: C → React         | React       | Active  |
-| FUN03 | Embedding   | $F_{embed}$: payload → ℝ^n  | ℝ^1536      | Active  |
-| FUN04 | Structure   | $F_{struct}$: subgraph → DAG | DAG         | Planned |
-| FUN05 | Benchmark   | $F_{bench}$: Provider → Met | Metric space | Planned |
+| ID    | Functor    | Signature                    | Codomain     | Status  |
+| ----- | ---------- | ---------------------------- | ------------ | ------- |
+| FUN01 | FileSystem | $F_{fs}$: Manifest → C       | Manifest     | Active  |
+| FUN02 | UI_Lens    | $F_{ui}$: C → React          | React        | Active  |
+| FUN03 | Embedding  | $F_{embed}$: payload → ℝ^n   | ℝ^1536       | Active  |
+| FUN04 | Structure  | $F_{struct}$: subgraph → DAG | DAG          | Planned |
+| FUN05 | Benchmark  | $F_{bench}$: Provider → Met  | Metric space | Planned |
 
 FUN05 is the classifying functor: it maps provider subcategories into a metric
 space. Its pre-image yields equivalence classes — providers that score
@@ -233,11 +233,11 @@ Seven packages separated by a strict purity boundary.
 
 ### Pure Core — no IO, no side effects
 
-| Package    | Purpose                                                          |
-| ---------- | ---------------------------------------------------------------- |
-| `cat`      | Categorical types: URN, Node, Wire, Envelope, Program, State    |
-| `fold`     | Catamorphism: `Evaluate()`, `Replay()`, morphism application    |
-| `operad`   | Semantic registry: type validation, constraint checking          |
+| Package  | Purpose                                                      |
+| -------- | ------------------------------------------------------------ |
+| `cat`    | Categorical types: URN, Node, Wire, Envelope, Program, State |
+| `fold`   | Catamorphism: `Evaluate()`, `Replay()`, morphism application |
+| `operad` | Semantic registry: type validation, constraint checking      |
 
 `fold.Evaluate()` is the kernel. It takes a state, an envelope, and a registry,
 and returns a new state. No imports from `os`, `net`, or any persistence
@@ -245,12 +245,12 @@ package. It is the categorical specification written in Go.
 
 ### Effect Shell — IO boundary
 
-| Package     | Purpose                                                        |
-| ----------- | -------------------------------------------------------------- |
-| `shell`     | Runtime: RWMutex-guarded state, Apply, SeedIfAbsent, Store    |
-| `transport` | HTTP server: 12 routes, JSON API, UI_Lens explorer             |
+| Package     | Purpose                                                         |
+| ----------- | --------------------------------------------------------------- |
+| `shell`     | Runtime: RWMutex-guarded state, Apply, SeedIfAbsent, Store      |
+| `transport` | HTTP server: 12 routes, JSON API, UI_Lens explorer              |
 | `hydration` | Batch materialization: structured documents → morphism programs |
-| `config`    | Configuration loader: JSON preset files                        |
+| `config`    | Configuration loader: JSON preset files                         |
 
 All shared state is guarded by `sync.RWMutex`. Read paths use `RLock`; write
 paths use `Lock`. The Store interface abstracts persistence — JSONL file store
@@ -275,20 +275,20 @@ or in-memory store, with Postgres planned.
 
 Transport layer only. HTTP is not semantics; it is a port on the IO boundary.
 
-| Method | Path                           | What it does                          |
-| ------ | ------------------------------ | ------------------------------------- |
-| GET    | `/healthz`                     | Status, node/wire/log counts          |
-| GET    | `/state`                       | Full graph state snapshot             |
-| GET    | `/state/nodes`                 | All nodes                             |
-| GET    | `/state/nodes/{urn}`           | Single node by URN                    |
-| GET    | `/state/wires`                 | All wires                             |
-| GET    | `/state/wires/outgoing/{urn}`  | Coslice: outgoing wires from a node   |
-| GET    | `/state/wires/incoming/{urn}`  | Slice: incoming wires to a node       |
-| POST   | `/morphisms`                   | Apply a single envelope               |
-| POST   | `/programs`                    | Apply a program (atomic)              |
-| GET    | `/log`                         | Full append-only morphism log         |
-| GET    | `/semantics/registry`          | Loaded ontology registry              |
-| POST   | `/hydration/materialize`       | Batch materialization from payload    |
+| Method | Path                          | What it does                        |
+| ------ | ----------------------------- | ----------------------------------- |
+| GET    | `/healthz`                    | Status, node/wire/log counts        |
+| GET    | `/state`                      | Full graph state snapshot           |
+| GET    | `/state/nodes`                | All nodes                           |
+| GET    | `/state/nodes/{urn}`          | Single node by URN                  |
+| GET    | `/state/wires`                | All wires                           |
+| GET    | `/state/wires/outgoing/{urn}` | Coslice: outgoing wires from a node |
+| GET    | `/state/wires/incoming/{urn}` | Slice: incoming wires to a node     |
+| POST   | `/morphisms`                  | Apply a single envelope             |
+| POST   | `/programs`                   | Apply a program (atomic)            |
+| GET    | `/log`                        | Full append-only morphism log       |
+| GET    | `/semantics/registry`         | Loaded ontology registry            |
+| POST   | `/hydration/materialize`      | Batch materialization from payload  |
 
 ---
 
@@ -351,39 +351,39 @@ registry that constrains all morphism evaluation.
 
 ### Object Kinds
 
-| ID    | Kind             | Stratum  | Role                                        |
-| ----- | ---------------- | -------- | ------------------------------------------- |
-| OBJ01 | User             | S2, S3   | Authenticated actor                         |
-| OBJ02 | ColliderAdmin    | S2, S3   | Category administrator                      |
-| OBJ03 | SuperAdmin       | S2, S3   | Root administrator (transitive OWNS)        |
-| OBJ04 | AppTemplate      | S1, S2   | Reusable subgraph pattern                   |
-| OBJ05 | NodeContainer    | S2, S3   | General-purpose container                   |
-| OBJ06 | AgnosticModel    | S2, S3   | Provider-agnostic LLM/ML model              |
-| OBJ07 | SystemTool       | S2, S3   | Tool container (MCP surface)                |
-| OBJ08 | UI_Lens          | S4       | UI rendering surface (functor output)       |
-| OBJ09 | RuntimeSurface   | S2, S3   | Execution endpoint (HTTP/WS/MCP)            |
-| OBJ10 | ComputeResource  | S2, S3   | GPU, container, thread pool, VM             |
-| OBJ11 | ProtocolAdapter  | S2, S3   | Routable communication container            |
-| OBJ12 | InfraService     | S2, S3   | Postgres, disk volume, network segment      |
-| OBJ13 | MemoryStore      | S2–S4    | Vector store, context window, history       |
-| OBJ14 | PlatformConfig   | S2, S3   | Distribution configuration                  |
-| OBJ15 | WorkstationConfig| S2, S3   | Workstation environment descriptor          |
-| OBJ16 | Preference       | S2, S3   | Runtime key-value preference (scoped)       |
-| OBJ17 | Provider         | S2, S3   | LLM/AI provider (owns model containers)     |
-| OBJ18 | BenchmarkSuite   | S2       | Named benchmark collection                  |
-| OBJ19 | BenchmarkTask    | S2       | Individual benchmark task definition        |
-| OBJ20 | BenchmarkScore   | S3       | Model's score on a task (evaluated result)  |
-| OBJ21 | AgentSpec        | S2, S3   | Agent specification (model, tools, persona) |
+| ID    | Kind              | Stratum | Role                                        |
+| ----- | ----------------- | ------- | ------------------------------------------- |
+| OBJ01 | User              | S2, S3  | Authenticated actor                         |
+| OBJ02 | ColliderAdmin     | S2, S3  | Category administrator                      |
+| OBJ03 | SuperAdmin        | S2, S3  | Root administrator (transitive OWNS)        |
+| OBJ04 | AppTemplate       | S1, S2  | Reusable subgraph pattern                   |
+| OBJ05 | NodeContainer     | S2, S3  | General-purpose container                   |
+| OBJ06 | AgnosticModel     | S2, S3  | Provider-agnostic LLM/ML model              |
+| OBJ07 | SystemTool        | S2, S3  | Tool container (MCP surface)                |
+| OBJ08 | UI_Lens           | S4      | UI rendering surface (functor output)       |
+| OBJ09 | RuntimeSurface    | S2, S3  | Execution endpoint (HTTP/WS/MCP)            |
+| OBJ10 | ComputeResource   | S2, S3  | GPU, container, thread pool, VM             |
+| OBJ11 | ProtocolAdapter   | S2, S3  | Routable communication container            |
+| OBJ12 | InfraService      | S2, S3  | Postgres, disk volume, network segment      |
+| OBJ13 | MemoryStore       | S2–S4   | Vector store, context window, history       |
+| OBJ14 | PlatformConfig    | S2, S3  | Distribution configuration                  |
+| OBJ15 | WorkstationConfig | S2, S3  | Workstation environment descriptor          |
+| OBJ16 | Preference        | S2, S3  | Runtime key-value preference (scoped)       |
+| OBJ17 | Provider          | S2, S3  | LLM/AI provider (owns model containers)     |
+| OBJ18 | BenchmarkSuite    | S2      | Named benchmark collection                  |
+| OBJ19 | BenchmarkTask     | S2      | Individual benchmark task definition        |
+| OBJ20 | BenchmarkScore    | S3      | Model's score on a task (evaluated result)  |
+| OBJ21 | AgentSpec         | S2, S3  | Agent specification (model, tools, persona) |
 
 ### Category Groups
 
-| Group              | Categories              | Purpose                                         |
-| ------------------ | ----------------------- | ----------------------------------------------- |
-| Core               | C, Coslice, Slice, Scoped, Kernel | Universal graph, fan-out/in, subcategories |
-| Stratum chain      | C₀, C₁, C₂, C₃, C₄    | Per-stratum full subcategories                  |
-| Hydration pipeline | A, V, P, E, L           | Pipeline stage categories                       |
-| Functor codomains  | Manifest, React, ℝ^1536, DAG | Target categories for FUN01–FUN04          |
-| Cross-provider     | Provider_p, Met, Adapter | Per-provider, metric space, protocol transport |
+| Group              | Categories                        | Purpose                                        |
+| ------------------ | --------------------------------- | ---------------------------------------------- |
+| Core               | C, Coslice, Slice, Scoped, Kernel | Universal graph, fan-out/in, subcategories     |
+| Stratum chain      | C₀, C₁, C₂, C₃, C₄                | Per-stratum full subcategories                 |
+| Hydration pipeline | A, V, P, E, L                     | Pipeline stage categories                      |
+| Functor codomains  | Manifest, React, ℝ^1536, DAG      | Target categories for FUN01–FUN04              |
+| Cross-provider     | Provider_p, Met, Adapter          | Per-provider, metric space, protocol transport |
 
 ---
 

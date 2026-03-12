@@ -73,6 +73,7 @@ nul
 .agents/skills/
 **/.agent/skills/
 **/.agents/skills/
+skills/
 
 # IDE / Editor
 .idea/
