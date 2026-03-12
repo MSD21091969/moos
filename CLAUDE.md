@@ -29,6 +29,8 @@ or migration work.
 Read order for AI Agents (intentionally minimal):
 
 1. `D:\FFS0_Factory\moos\CLAUDE.md` (this file — workspace authority)
+2. `.agent/configs/delegation-protocol.md` (task delegation workflow)
+3. `.agent/configs/tasks/` (active task queue — check for pending tasks)
 
 No workspace-local `CLAUDE.md` files exist or should be created.
 
@@ -193,6 +195,46 @@ Secrets path: `D:\FFS0_Factory\moos\secrets\api_keys.env`
 
 ---
 
+## Task Delegation
+
+Tasks are delegated via `.agent/configs/tasks/YYYYMMDD-NNN-short-name.md`.
+See `.agent/configs/delegation-protocol.md` for the full workflow.
+
+**On session start:** Check `.agent/configs/tasks/` for pending tasks.
+Pick up the highest-priority (`p0` first) task whose dependencies are met.
+
+**Execution rules:**
+- Read the task file for objective and acceptance criteria
+- **Always verify against SOTs** before implementing — task files reference
+  SOTs but do not duplicate them. The ontology (`superset/ontology.json`),
+  doctrine (`doctrine/*.md`), and design docs (`design/*.md`) are authoritative.
+  If a task file contradicts an SOT, the SOT wins.
+- Mark status `in_progress` when starting, `done` when acceptance criteria met
+- Fill in "Notes from Execution" section with what was done
+- Commit with: `feat|fix|chore: <description> [task:YYYYMMDD-NNN]`
+- Push to main after green tests
+
+**Current plan:** `.agent/knowledge_base/design/20260312-4week-mvp-plan.md`
+
+---
+
+## Sources of Truth (SOT Hierarchy)
+
+When implementing, resolve conflicts in this order:
+
+1. **`superset/ontology.json`** — canonical type_ids, morphisms, source/target
+   constraints, categories, functors. Machine-readable. Always wins.
+2. **`doctrine/*.md`** — hydration lifecycle, strata rules, install spec,
+   hypergraph encoding, concept definitions. Human-readable, non-duplicating.
+3. **`design/*.md`** — architecture decisions, layer specs, synthesis docs.
+   Timestamped; latest date wins on conflicting decisions.
+4. **`instances/*.json`** — contingent runtime facts. Must conform to ontology.
+5. **`industry/*.json`** — external landscape. Independent of ontology evolution.
+6. **This file (CLAUDE.md)** — workspace policy. Does not override ontology.
+7. **Task files** — delegation instructions. Reference SOTs, never restate them.
+
+---
+
 ## Rules
 
 - Keep all changes inside `D:\FFS0_Factory\`.
@@ -203,6 +245,7 @@ Secrets path: `D:\FFS0_Factory\moos\secrets\api_keys.env`
 - All writes to the graph must go through the four invariant morphisms. Do not
   bypass the kernel API in code or scripts.
 - Do not modify `data/morphism-log.jsonl` directly. It is a kernel-owned artifact.
+- **Do not duplicate SOT content** in task files, comments, or code. Reference it.
 
 ---
 
