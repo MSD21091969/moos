@@ -22,6 +22,7 @@ type ontologyObject struct {
 	Name              string   `json:"name"`
 	TypeID            string   `json:"type_id"`
 	BroadCategory     string   `json:"broad_category"`
+	AllowedStrata     []string `json:"allowed_strata"`
 	SourceConnections []string `json:"source_connections"`
 	TargetConnections []string `json:"target_connections"`
 }
@@ -137,11 +138,19 @@ func DeriveFromOntology(ont ontologyFile) Registry {
 
 func deriveTypeSpec(obj ontologyObject) TypeSpec {
 	mutable := obj.TypeID != "ui_lens"
-	strata := []cat.Stratum{cat.S2, cat.S3}
-	if obj.TypeID == "ui_lens" {
-		mutable = false
+
+	// Use allowed_strata from ontology.json if declared; fall back to defaults.
+	var strata []cat.Stratum
+	if len(obj.AllowedStrata) > 0 {
+		for _, s := range obj.AllowedStrata {
+			strata = append(strata, cat.Stratum(s))
+		}
+	} else if obj.TypeID == "ui_lens" {
 		strata = []cat.Stratum{cat.S4}
+	} else {
+		strata = []cat.Stratum{cat.S2, cat.S3}
 	}
+
 	return TypeSpec{
 		Mutable:       mutable,
 		AllowedStrata: strata,
