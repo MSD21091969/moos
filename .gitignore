@@ -28,9 +28,13 @@ secrets/
 
 # ── Build / temp ──
 *.log
+*.err
 *.tmp
 *.exe~
 *.pid
+.venv/
+venv/
+node_modules/
 
 # ── OS ──
 .DS_Store

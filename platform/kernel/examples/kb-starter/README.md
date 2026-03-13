@@ -14,12 +14,12 @@ Copy this directory to a location **outside** the repo and boot with:
 
 ## Structure
 
-| Path | Purpose |
-|------|---------|
-| `superset/ontology.json` | 21-kind / 16-morphism categorical ontology (source of truth) |
-| `superset/schema.json`   | JSON schema for ontology validation |
+| Path                     | Purpose                                                       |
+| ------------------------ | ------------------------------------------------------------- |
+| `superset/ontology.json` | 21-kind / 16-morphism categorical ontology (source of truth)  |
+| `superset/schema.json`   | JSON schema for ontology validation                           |
 | `instances/`             | Your domain instance models (`.json` files, hydrated on boot) |
-| `doctrine/`              | Your prose specs and policies (`.md` files, read by agents) |
+| `doctrine/`              | Your prose specs and policies (`.md` files, read by agents)   |
 
 ## Minimum viable KB
 

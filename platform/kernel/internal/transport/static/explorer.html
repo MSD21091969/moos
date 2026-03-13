@@ -191,11 +191,27 @@
             border-color: #388bfd;
         }
 
-        svg { cursor: grab; }
-        svg.dragging { cursor: grabbing; user-select: none; }
-        .node.dim circle { opacity: 0.07 !important; }
-        .node.dim text { opacity: 0.07 !important; }
-        .node.highlighted circle { stroke: #ffd700 !important; stroke-width: 3 !important; }
+        svg {
+            cursor: grab;
+        }
+
+        svg.dragging {
+            cursor: grabbing;
+            user-select: none;
+        }
+
+        .node.dim circle {
+            opacity: 0.07 !important;
+        }
+
+        .node.dim text {
+            opacity: 0.07 !important;
+        }
+
+        .node.highlighted circle {
+            stroke: #ffd700 !important;
+            stroke-width: 3 !important;
+        }
 
         .activity-panel {
             width: 300px;
@@ -295,7 +311,9 @@
             </div>
         </div>
         <div class="canvas-area">
-            <svg id="graph"><g id="vp"></g></svg>
+            <svg id="graph">
+                <g id="vp"></g>
+            </svg>
         </div>
         <div class="activity-panel">
             <h2>Live Morphisms</h2>
