@@ -182,8 +182,20 @@
             margin-bottom: 10px;
         }
 
-        .search-box::placeholder { color: #484f58; }
-        .search-box:focus { outline: none; border-color: #388bfd; }
+        .search-box::placeholder {
+            color: #484f58;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #388bfd;
+        }
+
+        svg { cursor: grab; }
+        svg.dragging { cursor: grabbing; user-select: none; }
+        .node.dim circle { opacity: 0.07 !important; }
+        .node.dim text { opacity: 0.07 !important; }
+        .node.highlighted circle { stroke: #ffd700 !important; stroke-width: 3 !important; }
 
         .activity-panel {
             width: 300px;
@@ -283,7 +295,7 @@
             </div>
         </div>
         <div class="canvas-area">
-            <svg id="graph"></svg>
+            <svg id="graph"><g id="vp"></g></svg>
         </div>
         <div class="activity-panel">
             <h2>Live Morphisms</h2>
@@ -345,7 +357,7 @@
 
         function isKernelNode(n) {
             return typeof n.id === 'string' &&
-                   (n.id.indexOf('urn:moos:kernel:') === 0 ||
+                (n.id.indexOf('urn:moos:kernel:') === 0 ||
                     n.id.indexOf('urn:moos:feature:') === 0);
         }
 
@@ -365,26 +377,31 @@
             return div.innerHTML;
         }
 
+        var svgElems = {};
+
         function render() {
             while (nodeList.firstChild) nodeList.removeChild(nodeList.firstChild);
-            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            var vpEl = document.getElementById('vp');
+            while (vpEl.firstChild) vpEl.removeChild(vpEl.firstChild);
+            svgElems = {};
 
             var allVisible = data.nodes.filter(nodeVisible);
             var q = (searchInput.value || '').trim().toLowerCase();
-            var nodes = q ? allVisible.filter(function (n) {
+            var matching = q ? allVisible.filter(function (n) {
                 return (n.id || '').toLowerCase().indexOf(q) >= 0 ||
-                       (n.label || '').toLowerCase().indexOf(q) >= 0 ||
-                       (n.kind || '').toLowerCase().indexOf(q) >= 0;
+                    (n.label || '').toLowerCase().indexOf(q) >= 0 ||
+                    (n.kind || '').toLowerCase().indexOf(q) >= 0;
             }) : allVisible;
-            var vis = new Set(nodes.map(function (n) { return n.id; }));
+            var matchSet = new Set(matching.map(function (n) { return n.id; }));
+            var vis = new Set(allVisible.map(function (n) { return n.id; }));
             var edges = data.edges.filter(function (e) { return edgeVisible(e, vis); });
 
             stats.textContent = q
-                ? nodes.length + ' of ' + allVisible.length + ' nodes'
-                : nodes.length + ' nodes, ' + edges.length + ' edges';
+                ? matching.length + ' of ' + allVisible.length + ' nodes'
+                : allVisible.length + ' nodes, ' + edges.length + ' edges';
 
-            /* ── sidebar cards ── */
-            nodes.forEach(function (n) {
+            /* ── sidebar cards (search-filtered) ── */
+            matching.forEach(function (n) {
                 var color = kindColor[n.kind] || '#3fb950';
                 var card = document.createElement('div');
                 card.className = 'node-card';
@@ -395,13 +412,27 @@
                     '<span class="stratum-pill">' + escapeHtml(n.stratum || 'S?') + '</span>' +
                     '<span class="category-pill">' + escapeHtml(n.broad_category || '') + '</span>' +
                     '</div>';
+                card.addEventListener('click', (function (node) {
+                    return function () {
+                        var el = svgElems[node.id];
+                        if (!el) return;
+                        var svgRect = svg.getBoundingClientRect();
+                        vpState.x = svgRect.width / 2 - (node.x + 200) * vpState.k;
+                        vpState.y = svgRect.height / 2 - (node.y + 60) * vpState.k;
+                        applyVP();
+                        el.classList.add('highlighted');
+                        setTimeout(function () { el.classList.remove('highlighted'); }, 1500);
+                    };
+                }(n)));
                 nodeList.appendChild(card);
             });
 
-            /* ── SVG edges ── */
+            /* ── SVG edges (full allVisible set) ── */
+            var nodeMap = {};
+            allVisible.forEach(function (n) { nodeMap[n.id] = n; });
             edges.forEach(function (e) {
-                var src = nodes.find(function (n) { return n.id === e.source; });
-                var tgt = nodes.find(function (n) { return n.id === e.target; });
+                var src = nodeMap[e.source];
+                var tgt = nodeMap[e.target];
                 if (!src || !tgt) return;
                 var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 g.setAttribute('class', 'edge');
@@ -416,13 +447,14 @@
                 label.setAttribute('y', (y1 + y2) / 2 - 4);
                 label.textContent = e.label || '';
                 g.appendChild(label);
-                svg.appendChild(g);
+                vpEl.appendChild(g);
             });
 
-            /* ── SVG nodes ── */
-            nodes.forEach(function (n) {
+            /* ── SVG nodes (all visible, dim non-matching when searching) ── */
+            allVisible.forEach(function (n) {
                 var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('class', 'node');
+                var cls = 'node' + (q && !matchSet.has(n.id) ? ' dim' : '');
+                g.setAttribute('class', cls);
                 g.setAttribute('transform', 'translate(' + (n.x + 200) + ',' + (n.y + 60) + ')');
                 var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('r', 8);
@@ -434,7 +466,8 @@
                 text.setAttribute('dx', 12); text.setAttribute('dy', 4);
                 text.textContent = n.id.split(':').pop();
                 g.appendChild(text);
-                svg.appendChild(g);
+                vpEl.appendChild(g);
+                svgElems[n.id] = g;
             });
         }
 
@@ -482,6 +515,37 @@
         toggleCat.addEventListener('change', render);
         toggleSystem.addEventListener('change', render);
         searchInput.addEventListener('input', render);
+
+        /* ── pan / zoom ── */
+        var vpState = { x: 0, y: 0, k: 1 };
+        function applyVP() {
+            var el = document.getElementById('vp');
+            if (el) el.setAttribute('transform',
+                'translate(' + vpState.x + ',' + vpState.y + ') scale(' + vpState.k + ')');
+        }
+        var drag = { active: false, sx: 0, sy: 0, tx: 0, ty: 0 };
+        svg.addEventListener('mousedown', function (e) {
+            drag.active = true; drag.sx = e.clientX; drag.sy = e.clientY;
+            drag.tx = vpState.x; drag.ty = vpState.y;
+            svg.classList.add('dragging');
+            e.preventDefault();
+        });
+        window.addEventListener('mousemove', function (e) {
+            if (!drag.active) return;
+            vpState.x = drag.tx + (e.clientX - drag.sx);
+            vpState.y = drag.ty + (e.clientY - drag.sy);
+            applyVP();
+        });
+        window.addEventListener('mouseup', function () {
+            drag.active = false;
+            svg.classList.remove('dragging');
+        });
+        svg.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            var factor = e.deltaY < 0 ? 1.1 : 0.9;
+            vpState.k = Math.min(5, Math.max(0.15, vpState.k * factor));
+            applyVP();
+        }, { passive: false });
     </script>
 </body>
 
