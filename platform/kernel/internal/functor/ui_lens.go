@@ -6,12 +6,11 @@
 // category. Objects (Nodes) map to UINodes; morphisms (Wires) map to UIEdges.
 // Output lives at S4 (Projected) — NEVER ground truth.
 //
-// Position is a derived property: hash-deterministic grid layout from URN.
+// Position is a derived property: category-grid layout from broadCategory × stratum.
 // BroadCategory is derived from TypeID via the ontology's groupings.
 package functor
 
 import (
-	"hash/fnv"
 	"sort"
 
 	"moos/platform/kernel/internal/cat"
@@ -62,9 +61,21 @@ func (u UILens) Project(state cat.GraphState) (any, error) {
 
 // ProjectUI is the typed projection for direct use.
 func (u UILens) ProjectUI(state cat.GraphState) UIProjection {
+	// Sort URNs first for deterministic bucket ordering.
+	urns := make([]cat.URN, 0, len(state.Nodes))
+	for urn := range state.Nodes {
+		urns = append(urns, urn)
+	}
+	sort.Slice(urns, func(i, j int) bool { return urns[i] < urns[j] })
+
+	bucketCount := map[string]int{}
 	nodes := make([]UINode, 0, len(state.Nodes))
-	for _, n := range state.Nodes {
-		x, y := hashPosition(string(n.URN))
+	for _, urn := range urns {
+		n := state.Nodes[urn]
+		bk := broadCategory(n.TypeID) + ":" + string(n.Stratum)
+		idx := bucketCount[bk]
+		bucketCount[bk]++
+		x, y := categoryGridPosition(n.TypeID, string(n.Stratum), idx)
 		label := extractLabel(n)
 		nodes = append(nodes, UINode{
 			ID:            string(n.URN),
@@ -95,15 +106,63 @@ func (u UILens) ProjectUI(state cat.GraphState) UIProjection {
 	return UIProjection{Nodes: nodes, Edges: edges}
 }
 
-// hashPosition derives a deterministic grid position from a URN string.
+// categoryGridPosition places nodes on a semantic grid.
+// X = broad_category column, Y = stratum row, with intra-cell offset.
 // This is a layout heuristic — position is NOT categorical structure.
-func hashPosition(urn string) (float64, float64) {
-	h := fnv.New32a()
-	h.Write([]byte(urn))
-	v := h.Sum32()
-	col := v % 20
-	row := (v / 20) % 20
-	return float64(col) * 60, float64(row) * 60
+func categoryGridPosition(tid cat.TypeID, stratum string, index int) (float64, float64) {
+	col := categoryColumnIndex(broadCategory(tid))
+	row := stratumRowIndex(stratum)
+
+	const colW, rowH = 180.0, 200.0
+	const cellCols = 4
+	cx := float64(index%cellCols) * 40
+	cy := float64(index/cellCols) * 40
+
+	return float64(col)*colW + cx + 40, float64(row)*rowH + cy + 40
+}
+
+func categoryColumnIndex(cat string) int {
+	switch cat {
+	case "identity":
+		return 0
+	case "structure":
+		return 1
+	case "protocol":
+		return 2
+	case "compute":
+		return 3
+	case "surface":
+		return 4
+	case "infra":
+		return 5
+	case "memory":
+		return 6
+	case "platform":
+		return 7
+	case "config":
+		return 8
+	case "evaluation":
+		return 9
+	default:
+		return 10
+	}
+}
+
+func stratumRowIndex(s string) int {
+	switch s {
+	case "S0":
+		return 0
+	case "S1":
+		return 1
+	case "S2":
+		return 2
+	case "S3":
+		return 3
+	case "S4":
+		return 4
+	default:
+		return 2
+	}
 }
 
 // extractLabel picks a human-readable label from the node.
