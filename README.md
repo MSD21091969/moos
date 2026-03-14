@@ -336,9 +336,9 @@ To load the demo graph:
 
 ## Ontology Registry
 
-The structured ontology at `.agent/knowledge_base/superset/ontology.json` is
-the formal type system — loaded by the kernel at boot to construct the semantic
-registry that constrains all morphism evaluation.
+The structured ontology (see `examples/kb-starter/superset/ontology.json` for
+the schema) is the formal type system — loaded by the kernel at boot via `--kb`
+to construct the semantic registry that constrains all morphism evaluation.
 
 | Element                 | Count | IDs                                          |
 | ----------------------- | ----- | -------------------------------------------- |
@@ -391,16 +391,6 @@ registry that constrains all morphism evaluation.
 
 ```text
 moos/
-├── .agent/
-│   ├── configs/                  Runtime agent configuration
-│   └── knowledge_base/           Canonical knowledge base
-│       ├── superset/             ontology.json, schema, changelog, CSV
-│       ├── doctrine/             Prose: hypergraph, strata, normalization
-│       ├── design/               Timestamped decision + plan documents
-│       ├── instances/            Contingent runtime facts (JSON)
-│       ├── industry/             Industry landscape: providers, benchmarks
-│       ├── reference/            Paper digests (read-only after import)
-│       └── archive/              Retired KB material (provenance only)
 ├── platform/
 │   ├── kernel/                   Go kernel module (moos/platform/kernel)
 │   │   ├── cmd/moos/main.go     Entrypoint: config → registry → store → runtime → seed → HTTP
@@ -408,18 +398,37 @@ moos/
 │   │   ├── internal/fold/        Pure catamorphism: Evaluate, Replay
 │   │   ├── internal/operad/      Semantic registry: type validation
 │   │   ├── internal/shell/       Effect shell: Runtime, Store, SeedIfAbsent
-│   │   ├── internal/transport/   HTTP server: 12 routes, JSON API
+│   │   ├── internal/transport/   HTTP server: 16 routes, JSON API
 │   │   ├── internal/hydration/   Batch materialization pipeline
+│   │   ├── internal/mcp/         MCP bridge: SSE on :8080, 5 tools
+│   │   ├── internal/functor/     Projection functors: UI_Lens, Benchmark
 │   │   ├── internal/config/      JSON configuration loader
-│   │   ├── data/                 morphism-log.jsonl (kernel-owned)
-│   │   └── examples/             Demo materialization payloads
+│   │   ├── data/                 morphism-log.jsonl (generated at runtime, gitignored)
+│   │   └── examples/
+│   │       ├── kb-starter/       Minimal KB scaffold for new users
+│   │       ├── demo.sh           Demo walkthrough (bash)
+│   │       └── demo.ps1          Demo walkthrough (PowerShell)
 │   ├── presets/                  Declarative environment launch recipes
 │   └── windows/installers/       bootstrap.ps1, seed-explorer-demo.ps1
-├── archive/                      Retired code (provenance only)
-├── secrets/                      Local credential staging (never committed)
-├── CLAUDE.md                     AI agent workspace authority
-├── moos.code-workspace           VS Code workspace entry
+├── LICENSE                       MIT
 └── README.md                     This file
+```
+
+**External (not in repo):**
+
+The kernel expects a knowledge base directory passed via `--kb <path>`. See
+`examples/kb-starter/` for the minimal scaffold, or create your own with:
+
+```text
+my-kb/
+├── superset/
+│   └── ontology.json             Type system (21 kinds, 16 morphisms)
+├── instances/
+│   ├── providers.json            LLM providers and models
+│   ├── tools.json                System tools
+│   ├── surfaces.json             Runtime surfaces and adapters
+│   └── ...                       Additional instance files
+└── doctrine/                     Optional prose specifications
 ```
 
 ---
