@@ -249,3 +249,90 @@ func TestGetScope_Empty(t *testing.T) {
 		t.Errorf("expected 0 nodes for missing actor, got %d", len(state.Nodes))
 	}
 }
+
+func TestGetLens_KindFilter(t *testing.T) {
+	srv := newTestServer(t)
+	prog := cat.Program{Actor: testActor, Envelopes: []cat.Envelope{
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:provider:a", TypeID: "provider"}},
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:user:a", TypeID: "user"}},
+	}}
+	doRequest(t, srv.Handler(), "POST", "/programs", prog)
+
+	w := doRequest(t, srv.Handler(), "GET", "/state/lens?kind=provider", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var state cat.GraphState
+	json.Unmarshal(w.Body.Bytes(), &state)
+	if len(state.Nodes) != 1 {
+		t.Fatalf("expected 1 node, got %d", len(state.Nodes))
+	}
+	if _, ok := state.Nodes["urn:provider:a"]; !ok {
+		t.Fatal("expected provider node in result")
+	}
+}
+
+func TestGetLens_ComposeWithScope(t *testing.T) {
+	srv := newTestServer(t)
+	prog := cat.Program{Actor: testActor, Envelopes: []cat.Envelope{
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:actor", TypeID: "node_container"}},
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:provider:in", TypeID: "provider"}},
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:provider:out", TypeID: "provider"}},
+		{Type: cat.LINK, Link: &cat.LinkPayload{SourceURN: "urn:actor", SourcePort: "OWNS", TargetURN: "urn:provider:in", TargetPort: "CHILD"}},
+	}}
+	doRequest(t, srv.Handler(), "POST", "/programs", prog)
+
+	w := doRequest(t, srv.Handler(), "GET", "/state/lens?scope=urn:actor&kind=provider", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var state cat.GraphState
+	json.Unmarshal(w.Body.Bytes(), &state)
+	if len(state.Nodes) != 1 {
+		t.Fatalf("expected 1 scoped provider node, got %d", len(state.Nodes))
+	}
+	if _, ok := state.Nodes["urn:provider:in"]; !ok {
+		t.Fatal("expected scoped provider in result")
+	}
+	if _, ok := state.Nodes["urn:provider:out"]; ok {
+		t.Fatal("unexpected out-of-scope provider in result")
+	}
+}
+
+func TestPostLens_Union(t *testing.T) {
+	srv := newTestServer(t)
+	prog := cat.Program{Actor: testActor, Envelopes: []cat.Envelope{
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:provider:a", TypeID: "provider"}},
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:user:a", TypeID: "user"}},
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:tool:a", TypeID: "system_tool"}},
+	}}
+	doRequest(t, srv.Handler(), "POST", "/programs", prog)
+
+	body := map[string]any{
+		"mode": "union",
+		"rules": []map[string]any{
+			{"kind": []string{"provider"}},
+			{"kind": []string{"user"}},
+		},
+	}
+	w := doRequest(t, srv.Handler(), "POST", "/state/lens", body)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var state cat.GraphState
+	json.Unmarshal(w.Body.Bytes(), &state)
+	if len(state.Nodes) != 2 {
+		t.Fatalf("expected 2 nodes, got %d", len(state.Nodes))
+	}
+}
+
+func TestPostLens_InvalidJSON(t *testing.T) {
+	srv := newTestServer(t)
+	req := httptest.NewRequest("POST", "/state/lens", bytes.NewReader([]byte("not json")))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	srv.Handler().ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", w.Code)
+	}
+}

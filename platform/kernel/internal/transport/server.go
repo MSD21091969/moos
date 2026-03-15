@@ -18,6 +18,7 @@ import (
 	"moos/platform/kernel/internal/cat"
 	"moos/platform/kernel/internal/functor"
 	"moos/platform/kernel/internal/hydration"
+	"moos/platform/kernel/internal/lens"
 	"moos/platform/kernel/internal/shell"
 )
 
@@ -60,6 +61,8 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /semantics/registry", s.handleRegistry)
 	s.mux.HandleFunc("POST /hydration/materialize", s.handleMaterialize)
 	s.mux.HandleFunc("GET /state/scope/", s.handleScope)
+	s.mux.HandleFunc("GET /state/lens", s.handleLens)
+	s.mux.HandleFunc("POST /state/lens", s.handleLensPost)
 	s.mux.HandleFunc("GET /functor/benchmark/", s.handleBenchmarkFunctor)
 	s.mux.HandleFunc("GET /explorer", s.handleExplorer)
 	s.mux.HandleFunc("GET /functor/ui", s.handleUIFunctor)
@@ -153,6 +156,30 @@ func (s *Server) handleScope(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, s.runtime.ScopedSubgraph(urn))
+}
+
+func (s *Server) handleLens(w http.ResponseWriter, r *http.Request) {
+	state := s.runtime.State()
+	if scope := strings.TrimSpace(r.URL.Query().Get("scope")); scope != "" {
+		state = s.runtime.ScopedSubgraph(cat.URN(scope))
+	}
+	spec := lens.ParseQueryParams(r.URL.Query())
+	writeJSON(w, http.StatusOK, lens.Apply(state, spec))
+}
+
+func (s *Server) handleLensPost(w http.ResponseWriter, r *http.Request) {
+	state := s.runtime.State()
+	if scope := strings.TrimSpace(r.URL.Query().Get("scope")); scope != "" {
+		state = s.runtime.ScopedSubgraph(cat.URN(scope))
+	}
+
+	var spec lens.LensSpec
+	if err := json.NewDecoder(r.Body).Decode(&spec); err != nil {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid JSON: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, lens.Apply(state, spec))
 }
 
 func (s *Server) handlePostMorphism(w http.ResponseWriter, r *http.Request) {
