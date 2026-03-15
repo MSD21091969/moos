@@ -191,6 +191,24 @@
             border-color: #388bfd;
         }
 
+        .scope-select {
+            width: 100%;
+            box-sizing: border-box;
+            background: #0d1117;
+            border: 1px solid #27364f;
+            color: #c9d1d9;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .scope-label {
+            font-size: 11px;
+            color: #8b949e;
+            margin-bottom: 10px;
+        }
+
         svg {
             cursor: grab;
         }
@@ -305,6 +323,10 @@
                 <label><input id="toggle-system" type="checkbox"> show kernel/feature nodes</label>
             </div>
             <input type="text" id="search" class="search-box" placeholder="Filter nodes…" autocomplete="off">
+            <select id="scope-select" class="scope-select">
+                <option value="">— Full graph (no scope) —</option>
+            </select>
+            <div id="scope-label" class="scope-label"></div>
             <h2>Nodes</h2>
             <div id="node-list">
                 <div class="loading">Loading graph...</div>
@@ -365,6 +387,11 @@
         var toggleCat = document.getElementById('toggle-cat');
         var toggleSystem = document.getElementById('toggle-system');
         var searchInput = document.getElementById('search');
+        var scopeSelect = document.getElementById('scope-select');
+        var scopeLabel = document.getElementById('scope-label');
+
+        var fullData = { nodes: [], edges: [] };
+        var currentScopeURN = '';
 
         toggleCat.checked = false;
         toggleSystem.checked = false;
@@ -395,6 +422,161 @@
             return div.innerHTML;
         }
 
+        function broadCategoryFromType(typeID) {
+            switch (typeID) {
+                case 'user':
+                case 'collider_admin':
+                case 'superadmin':
+                case 'agent_spec':
+                    return 'identity';
+                case 'app_template':
+                case 'node_container':
+                    return 'structure';
+                case 'agnostic_model':
+                case 'system_tool':
+                case 'compute_resource':
+                case 'provider':
+                    return 'compute';
+                case 'ui_lens':
+                case 'runtime_surface':
+                    return 'surface';
+                case 'protocol_adapter':
+                    return 'protocol';
+                case 'infra_service':
+                    return 'infra';
+                case 'memory_store':
+                    return 'memory';
+                case 'platform_config':
+                case 'workstation_config':
+                    return 'platform';
+                case 'preference':
+                    return 'config';
+                case 'benchmark_suite':
+                case 'benchmark_task':
+                case 'benchmark_score':
+                    return 'evaluation';
+                default:
+                    return 'unknown';
+            }
+        }
+
+        function categoryColumnIndex(cat) {
+            switch (cat) {
+                case 'identity': return 0;
+                case 'structure': return 1;
+                case 'protocol': return 2;
+                case 'compute': return 3;
+                case 'surface': return 4;
+                case 'infra': return 5;
+                case 'memory': return 6;
+                case 'platform': return 7;
+                case 'config': return 8;
+                case 'evaluation': return 9;
+                default: return 10;
+            }
+        }
+
+        function stratumRowIndex(s) {
+            switch (s) {
+                case 'S0': return 0;
+                case 'S1': return 1;
+                case 'S2': return 2;
+                case 'S3': return 3;
+                case 'S4': return 4;
+                default: return 2;
+            }
+        }
+
+        function categoryGridPosition(kind, stratum, index) {
+            var col = categoryColumnIndex(broadCategoryFromType(kind));
+            var row = stratumRowIndex(stratum || 'S2');
+            var colW = 180;
+            var rowH = 200;
+            var cellCols = 4;
+            var cx = (index % cellCols) * 40;
+            var cy = Math.floor(index / cellCols) * 40;
+            return {
+                x: col * colW + cx + 40,
+                y: row * rowH + cy + 40
+            };
+        }
+
+        function graphStateToUIGraph(state) {
+            var nodeObj = state && state.nodes ? state.nodes : {};
+            var wireObj = state && state.wires ? state.wires : {};
+            var nodes = [];
+            var edges = [];
+            var fullByID = {};
+            fullData.nodes.forEach(function (n) { fullByID[n.id] = n; });
+
+            var ids = Object.keys(nodeObj).sort();
+            var bucketCount = {};
+            ids.forEach(function (id) {
+                var n = nodeObj[id] || {};
+                var kind = n.type_id || n.TypeID || 'app_template';
+                var stratum = n.stratum || n.Stratum || 'S2';
+                var label = (n.payload && (n.payload.label || n.payload.name)) || n.label || id;
+                var category = broadCategoryFromType(kind);
+                var bucketKey = category + ':' + stratum;
+                var idx = bucketCount[bucketKey] || 0;
+                bucketCount[bucketKey] = idx + 1;
+                var fallbackPos = categoryGridPosition(kind, stratum, idx);
+                var fromFull = fullByID[id];
+                nodes.push({
+                    id: id,
+                    kind: kind,
+                    broad_category: category,
+                    stratum: stratum,
+                    label: label,
+                    x: fromFull ? fromFull.x : fallbackPos.x,
+                    y: fromFull ? fromFull.y : fallbackPos.y,
+                    data: n.payload || {}
+                });
+            });
+
+            Object.keys(wireObj).forEach(function (k) {
+                var w = wireObj[k] || {};
+                var source = w.source_urn || w.SourceURN || '';
+                var target = w.target_urn || w.TargetURN || '';
+                var sourcePort = w.source_port || w.SourcePort || '';
+                var targetPort = w.target_port || w.TargetPort || '';
+                edges.push({
+                    id: k,
+                    source: source,
+                    target: target,
+                    source_port: sourcePort,
+                    target_port: targetPort,
+                    label: sourcePort + ' -> ' + targetPort
+                });
+            });
+
+            return { nodes: nodes, edges: edges };
+        }
+
+        function populateScopeSelector() {
+            while (scopeSelect.options.length > 1) {
+                scopeSelect.remove(1);
+            }
+            var byID = {};
+            fullData.nodes.forEach(function (n) {
+                var isScopeActor = n.kind === 'agent_spec' ||
+                    n.kind === 'user' ||
+                    n.kind === 'superadmin' ||
+                    n.kind === 'collider_admin' ||
+                    n.kind === 'node_container';
+                if (isScopeActor) {
+                    byID[n.id] = n;
+                }
+            });
+            Object.keys(byID).sort().forEach(function (id) {
+                var n = byID[id];
+                var opt = document.createElement('option');
+                opt.value = n.id;
+                opt.textContent = (n.label || n.id) + ' (' + n.kind + ')';
+                scopeSelect.appendChild(opt);
+            });
+        }
+
         var svgElems = {};
 
         function render() {
@@ -414,9 +596,14 @@
             var vis = new Set(allVisible.map(function (n) { return n.id; }));
             var edges = data.edges.filter(function (e) { return edgeVisible(e, vis); });
 
-            stats.textContent = q
-                ? matching.length + ' of ' + allVisible.length + ' nodes'
-                : allVisible.length + ' nodes, ' + edges.length + ' edges';
+            if (currentScopeURN) {
+                stats.textContent = 'Scope: ' + allVisible.length + ' nodes, ' + edges.length +
+                    ' edges (of ' + fullData.nodes.length + ' total)';
+            } else {
+                stats.textContent = q
+                    ? matching.length + ' of ' + allVisible.length + ' nodes'
+                    : allVisible.length + ' nodes, ' + edges.length + ' edges';
+            }
 
             /* ── sidebar cards (search-filtered) ── */
             matching.forEach(function (n) {
@@ -493,7 +680,15 @@
         function fetchAndRender() {
             fetch('/functor/ui')
                 .then(function (r) { return r.json(); })
-                .then(function (d) { data = d; render(); })
+                .then(function (d) {
+                    fullData = d;
+                    data = d;
+                    currentScopeURN = '';
+                    scopeSelect.value = '';
+                    scopeLabel.textContent = '';
+                    populateScopeSelector();
+                    render();
+                })
                 .catch(function (err) {
                     nodeList.innerHTML = '<div class="loading" style="color:#f85149">Failed to load: ' + escapeHtml(String(err)) + '</div>';
                 });
@@ -533,6 +728,28 @@
         toggleCat.addEventListener('change', render);
         toggleSystem.addEventListener('change', render);
         searchInput.addEventListener('input', render);
+        scopeSelect.addEventListener('change', function () {
+            var urn = scopeSelect.value || '';
+            if (!urn) {
+                currentScopeURN = '';
+                data = fullData;
+                scopeLabel.textContent = '';
+                render();
+                return;
+            }
+
+            fetch('/state/scope/' + encodeURIComponent(urn))
+                .then(function (r) { return r.json(); })
+                .then(function (state) {
+                    currentScopeURN = urn;
+                    data = graphStateToUIGraph(state);
+                    scopeLabel.textContent = 'Scope: ' + (scopeSelect.options[scopeSelect.selectedIndex].textContent || urn);
+                    render();
+                })
+                .catch(function (err) {
+                    scopeLabel.textContent = 'Scope load failed: ' + String(err);
+                });
+        });
 
         /* ── pan / zoom ── */
         var vpState = { x: 0, y: 0, k: 1 };
