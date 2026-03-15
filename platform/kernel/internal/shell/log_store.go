@@ -26,6 +26,7 @@ func NewLogStore(path string) (*LogStore, error) {
 	return &LogStore{path: path}, nil
 }
 
+// Append persists envelopes by appending JSONL records to the log file.
 func (s *LogStore) Append(entries []cat.PersistedEnvelope) error {
 	f, err := os.OpenFile(s.path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
 	if err != nil {
@@ -42,6 +43,7 @@ func (s *LogStore) Append(entries []cat.PersistedEnvelope) error {
 	return nil
 }
 
+// ReadAll returns all persisted envelopes in append order from the log file.
 func (s *LogStore) ReadAll() ([]cat.PersistedEnvelope, error) {
 	f, err := os.Open(s.path)
 	if err != nil {

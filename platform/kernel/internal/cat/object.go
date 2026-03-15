@@ -20,10 +20,15 @@ type Port string
 type Stratum string
 
 const (
+	// S0 is the authored stratum: declared syntax, manifests, references.
 	S0 Stratum = "S0" // Authored — declared syntax, manifests, references
+	// S1 is the validated stratum: schema-checked, admissible for realization.
 	S1 Stratum = "S1" // Validated — schema-checked, admissible for realization
+	// S2 is the materialized stratum: graph-ready programs and structures.
 	S2 Stratum = "S2" // Materialized — graph-ready programs and structures
+	// S3 is the evaluated stratum: contingent state after execution or replay.
 	S3 Stratum = "S3" // Evaluated — contingent state after execution/replay
+	// S4 is the projected stratum: derived views, lenses, embeddings, metrics.
 	S4 Stratum = "S4" // Projected — views, lenses, embeddings, metrics
 )
 

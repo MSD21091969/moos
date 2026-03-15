@@ -18,6 +18,7 @@ func NewMemStore() *MemStore {
 	return &MemStore{}
 }
 
+// Append stores envelopes in memory, preserving insertion order.
 func (m *MemStore) Append(entries []cat.PersistedEnvelope) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -25,6 +26,7 @@ func (m *MemStore) Append(entries []cat.PersistedEnvelope) error {
 	return nil
 }
 
+// ReadAll returns a copy of all in-memory envelopes.
 func (m *MemStore) ReadAll() ([]cat.PersistedEnvelope, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

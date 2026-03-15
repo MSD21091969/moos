@@ -7,9 +7,13 @@ import "fmt"
 type MorphismType string
 
 const (
+	// ADD creates a new node (object) in graph state.
 	ADD    MorphismType = "ADD"    // ∅ → Node: create a node
+	// LINK creates a new wire (morphism) between existing nodes.
 	LINK   MorphismType = "LINK"   // N × N → Wire: create a wire
+	// MUTATE updates payload/metadata of an existing node.
 	MUTATE MorphismType = "MUTATE" // N → N: update node payload (endomorphism)
+	// UNLINK removes an existing wire from graph state.
 	UNLINK MorphismType = "UNLINK" // Wire → ∅: remove a wire
 )
 
