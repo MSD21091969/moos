@@ -22,6 +22,13 @@ self-seeds its own node and feature set into the graph at startup.
 
 A read-only projection explorer is live at `http://localhost:8000/explorer`.
 
+## Release
+
+Wave 0 MVP is published as **v0.1.0**:
+
+- Release page: https://github.com/MSD21091969/moos/releases/tag/v0.1.0
+- Assets: `moos-linux-amd64`, `moos-darwin-amd64`, `moos-darwin-arm64`, `moos-windows-amd64.exe`
+
 ---
 
 ## Why a Hypergraph
