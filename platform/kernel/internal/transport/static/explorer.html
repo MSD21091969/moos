@@ -244,11 +244,14 @@
     <div class="toolbar">
         <div class="tool-field">
             <label for="kind-filter">Kind</label>
-            <select id="kind-filter" multiple></select>
+            <select id="kind-filter" multiple>
+                <option value="">— All —</option>
+            </select>
         </div>
         <div class="tool-field">
             <label for="stratum-filter">Stratum</label>
             <select id="stratum-filter" multiple>
+                <option value="">— All —</option>
                 <option value="S0">S0</option>
                 <option value="S1">S1</option>
                 <option value="S2">S2</option>
@@ -258,7 +261,9 @@
         </div>
         <div class="tool-field">
             <label for="category-filter">Category</label>
-            <select id="category-filter" multiple></select>
+            <select id="category-filter" multiple>
+                <option value="">— All —</option>
+            </select>
         </div>
         <div class="tool-field">
             <label for="scope-filter">Scope</label>
@@ -371,6 +376,33 @@
                 if (o.selected && o.value) out.push(o.value);
             }
             return out;
+        }
+
+        function normalizeMultiSelect(selectEl) {
+            if (!selectEl || !selectEl.multiple) return;
+
+            var emptyOpt = null;
+            var hasNonEmptySelected = false;
+            for (var i = 0; i < selectEl.options.length; i++) {
+                var o = selectEl.options[i];
+                if (o.value === '') {
+                    emptyOpt = o;
+                    continue;
+                }
+                if (o.selected) hasNonEmptySelected = true;
+            }
+            if (!emptyOpt) return;
+
+            if (emptyOpt.selected) {
+                for (var j = 0; j < selectEl.options.length; j++) {
+                    if (selectEl.options[j].value !== '') selectEl.options[j].selected = false;
+                }
+                return;
+            }
+
+            if (hasNonEmptySelected) {
+                emptyOpt.selected = false;
+            }
         }
 
         function nodeLabel(node, urn) {
@@ -624,7 +656,7 @@
         function renderLog() {
             var actorSet = {};
             (logData || []).forEach(function (e) {
-                actorSet[String(e.envelope && e.envelope.actor || '')] = true;
+                actorSet[String(e.entry && e.entry.envelope && e.entry.envelope.actor || '')] = true;
             });
             var actors = Object.keys(actorSet).filter(Boolean).sort();
 
@@ -643,24 +675,24 @@
                 var actor = document.getElementById('log-actor').value;
                 var typ = document.getElementById('log-type').value;
                 var rows = (logData || []).slice().reverse().filter(function (e) {
-                    var ea = String((e.envelope && e.envelope.actor) || '');
-                    var et = String((e.envelope && e.envelope.type) || '');
+                    var ea = String((e.entry && e.entry.envelope && e.entry.envelope.actor) || '');
+                    var et = String((e.entry && e.entry.envelope && e.entry.envelope.type) || '');
                     if (actor && ea !== actor) return false;
                     if (typ && et !== typ) return false;
                     return true;
                 });
                 var body = rows.map(function (e, i) {
-                    var env = e.envelope || {};
+                    var env = (e.entry && e.entry.envelope) || {};
                     var target = '';
                     if (env.add && env.add.urn) target = env.add.urn;
                     else if (env.mutate && env.mutate.urn) target = env.mutate.urn;
                     else if (env.link && env.link.target_urn) target = env.link.target_urn;
                     else if (env.unlink && env.unlink.target_urn) target = env.unlink.target_urn;
-                    return '<tr><td>' + (i + 1) + '</td>' +
+                    return '<tr><td>' + e.seq + '</td>' +
                         '<td class="mono">' + escapeHtml(env.actor || '') + '</td>' +
                         '<td class="mono">' + escapeHtml(target) + '</td>' +
                         '<td>' + escapeHtml(env.type || '') + '</td>' +
-                        '<td>' + escapeHtml(e.issued_at || '') + '</td></tr>';
+                        '<td>' + escapeHtml((e.entry && e.entry.issued_at) || '') + '</td></tr>';
                 }).join('');
                 document.getElementById('log-body').innerHTML = body;
             }
@@ -695,11 +727,11 @@
                 }
             });
 
-            kindFilter.innerHTML = Object.keys(kinds).sort().map(function (k) {
+            kindFilter.innerHTML = '<option value="">— All —</option>' + Object.keys(kinds).sort().map(function (k) {
                 return '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>';
             }).join('');
 
-            categoryFilter.innerHTML = Object.keys(cats).sort().map(function (c) {
+            categoryFilter.innerHTML = '<option value="">— All —</option>' + Object.keys(cats).sort().map(function (c) {
                 return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
             }).join('');
 
@@ -754,7 +786,12 @@
                 return Promise.all([
                     reloadStateWithFilters(),
                     fetchJSON('/semantics/registry').then(function (r) { registryData = r || { types: {} }; }),
-                    fetchJSON('/log').then(function (l) { logData = l || []; })
+                    fetchJSON('/log').then(function (l) {
+                        var raw = l || [];
+                        logData = raw.map(function (entry, idx) {
+                            return { entry: entry, seq: idx + 1 };
+                        });
+                    })
                 ]);
             }).then(function () {
                 renderActiveTab();
@@ -768,6 +805,9 @@
 
             [kindFilter, stratumFilter, categoryFilter, scopeFilter].forEach(function (el) {
                 el.addEventListener('change', function () {
+                    if (el === kindFilter || el === stratumFilter || el === categoryFilter) {
+                        normalizeMultiSelect(el);
+                    }
                     expandedRows = {};
                     reloadStateWithFilters();
                 });
