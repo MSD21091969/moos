@@ -166,7 +166,7 @@ violation of AX2 and AX4.
 | FUN02 | UI_Lens    | $F_{ui}$: C → React          | React        | Active  |
 | FUN03 | Embedding  | $F_{embed}$: payload → ℝ^n   | ℝ^1536       | Active  |
 | FUN04 | Structure  | $F_{struct}$: subgraph → DAG | DAG          | Planned |
-| FUN05 | Benchmark  | $F_{bench}$: Provider → Met  | Metric space | Planned |
+| FUN05 | Benchmark  | $F_{bench}$: Provider → Met  | Metric space | Active  |
 
 FUN05 is the classifying functor: it maps provider subcategories into a metric
 space. Its pre-image yields equivalence classes — providers that score
@@ -248,7 +248,7 @@ package. It is the categorical specification written in Go.
 | Package     | Purpose                                                         |
 | ----------- | --------------------------------------------------------------- |
 | `shell`     | Runtime: RWMutex-guarded state, Apply, SeedIfAbsent, Store      |
-| `transport` | HTTP server: 12 routes, JSON API, UI_Lens explorer              |
+| `transport` | HTTP server: 16 routes, JSON API, UI_Lens explorer              |
 | `hydration` | Batch materialization: structured documents → morphism programs |
 | `config`    | Configuration loader: JSON preset files                         |
 
@@ -284,11 +284,16 @@ Transport layer only. HTTP is not semantics; it is a port on the IO boundary.
 | GET    | `/state/wires`                | All wires                           |
 | GET    | `/state/wires/outgoing/{urn}` | Coslice: outgoing wires from a node |
 | GET    | `/state/wires/incoming/{urn}` | Slice: incoming wires to a node     |
+| GET    | `/state/scope/{urn}`          | Scoped subgraph (OWNS closure)      |
 | POST   | `/morphisms`                  | Apply a single envelope             |
 | POST   | `/programs`                   | Apply a program (atomic)            |
 | GET    | `/log`                        | Full append-only morphism log       |
+| GET    | `/log/stream`                 | SSE stream — live morphisms         |
 | GET    | `/semantics/registry`         | Loaded ontology registry            |
 | POST   | `/hydration/materialize`      | Batch materialization from payload  |
+| GET    | `/functor/ui`                 | UI projection (S4 Explorer lens)    |
+| GET    | `/functor/benchmark/{suite}`  | Benchmark functor projection        |
+| GET    | `/explorer`                   | Embedded HTML Explorer UI           |
 
 ---
 
@@ -428,7 +433,7 @@ my-kb/
 │   ├── tools.json                System tools
 │   ├── surfaces.json             Runtime surfaces and adapters
 │   └── ...                       Additional instance files
-└── doctrine/                     Optional prose specifications
+└── design/                      Architecture specs and decisions
 ```
 
 ---

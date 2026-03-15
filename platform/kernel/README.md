@@ -17,8 +17,8 @@ In plain terms: nodes and wires, four operations, one pure fold. No ORM, no
 migrations, no ad-hoc mutation endpoints. The HTTP API exposes the morphism
 surface; the Explorer UI lets you browse the graph visually.
 
-For the full developer reference — package map, core concepts, data-flow
-diagrams, and glossary — see [DEVELOPERS.md](DEVELOPERS.md).
+For the full conceptual framework — axioms, category theory, glossary — see
+the [repo README](../../README.md).
 
 ---
 
@@ -328,8 +328,8 @@ The **pure/impure boundary** is absolute:
 - `shell` → wraps fold with `sync.RWMutex` and store writes
 - `transport` + `mcp` → HTTP handlers, call shell methods only
 
-See [DEVELOPERS.md](DEVELOPERS.md) for the full package walkthrough, Python-analogy
-table, write/read data flow diagrams, and complete HTTP API documentation.
+See the [repo README](../../README.md) for the full categorical framework,
+axioms, ontology registry, glossary, and normalization rules.
 
 ---
 
