@@ -34,19 +34,26 @@ type instanceRecord struct {
 // filename is the bare filename inside kbRoot/instances/ (e.g. "providers.json").
 // rootURN is the kernel root node URN; if empty, defaultRootURN is used.
 func LoadInstanceFile(kbRoot, filename, rootURN string) (MaterializeRequest, error) {
+	return LoadKBFile(kbRoot, "instances", filename, rootURN)
+}
+
+// LoadKBFile reads a KB JSON file from a specific directory under kbRoot and
+// returns a MaterializeRequest using the same domain-driven builders as
+// LoadInstanceFile.
+func LoadKBFile(kbRoot, dir, filename, rootURN string) (MaterializeRequest, error) {
 	if rootURN == "" {
 		rootURN = defaultRootURN
 	}
 
-	path := filepath.Join(kbRoot, "instances", filename)
+	path := filepath.Join(kbRoot, dir, filename)
 	data, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
-		return MaterializeRequest{}, fmt.Errorf("read %s: %w", filename, err)
+		return MaterializeRequest{}, fmt.Errorf("read %s/%s: %w", dir, filename, err)
 	}
 
 	var inst instanceRecord
 	if err := json.Unmarshal(data, &inst); err != nil {
-		return MaterializeRequest{}, fmt.Errorf("parse %s: %w", filename, err)
+		return MaterializeRequest{}, fmt.Errorf("parse %s/%s: %w", dir, filename, err)
 	}
 
 	req := MaterializeRequest{Actor: demoSeederURN}

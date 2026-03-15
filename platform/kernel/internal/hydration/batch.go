@@ -10,6 +10,11 @@ import (
 	"moos/platform/kernel/internal/shell"
 )
 
+type hydrationSource struct {
+	Dir      string
+	Filename string
+}
+
 // InstanceOrder defines the canonical processing order for KB instance files.
 // Providers must precede models; surfaces before tools; tools before agents.
 var InstanceOrder = []string{
@@ -54,20 +59,32 @@ func HydrateAll(kbRoot, rootURN string, rt *shell.Runtime) error {
 	var errs []string
 	var applied, total int
 
+	sources := make([]hydrationSource, 0, len(InstanceOrder)+3)
 	for _, filename := range InstanceOrder {
-		req, err := LoadInstanceFile(kbRoot, filename, rootURN)
+		sources = append(sources, hydrationSource{Dir: "instances", Filename: filename})
+	}
+	// Structural constants moved to superset/ during KB restructure.
+	sources = append(sources,
+		hydrationSource{Dir: "superset", Filename: "glossary.json"},
+		hydrationSource{Dir: "superset", Filename: "categories.json"},
+		hydrationSource{Dir: "superset", Filename: "kinds.json"},
+	)
+
+	for _, src := range sources {
+		display := src.Dir + "/" + src.Filename
+		req, err := LoadKBFile(kbRoot, src.Dir, src.Filename, rootURN)
 		if err != nil {
-			log.Printf("[hydration] skip %s: %v", filename, err)
+			log.Printf("[hydration] skip %s: %v", display, err)
 			continue
 		}
 		if len(req.Nodes) == 0 {
-			log.Printf("[hydration] %s: no nodes, skipping", filename)
+			log.Printf("[hydration] %s: no nodes, skipping", display)
 			continue
 		}
 
 		result, err := Materialize(req, registry, false)
 		if err != nil {
-			msg := fmt.Sprintf("%s: materialize failed: %v", filename, err)
+			msg := fmt.Sprintf("%s: materialize failed: %v", display, err)
 			log.Printf("[hydration] %s", msg)
 			errs = append(errs, msg)
 			continue
@@ -76,7 +93,7 @@ func HydrateAll(kbRoot, rootURN string, rt *shell.Runtime) error {
 		for _, env := range result.Program.Envelopes {
 			total++
 			if err := rt.SeedIfAbsent(env); err != nil {
-				msg := fmt.Sprintf("%s: envelope %s: %v", filename, env.Type, err)
+				msg := fmt.Sprintf("%s: envelope %s: %v", display, env.Type, err)
 				log.Printf("[hydration] %s", msg)
 				errs = append(errs, msg)
 			} else {
@@ -85,7 +102,7 @@ func HydrateAll(kbRoot, rootURN string, rt *shell.Runtime) error {
 		}
 
 		log.Printf("[hydration] %s: %d/%d envelopes applied (nodes=%d wires=%d)",
-			filename, applied, total, result.NodeCount, result.WireCount)
+			display, applied, total, result.NodeCount, result.WireCount)
 	}
 
 	if len(errs) > 0 {

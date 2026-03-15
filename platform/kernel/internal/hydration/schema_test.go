@@ -64,9 +64,23 @@ var validStratumValues = map[string]bool{
 	"S0": true, "S1": true, "S2": true, "S3": true, "S4": true,
 }
 
-// kbInstanceDir is the path from this test package to the KB instances directory.
-// Test path depth: platform/kernel/internal/hydration → repo root is 4 `..` segments.
-const kbInstanceDir = "../../../../.agent/knowledge_base/instances"
+// kbInstanceDirCandidates includes both legacy in-repo and current externalized
+// KB layouts.
+var kbInstanceDirCandidates = []string{
+	"../../../../.agent/knowledge_base/instances",  // legacy: repo-local .agent
+	"../../../../../.agent/knowledge_base/instances", // current: sibling .agent
+}
+
+func resolveKBInstanceDir(t *testing.T) string {
+	t.Helper()
+	for _, p := range kbInstanceDirCandidates {
+		if info, err := os.Stat(p); err == nil && info.IsDir() {
+			return p
+		}
+	}
+	t.Fatalf("cannot resolve KB instances dir; tried: %v", kbInstanceDirCandidates)
+	return ""
+}
 
 // instanceFile mirrors the top-level structure of instances/*.json.
 type instanceFile struct {
@@ -80,6 +94,7 @@ type instanceFile struct {
 //   - Each entry: id (required, must match ^urn:moos:), type_id (required, must be one of 21 enum values)
 //   - stratum (optional): when present must be S0-S4 and within allowed_strata for the type_id
 func TestInstanceFileSchema(t *testing.T) {
+	kbInstanceDir := resolveKBInstanceDir(t)
 	dirEntries, err := os.ReadDir(kbInstanceDir)
 	if err != nil {
 		t.Fatalf("cannot read instance dir %q: %v", kbInstanceDir, err)
