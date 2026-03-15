@@ -4,13 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mo:os — Explorer (FUN02 UI_Lens)</title>
+    <title>mo:os — Explorer (Data Lens)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: "Segoe UI", "Calibri", sans-serif;
@@ -19,411 +15,276 @@
         }
 
         header {
-            padding: 12px 20px;
-            background: #161b22;
-            border-bottom: 1px solid #30363d;
+            padding: 12px 16px;
+            border-bottom: 1px solid #27364f;
+            background: #101a2d;
             display: flex;
+            justify-content: space-between;
             align-items: center;
             gap: 12px;
         }
 
-        header h1 {
-            font-size: 16px;
-            font-weight: 600;
-        }
+        h1 { font-size: 16px; font-weight: 600; }
 
-        header .badge {
+        .badge {
+            display: inline-block;
             font-size: 11px;
-            background: #238636;
+            background: #1f6feb;
             padding: 2px 8px;
             border-radius: 12px;
+            margin-left: 8px;
         }
 
-        .container {
-            display: flex;
-            height: calc(100vh - 48px);
+        .stats { font-size: 12px; color: #9fb4d7; }
+
+        .toolbar {
+            padding: 10px 12px;
+            border-bottom: 1px solid #27364f;
+            background: #0f1728;
+            display: grid;
+            gap: 8px;
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
         }
 
-        .sidebar {
-            width: 340px;
-            overflow-y: auto;
-            border-right: 1px solid #27364f;
-            padding: 12px;
-            background: #101a2d;
-        }
-
-        .sidebar h2 {
-            font-size: 13px;
+        .tool-field label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 11px;
             color: #8b949e;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
         }
 
-        .node-card {
-            background: #172238;
+        .tool-field select,
+        .tool-field input {
+            width: 100%;
+            background: #0d1117;
             border: 1px solid #30415f;
-            border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 8px;
+            color: #dbe7ff;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 12px;
+        }
+
+        .tool-field select[multiple] { min-height: 72px; }
+
+        .tabs {
+            padding: 8px 12px;
+            border-bottom: 1px solid #27364f;
+            background: #0f1728;
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            border: 1px solid #30415f;
+            background: #172238;
+            color: #c9d1d9;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
             cursor: pointer;
         }
 
-        .node-card:hover {
-            border-color: #58a6ff;
-        }
-
-        .node-card .urn {
-            font-size: 12px;
-            font-family: monospace;
-            color: #58a6ff;
-            word-break: break-all;
-        }
-
-        .node-meta {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-top: 6px;
-            flex-wrap: wrap;
-        }
-
-        .kind-pill {
-            font-size: 10px;
-            font-weight: 600;
-            border-radius: 999px;
-            padding: 2px 8px;
-            color: #0d1117;
-        }
-
-        .stratum-pill {
-            font-size: 10px;
-            color: #9fb4d7;
-            border: 1px solid #3a5277;
-            border-radius: 999px;
-            padding: 2px 8px;
-        }
-
-        .category-pill {
-            font-size: 9px;
-            color: #9fb4d7;
-            border: 1px solid #3a5277;
-            border-radius: 999px;
-            padding: 1px 6px;
-        }
-
-        .controls {
-            margin-bottom: 12px;
-            display: grid;
-            gap: 8px;
-        }
-
-        .controls label {
-            display: flex;
-            gap: 8px;
-            font-size: 12px;
-            color: #9fb4d7;
-            align-items: center;
-        }
-
-        .canvas-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .node circle {
-            stroke-width: 2;
-        }
-
-        .node text {
-            fill: #c9d1d9;
-            font-size: 10px;
-            font-family: monospace;
-        }
-
-        .edge line {
-            stroke: #4a5f83;
-            stroke-width: 1.5;
-        }
-
-        .edge text {
-            fill: #7f9cc7;
-            font-size: 9px;
-            font-family: monospace;
-        }
-
-        .stats {
-            font-size: 11px;
-            color: #8b949e;
-            margin-bottom: 12px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #8b949e;
-        }
-
-        .search-box {
-            width: 100%;
-            box-sizing: border-box;
-            background: #0d1117;
-            border: 1px solid #27364f;
-            color: #c9d1d9;
-            border-radius: 4px;
-            padding: 6px 8px;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-
-        .search-box::placeholder {
-            color: #484f58;
-        }
-
-        .search-box:focus {
-            outline: none;
+        .tab-btn.active {
+            background: #1f6feb;
             border-color: #388bfd;
+            color: white;
         }
 
-        .scope-select {
-            width: 100%;
-            box-sizing: border-box;
-            background: #0d1117;
+        .content {
+            padding: 10px 12px;
+            height: calc(100vh - 156px);
+            overflow: auto;
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        details {
             border: 1px solid #27364f;
-            color: #c9d1d9;
-            border-radius: 4px;
-            padding: 6px 8px;
-            font-size: 12px;
-            margin-bottom: 6px;
-        }
-
-        .scope-label {
-            font-size: 11px;
-            color: #8b949e;
+            border-radius: 6px;
+            background: #101a2d;
             margin-bottom: 10px;
         }
 
-        svg {
-            cursor: grab;
+        summary {
+            cursor: pointer;
+            padding: 8px 10px;
+            color: #9fb4d7;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        svg.dragging {
-            cursor: grabbing;
-            user-select: none;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
         }
 
-        .node.dim circle {
-            opacity: 0.07 !important;
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #151a2e;
+            color: #9fb4d7;
+            text-align: left;
+            border-bottom: 1px solid #30415f;
+            padding: 8px;
         }
 
-        .node.dim text {
-            opacity: 0.07 !important;
+        tbody td {
+            border-bottom: 1px solid #1f2e47;
+            padding: 7px 8px;
+            vertical-align: top;
         }
 
-        .node.highlighted circle {
-            stroke: #ffd700 !important;
-            stroke-width: 3 !important;
-        }
+        tbody tr:hover { background: #122033; }
 
-        .activity-panel {
-            width: 300px;
-            overflow-y: auto;
-            border-left: 1px solid #27364f;
-            padding: 12px;
-            background: #0e1724;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .activity-panel h2 {
-            font-size: 13px;
-            color: #8b949e;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            flex-shrink: 0;
-        }
-
-        .activity-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .activity-item {
-            background: #112131;
-            border: 1px solid #1e3050;
-            border-radius: 4px;
-            padding: 6px 8px;
-            font-size: 10px;
-            font-family: monospace;
+        .mono {
+            font-family: Consolas, Monaco, monospace;
+            font-size: 11px;
             word-break: break-all;
-            animation: fadein 0.3s ease;
         }
 
-        .activity-item .mt {
-            font-weight: 700;
-            margin-right: 4px;
+        .pill {
+            border: 1px solid #3a5277;
+            border-radius: 999px;
+            padding: 1px 7px;
+            font-size: 10px;
+            color: #9fb4d7;
         }
 
-        .activity-item .mt-ADD {
-            color: #3fb950;
+        .expander {
+            background: #0d1424;
+            border: 1px solid #27364f;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 6px 0 10px;
         }
 
-        .activity-item .mt-LINK {
-            color: #58a6ff;
+        pre {
+            background: #0a1220;
+            border: 1px solid #26334f;
+            border-radius: 6px;
+            padding: 8px;
+            color: #b8de6f;
+            overflow: auto;
+            max-height: 260px;
         }
 
-        .activity-item .mt-MUTATE {
-            color: #e3b341;
+        .small-note {
+            font-size: 11px;
+            color: #8b949e;
+            margin-top: 6px;
         }
 
-        .activity-item .mt-UNLINK {
-            color: #f85149;
+        .row { cursor: pointer; }
+
+        .filters-inline {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
         }
 
-        .activity-ts {
-            color: #5a7399;
-            margin-left: 4px;
+        .filters-inline select {
+            background: #0d1117;
+            border: 1px solid #30415f;
+            color: #dbe7ff;
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 12px;
         }
 
-        @keyframes fadein {
-            from {
-                opacity: 0;
-                transform: translateY(-4px);
-            }
+        .loading { color: #9fb4d7; font-size: 13px; }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @media (max-width: 1100px) {
+            .toolbar { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+            .content { height: calc(100vh - 230px); }
         }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>mo:os Explorer</h1>
-        <span class="badge">FUN02 UI_Lens</span>
-        <span class="badge" style="background:#1f6feb">S4 read-only</span>
+        <div>
+            <h1>mo:os Explorer <span class="badge">Data Lens</span></h1>
+        </div>
+        <div class="stats" id="stats">Loading...</div>
     </header>
-    <div class="container">
-        <div class="sidebar" id="sidebar">
-            <div class="stats" id="stats"></div>
-            <div class="controls">
-                <label><input id="toggle-cat" type="checkbox"> show glossary urn:moos:cat:*</label>
-                <label><input id="toggle-system" type="checkbox"> show kernel/feature nodes</label>
-            </div>
-            <input type="text" id="search" class="search-box" placeholder="Filter nodes…" autocomplete="off">
-            <select id="scope-select" class="scope-select">
+
+    <div class="toolbar">
+        <div class="tool-field">
+            <label for="kind-filter">Kind</label>
+            <select id="kind-filter" multiple></select>
+        </div>
+        <div class="tool-field">
+            <label for="stratum-filter">Stratum</label>
+            <select id="stratum-filter" multiple>
+                <option value="S0">S0</option>
+                <option value="S1">S1</option>
+                <option value="S2">S2</option>
+                <option value="S3">S3</option>
+                <option value="S4">S4</option>
+            </select>
+        </div>
+        <div class="tool-field">
+            <label for="category-filter">Category</label>
+            <select id="category-filter" multiple></select>
+        </div>
+        <div class="tool-field">
+            <label for="scope-filter">Scope</label>
+            <select id="scope-filter">
                 <option value="">— Full graph (no scope) —</option>
             </select>
-            <div id="scope-label" class="scope-label"></div>
-            <h2>Nodes</h2>
-            <div id="node-list">
-                <div class="loading">Loading graph...</div>
-            </div>
         </div>
-        <div class="canvas-area">
-            <svg id="graph">
-                <g id="vp"></g>
-            </svg>
-        </div>
-        <div class="activity-panel">
-            <h2>Live Morphisms</h2>
-            <div class="activity-list" id="activity-list"></div>
+        <div class="tool-field">
+            <label for="search-filter">Search</label>
+            <input id="search-filter" type="text" placeholder="URN / label / kind">
         </div>
     </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="objects">Objects</button>
+        <button class="tab-btn" data-tab="morphisms">Morphisms</button>
+        <button class="tab-btn" data-tab="ontology">Ontology</button>
+        <button class="tab-btn" data-tab="log">Log</button>
+    </div>
+
+    <div class="content">
+        <section id="tab-objects" class="tab-panel active"></section>
+        <section id="tab-morphisms" class="tab-panel"></section>
+        <section id="tab-ontology" class="tab-panel"></section>
+        <section id="tab-log" class="tab-panel"></section>
+    </div>
+
     <script>
-        /* ── ontology-derived color map (21 type_ids, grouped by broad_category) ── */
-        var kindColor = {
-            /* identity */
-            user: '#ffd166',
-            collider_admin: '#f4a261',
-            superadmin: '#e76f51',
-            agent_spec: '#ef476f',
-            /* structure */
-            app_template: '#2a9d8f',
-            node_container: '#4cc9f0',
-            /* compute */
-            agnostic_model: '#72efdd',
-            system_tool: '#90be6d',
-            compute_resource: '#5bc0be',
-            provider: '#83c5be',
-            /* surface */
-            ui_lens: '#f7b267',
-            runtime_surface: '#f4845f',
-            /* protocol */
-            protocol_adapter: '#9d4edd',
-            /* infra */
-            infra_service: '#577590',
-            /* memory */
-            memory_store: '#b8de6f',
-            /* platform */
-            platform_config: '#a5b4fc',
-            workstation_config: '#818cf8',
-            /* config */
-            preference: '#c4b5fd',
-            /* evaluation */
-            benchmark_suite: '#fb923c',
-            benchmark_task: '#fdba74',
-            benchmark_score: '#fed7aa'
-        };
+        var stateData = { nodes: {}, wires: {} };
+        var fullTotals = { nodes: 0, wires: 0 };
+        var registryData = { types: {} };
+        var logData = [];
+        var expandedRows = {};
+        var activeTab = 'objects';
 
-        var stratumOpacity = { S0: 0.55, S1: 0.68, S2: 0.86, S3: 1.0, S4: 0.78 };
+        var statsEl = document.getElementById('stats');
+        var objectsEl = document.getElementById('tab-objects');
+        var morphismsEl = document.getElementById('tab-morphisms');
+        var ontologyEl = document.getElementById('tab-ontology');
+        var logEl = document.getElementById('tab-log');
 
-        var data = { nodes: [], edges: [] };
-        var stats = document.getElementById('stats');
-        var nodeList = document.getElementById('node-list');
-        var svg = document.getElementById('graph');
-        var toggleCat = document.getElementById('toggle-cat');
-        var toggleSystem = document.getElementById('toggle-system');
-        var searchInput = document.getElementById('search');
-        var scopeSelect = document.getElementById('scope-select');
-        var scopeLabel = document.getElementById('scope-label');
-
-        var fullData = { nodes: [], edges: [] };
-        var currentScopeURN = '';
-
-        toggleCat.checked = false;
-        toggleSystem.checked = false;
-
-        function isGlossaryNode(n) {
-            return typeof n.id === 'string' && n.id.indexOf('urn:moos:cat:') === 0;
-        }
-
-        function isKernelNode(n) {
-            return typeof n.id === 'string' &&
-                (n.id.indexOf('urn:moos:kernel:') === 0 ||
-                    n.id.indexOf('urn:moos:feature:') === 0);
-        }
-
-        function nodeVisible(n) {
-            if (!toggleCat.checked && isGlossaryNode(n)) return false;
-            if (!toggleSystem.checked && isKernelNode(n)) return false;
-            return true;
-        }
-
-        function edgeVisible(e, vis) {
-            return vis.has(e.source) && vis.has(e.target);
-        }
+        var kindFilter = document.getElementById('kind-filter');
+        var stratumFilter = document.getElementById('stratum-filter');
+        var categoryFilter = document.getElementById('category-filter');
+        var scopeFilter = document.getElementById('scope-filter');
+        var searchFilter = document.getElementById('search-filter');
 
         function escapeHtml(s) {
-            var div = document.createElement('div');
-            div.appendChild(document.createTextNode(s));
-            return div.innerHTML;
+            var d = document.createElement('div');
+            d.appendChild(document.createTextNode(String(s == null ? '' : s)));
+            return d.innerHTML;
         }
 
-        function broadCategoryFromType(typeID) {
-            switch (typeID) {
+        function broadCategory(kind) {
+            switch (kind) {
                 case 'user':
                 case 'collider_admin':
                 case 'superadmin':
@@ -460,327 +321,394 @@
             }
         }
 
-        function categoryColumnIndex(cat) {
-            switch (cat) {
-                case 'identity': return 0;
-                case 'structure': return 1;
-                case 'protocol': return 2;
-                case 'compute': return 3;
-                case 'surface': return 4;
-                case 'infra': return 5;
-                case 'memory': return 6;
-                case 'platform': return 7;
-                case 'config': return 8;
-                case 'evaluation': return 9;
-                default: return 10;
+        function selectedValues(selectEl) {
+            var out = [];
+            for (var i = 0; i < selectEl.options.length; i++) {
+                var o = selectEl.options[i];
+                if (o.selected && o.value) out.push(o.value);
             }
+            return out;
         }
 
-        function stratumRowIndex(s) {
-            switch (s) {
-                case 'S0': return 0;
-                case 'S1': return 1;
-                case 'S2': return 2;
-                case 'S3': return 3;
-                case 'S4': return 4;
-                default: return 2;
-            }
+        function nodeLabel(node, urn) {
+            var p = node.payload || {};
+            return p.label || p.name || urn;
         }
 
-        function categoryGridPosition(kind, stratum, index) {
-            var col = categoryColumnIndex(broadCategoryFromType(kind));
-            var row = stratumRowIndex(stratum || 'S2');
-            var colW = 180;
-            var rowH = 200;
-            var cellCols = 4;
-            var cx = (index % cellCols) * 40;
-            var cy = Math.floor(index / cellCols) * 40;
-            return {
-                x: col * colW + cx + 40,
-                y: row * rowH + cy + 40
-            };
-        }
-
-        function graphStateToUIGraph(state) {
-            var nodeObj = state && state.nodes ? state.nodes : {};
-            var wireObj = state && state.wires ? state.wires : {};
-            var nodes = [];
-            var edges = [];
-            var fullByID = {};
-            fullData.nodes.forEach(function (n) { fullByID[n.id] = n; });
-
-            var ids = Object.keys(nodeObj).sort();
-            var bucketCount = {};
-            ids.forEach(function (id) {
-                var n = nodeObj[id] || {};
-                var kind = n.type_id || n.TypeID || 'app_template';
-                var stratum = n.stratum || n.Stratum || 'S2';
-                var label = (n.payload && (n.payload.label || n.payload.name)) || n.label || id;
-                var category = broadCategoryFromType(kind);
-                var bucketKey = category + ':' + stratum;
-                var idx = bucketCount[bucketKey] || 0;
-                bucketCount[bucketKey] = idx + 1;
-                var fallbackPos = categoryGridPosition(kind, stratum, idx);
-                var fromFull = fullByID[id];
-                nodes.push({
-                    id: id,
-                    kind: kind,
-                    broad_category: category,
-                    stratum: stratum,
-                    label: label,
-                    x: fromFull ? fromFull.x : fallbackPos.x,
-                    y: fromFull ? fromFull.y : fallbackPos.y,
-                    data: n.payload || {}
-                });
-            });
-
-            Object.keys(wireObj).forEach(function (k) {
-                var w = wireObj[k] || {};
-                var source = w.source_urn || w.SourceURN || '';
-                var target = w.target_urn || w.TargetURN || '';
-                var sourcePort = w.source_port || w.SourcePort || '';
-                var targetPort = w.target_port || w.TargetPort || '';
-                edges.push({
-                    id: k,
-                    source: source,
-                    target: target,
-                    source_port: sourcePort,
-                    target_port: targetPort,
-                    label: sourcePort + ' -> ' + targetPort
-                });
-            });
-
-            return { nodes: nodes, edges: edges };
-        }
-
-        function populateScopeSelector() {
-            while (scopeSelect.options.length > 1) {
-                scopeSelect.remove(1);
-            }
-            var byID = {};
-            fullData.nodes.forEach(function (n) {
-                var isScopeActor = n.kind === 'agent_spec' ||
-                    n.kind === 'user' ||
-                    n.kind === 'superadmin' ||
-                    n.kind === 'collider_admin' ||
-                    n.kind === 'node_container';
-                if (isScopeActor) {
-                    byID[n.id] = n;
-                }
-            });
-            Object.keys(byID).sort().forEach(function (id) {
-                var n = byID[id];
-                var opt = document.createElement('option');
-                opt.value = n.id;
-                opt.textContent = (n.label || n.id) + ' (' + n.kind + ')';
-                scopeSelect.appendChild(opt);
+        function applyClientSearch(nodes) {
+            var q = (searchFilter.value || '').trim().toLowerCase();
+            if (!q) return nodes;
+            return nodes.filter(function (x) {
+                var n = x.node;
+                var label = nodeLabel(n, x.urn);
+                return x.urn.toLowerCase().indexOf(q) >= 0 ||
+                    String(n.type_id || '').toLowerCase().indexOf(q) >= 0 ||
+                    String(label).toLowerCase().indexOf(q) >= 0;
             });
         }
 
-        var svgElems = {};
-
-        function render() {
-            while (nodeList.firstChild) nodeList.removeChild(nodeList.firstChild);
-            var vpEl = document.getElementById('vp');
-            while (vpEl.firstChild) vpEl.removeChild(vpEl.firstChild);
-            svgElems = {};
-
-            var allVisible = data.nodes.filter(nodeVisible);
-            var q = (searchInput.value || '').trim().toLowerCase();
-            var matching = q ? allVisible.filter(function (n) {
-                return (n.id || '').toLowerCase().indexOf(q) >= 0 ||
-                    (n.label || '').toLowerCase().indexOf(q) >= 0 ||
-                    (n.kind || '').toLowerCase().indexOf(q) >= 0;
-            }) : allVisible;
-            var matchSet = new Set(matching.map(function (n) { return n.id; }));
-            var vis = new Set(allVisible.map(function (n) { return n.id; }));
-            var edges = data.edges.filter(function (e) { return edgeVisible(e, vis); });
-
-            if (currentScopeURN) {
-                stats.textContent = 'Scope: ' + allVisible.length + ' nodes, ' + edges.length +
-                    ' edges (of ' + fullData.nodes.length + ' total)';
-            } else {
-                stats.textContent = q
-                    ? matching.length + ' of ' + allVisible.length + ' nodes'
-                    : allVisible.length + ' nodes, ' + edges.length + ' edges';
-            }
-
-            /* ── sidebar cards (search-filtered) ── */
-            matching.forEach(function (n) {
-                var color = kindColor[n.kind] || '#3fb950';
-                var card = document.createElement('div');
-                card.className = 'node-card';
-                card.innerHTML =
-                    '<div class="urn">' + escapeHtml(n.label || n.id) + '</div>' +
-                    '<div class="node-meta">' +
-                    '<span class="kind-pill" style="background:' + color + '">' + escapeHtml(n.kind || '?') + '</span>' +
-                    '<span class="stratum-pill">' + escapeHtml(n.stratum || 'S?') + '</span>' +
-                    '<span class="category-pill">' + escapeHtml(n.broad_category || '') + '</span>' +
-                    '</div>';
-                card.addEventListener('click', (function (node) {
-                    return function () {
-                        var el = svgElems[node.id];
-                        if (!el) return;
-                        var svgRect = svg.getBoundingClientRect();
-                        vpState.x = svgRect.width / 2 - (node.x + 200) * vpState.k;
-                        vpState.y = svgRect.height / 2 - (node.y + 60) * vpState.k;
-                        applyVP();
-                        el.classList.add('highlighted');
-                        setTimeout(function () { el.classList.remove('highlighted'); }, 1500);
-                    };
-                }(n)));
-                nodeList.appendChild(card);
-            });
-
-            /* ── SVG edges (full allVisible set) ── */
-            var nodeMap = {};
-            allVisible.forEach(function (n) { nodeMap[n.id] = n; });
-            edges.forEach(function (e) {
-                var src = nodeMap[e.source];
-                var tgt = nodeMap[e.target];
-                if (!src || !tgt) return;
-                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('class', 'edge');
-                var x1 = src.x + 200, y1 = src.y + 60;
-                var x2 = tgt.x + 200, y2 = tgt.y + 60;
-                var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-                line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                g.appendChild(line);
-                var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                label.setAttribute('x', (x1 + x2) / 2 + 4);
-                label.setAttribute('y', (y1 + y2) / 2 - 4);
-                label.textContent = e.label || '';
-                g.appendChild(label);
-                vpEl.appendChild(g);
-            });
-
-            /* ── SVG nodes (all visible, dim non-matching when searching) ── */
-            allVisible.forEach(function (n) {
-                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                var cls = 'node' + (q && !matchSet.has(n.id) ? ' dim' : '');
-                g.setAttribute('class', cls);
-                g.setAttribute('transform', 'translate(' + (n.x + 200) + ',' + (n.y + 60) + ')');
-                var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('r', 8);
-                circle.setAttribute('fill', kindColor[n.kind] || '#3fb950');
-                circle.setAttribute('fill-opacity', stratumOpacity[n.stratum] || 0.85);
-                circle.setAttribute('stroke', '#c7d2fe');
-                g.appendChild(circle);
-                var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('dx', 12); text.setAttribute('dy', 4);
-                text.textContent = n.id.split(':').pop();
-                g.appendChild(text);
-                vpEl.appendChild(g);
-                svgElems[n.id] = g;
-            });
+        function buildLensURL() {
+            var q = [];
+            var kinds = selectedValues(kindFilter);
+            var strata = selectedValues(stratumFilter);
+            var cats = selectedValues(categoryFilter);
+            var scope = scopeFilter.value || '';
+            if (kinds.length) q.push('kind=' + encodeURIComponent(kinds.join(',')));
+            if (strata.length) q.push('stratum=' + encodeURIComponent(strata.join(',')));
+            if (cats.length) q.push('category=' + encodeURIComponent(cats.join(',')));
+            if (scope) q.push('scope=' + encodeURIComponent(scope));
+            return '/state/lens' + (q.length ? ('?' + q.join('&')) : '');
         }
 
-        /* ── fetch projection from FUN02 endpoint ── */
-        function fetchAndRender() {
-            fetch('/functor/ui')
-                .then(function (r) { return r.json(); })
-                .then(function (d) {
-                    fullData = d;
-                    data = d;
-                    currentScopeURN = '';
-                    scopeSelect.value = '';
-                    scopeLabel.textContent = '';
-                    populateScopeSelector();
-                    render();
-                })
-                .catch(function (err) {
-                    nodeList.innerHTML = '<div class="loading" style="color:#f85149">Failed to load: ' + escapeHtml(String(err)) + '</div>';
-                });
+        function classifyWire(w) {
+            return String(w.source_port || '').toUpperCase() || 'UNKNOWN';
         }
 
-        function appendToActivityLog(env) {
-            var list = document.getElementById('activity-list');
-            if (!list) { return; }
-            var item = document.createElement('div');
-            item.className = 'activity-item';
-            var type = env.type || env.Type || '?';
-            var actor = env.actor || env.Actor || '';
-            var ts = env.applied_at || env.AppliedAt || '';
-            var tsShort = ts ? new Date(ts).toISOString().replace('T', ' ').slice(11, 19) : '';
-            item.innerHTML = '<span class="mt mt-' + escapeHtml(type) + '">' + escapeHtml(type) + '</span>' +
-                escapeHtml(actor.split(':').pop() || actor) +
-                '<span class="activity-ts">' + escapeHtml(tsShort) + '</span>';
-            list.insertBefore(item, list.firstChild);
-            // Keep last 20 entries
-            while (list.children.length > 20) {
-                list.removeChild(list.lastChild);
-            }
+        function wireIndexForNode(urn) {
+            var incoming = [];
+            var outgoing = [];
+            Object.keys(stateData.wires || {}).forEach(function (k) {
+                var w = stateData.wires[k];
+                if (w.source_urn === urn) outgoing.push(w);
+                if (w.target_urn === urn) incoming.push(w);
+            });
+            return { incoming: incoming, outgoing: outgoing };
         }
 
-        /* ── SSE live update ── */
-        var es = new EventSource('/log/stream');
-        es.addEventListener('morphism', function (e) {
-            try {
-                var env = JSON.parse(e.data);
-                appendToActivityLog(env);
-                fetchAndRender();
-            } catch (_) { }
-        });
+        function renderStats() {
+            var nodeCount = Object.keys(stateData.nodes || {}).length;
+            var wireCount = Object.keys(stateData.wires || {}).length;
+            var scope = scopeFilter.value ? (' | scope=' + scopeFilter.value) : '';
+            statsEl.textContent = 'Data Lens: ' + nodeCount + ' nodes, ' + wireCount +
+                ' wires (of ' + fullTotals.nodes + '/' + fullTotals.wires + ')' + scope;
+        }
 
-        fetchAndRender();
+        function renderObjects() {
+            var nodes = Object.keys(stateData.nodes || {}).map(function (urn) {
+                return { urn: urn, node: stateData.nodes[urn] };
+            });
+            nodes = applyClientSearch(nodes);
 
-        toggleCat.addEventListener('change', render);
-        toggleSystem.addEventListener('change', render);
-        searchInput.addEventListener('input', render);
-        scopeSelect.addEventListener('change', function () {
-            var urn = scopeSelect.value || '';
-            if (!urn) {
-                currentScopeURN = '';
-                data = fullData;
-                scopeLabel.textContent = '';
-                render();
+            var groups = {};
+            nodes.forEach(function (x) {
+                var k = x.node.type_id || 'unknown';
+                if (!groups[k]) groups[k] = [];
+                groups[k].push(x);
+            });
+
+            var kinds = Object.keys(groups).sort();
+            if (!kinds.length) {
+                objectsEl.innerHTML = '<div class="loading">No objects match current filters.</div>';
                 return;
             }
 
-            fetch('/state/scope/' + encodeURIComponent(urn))
-                .then(function (r) { return r.json(); })
-                .then(function (state) {
-                    currentScopeURN = urn;
-                    data = graphStateToUIGraph(state);
-                    scopeLabel.textContent = 'Scope: ' + (scopeSelect.options[scopeSelect.selectedIndex].textContent || urn);
-                    render();
-                })
-                .catch(function (err) {
-                    scopeLabel.textContent = 'Scope load failed: ' + String(err);
-                });
-        });
+            var html = '';
+            kinds.forEach(function (k) {
+                var rows = groups[k].sort(function (a, b) { return a.urn.localeCompare(b.urn); });
+                html += '<details open><summary>KIND: ' + escapeHtml(k) + ' (' + rows.length + ')</summary>';
+                html += '<table><thead><tr>' +
+                    '<th>URN</th><th>Stratum</th><th>Category</th><th>Label</th><th>Wires</th>' +
+                    '</tr></thead><tbody>';
 
-        /* ── pan / zoom ── */
-        var vpState = { x: 0, y: 0, k: 1 };
-        function applyVP() {
-            var el = document.getElementById('vp');
-            if (el) el.setAttribute('transform',
-                'translate(' + vpState.x + ',' + vpState.y + ') scale(' + vpState.k + ')');
+                rows.forEach(function (x) {
+                    var n = x.node;
+                    var idx = wireIndexForNode(x.urn);
+                    var key = 'obj:' + x.urn;
+                    var isOpen = !!expandedRows[key];
+                    html += '<tr class="row" data-row-key="' + escapeHtml(key) + '">' +
+                        '<td class="mono">' + escapeHtml(x.urn) + '</td>' +
+                        '<td><span class="pill">' + escapeHtml(n.stratum || '') + '</span></td>' +
+                        '<td>' + escapeHtml(broadCategory(n.type_id || '')) + '</td>' +
+                        '<td>' + escapeHtml(nodeLabel(n, x.urn)) + '</td>' +
+                        '<td>' + (idx.incoming.length + idx.outgoing.length) + '</td>' +
+                        '</tr>';
+
+                    if (isOpen) {
+                        html += '<tr><td colspan="5"><div class="expander">';
+                        html += '<div class="small-note">Payload JSON</div>';
+                        html += '<pre>' + escapeHtml(JSON.stringify(n.payload || {}, null, 2)) + '</pre>';
+
+                        html += '<div class="small-note">Outgoing wires (' + idx.outgoing.length + ')</div>';
+                        html += '<table><thead><tr><th>Target</th><th>Source Port</th><th>Target Port</th></tr></thead><tbody>';
+                        idx.outgoing.forEach(function (w) {
+                            html += '<tr><td class="mono">' + escapeHtml(w.target_urn) + '</td><td>' +
+                                escapeHtml(w.source_port) + '</td><td>' + escapeHtml(w.target_port) + '</td></tr>';
+                        });
+                        html += '</tbody></table>';
+
+                        html += '<div class="small-note">Incoming wires (' + idx.incoming.length + ')</div>';
+                        html += '<table><thead><tr><th>Source</th><th>Source Port</th><th>Target Port</th></tr></thead><tbody>';
+                        idx.incoming.forEach(function (w) {
+                            html += '<tr><td class="mono">' + escapeHtml(w.source_urn) + '</td><td>' +
+                                escapeHtml(w.source_port) + '</td><td>' + escapeHtml(w.target_port) + '</td></tr>';
+                        });
+                        html += '</tbody></table>';
+                        html += '</div></td></tr>';
+                    }
+                });
+
+                html += '</tbody></table></details>';
+            });
+
+            objectsEl.innerHTML = html;
+            objectsEl.querySelectorAll('tr.row').forEach(function (row) {
+                row.addEventListener('click', function () {
+                    var key = row.getAttribute('data-row-key');
+                    expandedRows[key] = !expandedRows[key];
+                    renderObjects();
+                });
+            });
         }
-        var drag = { active: false, sx: 0, sy: 0, tx: 0, ty: 0 };
-        svg.addEventListener('mousedown', function (e) {
-            drag.active = true; drag.sx = e.clientX; drag.sy = e.clientY;
-            drag.tx = vpState.x; drag.ty = vpState.y;
-            svg.classList.add('dragging');
-            e.preventDefault();
-        });
-        window.addEventListener('mousemove', function (e) {
-            if (!drag.active) return;
-            vpState.x = drag.tx + (e.clientX - drag.sx);
-            vpState.y = drag.ty + (e.clientY - drag.sy);
-            applyVP();
-        });
-        window.addEventListener('mouseup', function () {
-            drag.active = false;
-            svg.classList.remove('dragging');
-        });
-        svg.addEventListener('wheel', function (e) {
-            e.preventDefault();
-            var factor = e.deltaY < 0 ? 1.1 : 0.9;
-            vpState.k = Math.min(5, Math.max(0.15, vpState.k * factor));
-            applyVP();
-        }, { passive: false });
+
+        function renderMorphisms() {
+            var groups = {};
+            Object.keys(stateData.wires || {}).forEach(function (k) {
+                var w = stateData.wires[k];
+                var t = classifyWire(w);
+                if (!groups[t]) groups[t] = [];
+                groups[t].push(w);
+            });
+
+            var keys = Object.keys(groups).sort();
+            if (!keys.length) {
+                morphismsEl.innerHTML = '<div class="loading">No morphisms match current filters.</div>';
+                return;
+            }
+
+            var html = '';
+            keys.forEach(function (k) {
+                var ws = groups[k];
+                html += '<details open><summary>MORPHISM: ' + escapeHtml(k) + ' (' + ws.length + ')</summary>';
+                html += '<table><thead><tr>' +
+                    '<th>Source URN</th><th>Target URN</th><th>Source Port</th><th>Target Port</th><th>Source Stratum</th>' +
+                    '</tr></thead><tbody>';
+                ws.forEach(function (w) {
+                    var srcNode = (stateData.nodes || {})[w.source_urn] || {};
+                    html += '<tr>' +
+                        '<td class="mono">' + escapeHtml(w.source_urn) + '</td>' +
+                        '<td class="mono">' + escapeHtml(w.target_urn) + '</td>' +
+                        '<td>' + escapeHtml(w.source_port) + '</td>' +
+                        '<td>' + escapeHtml(w.target_port) + '</td>' +
+                        '<td>' + escapeHtml(srcNode.stratum || '') + '</td>' +
+                        '</tr>';
+                });
+                html += '</tbody></table></details>';
+            });
+            morphismsEl.innerHTML = html;
+        }
+
+        function renderOntology() {
+            var types = registryData.types || {};
+            var keys = Object.keys(types).sort();
+            if (!keys.length) {
+                ontologyEl.innerHTML = '<div class="loading">No ontology registry data loaded.</div>';
+                return;
+            }
+
+            var html = '<details open><summary>Kinds (' + keys.length + ')</summary>';
+            html += '<table><thead><tr><th>Kind</th><th>Category</th><th>Allowed Strata</th><th>Ports</th></tr></thead><tbody>';
+            var morphMap = {};
+
+            keys.forEach(function (k) {
+                var t = types[k] || {};
+                var strata = (t.allowed_strata || []).join(', ');
+                var ports = Object.keys(t.ports || {}).sort();
+                var portText = ports.join(', ');
+                html += '<tr>' +
+                    '<td class="mono">' + escapeHtml(k) + '</td>' +
+                    '<td>' + escapeHtml(broadCategory(k)) + '</td>' +
+                    '<td>' + escapeHtml(strata) + '</td>' +
+                    '<td class="mono">' + escapeHtml(portText) + '</td>' +
+                    '</tr>';
+
+                ports.forEach(function (p) {
+                    var ps = t.ports[p] || {};
+                    if (String(ps.direction || '').toLowerCase() !== 'out') return;
+                    var id = String(p).toUpperCase();
+                    if (!morphMap[id]) morphMap[id] = { sources: {}, targets: {} };
+                    morphMap[id].sources[k] = true;
+                    (ps.targets || []).forEach(function (tg) {
+                        var tt = String((tg && tg.type_id) || '');
+                        var tp = String((tg && tg.port) || '');
+                        if (tt || tp) morphMap[id].targets[tt + ':' + tp] = true;
+                    });
+                });
+            });
+            html += '</tbody></table></details>';
+
+            var morphKeys = Object.keys(morphMap).sort();
+            html += '<details open><summary>Morphism-like Port Relations (' + morphKeys.length + ')</summary>';
+            html += '<table><thead><tr><th>Type</th><th>Source Kinds</th><th>Target Kinds/Ports</th></tr></thead><tbody>';
+            morphKeys.forEach(function (mk) {
+                var m = morphMap[mk];
+                var src = Object.keys(m.sources).sort().join(', ');
+                var tgt = Object.keys(m.targets).sort().join(', ');
+                html += '<tr><td class="mono">' + escapeHtml(mk) + '</td><td class="mono">' +
+                    escapeHtml(src) + '</td><td class="mono">' + escapeHtml(tgt) + '</td></tr>';
+            });
+            html += '</tbody></table></details>';
+
+            ontologyEl.innerHTML = html;
+        }
+
+        function renderLog() {
+            var actorSet = {};
+            (logData || []).forEach(function (e) {
+                actorSet[String(e.envelope && e.envelope.actor || '')] = true;
+            });
+            var actors = Object.keys(actorSet).filter(Boolean).sort();
+
+            var html = '<div class="filters-inline">' +
+                '<label>Actor:</label><select id="log-actor"><option value="">All</option>' +
+                actors.map(function (a) { return '<option value="' + escapeHtml(a) + '">' + escapeHtml(a) + '</option>'; }).join('') +
+                '</select>' +
+                '<label>Type:</label><select id="log-type">' +
+                '<option value="">All</option><option>ADD</option><option>LINK</option><option>MUTATE</option><option>UNLINK</option>' +
+                '</select></div>';
+
+            html += '<table><thead><tr><th>#</th><th>Actor</th><th>Target</th><th>Type</th><th>Timestamp</th></tr></thead><tbody id="log-body"></tbody></table>';
+            logEl.innerHTML = html;
+
+            function refill() {
+                var actor = document.getElementById('log-actor').value;
+                var typ = document.getElementById('log-type').value;
+                var rows = (logData || []).slice().reverse().filter(function (e) {
+                    var ea = String((e.envelope && e.envelope.actor) || '');
+                    var et = String((e.envelope && e.envelope.type) || '');
+                    if (actor && ea !== actor) return false;
+                    if (typ && et !== typ) return false;
+                    return true;
+                });
+                var body = rows.map(function (e, i) {
+                    var env = e.envelope || {};
+                    var target = '';
+                    if (env.add && env.add.urn) target = env.add.urn;
+                    else if (env.mutate && env.mutate.urn) target = env.mutate.urn;
+                    else if (env.link && env.link.target_urn) target = env.link.target_urn;
+                    else if (env.unlink && env.unlink.target_urn) target = env.unlink.target_urn;
+                    return '<tr><td>' + (i + 1) + '</td>' +
+                        '<td class="mono">' + escapeHtml(env.actor || '') + '</td>' +
+                        '<td class="mono">' + escapeHtml(target) + '</td>' +
+                        '<td>' + escapeHtml(env.type || '') + '</td>' +
+                        '<td>' + escapeHtml(e.issued_at || '') + '</td></tr>';
+                }).join('');
+                document.getElementById('log-body').innerHTML = body;
+            }
+
+            document.getElementById('log-actor').addEventListener('change', refill);
+            document.getElementById('log-type').addEventListener('change', refill);
+            refill();
+        }
+
+        function renderActiveTab() {
+            renderStats();
+            if (activeTab === 'objects') renderObjects();
+            if (activeTab === 'morphisms') renderMorphisms();
+            if (activeTab === 'ontology') renderOntology();
+            if (activeTab === 'log') renderLog();
+        }
+
+        function populateFiltersFromState(state) {
+            var nodes = state.nodes || {};
+            var kinds = {};
+            var cats = {};
+            var scopes = {};
+            Object.keys(nodes).forEach(function (urn) {
+                var n = nodes[urn] || {};
+                var k = String(n.type_id || '');
+                if (k) {
+                    kinds[k] = true;
+                    cats[broadCategory(k)] = true;
+                }
+                if (k === 'agent_spec' || k === 'user' || k === 'superadmin' || k === 'collider_admin' || k === 'node_container') {
+                    scopes[urn] = true;
+                }
+            });
+
+            kindFilter.innerHTML = Object.keys(kinds).sort().map(function (k) {
+                return '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>';
+            }).join('');
+
+            categoryFilter.innerHTML = Object.keys(cats).sort().map(function (c) {
+                return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+            }).join('');
+
+            var current = scopeFilter.value || '';
+            var opts = '<option value="">— Full graph (no scope) —</option>' +
+                Object.keys(scopes).sort().map(function (s) {
+                    return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>';
+                }).join('');
+            scopeFilter.innerHTML = opts;
+            scopeFilter.value = current;
+        }
+
+        function fetchJSON(url) {
+            return fetch(url).then(function (r) {
+                if (!r.ok) throw new Error(url + ' -> HTTP ' + r.status);
+                return r.json();
+            });
+        }
+
+        function reloadStateWithFilters() {
+            var lensURL = buildLensURL();
+            return fetchJSON(lensURL).then(function (state) {
+                stateData = state || { nodes: {}, wires: {} };
+                renderActiveTab();
+            }).catch(function (err) {
+                var msg = '<div class="loading">Failed to load filtered state: ' + escapeHtml(String(err)) + '</div>';
+                objectsEl.innerHTML = msg;
+                morphismsEl.innerHTML = msg;
+            });
+        }
+
+        function initTabs() {
+            document.querySelectorAll('.tab-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    activeTab = btn.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+                    document.getElementById('tab-' + activeTab).classList.add('active');
+                    renderActiveTab();
+                });
+            });
+        }
+
+        function init() {
+            initTabs();
+
+            fetchJSON('/state').then(function (fullState) {
+                fullTotals.nodes = Object.keys(fullState.nodes || {}).length;
+                fullTotals.wires = Object.keys(fullState.wires || {}).length;
+                populateFiltersFromState(fullState);
+                return Promise.all([
+                    reloadStateWithFilters(),
+                    fetchJSON('/semantics/registry').then(function (r) { registryData = r || { types: {} }; }),
+                    fetchJSON('/log').then(function (l) { logData = l || []; })
+                ]);
+            }).then(function () {
+                renderActiveTab();
+            }).catch(function (err) {
+                var msg = '<div class="loading">Initialization failed: ' + escapeHtml(String(err)) + '</div>';
+                objectsEl.innerHTML = msg;
+                morphismsEl.innerHTML = msg;
+                ontologyEl.innerHTML = msg;
+                logEl.innerHTML = msg;
+            });
+
+            [kindFilter, stratumFilter, categoryFilter, scopeFilter].forEach(function (el) {
+                el.addEventListener('change', function () {
+                    expandedRows = {};
+                    reloadStateWithFilters();
+                });
+            });
+            searchFilter.addEventListener('input', function () {
+                if (activeTab === 'objects') renderObjects();
+                else renderActiveTab();
+            });
+        }
+
+        init();
     </script>
 </body>
 
