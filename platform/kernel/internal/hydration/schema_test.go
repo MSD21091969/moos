@@ -67,7 +67,7 @@ var validStratumValues = map[string]bool{
 // kbInstanceDirCandidates includes both legacy in-repo and current externalized
 // KB layouts.
 var kbInstanceDirCandidates = []string{
-	"../../../../.agent/knowledge_base/instances",  // legacy: repo-local .agent
+	"../../../../.agent/knowledge_base/instances",    // legacy: repo-local .agent
 	"../../../../../.agent/knowledge_base/instances", // current: sibling .agent
 }
 
