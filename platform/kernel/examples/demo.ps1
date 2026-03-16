@@ -10,7 +10,7 @@
 .EXAMPLE
     # Start the kernel first (in another terminal):
     Push-Location platform\kernel
-    go run .\cmd\moos --kb "..\..\..agent\knowledge_base" --hydrate
+    go run .\cmd\moos --kb "..\..\..\.agent\kb" --hydrate
 
     # Then run this demo:
     .\platform\kernel\examples\demo.ps1
@@ -71,7 +71,7 @@ try {
     Write-Host "ERROR: Cannot reach kernel at $KernelBase" -ForegroundColor Red
     Write-Host "Start the kernel first:" -ForegroundColor Yellow
     Write-Host "  Push-Location platform\kernel" -ForegroundColor Yellow
-    Write-Host "  go run .\cmd\moos --kb `"..\..\.agent\knowledge_base`" --hydrate" -ForegroundColor Yellow
+    Write-Host "  go run .\cmd\moos --kb `"..\..\.agent\kb`" --hydrate" -ForegroundColor Yellow
     exit 1
 }
 

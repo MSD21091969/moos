@@ -9,7 +9,7 @@
 #
 # Start the kernel first:
 #   cd platform/kernel
-#   go run ./cmd/moos --kb "../../.agent/knowledge_base" --hydrate
+#   go run ./cmd/moos --kb "../../.agent/kb" --hydrate
 
 set -euo pipefail
 
@@ -87,7 +87,7 @@ if ! kget "/healthz" &>/dev/null; then
     printf "${RED}ERROR: Cannot reach kernel at %s${NC}\n" "$BASE"
     printf "${YELLOW}Start the kernel first:${NC}\n"
     printf "${YELLOW}  cd platform/kernel${NC}\n"
-    printf "${YELLOW}  go run ./cmd/moos --kb '../../.agent/knowledge_base' --hydrate${NC}\n"
+    printf "${YELLOW}  go run ./cmd/moos --kb '../../.agent/kb' --hydrate${NC}\n"
     exit 1
 fi
 
