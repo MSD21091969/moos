@@ -1,9 +1,12 @@
 package mcp
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"sync"
@@ -74,6 +77,59 @@ func (s *Server) Shutdown(ctx context.Context) error {
 // Handler returns the http.Handler for testing.
 func (s *Server) Handler() http.Handler {
 	return s.mux
+}
+
+// HandleStdio serves newline-delimited JSON-RPC requests from in and writes
+// newline-delimited JSON-RPC responses to out.
+func (s *Server) HandleStdio(ctx context.Context, in io.Reader, out io.Writer) error {
+	scanner := bufio.NewScanner(in)
+	enc := json.NewEncoder(out)
+
+	for scanner.Scan() {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		line := bytes.TrimSpace(scanner.Bytes())
+		if len(line) == 0 {
+			continue
+		}
+
+		var req Request
+		if err := json.Unmarshal(line, &req); err != nil {
+			resp := Response{
+				JSONRPC: "2.0",
+				Error:   &RPCError{Code: CodeParseError, Message: "invalid JSON"},
+			}
+			if err := enc.Encode(resp); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if req.JSONRPC != "2.0" {
+			resp := Response{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error:   &RPCError{Code: CodeInvalidRequest, Message: "jsonrpc must be 2.0"},
+			}
+			if err := enc.Encode(resp); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if err := enc.Encode(s.dispatch(req)); err != nil {
+			return err
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+	return nil
 }
 
 // handleSSE establishes a Server-Sent Events stream for a client session.

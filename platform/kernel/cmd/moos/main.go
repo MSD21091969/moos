@@ -33,6 +33,7 @@ func main() {
 	configPath := flag.String("config", "", "path to config.json")
 	kbPath := flag.String("kb", "", "path to knowledge base root (derives registry + config)")
 	hydrateFlag := flag.Bool("hydrate", false, "auto-apply Tier-2 instance hydration on boot (requires --kb)")
+	mcpStdioFlag := flag.Bool("mcp-stdio", false, "enable newline-delimited JSON-RPC over stdin/stdout")
 	flag.Parse()
 
 	var (
@@ -117,6 +118,14 @@ func main() {
 			log.Fatalf("[mcp] %v", err)
 		}
 	}()
+	if *mcpStdioFlag {
+		go func() {
+			log.Printf("[mcp] stdio transport enabled")
+			if err := mcpSrv.HandleStdio(ctx, os.Stdin, os.Stdout); err != nil && err != context.Canceled {
+				log.Printf("[mcp-stdio] %v", err)
+			}
+		}()
+	}
 
 	<-ctx.Done()
 	log.Printf("[boot] shutting down...")

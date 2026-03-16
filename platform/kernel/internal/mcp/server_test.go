@@ -3,6 +3,7 @@ package mcp_test
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -437,5 +438,66 @@ func TestMessage_InvalidJSON(t *testing.T) {
 	json.NewDecoder(resp.Body).Decode(&rpcResp)
 	if rpcResp.Error == nil || rpcResp.Error.Code != mcp.CodeParseError {
 		t.Error("expected parse error for invalid JSON")
+	}
+}
+
+func TestStdio_InitializeRoundTrip(t *testing.T) {
+	srv := newTestMCP(t)
+
+	in := bytes.NewBufferString(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}` + "\n")
+	out := &bytes.Buffer{}
+
+	if err := srv.HandleStdio(context.Background(), in, out); err != nil {
+		t.Fatalf("HandleStdio: %v", err)
+	}
+
+	var resp mcp.Response
+	if err := json.Unmarshal(bytes.TrimSpace(out.Bytes()), &resp); err != nil {
+		t.Fatalf("unmarshal response: %v", err)
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %+v", resp.Error)
+	}
+
+	data, _ := json.Marshal(resp.Result)
+	if !strings.Contains(string(data), "moos-kernel") {
+		t.Fatalf("expected initialize response with server info, got: %s", string(data))
+	}
+}
+
+func TestStdio_InvalidJSONThenToolsList(t *testing.T) {
+	srv := newTestMCP(t)
+
+	in := bytes.NewBufferString("not json\n" + `{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}` + "\n")
+	out := &bytes.Buffer{}
+
+	if err := srv.HandleStdio(context.Background(), in, out); err != nil {
+		t.Fatalf("HandleStdio: %v", err)
+	}
+
+	lines := strings.Split(strings.TrimSpace(out.String()), "\n")
+	if len(lines) != 2 {
+		t.Fatalf("expected 2 response lines, got %d: %q", len(lines), out.String())
+	}
+
+	var parseErrResp mcp.Response
+	if err := json.Unmarshal([]byte(lines[0]), &parseErrResp); err != nil {
+		t.Fatalf("unmarshal parse-error response: %v", err)
+	}
+	if parseErrResp.Error == nil || parseErrResp.Error.Code != mcp.CodeParseError {
+		t.Fatalf("expected parse error response, got: %+v", parseErrResp)
+	}
+
+	var toolsResp mcp.Response
+	if err := json.Unmarshal([]byte(lines[1]), &toolsResp); err != nil {
+		t.Fatalf("unmarshal tools/list response: %v", err)
+	}
+	if toolsResp.Error != nil {
+		t.Fatalf("unexpected tools/list error: %+v", toolsResp.Error)
+	}
+
+	data, _ := json.Marshal(toolsResp.Result)
+	if !strings.Contains(string(data), "graph_state") {
+		t.Fatalf("expected tools/list payload, got: %s", string(data))
 	}
 }
