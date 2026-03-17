@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 
+	"moos/platform/kernel/internal/cat"
 	"moos/platform/kernel/internal/shell"
 )
 
@@ -59,16 +60,39 @@ func HydrateAll(kbRoot, rootURN string, rt *shell.Runtime) error {
 	var errs []string
 	var applied, total int
 
+	ontologyPath := kbRoot + "/superset/ontology.json"
+	ontologyNodes, err := HydrateFromOntology(ontologyPath)
+	if err != nil {
+		log.Printf("[hydration] skip superset/ontology.json: %v", err)
+	} else {
+		for _, node := range ontologyNodes {
+			total++
+			err := rt.SeedIfAbsent(cat.Envelope{
+				Type:  cat.ADD,
+				Actor: cat.URN(demoSeederURN),
+				Add: &cat.AddPayload{
+					URN:      node.URN,
+					TypeID:   node.TypeID,
+					Stratum:  node.Stratum,
+					Payload:  node.Payload,
+					Metadata: node.Metadata,
+				},
+			})
+			if err != nil {
+				msg := fmt.Sprintf("superset/ontology.json: node %s: %v", node.URN, err)
+				log.Printf("[hydration] %s", msg)
+				errs = append(errs, msg)
+				continue
+			}
+			applied++
+		}
+		log.Printf("[hydration] superset/ontology.json: %d/%d ontology nodes applied", applied, total)
+	}
+
 	sources := make([]hydrationSource, 0, len(InstanceOrder)+3)
 	for _, filename := range InstanceOrder {
 		sources = append(sources, hydrationSource{Dir: "instances", Filename: filename})
 	}
-	// Structural constants moved to superset/ during KB restructure.
-	sources = append(sources,
-		hydrationSource{Dir: "superset", Filename: "glossary.json"},
-		hydrationSource{Dir: "superset", Filename: "categories.json"},
-		hydrationSource{Dir: "superset", Filename: "kinds.json"},
-	)
 
 	for _, src := range sources {
 		display := src.Dir + "/" + src.Filename
