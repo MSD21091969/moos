@@ -212,6 +212,9 @@ func broadCategory(tid cat.TypeID) string {
 	// evaluation
 	case "benchmark_suite", "benchmark_task", "benchmark_score":
 		return "evaluation"
+	// industry
+	case "industry_entity":
+		return "industry"
 	default:
 		return "unknown"
 	}

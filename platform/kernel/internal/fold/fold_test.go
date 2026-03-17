@@ -121,6 +121,37 @@ func TestEvaluate_MUTATE_VersionConflict(t *testing.T) {
 	}
 }
 
+func TestEvaluate_MUTATE_S0Blocked(t *testing.T) {
+	state := cat.NewGraphState()
+	addS0 := cat.Envelope{
+		Type:  cat.ADD,
+		Actor: testActor,
+		Add: &cat.AddPayload{
+			URN:     "urn:s0",
+			TypeID:  "industry_entity",
+			Stratum: cat.S0,
+		},
+	}
+	r1, err := fold.Evaluate(state, addS0, now)
+	if err != nil {
+		t.Fatalf("unexpected add error: %v", err)
+	}
+
+	mut := cat.Envelope{
+		Type:  cat.MUTATE,
+		Actor: testActor,
+		Mutate: &cat.MutatePayload{
+			URN:             "urn:s0",
+			ExpectedVersion: 1,
+			Payload:         map[string]any{"x": 1},
+		},
+	}
+	_, err = fold.Evaluate(r1.State, mut, now)
+	if !errors.Is(err, cat.ErrMutationBlocked) {
+		t.Fatalf("expected ErrMutationBlocked, got %v", err)
+	}
+}
+
 func TestEvaluate_UNLINK(t *testing.T) {
 	state := cat.NewGraphState()
 	r1, _ := fold.Evaluate(state, addEnvelope("urn:a", "node_container"), now)

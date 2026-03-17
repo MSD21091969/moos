@@ -126,6 +126,12 @@ func HydrateAll(kbRoot, rootURN string, rt *shell.Runtime) error {
 			display, applied, total, result.NodeCount, result.WireCount)
 	}
 
+	if err := HydrateIndustry(kbRoot, rt); err != nil {
+		msg := fmt.Sprintf("industry hydration failed: %v", err)
+		log.Printf("[hydration] %s", msg)
+		errs = append(errs, msg)
+	}
+
 	if len(errs) > 0 {
 		return fmt.Errorf("hydration completed with %d error(s): %s", len(errs), errs[0])
 	}

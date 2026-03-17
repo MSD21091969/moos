@@ -128,3 +128,55 @@ func TestLoadRegistry_DirectFormat(t *testing.T) {
 		t.Errorf("expected 2 types, got %d", len(loaded.Types))
 	}
 }
+
+func TestLoadRegistry_OntologyIndustryEntity(t *testing.T) {
+	ontology := map[string]any{
+		"objects": []map[string]any{
+			{
+				"name":               "IndustryEntity",
+				"type_id":            "industry_entity",
+				"allowed_strata":     []string{"S0"},
+				"source_connections": []string{"CLASSIFIES"},
+				"target_connections": []string{"OWNS"},
+			},
+			{
+				"name":               "Provider",
+				"type_id":            "provider",
+				"allowed_strata":     []string{"S2", "S3"},
+				"source_connections": []string{"OWNS"},
+				"target_connections": []string{"OWNS"},
+			},
+		},
+		"morphisms": []map[string]any{
+			{
+				"name":          "CLASSIFIES",
+				"decomposition": "LINK(industry_node, 'classifies', instance_node, 'source')",
+				"target":        "any",
+			},
+		},
+	}
+
+	data, _ := json.Marshal(ontology)
+	reg, err := operad.LoadRegistry(data)
+	if err != nil {
+		t.Fatalf("LoadRegistry failed: %v", err)
+	}
+
+	industry, ok := reg.Types["industry_entity"]
+	if !ok {
+		t.Fatal("industry_entity type missing")
+	}
+	if len(industry.AllowedStrata) != 1 || industry.AllowedStrata[0] != cat.S0 {
+		t.Fatalf("industry_entity strata = %v, want [S0]", industry.AllowedStrata)
+	}
+	classifies, ok := industry.Ports["classifies"]
+	if !ok {
+		t.Fatal("industry_entity classifies port missing")
+	}
+	if classifies.Direction != "out" {
+		t.Fatalf("classifies direction = %q, want out", classifies.Direction)
+	}
+	if len(classifies.Targets) == 0 {
+		t.Fatal("classifies should derive at least one admissible target when morphism target is any")
+	}
+}

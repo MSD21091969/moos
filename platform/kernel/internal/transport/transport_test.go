@@ -336,3 +336,42 @@ func TestPostLens_InvalidJSON(t *testing.T) {
 		t.Errorf("expected 400, got %d", w.Code)
 	}
 }
+
+func TestUIFunctor_IncludesS0IndustryNodes(t *testing.T) {
+	srv := newTestServer(t)
+
+	prog := cat.Program{Actor: testActor, Envelopes: []cat.Envelope{
+		{Type: cat.ADD, Add: &cat.AddPayload{URN: "urn:moos:industry:providers:ind-provider-anthropic", TypeID: "industry_entity", Stratum: cat.S0}},
+	}}
+	doRequest(t, srv.Handler(), "POST", "/programs", prog)
+
+	w := doRequest(t, srv.Handler(), "GET", "/functor/ui", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal(w.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode ui payload: %v", err)
+	}
+
+	nodesRaw, ok := payload["nodes"].([]any)
+	if !ok {
+		t.Fatalf("nodes field missing or invalid: %T", payload["nodes"])
+	}
+
+	found := false
+	for _, raw := range nodesRaw {
+		node, ok := raw.(map[string]any)
+		if !ok {
+			continue
+		}
+		if node["kind"] == "industry_entity" && node["stratum"] == "S0" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatal("expected S0 industry_entity node in /functor/ui output")
+	}
+}

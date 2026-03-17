@@ -90,6 +90,7 @@ func TestUILens_TypeIDMapping(t *testing.T) {
 		{"benchmark_suite", "evaluation"},
 		{"benchmark_task", "evaluation"},
 		{"benchmark_score", "evaluation"},
+		{"industry_entity", "industry"},
 		{"something_new", "unknown"},
 	}
 	for _, tt := range tests {

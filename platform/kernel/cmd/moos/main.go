@@ -12,12 +12,15 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 
 	"moos/platform/kernel/internal/cat"
@@ -91,6 +94,7 @@ func main() {
 	// 4. Apply seed
 	seedKernel(rt, cfg)
 	seedAgentNodes(rt)
+	seedSourceNodes(rt, *kbPath, rootSeedURN(cfg))
 
 	// 5. Optionally hydrate Tier-2 instance files from the KB.
 	if *hydrateFlag && *kbPath != "" {
@@ -198,4 +202,85 @@ func seedAgentNodes(rt *shell.Runtime) {
 		}
 	}
 	log.Printf("[seed] agent nodes seeded")
+}
+
+type sourceSeedFile struct {
+	Entries []sourceSeedEntry `json:"entries"`
+}
+
+type sourceSeedEntry struct {
+	ID     string `json:"id"`
+	Label  string `json:"label"`
+	Domain string `json:"domain"`
+	URL    string `json:"url"`
+}
+
+func rootSeedURN(cfg *config.Config) string {
+	if cfg != nil && cfg.Seed != nil && strings.TrimSpace(cfg.Seed.URN) != "" {
+		return cfg.Seed.URN
+	}
+	return "urn:moos:kernel:wave-0"
+}
+
+func seedSourceNodes(rt *shell.Runtime, kbRoot, rootURN string) {
+	if strings.TrimSpace(kbRoot) == "" {
+		return
+	}
+	path := filepath.Join(kbRoot, "superset", "sources.json")
+	data, err := os.ReadFile(filepath.Clean(path))
+	if err != nil {
+		log.Printf("[seed] sources skipped: %v", err)
+		return
+	}
+
+	var doc sourceSeedFile
+	if err := json.Unmarshal(data, &doc); err != nil {
+		log.Printf("[seed] sources parse skipped: %v", err)
+		return
+	}
+
+	for _, src := range doc.Entries {
+		urn := strings.TrimSpace(src.ID)
+		if urn == "" {
+			continue
+		}
+		label := strings.TrimSpace(src.Label)
+		if label == "" {
+			label = urn
+		}
+
+		if err := rt.SeedIfAbsent(cat.Envelope{
+			Type:  cat.ADD,
+			Actor: cat.URN("urn:moos:identity:kernel"),
+			Add: &cat.AddPayload{
+				URN:     cat.URN(urn),
+				TypeID:  "node_container",
+				Stratum: cat.S1,
+				Payload: map[string]any{
+					"label":  label,
+					"domain": src.Domain,
+					"url":    src.URL,
+				},
+			},
+		}); err != nil {
+			log.Printf("[seed] source add %s: %v", urn, err)
+		}
+
+		if strings.TrimSpace(rootURN) != "" {
+			if err := rt.SeedIfAbsent(cat.Envelope{
+				Type:  cat.LINK,
+				Actor: cat.URN("urn:moos:identity:kernel"),
+				Link: &cat.LinkPayload{
+					SourceURN:  cat.URN(rootURN),
+					SourcePort: "owns",
+					TargetURN:  cat.URN(urn),
+					TargetPort: "child",
+				},
+			}); err != nil {
+				log.Printf("[seed] source link %s -> %s: %v", rootURN, urn, err)
+			}
+		}
+	}
+
+	log.Printf("[seed] source nodes seeded: %d", len(doc.Entries))
 }

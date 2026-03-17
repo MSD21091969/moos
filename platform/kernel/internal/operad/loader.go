@@ -30,6 +30,7 @@ type ontologyObject struct {
 type ontologyMorphism struct {
 	Name          string `json:"name"`
 	Decomposition string `json:"decomposition"`
+	Target        string `json:"target"`
 }
 
 // LoadRegistry parses a registry from raw JSON bytes. It auto-detects format:
@@ -105,12 +106,21 @@ func DeriveFromOntology(ont ontologyFile) Registry {
 			if ps.Direction == "" {
 				ps.Direction = "out"
 			}
+			added := 0
 			for _, cand := range ont.Objects {
 				if !strSliceContains(cand.TargetConnections, conn) {
 					continue
 				}
 				candTID := cat.TypeID(cand.TypeID)
 				ps.Targets = appendUniqueTarget(ps.Targets, PortTarget{TypeID: candTID, Port: tp})
+				added++
+			}
+
+			if added == 0 && strings.EqualFold(strings.TrimSpace(morph.Target), "any") {
+				for _, cand := range ont.Objects {
+					candTID := cat.TypeID(cand.TypeID)
+					ps.Targets = appendUniqueTarget(ps.Targets, PortTarget{TypeID: candTID, Port: tp})
+				}
 			}
 			spec.Ports[sp] = normalizePortSpec(ps)
 		}
