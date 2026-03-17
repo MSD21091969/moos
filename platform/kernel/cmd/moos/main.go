@@ -255,7 +255,7 @@ func seedSourceNodes(rt *shell.Runtime, kbRoot, rootURN string) {
 			Add: &cat.AddPayload{
 				URN:     cat.URN(urn),
 				TypeID:  "node_container",
-				Stratum: cat.S1,
+				Stratum: cat.S2,
 				Payload: map[string]any{
 					"label":  label,
 					"domain": src.Domain,
