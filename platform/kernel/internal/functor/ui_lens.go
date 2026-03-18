@@ -215,6 +215,9 @@ func broadCategory(tid cat.TypeID) string {
 	// industry
 	case "industry_entity":
 		return "industry"
+	// ontology
+	case "ontology_term":
+		return "ontology"
 	default:
 		return "unknown"
 	}

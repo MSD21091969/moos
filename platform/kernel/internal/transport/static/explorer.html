@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mo:os — Explorer (Data Lens)</title>
+    <title>mo:os — Explorer 2.0</title>
     <style>
         * {
             box-sizing: border-box;
@@ -16,10 +16,11 @@
             font-family: "Segoe UI", "Calibri", sans-serif;
             background: #0b1220;
             color: #dbe7ff;
+            font-size: 14px;
         }
 
         header {
-            padding: 12px 16px;
+            padding: 14px 20px;
             border-bottom: 1px solid #27364f;
             background: #101a2d;
             display: flex;
@@ -29,38 +30,41 @@
         }
 
         h1 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
         }
 
         .badge {
             display: inline-block;
-            font-size: 11px;
+            font-size: 12px;
             background: #1f6feb;
-            padding: 2px 8px;
+            padding: 3px 10px;
             border-radius: 12px;
             margin-left: 8px;
+            vertical-align: middle;
         }
 
         .stats {
-            font-size: 12px;
-            color: #9fb4d7;
+            font-size: 13px;
+            color: #b0c4e8;
         }
 
         .toolbar {
-            padding: 10px 12px;
+            padding: 10px 20px;
             border-bottom: 1px solid #27364f;
             background: #0f1728;
             display: grid;
-            gap: 8px;
-            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            gap: 10px;
+            grid-template-columns: repeat(5, 1fr);
         }
 
         .tool-field label {
             display: block;
             margin-bottom: 4px;
             font-size: 11px;
-            color: #8b949e;
+            color: #b0c4e8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .tool-field select,
@@ -69,17 +73,68 @@
             background: #0d1117;
             border: 1px solid #30415f;
             color: #dbe7ff;
-            border-radius: 4px;
-            padding: 6px 8px;
-            font-size: 12px;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 13px;
         }
 
-        .tool-field select[multiple] {
-            min-height: 72px;
+        .tool-field select:focus,
+        .tool-field input:focus {
+            border-color: #388bfd;
+            outline: none;
+        }
+
+        /* Pipeline Bar */
+        .pipeline-bar {
+            display: flex;
+            padding: 8px 20px;
+            gap: 4px;
+            border-bottom: 1px solid #27364f;
+            background: #0f1728;
+            align-items: center;
+        }
+
+        .pipeline-segment {
+            flex: 1;
+            text-align: center;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            border: 1px solid transparent;
+            font-weight: 600;
+        }
+
+        .pipeline-segment:hover {
+            border-color: #4a6a9a;
+        }
+
+        .pipeline-segment.active {
+            border-color: #388bfd;
+        }
+
+        .pipeline-segment .seg-count {
+            font-weight: 400;
+            opacity: 0.7;
+            margin-left: 4px;
+        }
+
+        .seg-s0 { background: #1a3a2a; color: #4ade80; }
+        .seg-s1 { background: #1a2a3a; color: #60a5fa; }
+        .seg-s2 { background: #2a2a1a; color: #facc15; }
+        .seg-s3 { background: #2a1a2a; color: #c084fc; }
+        .seg-s4 { background: #3a1a1a; color: #fb923c; }
+
+        .pipeline-arrow {
+            color: #4a6a9a;
+            font-size: 14px;
+            padding: 0 2px;
+            user-select: none;
         }
 
         .tabs {
-            padding: 8px 12px;
+            padding: 10px 20px;
             border-bottom: 1px solid #27364f;
             background: #0f1728;
             display: flex;
@@ -91,9 +146,15 @@
             background: #172238;
             color: #c9d1d9;
             border-radius: 999px;
-            padding: 6px 12px;
-            font-size: 12px;
+            padding: 7px 16px;
+            font-size: 13px;
             cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .tab-btn:hover {
+            background: #1c2e4a;
+            border-color: #4a6a9a;
         }
 
         .tab-btn.active {
@@ -103,8 +164,8 @@
         }
 
         .content {
-            padding: 10px 12px;
-            height: calc(100vh - 156px);
+            padding: 14px 20px;
+            height: calc(100vh - 175px);
             overflow: auto;
         }
 
@@ -118,23 +179,39 @@
 
         details {
             border: 1px solid #27364f;
-            border-radius: 6px;
+            border-radius: 8px;
             background: #101a2d;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        details[open] > summary {
+            border-bottom: 1px solid #1f2e47;
         }
 
         summary {
             cursor: pointer;
-            padding: 8px 10px;
-            color: #9fb4d7;
-            font-size: 12px;
+            padding: 10px 14px;
+            color: #b0c4e8;
+            font-size: 14px;
             font-weight: 600;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #152038;
+            border-radius: 8px;
+        }
+
+        summary .kind-count {
+            color: #6e8ab0;
+            font-weight: 400;
+            margin-left: 4px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         thead th {
@@ -142,15 +219,18 @@
             top: 0;
             z-index: 1;
             background: #151a2e;
-            color: #9fb4d7;
+            color: #b0c4e8;
             text-align: left;
             border-bottom: 1px solid #30415f;
-            padding: 8px;
+            padding: 9px 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         tbody td {
             border-bottom: 1px solid #1f2e47;
-            padding: 7px 8px;
+            padding: 8px 10px;
             vertical-align: top;
         }
 
@@ -160,40 +240,77 @@
 
         .mono {
             font-family: Consolas, Monaco, monospace;
-            font-size: 11px;
+            font-size: 12px;
             word-break: break-all;
         }
 
         .pill {
-            border: 1px solid #3a5277;
+            display: inline-block;
             border-radius: 999px;
-            padding: 1px 7px;
-            font-size: 10px;
-            color: #9fb4d7;
+            padding: 2px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .pill-s0 { background: #1a3a2a; color: #4ade80; border: 1px solid #2d5a3e; }
+        .pill-s1 { background: #1a2a3a; color: #60a5fa; border: 1px solid #2d4a6e; }
+        .pill-s2 { background: #2a2a1a; color: #facc15; border: 1px solid #5a5a2d; }
+        .pill-s3 { background: #2a1a2a; color: #c084fc; border: 1px solid #5a2d5a; }
+        .pill-s4 { background: #3a1a1a; color: #fb923c; border: 1px solid #6e3a2d; }
+
+        /* Port saturation badges */
+        .port-badge {
+            display: inline-block;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 2px 4px 2px 0;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .port-saturated { background: #1a3a2a; color: #4ade80; border: 1px solid #2d5a3e; }
+        .port-partial { background: #2a2a1a; color: #facc15; border: 1px solid #5a5a2d; }
+        .port-gap { background: #3a1a1a; color: #fb923c; border: 1px solid #6e3a2d; }
+
+        .fan-stats {
+            font-size: 12px;
+            color: #8b9cc0;
+            margin-top: 8px;
+            padding: 6px 0;
+            border-top: 1px solid #1f2e47;
+        }
+
+        .fan-stats span {
+            margin-right: 16px;
         }
 
         .expander {
             background: #0d1424;
             border: 1px solid #27364f;
             border-radius: 6px;
-            padding: 8px;
-            margin: 6px 0 10px;
+            padding: 12px;
+            margin: 8px 10px 12px;
         }
 
         pre {
             background: #0a1220;
             border: 1px solid #26334f;
             border-radius: 6px;
-            padding: 8px;
+            padding: 10px;
             color: #b8de6f;
             overflow: auto;
-            max-height: 260px;
+            max-height: 300px;
+            font-size: 12px;
         }
 
         .small-note {
-            font-size: 11px;
-            color: #8b949e;
-            margin-top: 6px;
+            font-size: 12px;
+            color: #8b9cc0;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .row {
@@ -202,32 +319,139 @@
 
         .filters-inline {
             display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 10px;
+            margin-bottom: 10px;
             align-items: center;
+            font-size: 13px;
+        }
+
+        .filters-inline label {
+            color: #b0c4e8;
+            font-weight: 600;
         }
 
         .filters-inline select {
             background: #0d1117;
             border: 1px solid #30415f;
             color: #dbe7ff;
-            border-radius: 4px;
-            padding: 4px 6px;
-            font-size: 12px;
-        }
-
-        .loading {
-            color: #9fb4d7;
+            border-radius: 6px;
+            padding: 6px 10px;
             font-size: 13px;
         }
 
-        @media (max-width: 1100px) {
+        .urn-short {
+            cursor: default;
+        }
+
+        .urn-short:hover {
+            color: #58a6ff;
+        }
+
+        .wire-port {
+            color: #f0883e;
+            font-weight: 600;
+        }
+
+        .loading {
+            color: #b0c4e8;
+            font-size: 14px;
+            padding: 20px 0;
+        }
+
+        /* Slice tab */
+        .slice-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+
+        .slice-input-row input {
+            flex: 1;
+            background: #0d1117;
+            border: 1px solid #30415f;
+            color: #dbe7ff;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .slice-input-row input:focus {
+            border-color: #388bfd;
+            outline: none;
+        }
+
+        .slice-section {
+            margin-bottom: 16px;
+        }
+
+        .slice-section h3 {
+            font-size: 14px;
+            color: #b0c4e8;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* Schema cards */
+        .schema-card {
+            border: 1px solid #27364f;
+            border-radius: 8px;
+            background: #101a2d;
+            margin-bottom: 8px;
+            padding: 12px 14px;
+        }
+
+        .schema-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .schema-card-header:hover {
+            color: #58a6ff;
+        }
+
+        .schema-card .port-list {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #1f2e47;
+        }
+
+        .port-row {
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .port-dir {
+            font-weight: 600;
+            width: 32px;
+            text-align: center;
+            border-radius: 4px;
+            padding: 1px 4px;
+            font-size: 10px;
+        }
+
+        .port-dir-out { background: #1a3a2a; color: #4ade80; }
+        .port-dir-in { background: #1a2a3a; color: #60a5fa; }
+
+        .port-targets {
+            color: #8b9cc0;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 11px;
+        }
+
+        @media (max-width: 900px) {
             .toolbar {
-                grid-template-columns: repeat(2, minmax(120px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .content {
-                height: calc(100vh - 230px);
+                height: calc(100vh - 240px);
             }
         }
     </style>
@@ -236,59 +460,63 @@
 <body>
     <header>
         <div>
-            <h1>mo:os Explorer <span class="badge">Data Lens</span></h1>
+            <h1>mo:os Explorer <span class="badge">2.0</span></h1>
         </div>
         <div class="stats" id="stats">Loading...</div>
     </header>
 
     <div class="toolbar">
         <div class="tool-field">
-            <label for="kind-filter">Kind</label>
-            <select id="kind-filter" multiple>
-                <option value="">— All —</option>
+            <label for="type-filter">Type</label>
+            <select id="type-filter">
+                <option value="">All types</option>
             </select>
         </div>
         <div class="tool-field">
             <label for="stratum-filter">Stratum</label>
-            <select id="stratum-filter" multiple>
-                <option value="">— All —</option>
-                <option value="S0">S0</option>
-                <option value="S1">S1</option>
-                <option value="S2">S2</option>
-                <option value="S3">S3</option>
-                <option value="S4">S4</option>
+            <select id="stratum-filter">
+                <option value="">All strata</option>
+                <option value="S0">S0 &mdash; Industry</option>
+                <option value="S1">S1 &mdash; Ontology</option>
+                <option value="S2">S2 &mdash; Instance</option>
+                <option value="S3">S3 &mdash; Evaluated</option>
+                <option value="S4">S4 &mdash; Projected</option>
             </select>
         </div>
         <div class="tool-field">
-            <label for="category-filter">Category</label>
-            <select id="category-filter" multiple>
-                <option value="">— All —</option>
+            <label for="domain-filter">Domain</label>
+            <select id="domain-filter">
+                <option value="">All domains</option>
             </select>
         </div>
         <div class="tool-field">
-            <label for="scope-filter">Scope</label>
-            <select id="scope-filter">
+            <label for="container-filter">Container</label>
+            <select id="container-filter">
                 <option value="">— Full graph (no scope) —</option>
             </select>
         </div>
         <div class="tool-field">
             <label for="search-filter">Search</label>
-            <input id="search-filter" type="text" placeholder="URN / label / kind">
+            <input id="search-filter" type="text" placeholder="URN / label / type">
         </div>
     </div>
 
+    <div class="pipeline-bar" id="pipeline-bar"></div>
+
     <div class="tabs">
-        <button class="tab-btn active" data-tab="objects">Objects</button>
-        <button class="tab-btn" data-tab="morphisms">Morphisms</button>
-        <button class="tab-btn" data-tab="ontology">Ontology</button>
-        <button class="tab-btn" data-tab="log">Log</button>
+        <button class="tab-btn active" data-tab="nodes">Nodes</button>
+        <button class="tab-btn" data-tab="wires">Wires</button>
+        <button class="tab-btn" data-tab="slice">Slice</button>
+        <button class="tab-btn" data-tab="schema">Schema</button>
+        <button class="tab-btn" data-tab="history">History</button>
     </div>
 
     <div class="content">
-        <section id="tab-objects" class="tab-panel active"></section>
-        <section id="tab-morphisms" class="tab-panel"></section>
-        <section id="tab-ontology" class="tab-panel"></section>
-        <section id="tab-log" class="tab-panel"></section>
+        <section id="tab-nodes" class="tab-panel active"></section>
+        <section id="tab-wires" class="tab-panel"></section>
+        <section id="tab-slice" class="tab-panel"></section>
+        <section id="tab-schema" class="tab-panel"></section>
+        <section id="tab-history" class="tab-panel"></section>
     </div>
 
     <script>
@@ -297,38 +525,48 @@
         var registryData = { types: {} };
         var logData = [];
         var expandedRows = {};
-        var activeTab = 'objects';
+        var openGroups = {};
+        var activeTab = 'nodes';
+        var sliceURN = '';
 
         var statsEl = document.getElementById('stats');
-        var objectsEl = document.getElementById('tab-objects');
-        var morphismsEl = document.getElementById('tab-morphisms');
-        var ontologyEl = document.getElementById('tab-ontology');
-        var logEl = document.getElementById('tab-log');
+        var nodesEl = document.getElementById('tab-nodes');
+        var wiresEl = document.getElementById('tab-wires');
+        var sliceEl = document.getElementById('tab-slice');
+        var schemaEl = document.getElementById('tab-schema');
+        var historyEl = document.getElementById('tab-history');
+        var pipelineEl = document.getElementById('pipeline-bar');
 
-        var kindFilter = document.getElementById('kind-filter');
+        var typeFilter = document.getElementById('type-filter');
         var stratumFilter = document.getElementById('stratum-filter');
-        var categoryFilter = document.getElementById('category-filter');
-        var scopeFilter = document.getElementById('scope-filter');
+        var domainFilter = document.getElementById('domain-filter');
+        var containerFilter = document.getElementById('container-filter');
         var searchFilter = document.getElementById('search-filter');
-
-        function isCatOntologyNode(node, urn) {
-            return String(urn || '').indexOf('urn:moos:cat:') === 0 && String(node.type_id || '') === 'app_template';
-        }
-
-        function displayKind(node, urn) {
-            if (isCatOntologyNode(node, urn)) return 'ontology_term';
-            return String(node.type_id || 'unknown');
-        }
-
-        function displayCategory(node, urn) {
-            if (isCatOntologyNode(node, urn)) return 'ontology';
-            return broadCategory(node.type_id || '');
-        }
 
         function escapeHtml(s) {
             var d = document.createElement('div');
             d.appendChild(document.createTextNode(String(s == null ? '' : s)));
             return d.innerHTML;
+        }
+
+        function shortURN(urn) {
+            var s = String(urn || '');
+            if (s.indexOf('urn:moos:') === 0) return s.substring(9);
+            return s;
+        }
+
+        function urnHtml(urn) {
+            return '<span class="mono urn-short" title="' + escapeHtml(urn) + '">' + escapeHtml(shortURN(urn)) + '</span>';
+        }
+
+        function wireIdHtml(wireId) {
+            var parts = String(wireId || '').split('|');
+            if (parts.length === 4) {
+                return '<span class="mono urn-short" title="' + escapeHtml(wireId) + '">' +
+                    escapeHtml(shortURN(parts[0])) + ' <span class="wire-port">' + escapeHtml(parts[1]) +
+                    '</span> &rarr; ' + escapeHtml(shortURN(parts[2])) + '</span>';
+            }
+            return '<span class="mono" title="' + escapeHtml(wireId) + '">' + escapeHtml(wireId) + '</span>';
         }
 
         function broadCategory(kind) {
@@ -366,45 +604,26 @@
                     return 'evaluation';
                 case 'industry_entity':
                     return 'industry';
+                case 'ontology_term':
+                    return 'ontology';
                 default:
                     return 'unknown';
             }
         }
 
         function selectedValues(selectEl) {
-            var out = [];
-            for (var i = 0; i < selectEl.options.length; i++) {
-                var o = selectEl.options[i];
-                if (o.selected && o.value) out.push(o.value);
-            }
-            return out;
+            var v = selectEl.value;
+            return v ? [v] : [];
         }
 
-        function normalizeMultiSelect(selectEl) {
-            if (!selectEl || !selectEl.multiple) return;
-
-            var emptyOpt = null;
-            var hasNonEmptySelected = false;
-            for (var i = 0; i < selectEl.options.length; i++) {
-                var o = selectEl.options[i];
-                if (o.value === '') {
-                    emptyOpt = o;
-                    continue;
-                }
-                if (o.selected) hasNonEmptySelected = true;
-            }
-            if (!emptyOpt) return;
-
-            if (emptyOpt.selected) {
-                for (var j = 0; j < selectEl.options.length; j++) {
-                    if (selectEl.options[j].value !== '') selectEl.options[j].selected = false;
-                }
-                return;
-            }
-
-            if (hasNonEmptySelected) {
-                emptyOpt.selected = false;
-            }
+        function stratumPillClass(stratum) {
+            var s = String(stratum || '').toUpperCase();
+            if (s === 'S0') return 'pill pill-s0';
+            if (s === 'S1') return 'pill pill-s1';
+            if (s === 'S2') return 'pill pill-s2';
+            if (s === 'S3') return 'pill pill-s3';
+            if (s === 'S4') return 'pill pill-s4';
+            return 'pill';
         }
 
         function nodeLabel(node, urn) {
@@ -426,10 +645,10 @@
 
         function buildLensURL() {
             var q = [];
-            var kinds = selectedValues(kindFilter);
+            var kinds = selectedValues(typeFilter);
             var strata = selectedValues(stratumFilter);
-            var cats = selectedValues(categoryFilter);
-            var scope = scopeFilter.value || '';
+            var cats = selectedValues(domainFilter);
+            var scope = containerFilter.value || '';
             if (kinds.length) q.push('kind=' + encodeURIComponent(kinds.join(',')));
             if (strata.length) q.push('stratum=' + encodeURIComponent(strata.join(',')));
             if (cats.length) q.push('category=' + encodeURIComponent(cats.join(',')));
@@ -452,15 +671,103 @@
             return { incoming: incoming, outgoing: outgoing };
         }
 
+        // --- Port saturation (client-side from registry + wires) ---
+        function computeNodeSaturation(urn, node) {
+            var typeSpec = (registryData.types || {})[node.type_id];
+            if (!typeSpec) return null;
+            var ports = typeSpec.ports || {};
+            var idx = wireIndexForNode(urn);
+            var result = { ports: {}, totalDefined: 0, totalWired: 0, gaps: [] };
+
+            Object.keys(ports).forEach(function (portName) {
+                var ps = ports[portName];
+                var dir = (ps.direction || '').toLowerCase();
+                // Out-ports: defined ceiling = number of admissible targets in operad.
+                // In-ports: no ceiling defined in operad (they receive, not distribute).
+                // Saturated applies only to out-ports (cooperad fan-out completeness).
+                var defined = dir === 'out' ? (ps.targets || []).length : 0;
+                var actual = 0;
+                if (dir === 'out') {
+                    idx.outgoing.forEach(function (w) {
+                        if (w.source_port === portName) actual++;
+                    });
+                } else {
+                    idx.incoming.forEach(function (w) {
+                        if (w.target_port === portName) actual++;
+                    });
+                }
+                result.ports[portName] = {
+                    direction: dir,
+                    defined: defined,
+                    actual: actual,
+                    // In-ports: saturated = false (no ceiling). Out-ports: actual >= defined.
+                    saturated: dir === 'out' ? (actual >= defined && defined > 0) : false
+                };
+                if (dir === 'out') result.totalDefined += defined;
+                result.totalWired += actual;
+                if (actual === 0) result.gaps.push(portName);
+            });
+            return result;
+        }
+
+        function renderPortBadges(sat) {
+            if (!sat) return '';
+            var html = '<div class="small-note">Port Saturation</div>';
+            Object.keys(sat.ports).sort().forEach(function (p) {
+                var ps = sat.ports[p];
+                var cls = ps.actual === 0 ? 'port-gap' : (ps.saturated ? 'port-saturated' : 'port-partial');
+                var arrow = ps.direction === 'out' ? '&#x2192;' : '&#x2190;';
+                // Out-ports: show "actual/defined" ceiling. In-ports: just actual (no ceiling).
+                var countStr = ps.direction === 'out' && ps.defined > 0 ? (ps.actual + '/' + ps.defined) : String(ps.actual);
+                html += '<span class="port-badge ' + cls + '">' + arrow + ' ' + escapeHtml(p) + ' ' + countStr + '</span>';
+            });
+            if (sat.gaps.length > 0) {
+                html += '<div style="margin-top:4px;font-size:11px;color:#fb923c">Gaps: ' + sat.gaps.map(escapeHtml).join(', ') + '</div>';
+            }
+            return html;
+        }
+
+        // --- Pipeline Bar ---
+        function renderPipeline() {
+            var counts = { S0: 0, S1: 0, S2: 0, S3: 0, S4: 0 };
+            Object.keys(stateData.nodes || {}).forEach(function (urn) {
+                var s = String((stateData.nodes[urn] || {}).stratum || '').toUpperCase();
+                if (counts.hasOwnProperty(s)) counts[s]++;
+            });
+            var strata = ['S0', 'S1', 'S2', 'S3', 'S4'];
+            var labels = { S0: 'Industry', S1: 'Ontology', S2: 'Instance', S3: 'Evaluated', S4: 'Projected' };
+            var activeStratum = stratumFilter.value || '';
+
+            var html = '';
+            strata.forEach(function (s, i) {
+                if (i > 0) html += '<span class="pipeline-arrow">&rarr;</span>';
+                var cls = 'pipeline-segment seg-' + s.toLowerCase() + (activeStratum === s ? ' active' : '');
+                html += '<div class="' + cls + '" data-stratum="' + s + '">' +
+                    s + ' ' + labels[s] + '<span class="seg-count">(' + counts[s] + ')</span></div>';
+            });
+            pipelineEl.innerHTML = html;
+
+            pipelineEl.querySelectorAll('.pipeline-segment').forEach(function (seg) {
+                seg.addEventListener('click', function () {
+                    var s = seg.getAttribute('data-stratum');
+                    stratumFilter.value = (stratumFilter.value === s) ? '' : s;
+                    expandedRows = {};
+                    reloadStateWithFilters();
+                });
+            });
+        }
+
+        // --- Render functions ---
         function renderStats() {
             var nodeCount = Object.keys(stateData.nodes || {}).length;
             var wireCount = Object.keys(stateData.wires || {}).length;
-            var scope = scopeFilter.value ? (' | scope=' + scopeFilter.value) : '';
-            statsEl.textContent = 'Data Lens: ' + nodeCount + ' nodes, ' + wireCount +
+            var scope = containerFilter.value ? (' | container=' + containerFilter.value) : '';
+            statsEl.textContent = 'Categorical Lens: ' + nodeCount + ' nodes, ' + wireCount +
                 ' wires (of ' + fullTotals.nodes + '/' + fullTotals.wires + ')' + scope;
+            renderPipeline();
         }
 
-        function renderObjects() {
+        function renderNodes() {
             var nodes = Object.keys(stateData.nodes || {}).map(function (urn) {
                 return { urn: urn, node: stateData.nodes[urn] };
             });
@@ -468,56 +775,67 @@
 
             var groups = {};
             nodes.forEach(function (x) {
-                var k = displayKind(x.node, x.urn);
+                var k = String(x.node.type_id || 'unknown');
                 if (!groups[k]) groups[k] = [];
                 groups[k].push(x);
             });
 
             var kinds = Object.keys(groups).sort();
             if (!kinds.length) {
-                objectsEl.innerHTML = '<div class="loading">No objects match current filters.</div>';
+                nodesEl.innerHTML = '<div class="loading">No nodes match current filters.</div>';
                 return;
             }
 
             var html = '';
             kinds.forEach(function (k) {
                 var rows = groups[k].sort(function (a, b) { return a.urn.localeCompare(b.urn); });
-                html += '<details open><summary>KIND: ' + escapeHtml(k) + ' (' + rows.length + ')</summary>';
+                var groupOpen = openGroups['node:' + k] !== false;
+                html += '<details data-group-key="node:' + escapeHtml(k) + '"' + (groupOpen ? ' open' : '') + '><summary>TYPE: ' + escapeHtml(k) + ' <span class="kind-count">(' + rows.length + ')</span></summary>';
                 html += '<table><thead><tr>' +
-                    '<th>URN</th><th>Stratum</th><th>Category</th><th>Label</th><th>Wires</th>' +
+                    '<th>URN</th><th>Stratum</th><th>Domain</th><th>Label</th><th>Wires</th>' +
                     '</tr></thead><tbody>';
 
                 rows.forEach(function (x) {
                     var n = x.node;
                     var idx = wireIndexForNode(x.urn);
-                    var key = 'obj:' + x.urn;
+                    var key = 'node:' + x.urn;
                     var isOpen = !!expandedRows[key];
                     html += '<tr class="row" data-row-key="' + escapeHtml(key) + '">' +
-                        '<td class="mono">' + escapeHtml(x.urn) + '</td>' +
-                        '<td><span class="pill">' + escapeHtml(n.stratum || '') + '</span></td>' +
-                        '<td>' + escapeHtml(displayCategory(n, x.urn)) + '</td>' +
+                        '<td>' + urnHtml(x.urn) + '</td>' +
+                        '<td><span class="' + stratumPillClass(n.stratum) + '">' + escapeHtml(n.stratum || '') + '</span></td>' +
+                        '<td>' + escapeHtml(broadCategory(n.type_id || '')) + '</td>' +
                         '<td>' + escapeHtml(nodeLabel(n, x.urn)) + '</td>' +
                         '<td>' + (idx.incoming.length + idx.outgoing.length) + '</td>' +
                         '</tr>';
 
                     if (isOpen) {
+                        var sat = computeNodeSaturation(x.urn, n);
                         html += '<tr><td colspan="5"><div class="expander">';
                         html += '<div class="small-note">Payload JSON</div>';
                         html += '<pre>' + escapeHtml(JSON.stringify(n.payload || {}, null, 2)) + '</pre>';
 
+                        // Port saturation badges
+                        html += renderPortBadges(sat);
+
+                        // Fan-in / Fan-out stats
+                        html += '<div class="fan-stats">' +
+                            '<span>Fan-in (slice): ' + idx.incoming.length + '</span>' +
+                            '<span>Fan-out (coslice): ' + idx.outgoing.length + '</span>' +
+                            '</div>';
+
                         html += '<div class="small-note">Outgoing wires (' + idx.outgoing.length + ')</div>';
                         html += '<table><thead><tr><th>Target</th><th>Source Port</th><th>Target Port</th></tr></thead><tbody>';
                         idx.outgoing.forEach(function (w) {
-                            html += '<tr><td class="mono">' + escapeHtml(w.target_urn) + '</td><td>' +
-                                escapeHtml(w.source_port) + '</td><td>' + escapeHtml(w.target_port) + '</td></tr>';
+                            html += '<tr><td>' + urnHtml(w.target_urn) + '</td><td><span class="wire-port">' +
+                                escapeHtml(w.source_port) + '</span></td><td>' + escapeHtml(w.target_port) + '</td></tr>';
                         });
                         html += '</tbody></table>';
 
                         html += '<div class="small-note">Incoming wires (' + idx.incoming.length + ')</div>';
                         html += '<table><thead><tr><th>Source</th><th>Source Port</th><th>Target Port</th></tr></thead><tbody>';
                         idx.incoming.forEach(function (w) {
-                            html += '<tr><td class="mono">' + escapeHtml(w.source_urn) + '</td><td>' +
-                                escapeHtml(w.source_port) + '</td><td>' + escapeHtml(w.target_port) + '</td></tr>';
+                            html += '<tr><td>' + urnHtml(w.source_urn) + '</td><td><span class="wire-port">' +
+                                escapeHtml(w.source_port) + '</span></td><td>' + escapeHtml(w.target_port) + '</td></tr>';
                         });
                         html += '</tbody></table>';
                         html += '</div></td></tr>';
@@ -527,17 +845,22 @@
                 html += '</tbody></table></details>';
             });
 
-            objectsEl.innerHTML = html;
-            objectsEl.querySelectorAll('tr.row').forEach(function (row) {
+            nodesEl.innerHTML = html;
+            nodesEl.querySelectorAll('details[data-group-key]').forEach(function (d) {
+                d.addEventListener('toggle', function () {
+                    openGroups[d.getAttribute('data-group-key')] = d.open;
+                });
+            });
+            nodesEl.querySelectorAll('tr.row').forEach(function (row) {
                 row.addEventListener('click', function () {
                     var key = row.getAttribute('data-row-key');
                     expandedRows[key] = !expandedRows[key];
-                    renderObjects();
+                    renderNodes();
                 });
             });
         }
 
-        function renderMorphisms() {
+        function renderWires() {
             var groups = {};
             Object.keys(stateData.wires || {}).forEach(function (k) {
                 var w = stateData.wires[k];
@@ -548,14 +871,15 @@
 
             var keys = Object.keys(groups).sort();
             if (!keys.length) {
-                morphismsEl.innerHTML = '<div class="loading">No morphisms match current filters.</div>';
+                wiresEl.innerHTML = '<div class="loading">No wires match current filters.</div>';
                 return;
             }
 
             var html = '';
             keys.forEach(function (k) {
                 var ws = groups[k];
-                html += '<details open><summary>MORPHISM: ' + escapeHtml(k) + ' (' + ws.length + ')</summary>';
+                var wireGroupOpen = openGroups['wire:' + k] !== false;
+                html += '<details data-group-key="wire:' + escapeHtml(k) + '"' + (wireGroupOpen ? ' open' : '') + '><summary>PORT: ' + escapeHtml(k) + ' <span class="kind-count">(' + ws.length + ')</span></summary>';
                 html += '<table><thead><tr>' +
                     '<th>Source URN</th><th>Target URN</th><th>Source Port</th><th>Target Port</th><th>Source Stratum</th>' +
                     '</tr></thead><tbody>';
@@ -563,25 +887,26 @@
                     var wireID = entry.id;
                     var w = entry.wire;
                     var srcNode = (stateData.nodes || {})[w.source_urn] || {};
-                    var rowKey = 'morph:' + wireID;
+                    var rowKey = 'wire:' + wireID;
                     var isOpen = !!expandedRows[rowKey];
                     html += '<tr class="row" data-row-key="' + escapeHtml(rowKey) + '">' +
-                        '<td class="mono">' + escapeHtml(w.source_urn) + '</td>' +
-                        '<td class="mono">' + escapeHtml(w.target_urn) + '</td>' +
-                        '<td>' + escapeHtml(w.source_port) + '</td>' +
+                        '<td>' + urnHtml(w.source_urn) + '</td>' +
+                        '<td>' + urnHtml(w.target_urn) + '</td>' +
+                        '<td><span class="wire-port">' + escapeHtml(w.source_port) + '</span></td>' +
                         '<td>' + escapeHtml(w.target_port) + '</td>' +
-                        '<td>' + escapeHtml(srcNode.stratum || '') + '</td>' +
+                        '<td><span class="' + stratumPillClass(srcNode.stratum) + '">' + escapeHtml(srcNode.stratum || '') + '</span></td>' +
                         '</tr>';
 
                     if (isOpen) {
                         html += '<tr><td colspan="5"><div class="expander">';
+                        html += '<div class="small-note">Wire ID</div>';
+                        html += '<div class="mono" style="margin-bottom:8px;font-size:11px;color:#8b9cc0;word-break:break-all">' + escapeHtml(wireID) + '</div>';
                         html += '<div class="small-note">Wire details</div>';
-                        html += '<table><thead><tr><th>Wire ID</th><th>Source URN</th><th>Target URN</th><th>Source Port</th><th>Target Port</th></tr></thead><tbody>';
+                        html += '<table><thead><tr><th>Source</th><th>Target</th><th>Source Port</th><th>Target Port</th></tr></thead><tbody>';
                         html += '<tr>' +
-                            '<td class="mono">' + escapeHtml(wireID) + '</td>' +
-                            '<td class="mono">' + escapeHtml(w.source_urn || '') + '</td>' +
-                            '<td class="mono">' + escapeHtml(w.target_urn || '') + '</td>' +
-                            '<td>' + escapeHtml(w.source_port || '') + '</td>' +
+                            '<td>' + urnHtml(w.source_urn || '') + '</td>' +
+                            '<td>' + urnHtml(w.target_urn || '') + '</td>' +
+                            '<td><span class="wire-port">' + escapeHtml(w.source_port || '') + '</span></td>' +
                             '<td>' + escapeHtml(w.target_port || '') + '</td>' +
                             '</tr>';
                         html += '</tbody></table>';
@@ -590,42 +915,160 @@
                 });
                 html += '</tbody></table></details>';
             });
-            morphismsEl.innerHTML = html;
-
-            morphismsEl.querySelectorAll('tr.row').forEach(function (row) {
+            wiresEl.innerHTML = html;
+            wiresEl.querySelectorAll('details[data-group-key]').forEach(function (d) {
+                d.addEventListener('toggle', function () {
+                    openGroups[d.getAttribute('data-group-key')] = d.open;
+                });
+            });
+            wiresEl.querySelectorAll('tr.row').forEach(function (row) {
                 row.addEventListener('click', function () {
                     var key = row.getAttribute('data-row-key');
                     expandedRows[key] = !expandedRows[key];
-                    renderMorphisms();
+                    renderWires();
                 });
             });
         }
 
-        function renderOntology() {
+        function renderSlice() {
+            var allURNs = Object.keys(stateData.nodes || {}).sort();
+            var html = '<div class="slice-input-row">' +
+                '<input type="text" id="slice-urn" list="slice-urn-list" placeholder="Select node URN..." value="' + escapeHtml(sliceURN) + '">' +
+                '<datalist id="slice-urn-list">' + allURNs.map(function (u) { return '<option value="' + escapeHtml(u) + '">'; }).join('') + '</datalist>' +
+                '</div>';
+
+            if (sliceURN && stateData.nodes[sliceURN]) {
+                var node = stateData.nodes[sliceURN];
+                var idx = wireIndexForNode(sliceURN);
+                var sat = computeNodeSaturation(sliceURN, node);
+
+                // Node summary
+                html += '<div class="schema-card"><div class="schema-card-header">' +
+                    '<span>' + urnHtml(sliceURN) + '</span>' +
+                    '<span><span class="' + stratumPillClass(node.stratum) + '">' + escapeHtml(node.stratum || '') + '</span> ' +
+                    escapeHtml(node.type_id || '') + '</span></div>';
+                html += renderPortBadges(sat);
+                html += '</div>';
+
+                // Coslice (fan-out) grouped by port
+                html += '<div class="slice-section"><h3>&#x2192; Coslice (fan-out): ' + idx.outgoing.length + ' wires</h3>';
+                var outByPort = {};
+                idx.outgoing.forEach(function (w) {
+                    var p = w.source_port || 'unknown';
+                    if (!outByPort[p]) outByPort[p] = [];
+                    outByPort[p].push(w);
+                });
+                Object.keys(outByPort).sort().forEach(function (p) {
+                    html += '<details open><summary><span class="wire-port">' + escapeHtml(p) + '</span> <span class="kind-count">(' + outByPort[p].length + ')</span></summary>';
+                    html += '<table><thead><tr><th>Target</th><th>Target Port</th><th>Type</th><th>Label</th></tr></thead><tbody>';
+                    outByPort[p].forEach(function (w) {
+                        var tNode = (stateData.nodes || {})[w.target_urn] || {};
+                        html += '<tr class="row" onclick="sliceURN=\'' + escapeHtml(w.target_urn).replace(/'/g, "\\'") + '\';renderSlice()">' +
+                            '<td>' + urnHtml(w.target_urn) + '</td>' +
+                            '<td>' + escapeHtml(w.target_port) + '</td>' +
+                            '<td>' + escapeHtml(tNode.type_id || '') + '</td>' +
+                            '<td>' + escapeHtml(nodeLabel(tNode, w.target_urn)) + '</td></tr>';
+                    });
+                    html += '</tbody></table></details>';
+                });
+                html += '</div>';
+
+                // Slice (fan-in) grouped by port
+                html += '<div class="slice-section"><h3>&#x2190; Slice (fan-in): ' + idx.incoming.length + ' wires</h3>';
+                var inByPort = {};
+                idx.incoming.forEach(function (w) {
+                    var p = w.target_port || 'unknown';
+                    if (!inByPort[p]) inByPort[p] = [];
+                    inByPort[p].push(w);
+                });
+                Object.keys(inByPort).sort().forEach(function (p) {
+                    html += '<details open><summary><span class="wire-port">' + escapeHtml(p) + '</span> <span class="kind-count">(' + inByPort[p].length + ')</span></summary>';
+                    html += '<table><thead><tr><th>Source</th><th>Source Port</th><th>Type</th><th>Label</th></tr></thead><tbody>';
+                    inByPort[p].forEach(function (w) {
+                        var sNode = (stateData.nodes || {})[w.source_urn] || {};
+                        html += '<tr class="row" onclick="sliceURN=\'' + escapeHtml(w.source_urn).replace(/'/g, "\\'") + '\';renderSlice()">' +
+                            '<td>' + urnHtml(w.source_urn) + '</td>' +
+                            '<td><span class="wire-port">' + escapeHtml(w.source_port) + '</span></td>' +
+                            '<td>' + escapeHtml(sNode.type_id || '') + '</td>' +
+                            '<td>' + escapeHtml(nodeLabel(sNode, w.source_urn)) + '</td></tr>';
+                    });
+                    html += '</tbody></table></details>';
+                });
+                html += '</div>';
+            } else if (sliceURN) {
+                html += '<div class="loading">Node not found: ' + escapeHtml(sliceURN) + '</div>';
+            } else {
+                html += '<div class="loading">Select a node URN to inspect its slice and coslice.</div>';
+            }
+
+            sliceEl.innerHTML = html;
+            var sliceInput = document.getElementById('slice-urn');
+            if (sliceInput) {
+                sliceInput.addEventListener('change', function () {
+                    sliceURN = sliceInput.value;
+                    renderSlice();
+                });
+            }
+        }
+
+        function renderSchema() {
             var types = registryData.types || {};
             var keys = Object.keys(types).sort();
             if (!keys.length) {
-                ontologyEl.innerHTML = '<div class="loading">No ontology registry data loaded.</div>';
+                schemaEl.innerHTML = '<div class="loading">No schema registry data loaded.</div>';
                 return;
             }
 
-            var html = '<details open><summary>Kinds (' + keys.length + ')</summary>';
-            html += '<table><thead><tr><th>Kind</th><th>Category</th><th>Allowed Strata</th><th>Ports</th></tr></thead><tbody>';
-            var morphMap = {};
+            var html = '<div class="small-note" style="margin-bottom:12px">' + keys.length + ' types registered in operad</div>';
 
             keys.forEach(function (k) {
                 var t = types[k] || {};
-                var strata = (t.allowed_strata || []).join(', ');
+                var strata = (t.allowed_strata || []).map(function (s) {
+                    return '<span class="' + stratumPillClass(s) + '" style="margin-right:4px">' + escapeHtml(s) + '</span>';
+                }).join('');
                 var ports = Object.keys(t.ports || {}).sort();
-                var portText = ports.join(', ');
-                html += '<tr>' +
-                    '<td class="mono">' + escapeHtml(k) + '</td>' +
-                    '<td>' + escapeHtml(broadCategory(k)) + '</td>' +
-                    '<td>' + escapeHtml(strata) + '</td>' +
-                    '<td class="mono">' + escapeHtml(portText) + '</td>' +
-                    '</tr>';
+                var mutableBadge = t.mutable === false ?
+                    '<span style="color:#fb923c;font-size:11px;margin-left:8px">immutable</span>' :
+                    '<span style="color:#4ade80;font-size:11px;margin-left:8px">mutable</span>';
 
+                // Count live nodes of this type
+                var liveCount = 0;
+                Object.keys(stateData.nodes || {}).forEach(function (urn) {
+                    if ((stateData.nodes[urn] || {}).type_id === k) liveCount++;
+                });
+
+                html += '<div class="schema-card">';
+                html += '<div class="schema-card-header" onclick="this.parentElement.querySelector(\'.port-list\').style.display = this.parentElement.querySelector(\'.port-list\').style.display === \'none\' ? \'block\' : \'none\'">';
+                html += '<span class="mono" style="font-weight:600">' + escapeHtml(k) + mutableBadge +
+                    ' <span style="color:#6e8ab0;font-weight:400;font-size:12px">' + broadCategory(k) + ' &middot; ' + liveCount + ' nodes</span></span>';
+                html += '<span>' + strata + '</span>';
+                html += '</div>';
+
+                // Port signature (collapsed by default)
+                html += '<div class="port-list" style="display:none">';
+                if (ports.length === 0) {
+                    html += '<div style="color:#6e8ab0;font-size:12px;padding:4px 0">No ports defined</div>';
+                }
                 ports.forEach(function (p) {
+                    var ps = t.ports[p] || {};
+                    var dirCls = ps.direction === 'out' ? 'port-dir-out' : 'port-dir-in';
+                    var targets = (ps.targets || []).map(function (tg) {
+                        return (tg.type_id || '?') + '.' + (tg.port || '?');
+                    }).join(', ');
+                    html += '<div class="port-row">' +
+                        '<span class="port-dir ' + dirCls + '">' + escapeHtml(ps.direction || '?') + '</span>' +
+                        '<span class="mono" style="color:#f0883e;font-weight:600">' + escapeHtml(p) + '</span>' +
+                        (targets ? '<span class="port-targets">&rarr; ' + escapeHtml(targets) + '</span>' : '') +
+                        '</div>';
+                });
+                html += '</div></div>';
+            });
+
+            // Morphism-like port relations summary
+            var morphMap = {};
+            keys.forEach(function (k) {
+                var t = types[k] || {};
+                Object.keys(t.ports || {}).forEach(function (p) {
                     var ps = t.ports[p] || {};
                     if (String(ps.direction || '').toLowerCase() !== 'out') return;
                     var id = String(p).toUpperCase();
@@ -638,11 +1081,10 @@
                     });
                 });
             });
-            html += '</tbody></table></details>';
 
             var morphKeys = Object.keys(morphMap).sort();
-            html += '<details open><summary>Morphism-like Port Relations (' + morphKeys.length + ')</summary>';
-            html += '<table><thead><tr><th>Type</th><th>Source Kinds</th><th>Target Kinds/Ports</th></tr></thead><tbody>';
+            html += '<details style="margin-top:16px"><summary>Port Relations <span class="kind-count">(' + morphKeys.length + ')</span></summary>';
+            html += '<table><thead><tr><th>Port</th><th>Source Types</th><th>Target Types/Ports</th></tr></thead><tbody>';
             morphKeys.forEach(function (mk) {
                 var m = morphMap[mk];
                 var src = Object.keys(m.sources).sort().join(', ');
@@ -652,10 +1094,10 @@
             });
             html += '</tbody></table></details>';
 
-            ontologyEl.innerHTML = html;
+            schemaEl.innerHTML = html;
         }
 
-        function renderLog() {
+        function renderHistory() {
             var actorSet = {};
             (logData || []).forEach(function (e) {
                 actorSet[String(e.entry && e.entry.envelope && e.entry.envelope.actor || '')] = true;
@@ -671,7 +1113,7 @@
                 '</select></div>';
 
             html += '<table><thead><tr><th>#</th><th>Actor</th><th>Target</th><th>Type</th><th>Timestamp</th></tr></thead><tbody id="log-body"></tbody></table>';
-            logEl.innerHTML = html;
+            historyEl.innerHTML = html;
 
             function refill() {
                 var actor = document.getElementById('log-actor').value;
@@ -691,8 +1133,8 @@
                     else if (env.link && env.link.target_urn) target = env.link.target_urn;
                     else if (env.unlink && env.unlink.target_urn) target = env.unlink.target_urn;
                     return '<tr><td>' + e.seq + '</td>' +
-                        '<td class="mono">' + escapeHtml(env.actor || '') + '</td>' +
-                        '<td class="mono">' + escapeHtml(target) + '</td>' +
+                        '<td>' + urnHtml(env.actor || '') + '</td>' +
+                        '<td>' + urnHtml(target) + '</td>' +
                         '<td>' + escapeHtml(env.type || '') + '</td>' +
                         '<td>' + escapeHtml((e.entry && e.entry.issued_at) || '') + '</td></tr>';
                 }).join('');
@@ -706,10 +1148,11 @@
 
         function renderActiveTab() {
             renderStats();
-            if (activeTab === 'objects') renderObjects();
-            if (activeTab === 'morphisms') renderMorphisms();
-            if (activeTab === 'ontology') renderOntology();
-            if (activeTab === 'log') renderLog();
+            if (activeTab === 'nodes') renderNodes();
+            if (activeTab === 'wires') renderWires();
+            if (activeTab === 'slice') renderSlice();
+            if (activeTab === 'schema') renderSchema();
+            if (activeTab === 'history') renderHistory();
         }
 
         function populateFiltersFromState(state) {
@@ -729,21 +1172,21 @@
                 }
             });
 
-            kindFilter.innerHTML = '<option value="">— All —</option>' + Object.keys(kinds).sort().map(function (k) {
+            typeFilter.innerHTML = '<option value="">All types (' + Object.keys(kinds).length + ')</option>' + Object.keys(kinds).sort().map(function (k) {
                 return '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>';
             }).join('');
 
-            categoryFilter.innerHTML = '<option value="">— All —</option>' + Object.keys(cats).sort().map(function (c) {
+            domainFilter.innerHTML = '<option value="">All domains (' + Object.keys(cats).length + ')</option>' + Object.keys(cats).sort().map(function (c) {
                 return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
             }).join('');
 
-            var current = scopeFilter.value || '';
+            var current = containerFilter.value || '';
             var opts = '<option value="">— Full graph (no scope) —</option>' +
                 Object.keys(scopes).sort().map(function (s) {
                     return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>';
                 }).join('');
-            scopeFilter.innerHTML = opts;
-            scopeFilter.value = current;
+            containerFilter.innerHTML = opts;
+            containerFilter.value = current;
         }
 
         function fetchJSON(url) {
@@ -760,8 +1203,8 @@
                 renderActiveTab();
             }).catch(function (err) {
                 var msg = '<div class="loading">Failed to load filtered state: ' + escapeHtml(String(err)) + '</div>';
-                objectsEl.innerHTML = msg;
-                morphismsEl.innerHTML = msg;
+                nodesEl.innerHTML = msg;
+                wiresEl.innerHTML = msg;
             });
         }
 
@@ -776,6 +1219,39 @@
                     renderActiveTab();
                 });
             });
+        }
+
+        // --- SSE live updates ---
+        function initSSE() {
+            var refreshTimer = null;
+            var eventSource = new EventSource('/log/stream');
+            eventSource.addEventListener('morphism', function (e) {
+                try {
+                    var entry = JSON.parse(e.data);
+                    logData.push({ entry: entry, seq: logData.length + 1 });
+                } catch (ex) { /* ignore parse errors */ }
+                if (refreshTimer) clearTimeout(refreshTimer);
+                refreshTimer = setTimeout(function () {
+                    fetchJSON('/state').then(function (fullState) {
+                        fullTotals.nodes = Object.keys(fullState.nodes || {}).length;
+                        fullTotals.wires = Object.keys(fullState.wires || {}).length;
+                        populateFiltersFromState(fullState);
+                        reloadStateWithFilters();
+                    });
+                    refreshTimer = null;
+                }, 500);
+            });
+            eventSource.onerror = function () {
+                // On reconnect, SSE auto-retries. After reconnect, do a full refresh.
+                setTimeout(function () {
+                    fetchJSON('/state').then(function (fullState) {
+                        fullTotals.nodes = Object.keys(fullState.nodes || {}).length;
+                        fullTotals.wires = Object.keys(fullState.wires || {}).length;
+                        populateFiltersFromState(fullState);
+                        reloadStateWithFilters();
+                    });
+                }, 2000);
+            };
         }
 
         function init() {
@@ -797,25 +1273,23 @@
                 ]);
             }).then(function () {
                 renderActiveTab();
+                initSSE();
             }).catch(function (err) {
                 var msg = '<div class="loading">Initialization failed: ' + escapeHtml(String(err)) + '</div>';
-                objectsEl.innerHTML = msg;
-                morphismsEl.innerHTML = msg;
-                ontologyEl.innerHTML = msg;
-                logEl.innerHTML = msg;
+                nodesEl.innerHTML = msg;
+                wiresEl.innerHTML = msg;
+                schemaEl.innerHTML = msg;
+                historyEl.innerHTML = msg;
             });
 
-            [kindFilter, stratumFilter, categoryFilter, scopeFilter].forEach(function (el) {
+            [typeFilter, stratumFilter, domainFilter, containerFilter].forEach(function (el) {
                 el.addEventListener('change', function () {
-                    if (el === kindFilter || el === stratumFilter || el === categoryFilter) {
-                        normalizeMultiSelect(el);
-                    }
                     expandedRows = {};
                     reloadStateWithFilters();
                 });
             });
             searchFilter.addEventListener('input', function () {
-                if (activeTab === 'objects') renderObjects();
+                if (activeTab === 'nodes') renderNodes();
                 else renderActiveTab();
             });
         }

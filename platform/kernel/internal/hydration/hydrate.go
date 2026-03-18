@@ -10,7 +10,7 @@ import (
 	"moos/platform/kernel/internal/cat"
 )
 
-const ontologyTemplateTypeID = "app_template"
+const ontologyTemplateTypeID = "ontology_term"
 
 type ontology struct {
 	Objects    []ontologyObject     `json:"objects"`
@@ -25,7 +25,7 @@ type ontologyCategorySets struct {
 	Core              []ontologyCategory `json:"core"`
 	StratumChain      []ontologyCategory `json:"stratum_chain"`
 	HydrationPipeline []ontologyCategory `json:"hydration_pipeline"`
-	FunctorCodomains []ontologyCategory `json:"functor_codomains"`
+	FunctorCodomains  []ontologyCategory `json:"functor_codomains"`
 	CrossProvider     []ontologyCategory `json:"cross_provider"`
 	Glossary          []ontologyGlossary `json:"glossary"`
 }
@@ -38,7 +38,7 @@ type ontologyGlossary struct {
 	ID string `json:"id"`
 }
 
-// HydrateFromOntology reads ontology.json and synthesizes S1 app_template nodes
+// HydrateFromOntology reads ontology.json and synthesizes S1 ontology_term nodes
 // for glossary terms, category satellites, and object kind references.
 func HydrateFromOntology(ontologyPath string) ([]cat.Node, error) {
 	data, err := os.ReadFile(filepath.Clean(ontologyPath))

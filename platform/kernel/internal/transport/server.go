@@ -63,6 +63,7 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /state/scope/", s.handleScope)
 	s.mux.HandleFunc("GET /state/lens", s.handleLens)
 	s.mux.HandleFunc("POST /state/lens", s.handleLensPost)
+	s.mux.HandleFunc("GET /state/saturation", s.handleSaturation)
 	s.mux.HandleFunc("GET /functor/benchmark/", s.handleBenchmarkFunctor)
 	s.mux.HandleFunc("GET /explorer", s.handleExplorer)
 	s.mux.HandleFunc("GET /functor/ui", s.handleUIFunctor)
@@ -180,6 +181,29 @@ func (s *Server) handleLensPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, lens.Apply(state, spec))
+}
+
+func (s *Server) handleSaturation(w http.ResponseWriter, r *http.Request) {
+	reg := s.runtime.Registry()
+	if reg == nil {
+		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
+		return
+	}
+	state := s.runtime.State()
+
+	// Optional single-node lookup: ?urn=<urn>
+	if urnParam := strings.TrimSpace(r.URL.Query().Get("urn")); urnParam != "" {
+		sat, ok := lens.ComputeNodeSaturation(state, reg, cat.URN(urnParam))
+		if !ok {
+			writeError(w, http.StatusNotFound,
+				fmt.Sprintf("node %s not found or has no port spec", urnParam))
+			return
+		}
+		writeJSON(w, http.StatusOK, sat)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, lens.ComputeSaturation(state, reg))
 }
 
 func (s *Server) handlePostMorphism(w http.ResponseWriter, r *http.Request) {

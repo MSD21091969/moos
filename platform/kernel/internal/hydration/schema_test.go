@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-// validTypeIDs is the canonical set of 21 type_ids from ontology.json objects[].type_id.
+// validTypeIDs is the canonical set of type_ids from ontology.json objects[].type_id.
 var validTypeIDs = map[string]bool{
 	"user":               true,
 	"collider_admin":     true,
@@ -32,6 +32,8 @@ var validTypeIDs = map[string]bool{
 	"benchmark_task":     true,
 	"benchmark_score":    true,
 	"agent_spec":         true,
+	"industry_entity":    true,
+	"ontology_term":      true,
 }
 
 // allowedStrata maps type_id → set of valid stratum values per ontology.json
@@ -58,6 +60,8 @@ var allowedStrata = map[string]map[string]bool{
 	"benchmark_task":     {"S2": true},
 	"benchmark_score":    {"S3": true},
 	"agent_spec":         {"S2": true, "S3": true},
+	"industry_entity":    {"S0": true},
+	"ontology_term":      {"S1": true},
 }
 
 var validStratumValues = map[string]bool{
@@ -91,7 +95,7 @@ type instanceFile struct {
 // TestInstanceFileSchema validates all *.json files in the KB instances directory
 // against the rules encoded in superset/schemas/instance.schema.json:
 //   - Top-level: domain (required string), entries (required non-empty array)
-//   - Each entry: id (required, must match ^urn:moos:), type_id (required, must be one of 21 enum values)
+//   - Each entry: id (required, must match ^urn:moos:), type_id (required, must be one of 23 enum values)
 //   - stratum (optional): when present must be S0-S4 and within allowed_strata for the type_id
 func TestInstanceFileSchema(t *testing.T) {
 	kbInstanceDir := resolveKBInstanceDir(t)
@@ -158,7 +162,7 @@ func validateEntry(t *testing.T, prefix string, entry map[string]interface{}) {
 		}
 	}
 
-	// type_id: required, must be one of the 21 ontology type_ids
+	// type_id: required, must be one of the 23 ontology type_ids
 	rawTypeID, hasTypeID := entry["type_id"]
 	var typeID string
 	if !hasTypeID {

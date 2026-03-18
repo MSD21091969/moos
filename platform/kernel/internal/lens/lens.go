@@ -310,6 +310,10 @@ func broadCategory(tid cat.TypeID) string {
 		return "config"
 	case "benchmark_suite", "benchmark_task", "benchmark_score":
 		return "evaluation"
+	case "industry_entity":
+		return "industry"
+	case "ontology_term":
+		return "ontology"
 	default:
 		return "unknown"
 	}
