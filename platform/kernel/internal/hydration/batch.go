@@ -34,6 +34,8 @@ var InstanceOrder = []string{
 	"memory.json",
 	"models.json",
 	"templates.json",
+	"prg.json",
+	"keeps.json",
 }
 
 // HydrateAll applies Tier-2 instance hydration for every KB instance file.
