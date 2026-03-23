@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"moos/platform/kernel/internal/cat"
@@ -155,6 +156,75 @@ func TestGetRegistry_Nil(t *testing.T) {
 	w := doRequest(t, srv.Handler(), "GET", "/semantics/registry", nil)
 	if w.Code != http.StatusOK {
 		t.Errorf("expected 200, got %d", w.Code)
+	}
+}
+
+func TestCalendarFunctorJSON(t *testing.T) {
+	srv := newTestServer(t)
+
+	// Add a prg_task node that should project into calendar entries.
+	env := cat.Envelope{
+		Type:  cat.ADD,
+		Actor: testActor,
+		Add: &cat.AddPayload{
+			URN:    "urn:test:prg:calendar",
+			TypeID: "prg_task",
+			Payload: map[string]any{
+				"title":  "Calendar Test Task",
+				"status": "in_progress",
+			},
+		},
+	}
+	doRequest(t, srv.Handler(), "POST", "/morphisms", env)
+
+	w := doRequest(t, srv.Handler(), "GET", "/functor/calendar", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var resp struct {
+		GeneratedAt string            `json:"generated_at"`
+		Entries     []map[string]any  `json:"entries"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if resp.GeneratedAt == "" {
+		t.Fatal("generated_at must be present")
+	}
+	if len(resp.Entries) == 0 {
+		t.Fatal("expected at least one calendar entry")
+	}
+}
+
+func TestCalendarFunctorICal(t *testing.T) {
+	srv := newTestServer(t)
+
+	env := cat.Envelope{
+		Type:  cat.ADD,
+		Actor: testActor,
+		Add: &cat.AddPayload{
+			URN:    "urn:test:calendar:event",
+			TypeID: "calendar_event",
+			Payload: map[string]any{
+				"summary":    "ICal Test",
+				"start_time": "2026-03-24T09:00:00Z",
+				"end_time":   "2026-03-24T10:00:00Z",
+			},
+		},
+	}
+	doRequest(t, srv.Handler(), "POST", "/morphisms", env)
+
+	w := doRequest(t, srv.Handler(), "GET", "/functor/calendar?format=ical", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	if ct := w.Header().Get("Content-Type"); !strings.HasPrefix(ct, "text/calendar") {
+		t.Fatalf("expected text/calendar content type, got %q", ct)
+	}
+	body := w.Body.String()
+	if !strings.Contains(body, "BEGIN:VCALENDAR") || !strings.Contains(body, "BEGIN:VEVENT") {
+		t.Fatalf("invalid ical body:\n%s", body)
 	}
 }
 

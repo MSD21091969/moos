@@ -190,6 +190,17 @@ func (r *Runtime) LogLen() int {
 	return len(r.log)
 }
 
+// Epoch returns the IssuedAt of the first morphism log entry — the graph's t=0.
+// Returns zero time if the log is empty.
+func (r *Runtime) Epoch() time.Time {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	if len(r.log) == 0 {
+		return time.Time{}
+	}
+	return r.log[0].IssuedAt
+}
+
 // ScopedSubgraph returns the full subcategory owned by actor.
 // BFS follows outgoing wires where SourcePort == "OWNS", collecting all
 // transitively owned nodes and any wires whose both endpoints are in the set.

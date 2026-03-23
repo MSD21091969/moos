@@ -67,6 +67,10 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /functor/benchmark/", s.handleBenchmarkFunctor)
 	s.mux.HandleFunc("GET /explorer", s.handleExplorer)
 	s.mux.HandleFunc("GET /functor/ui", s.handleUIFunctor)
+	s.mux.HandleFunc("GET /functor/calendar", s.handleCalendarFunctor)
+
+	// Right-adjoint (Ingest)
+	s.mux.HandleFunc("POST /webhooks/gcal", HandleGCalWebhook(s.runtime))
 }
 
 // ListenAndServe starts the HTTP server on the given address.
@@ -98,16 +102,25 @@ func (s *Server) Handler() http.Handler {
 // --- Handlers ---
 
 func (s *Server) handleHealthz(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]any{
+	resp := map[string]any{
 		"status":    "ok",
 		"nodes":     len(s.runtime.Nodes()),
 		"wires":     len(s.runtime.Wires()),
 		"log_depth": s.runtime.LogLen(),
-	})
+	}
+	if epoch := s.runtime.Epoch(); !epoch.IsZero() {
+		resp["epoch"] = epoch.UTC().Format(time.RFC3339Nano)
+	}
+	writeJSON(w, http.StatusOK, resp)
 }
 
 func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.runtime.State())
+	state := s.runtime.State()
+	if r.URL.Query().Has("compact") {
+		writeJSONCompact(w, http.StatusOK, state)
+		return
+	}
+	writeJSON(w, http.StatusOK, state)
 }
 
 func (s *Server) handleNodes(w http.ResponseWriter, r *http.Request) {
@@ -474,6 +487,30 @@ func (s *Server) handleUIFunctor(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, result)
 }
 
+func (s *Server) handleCalendarFunctor(w http.ResponseWriter, r *http.Request) {
+	cal := functor.Calendar{}
+	result, err := cal.Project(s.runtime.State())
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	proj, ok := result.(functor.CalendarProjection)
+	if !ok {
+		writeError(w, http.StatusInternalServerError, "invalid calendar projection type")
+		return
+	}
+
+	if strings.EqualFold(r.URL.Query().Get("format"), "ical") {
+		w.Header().Set("Content-Type", "text/calendar; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(functor.RenderICalendar(proj, "moos-calendar")))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, proj)
+}
+
 // --- Helpers ---
 
 func writeJSON(w http.ResponseWriter, status int, data any) {
@@ -482,6 +519,12 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 	enc.Encode(data)
+}
+
+func writeJSONCompact(w http.ResponseWriter, status int, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(data)
 }
 
 func writeError(w http.ResponseWriter, status int, msg string) {

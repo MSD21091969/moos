@@ -1,5 +1,7 @@
 package cat
 
+import "time"
+
 // Wire is a directed edge in the typed hypergraph — a morphism between Nodes.
 // Multiple wires between the same (A,B) are distinguished by ports.
 // UNIQUE on the 4-tuple (SourceURN, SourcePort, TargetURN, TargetPort).
@@ -9,6 +11,7 @@ type Wire struct {
 	TargetURN  URN            `json:"target_urn"`
 	TargetPort Port           `json:"target_port"`
 	Config     map[string]any `json:"config,omitempty"`
+	CreatedAt  time.Time      `json:"created_at"`
 }
 
 // WireKey produces the unique composite key for a wire (4-tuple).

@@ -50,3 +50,23 @@ type BenchmarkResult struct {
 	Distributions      []ScoreDistribution `json:"distributions"`
 	EquivalenceClasses []EquivalenceClass  `json:"equivalence_classes"`
 }
+
+// CalendarEntry is an event-shaped projection object for FUN06.
+// It is a read model only (S4 invariant).
+type CalendarEntry struct {
+	ID          string `json:"id"`
+	Summary     string `json:"summary"`
+	Description string `json:"description,omitempty"`
+	Start       string `json:"start,omitempty"`
+	End         string `json:"end,omitempty"`
+	Status      string `json:"status"`
+	Color       int    `json:"color"`
+	Source      string `json:"source"`
+	Kind        string `json:"kind"`
+}
+
+// CalendarProjection is the codomain object of FUN06: F_cal: C → GCal.
+type CalendarProjection struct {
+	GeneratedAt string          `json:"generated_at"`
+	Entries     []CalendarEntry `json:"entries"`
+}

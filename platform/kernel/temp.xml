@@ -1,0 +1,385 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <Obj N="folders" RefId="1">
+        <TN RefId="1">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <Obj RefId="2">
+            <TNRef RefId="0" />
+            <MS>
+              <S N="path">.</S>
+              <S N="name">FFS0_Factory (root)</S>
+            </MS>
+          </Obj>
+          <Obj RefId="3">
+            <TNRef RefId="0" />
+            <MS>
+              <S N="path">.agent</S>
+              <S N="name">Agent Workspace</S>
+            </MS>
+          </Obj>
+          <Obj RefId="4">
+            <TNRef RefId="0" />
+            <MS>
+              <S N="path">../moos</S>
+              <S N="name">mo:os Kernel (code)</S>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+      <Obj N="settings" RefId="5">
+        <TNRef RefId="0" />
+        <MS>
+          <B N="editor.formatOnSave">true</B>
+          <S N="editor.defaultFormatter">golang.go</S>
+          <Obj N="[go]" RefId="6">
+            <TNRef RefId="0" />
+            <MS>
+              <B N="editor.formatOnSave">true</B>
+              <Obj N="editor.codeActionsOnSave" RefId="7">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="source.organizeImports">explicit</S>
+                </MS>
+              </Obj>
+            </MS>
+          </Obj>
+          <Obj N="[markdown]" RefId="8">
+            <TNRef RefId="0" />
+            <MS>
+              <S N="editor.defaultFormatter">esbenp.prettier-vscode</S>
+            </MS>
+          </Obj>
+          <Obj N="files.exclude" RefId="9">
+            <TNRef RefId="0" />
+            <MS>
+              <B N="**/.git">false</B>
+              <B N="**/*.exe">true</B>
+              <B N="**/*.exe~">true</B>
+              <B N="**/moos.exe">true</B>
+              <B N="**/__pycache__">true</B>
+              <B N="**/.pytest_cache">true</B>
+              <B N="**/node_modules">true</B>
+            </MS>
+          </Obj>
+          <Obj N="search.exclude" RefId="10">
+            <TNRef RefId="0" />
+            <MS>
+              <B N="**/.agent/skills">true</B>
+              <B N="**/platform/kernel/data">true</B>
+              <B N="**/platform/kernel/boot*.err">true</B>
+            </MS>
+          </Obj>
+          <S N="go.lintOnSave">package</S>
+          <S N="go.lintTool">golangci-lint</S>
+          <S N="python.defaultInterpreterPath">${workspaceFolder:FFS0_Factory (root)}/.venv/Scripts/python.exe</S>
+          <S N="python.interpreterPath">${workspaceFolder:FFS0_Factory (root)}/.venv/Scripts/python.exe</S>
+          <Obj N="go.lintFlags" RefId="11">
+            <TNRef RefId="1" />
+            <LST>
+              <S>--fast</S>
+            </LST>
+          </Obj>
+        </MS>
+      </Obj>
+      <Obj N="extensions" RefId="12">
+        <TNRef RefId="0" />
+        <MS>
+          <Obj N="recommendations" RefId="13">
+            <TNRef RefId="1" />
+            <LST>
+              <S>golang.go</S>
+              <S>esbenp.prettier-vscode</S>
+              <S>ms-vscode.makefile-tools</S>
+              <S>redhat.vscode-yaml</S>
+              <S>DavidAnson.vscode-markdownlint</S>
+            </LST>
+          </Obj>
+        </MS>
+      </Obj>
+      <Obj N="launch" RefId="14">
+        <TNRef RefId="0" />
+        <MS>
+          <S N="version">0.2.0</S>
+          <Obj N="configurations" RefId="15">
+            <TNRef RefId="1" />
+            <LST>
+              <Obj RefId="16">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="name">Kernel (with --kb --hydrate)</S>
+                  <S N="type">go</S>
+                  <S N="request">launch</S>
+                  <S N="mode">debug</S>
+                  <S N="program">${workspaceFolder:mo:os Kernel (code)}/platform/kernel/cmd/moos</S>
+                  <S N="cwd">${workspaceFolder:mo:os Kernel (code)}/platform/kernel</S>
+                  <Obj N="args" RefId="17">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>--kb</S>
+                      <S>${workspaceFolder:Agent Workspace}/kb</S>
+                      <S>--hydrate</S>
+                    </LST>
+                  </Obj>
+                  <B N="showLog">true</B>
+                </MS>
+              </Obj>
+              <Obj RefId="18">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="name">Kernel (no hydrate)</S>
+                  <S N="type">go</S>
+                  <S N="request">launch</S>
+                  <S N="mode">debug</S>
+                  <S N="program">${workspaceFolder:mo:os Kernel (code)}/platform/kernel/cmd/moos</S>
+                  <S N="cwd">${workspaceFolder:mo:os Kernel (code)}/platform/kernel</S>
+                  <Obj N="args" RefId="19">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>--kb</S>
+                      <S>${workspaceFolder:Agent Workspace}/kb</S>
+                    </LST>
+                  </Obj>
+                  <B N="showLog">true</B>
+                </MS>
+              </Obj>
+              <Obj RefId="20">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="name">Kernel (--mcp-stdio)</S>
+                  <S N="type">go</S>
+                  <S N="request">launch</S>
+                  <S N="mode">debug</S>
+                  <S N="program">${workspaceFolder:mo:os Kernel (code)}/platform/kernel/cmd/moos</S>
+                  <S N="cwd">${workspaceFolder:mo:os Kernel (code)}/platform/kernel</S>
+                  <Obj N="args" RefId="21">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>--kb</S>
+                      <S>${workspaceFolder:Agent Workspace}/kb</S>
+                      <S>--hydrate</S>
+                      <S>--mcp-stdio</S>
+                    </LST>
+                  </Obj>
+                  <B N="showLog">true</B>
+                </MS>
+              </Obj>
+            </LST>
+          </Obj>
+        </MS>
+      </Obj>
+      <Obj N="tasks" RefId="22">
+        <TNRef RefId="0" />
+        <MS>
+          <S N="version">2.0.0</S>
+          <Obj N="tasks" RefId="23">
+            <TNRef RefId="1" />
+            <LST>
+              <Obj RefId="24">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="label">Kernel: build</S>
+                  <S N="type">shell</S>
+                  <S N="command">go</S>
+                  <Obj N="args" RefId="25">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>build</S>
+                      <S>-o</S>
+                      <S>moos.exe</S>
+                      <S>./cmd/moos</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="options" RefId="26">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <S N="cwd">${workspaceFolder:mo:os Kernel (code)}/platform/kernel</S>
+                    </MS>
+                  </Obj>
+                  <Obj N="problemMatcher" RefId="27">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>$go</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="presentation" RefId="28">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <B N="echo">true</B>
+                      <S N="reveal">always</S>
+                      <B N="focus">false</B>
+                    </MS>
+                  </Obj>
+                </MS>
+              </Obj>
+              <Obj RefId="29">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="label">Kernel: test all</S>
+                  <S N="type">shell</S>
+                  <S N="command">go</S>
+                  <Obj N="args" RefId="30">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>test</S>
+                      <S>./...</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="options" RefId="31">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <S N="cwd">${workspaceFolder:mo:os Kernel (code)}/platform/kernel</S>
+                    </MS>
+                  </Obj>
+                  <Obj N="problemMatcher" RefId="32">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>$go</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="presentation" RefId="33">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <B N="echo">true</B>
+                      <S N="reveal">always</S>
+                      <B N="focus">false</B>
+                    </MS>
+                  </Obj>
+                </MS>
+              </Obj>
+              <Obj RefId="34">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="label">Kernel: run (with --kb --hydrate)</S>
+                  <S N="type">shell</S>
+                  <S N="command">go</S>
+                  <Obj N="args" RefId="35">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>run</S>
+                      <S>./cmd/moos</S>
+                      <S>--kb</S>
+                      <S>${workspaceFolder:Agent Workspace}/kb</S>
+                      <S>--hydrate</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="options" RefId="36">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <S N="cwd">${workspaceFolder:mo:os Kernel (code)}/platform/kernel</S>
+                    </MS>
+                  </Obj>
+                  <Obj N="presentation" RefId="37">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <B N="echo">true</B>
+                      <S N="reveal">always</S>
+                      <B N="focus">true</B>
+                    </MS>
+                  </Obj>
+                </MS>
+              </Obj>
+              <Obj RefId="38">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="label">Git: pull latest</S>
+                  <S N="type">shell</S>
+                  <S N="command">git</S>
+                  <Obj N="args" RefId="39">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>pull</S>
+                      <S>origin</S>
+                      <S>main</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="options" RefId="40">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <S N="cwd">${workspaceFolder:mo:os Kernel (code)}</S>
+                    </MS>
+                  </Obj>
+                  <Obj N="presentation" RefId="41">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <B N="echo">true</B>
+                      <S N="reveal">always</S>
+                    </MS>
+                  </Obj>
+                </MS>
+              </Obj>
+              <Obj RefId="42">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="label">KB: open handoff.md</S>
+                  <S N="type">shell</S>
+                  <S N="command">code</S>
+                  <Obj N="args" RefId="43">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>${workspaceFolder:Agent Workspace}/channels/handoff.md</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="presentation" RefId="44">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <S N="reveal">silent</S>
+                    </MS>
+                  </Obj>
+                </MS>
+              </Obj>
+              <Obj RefId="45">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="label">KB: open testoff.md</S>
+                  <S N="type">shell</S>
+                  <S N="command">code</S>
+                  <Obj N="args" RefId="46">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>${workspaceFolder:Agent Workspace}/channels/testoff.md</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="presentation" RefId="47">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <S N="reveal">silent</S>
+                    </MS>
+                  </Obj>
+                </MS>
+              </Obj>
+              <Obj RefId="48">
+                <TNRef RefId="0" />
+                <MS>
+                  <S N="label">KB: open CLAUDE.md</S>
+                  <S N="type">shell</S>
+                  <S N="command">code</S>
+                  <Obj N="args" RefId="49">
+                    <TNRef RefId="1" />
+                    <LST>
+                      <S>${workspaceFolder:Agent Workspace}/CLAUDE.md</S>
+                    </LST>
+                  </Obj>
+                  <Obj N="presentation" RefId="50">
+                    <TNRef RefId="0" />
+                    <MS>
+                      <S N="reveal">silent</S>
+                    </MS>
+                  </Obj>
+                </MS>
+              </Obj>
+            </LST>
+          </Obj>
+        </MS>
+      </Obj>
+    </MS>
+  </Obj>
+</Objs>

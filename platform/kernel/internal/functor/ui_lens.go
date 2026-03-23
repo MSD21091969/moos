@@ -12,6 +12,7 @@ package functor
 
 import (
 	"sort"
+	"time"
 
 	"moos/platform/kernel/internal/cat"
 )
@@ -26,6 +27,8 @@ type UINode struct {
 	Label         string         `json:"label"`
 	X             float64        `json:"x"`
 	Y             float64        `json:"y"`
+	CreatedAt     string         `json:"created_at,omitempty"`
+	UpdatedAt     string         `json:"updated_at,omitempty"`
 	Data          map[string]any `json:"data,omitempty"`
 }
 
@@ -38,6 +41,7 @@ type UIEdge struct {
 	SourcePort string `json:"source_port"`
 	TargetPort string `json:"target_port"`
 	Label      string `json:"label"`
+	CreatedAt  string `json:"created_at,omitempty"`
 }
 
 // UIProjection is the codomain object of FUN02: F(GraphState) → UIProjection.
@@ -85,6 +89,8 @@ func (u UILens) ProjectUI(state cat.GraphState) UIProjection {
 			Label:         label,
 			X:             x,
 			Y:             y,
+			CreatedAt:     formatTime(n.CreatedAt),
+			UpdatedAt:     formatTime(n.UpdatedAt),
 			Data:          n.Payload,
 		})
 	}
@@ -99,6 +105,7 @@ func (u UILens) ProjectUI(state cat.GraphState) UIProjection {
 			SourcePort: string(w.SourcePort),
 			TargetPort: string(w.TargetPort),
 			Label:      string(w.SourcePort) + " → " + string(w.TargetPort),
+			CreatedAt:  formatTime(w.CreatedAt),
 		})
 	}
 	sort.Slice(edges, func(i, j int) bool { return edges[i].ID < edges[j].ID })
@@ -165,6 +172,14 @@ func stratumRowIndex(s string) int {
 	}
 }
 
+// formatTime returns RFC3339Nano string, or empty if zero.
+func formatTime(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.UTC().Format(time.RFC3339Nano)
+}
+
 // extractLabel picks a human-readable label from the node.
 func extractLabel(n cat.Node) string {
 	if n.Payload != nil {
@@ -186,8 +201,14 @@ func broadCategory(tid cat.TypeID) string {
 	case "user", "collider_admin", "superadmin", "agent_spec":
 		return "identity"
 	// structure
-	case "app_template", "node_container":
+	case "app_template", "node_container", "prg_task", "calendar_event":
 		return "structure"
+	// memory
+	case "keep_note", "channel_message":
+		return "memory"
+	// identity/session
+	case "agent_session":
+		return "identity"
 	// compute
 	case "agnostic_model", "system_tool", "compute_resource", "provider":
 		return "compute"

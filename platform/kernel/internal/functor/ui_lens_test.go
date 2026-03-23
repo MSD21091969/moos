@@ -1,9 +1,12 @@
 package functor
 
 import (
+	"reflect"
 	"testing"
+	"time"
 
 	"moos/platform/kernel/internal/cat"
+	"moos/platform/kernel/internal/fold"
 )
 
 func TestUILens_Name(t *testing.T) {
@@ -91,6 +94,11 @@ func TestUILens_TypeIDMapping(t *testing.T) {
 		{"benchmark_task", "evaluation"},
 		{"benchmark_score", "evaluation"},
 		{"industry_entity", "industry"},
+		{"agent_session", "identity"},
+		{"prg_task", "structure"},
+		{"calendar_event", "structure"},
+		{"keep_note", "memory"},
+		{"channel_message", "memory"},
 		{"something_new", "unknown"},
 	}
 	for _, tt := range tests {
@@ -183,5 +191,293 @@ func TestUILens_EdgePortPreservation(t *testing.T) {
 	}
 	if edge.SourcePort != "OWNS" || edge.TargetPort != "OWNS" {
 		t.Errorf("port topology not preserved: %q → %q", edge.SourcePort, edge.TargetPort)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// PRG034 — Naturality Harness (CI-2)
+//
+// The commuting square:
+//
+//   C  ——Apply(M)——→  C'
+//   |                  |
+//   F                  F
+//   ↓                  ↓
+//   V  ——   ==   ——→  V'
+//
+// For every morphism M and state S:
+//   F(Apply(M, S)) == F(S') where S' is the post-evaluation state.
+//
+// We verify this by:
+//   1. Build initial state S₀
+//   2. Create envelope M
+//   3. S₁ = Evaluate(S₀, M)
+//   4. P  = F(S₁)          ← left path: evaluate then project
+//   5. Independently construct S₁' from scratch
+//   6. P' = F(S₁')         ← right path: project the expected state
+//   7. Assert P == P'
+// ---------------------------------------------------------------------------
+
+func TestUILens_Naturality_ADD(t *testing.T) {
+	lens := UILens{}
+	now := time.Now()
+
+	// Start from empty state
+	s0 := cat.NewGraphState()
+
+	// Morphism: ADD a node
+	env := cat.Envelope{
+		Type:  cat.ADD,
+		Actor: "urn:moos:agent:test",
+		Add: &cat.AddPayload{
+			URN:     "urn:moos:test:nat-add",
+			TypeID:  "system_tool",
+			Stratum: cat.S2,
+			Payload: map[string]any{"name": "NatTest"},
+		},
+	}
+
+	// Left path: Apply then Project
+	result, err := fold.Evaluate(s0, env, now)
+	if err != nil {
+		t.Fatalf("Evaluate(ADD) error: %v", err)
+	}
+	left := lens.ProjectUI(result.State)
+
+	// Right path: construct expected state independently, then Project
+	expected := cat.NewGraphState()
+	expected.Nodes["urn:moos:test:nat-add"] = cat.Node{
+		URN:       "urn:moos:test:nat-add",
+		TypeID:    "system_tool",
+		Stratum:   cat.S2,
+		Payload:   map[string]any{"name": "NatTest"},
+		Version:   1,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	right := lens.ProjectUI(expected)
+
+	if !reflect.DeepEqual(left, right) {
+		t.Errorf("naturality violated for ADD\nleft  = %+v\nright = %+v", left, right)
+	}
+}
+
+func TestUILens_Naturality_LINK(t *testing.T) {
+	lens := UILens{}
+	now := time.Now()
+
+	// Build base state with two nodes
+	s0 := cat.NewGraphState()
+	s0.Nodes["urn:moos:test:src"] = cat.Node{
+		URN: "urn:moos:test:src", TypeID: "node_container", Stratum: cat.S2, Version: 1,
+	}
+	s0.Nodes["urn:moos:test:tgt"] = cat.Node{
+		URN: "urn:moos:test:tgt", TypeID: "system_tool", Stratum: cat.S2, Version: 1,
+	}
+
+	// Morphism: LINK src → tgt
+	env := cat.Envelope{
+		Type:  cat.LINK,
+		Actor: "urn:moos:agent:test",
+		Link: &cat.LinkPayload{
+			SourceURN:  "urn:moos:test:src",
+			SourcePort: "OWNS",
+			TargetURN:  "urn:moos:test:tgt",
+			TargetPort: "OWNS",
+		},
+	}
+
+	result, err := fold.Evaluate(s0, env, now)
+	if err != nil {
+		t.Fatalf("Evaluate(LINK) error: %v", err)
+	}
+	left := lens.ProjectUI(result.State)
+
+	// Independently construct expected state
+	expected := s0.Clone()
+	w := cat.Wire{
+		SourceURN: "urn:moos:test:src", SourcePort: "OWNS",
+		TargetURN: "urn:moos:test:tgt", TargetPort: "OWNS",
+		CreatedAt: now,
+	}
+	expected.Wires[w.Key()] = w
+	right := lens.ProjectUI(expected)
+
+	if !reflect.DeepEqual(left, right) {
+		t.Errorf("naturality violated for LINK\nleft  = %+v\nright = %+v", left, right)
+	}
+}
+
+func TestUILens_Naturality_MUTATE(t *testing.T) {
+	lens := UILens{}
+	now := time.Now()
+
+	// Base state: one node at S2, version 1
+	s0 := cat.NewGraphState()
+	s0.Nodes["urn:moos:test:mut"] = cat.Node{
+		URN:     "urn:moos:test:mut",
+		TypeID:  "system_tool",
+		Stratum: cat.S2,
+		Payload: map[string]any{"name": "Before"},
+		Version: 1,
+	}
+
+	// Morphism: MUTATE payload
+	env := cat.Envelope{
+		Type:  cat.MUTATE,
+		Actor: "urn:moos:agent:test",
+		Mutate: &cat.MutatePayload{
+			URN:             "urn:moos:test:mut",
+			ExpectedVersion: 1,
+			Payload:         map[string]any{"name": "After"},
+		},
+	}
+
+	result, err := fold.Evaluate(s0, env, now)
+	if err != nil {
+		t.Fatalf("Evaluate(MUTATE) error: %v", err)
+	}
+	left := lens.ProjectUI(result.State)
+
+	// Independently construct expected state
+	expected := cat.NewGraphState()
+	expected.Nodes["urn:moos:test:mut"] = cat.Node{
+		URN:       "urn:moos:test:mut",
+		TypeID:    "system_tool",
+		Stratum:   cat.S2,
+		Payload:   map[string]any{"name": "After"},
+		Version:   2,
+		UpdatedAt: now,
+	}
+	right := lens.ProjectUI(expected)
+
+	if !reflect.DeepEqual(left, right) {
+		t.Errorf("naturality violated for MUTATE\nleft  = %+v\nright = %+v", left, right)
+	}
+}
+
+func TestUILens_Naturality_UNLINK(t *testing.T) {
+	lens := UILens{}
+	now := time.Now()
+
+	// Base state: two nodes + one wire
+	s0 := cat.NewGraphState()
+	s0.Nodes["urn:moos:test:a"] = cat.Node{
+		URN: "urn:moos:test:a", TypeID: "node_container", Stratum: cat.S2, Version: 1,
+	}
+	s0.Nodes["urn:moos:test:b"] = cat.Node{
+		URN: "urn:moos:test:b", TypeID: "node_container", Stratum: cat.S2, Version: 1,
+	}
+	w := cat.Wire{
+		SourceURN: "urn:moos:test:a", SourcePort: "LINK_NODES",
+		TargetURN: "urn:moos:test:b", TargetPort: "LINK_NODES",
+	}
+	s0.Wires[w.Key()] = w
+
+	// Morphism: UNLINK the wire
+	env := cat.Envelope{
+		Type:  cat.UNLINK,
+		Actor: "urn:moos:agent:test",
+		Unlink: &cat.UnlinkPayload{
+			SourceURN:  "urn:moos:test:a",
+			SourcePort: "LINK_NODES",
+			TargetURN:  "urn:moos:test:b",
+			TargetPort: "LINK_NODES",
+		},
+	}
+
+	result, err := fold.Evaluate(s0, env, now)
+	if err != nil {
+		t.Fatalf("Evaluate(UNLINK) error: %v", err)
+	}
+	left := lens.ProjectUI(result.State)
+
+	// Independently construct expected state: just the two nodes, no wire
+	expected := cat.NewGraphState()
+	expected.Nodes["urn:moos:test:a"] = cat.Node{
+		URN: "urn:moos:test:a", TypeID: "node_container", Stratum: cat.S2, Version: 1,
+	}
+	expected.Nodes["urn:moos:test:b"] = cat.Node{
+		URN: "urn:moos:test:b", TypeID: "node_container", Stratum: cat.S2, Version: 1,
+	}
+	right := lens.ProjectUI(expected)
+
+	if !reflect.DeepEqual(left, right) {
+		t.Errorf("naturality violated for UNLINK\nleft  = %+v\nright = %+v", left, right)
+	}
+}
+
+// TestUILens_Naturality_Composition verifies that naturality holds for
+// composed morphisms: F(Apply(M₂, Apply(M₁, S))) == F(S₂) where S₂ is
+// independently constructed from the sequential application of M₁ then M₂.
+func TestUILens_Naturality_Composition(t *testing.T) {
+	lens := UILens{}
+	now := time.Now()
+
+	s0 := cat.NewGraphState()
+
+	// M₁: ADD node A
+	env1 := cat.Envelope{
+		Type: cat.ADD, Actor: "urn:moos:agent:test",
+		Add: &cat.AddPayload{
+			URN: "urn:moos:test:comp-a", TypeID: "node_container", Stratum: cat.S2,
+			Payload: map[string]any{"name": "CompA"},
+		},
+	}
+	r1, err := fold.Evaluate(s0, env1, now)
+	if err != nil {
+		t.Fatalf("Evaluate(ADD A) error: %v", err)
+	}
+
+	// M₂: ADD node B
+	env2 := cat.Envelope{
+		Type: cat.ADD, Actor: "urn:moos:agent:test",
+		Add: &cat.AddPayload{
+			URN: "urn:moos:test:comp-b", TypeID: "system_tool", Stratum: cat.S2,
+			Payload: map[string]any{"name": "CompB"},
+		},
+	}
+	r2, err := fold.Evaluate(r1.State, env2, now)
+	if err != nil {
+		t.Fatalf("Evaluate(ADD B) error: %v", err)
+	}
+
+	// M₃: LINK A → B
+	env3 := cat.Envelope{
+		Type: cat.LINK, Actor: "urn:moos:agent:test",
+		Link: &cat.LinkPayload{
+			SourceURN: "urn:moos:test:comp-a", SourcePort: "OWNS",
+			TargetURN: "urn:moos:test:comp-b", TargetPort: "OWNS",
+		},
+	}
+	r3, err := fold.Evaluate(r2.State, env3, now)
+	if err != nil {
+		t.Fatalf("Evaluate(LINK) error: %v", err)
+	}
+
+	left := lens.ProjectUI(r3.State)
+
+	// Independent expected state
+	expected := cat.NewGraphState()
+	expected.Nodes["urn:moos:test:comp-a"] = cat.Node{
+		URN: "urn:moos:test:comp-a", TypeID: "node_container", Stratum: cat.S2,
+		Payload: map[string]any{"name": "CompA"}, Version: 1,
+		CreatedAt: now, UpdatedAt: now,
+	}
+	expected.Nodes["urn:moos:test:comp-b"] = cat.Node{
+		URN: "urn:moos:test:comp-b", TypeID: "system_tool", Stratum: cat.S2,
+		Payload: map[string]any{"name": "CompB"}, Version: 1,
+		CreatedAt: now, UpdatedAt: now,
+	}
+	ew := cat.Wire{
+		SourceURN: "urn:moos:test:comp-a", SourcePort: "OWNS",
+		TargetURN: "urn:moos:test:comp-b", TargetPort: "OWNS",
+		CreatedAt: now,
+	}
+	expected.Wires[ew.Key()] = ew
+	right := lens.ProjectUI(expected)
+
+	if !reflect.DeepEqual(left, right) {
+		t.Errorf("naturality violated for composition (ADD+ADD+LINK)\nleft  = %+v\nright = %+v", left, right)
 	}
 }

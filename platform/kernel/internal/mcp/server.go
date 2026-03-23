@@ -161,7 +161,7 @@ func (s *Server) handleSSE(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 
 	// Send the endpoint event — tells the client where to POST messages.
-	endpointMsg := fmt.Sprintf("event: endpoint\ndata: /message?sessionId=%s\n\n", sessionID)
+	endpointMsg := fmt.Sprintf("event: endpoint\ndata: http://%s/message?sessionId=%s\n\n", r.Host, sessionID)
 	fmt.Fprint(w, endpointMsg)
 	flusher.Flush()
 

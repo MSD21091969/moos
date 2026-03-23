@@ -22,12 +22,14 @@ func (gs GraphState) Clone() GraphState {
 	c := NewGraphState()
 	for urn, node := range gs.Nodes {
 		c.Nodes[urn] = Node{
-			URN:      node.URN,
-			TypeID:   node.TypeID,
-			Stratum:  node.Stratum,
-			Payload:  cloneMap(node.Payload),
-			Metadata: cloneMap(node.Metadata),
-			Version:  node.Version,
+			URN:       node.URN,
+			TypeID:    node.TypeID,
+			Stratum:   node.Stratum,
+			Payload:   cloneMap(node.Payload),
+			Metadata:  cloneMap(node.Metadata),
+			Version:   node.Version,
+			CreatedAt: node.CreatedAt,
+			UpdatedAt: node.UpdatedAt,
 		}
 	}
 	for key, wire := range gs.Wires {
@@ -37,6 +39,7 @@ func (gs GraphState) Clone() GraphState {
 			TargetURN:  wire.TargetURN,
 			TargetPort: wire.TargetPort,
 			Config:     cloneMap(wire.Config),
+			CreatedAt:  wire.CreatedAt,
 		}
 	}
 	return c

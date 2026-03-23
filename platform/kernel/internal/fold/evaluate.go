@@ -42,6 +42,9 @@ func EvaluateWithRegistry(state cat.GraphState, envelope cat.Envelope, issuedAt 
 		if err != nil {
 			return cat.EvalResult{}, err
 		}
+		node.CreatedAt = issuedAt
+		node.UpdatedAt = issuedAt
+		next.Nodes[envelope.Add.URN] = node
 		result.Node = &node
 		result.Summary = "node added"
 
@@ -50,6 +53,10 @@ func EvaluateWithRegistry(state cat.GraphState, envelope cat.Envelope, issuedAt 
 		if err != nil {
 			return cat.EvalResult{}, err
 		}
+		wire.CreatedAt = issuedAt
+		key := cat.WireKey(envelope.Link.SourceURN, envelope.Link.SourcePort,
+			envelope.Link.TargetURN, envelope.Link.TargetPort)
+		next.Wires[key] = wire
 		result.Wire = &wire
 		result.Summary = "wire linked"
 
@@ -58,6 +65,8 @@ func EvaluateWithRegistry(state cat.GraphState, envelope cat.Envelope, issuedAt 
 		if err != nil {
 			return cat.EvalResult{}, err
 		}
+		node.UpdatedAt = issuedAt
+		next.Nodes[envelope.Mutate.URN] = node
 		result.Node = &node
 		result.Summary = "node mutated"
 

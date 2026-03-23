@@ -6,6 +6,8 @@
 // This package contains ONLY value types: no IO, no side effects, no concurrency.
 package cat
 
+import "time"
+
 // URN is a universally unique resource name — the identity of a Node.
 type URN string
 
@@ -51,10 +53,12 @@ func ValidStratum(s Stratum) bool {
 
 // Node is an Object in the typed graph — a vertex identified by URN.
 type Node struct {
-	URN      URN            `json:"urn"`
-	TypeID   TypeID         `json:"type_id"`
-	Stratum  Stratum        `json:"stratum"`
-	Payload  map[string]any `json:"payload,omitempty"`
-	Metadata map[string]any `json:"metadata,omitempty"`
-	Version  int64          `json:"version"`
+	URN       URN            `json:"urn"`
+	TypeID    TypeID         `json:"type_id"`
+	Stratum   Stratum        `json:"stratum"`
+	Payload   map[string]any `json:"payload,omitempty"`
+	Metadata  map[string]any `json:"metadata,omitempty"`
+	Version   int64          `json:"version"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
 }
