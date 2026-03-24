@@ -23,10 +23,12 @@ jobs:
 
             const ensure = [
               ["branch:feature", "0e8a16", "Feature branch PR"],
+              ["branch:chore", "e4e669", "Chore branch PR"],
               ["branch:hotfix", "b60205", "Hotfix branch PR"],
               ["branch:agent", "5319e7", "Agent branch PR"],
               ["branch:admin", "6f42c1", "Admin branch PR"],
               ["branch:release", "1d76db", "Release branch PR"],
+              ["role:agent", "5319e7", "Agent-owned or agent-executed"],
               ["status:needs-triage", "fbca04", "Needs triage"]
             ];
 
@@ -45,7 +47,8 @@ jobs:
             }
 
             const labels = ["status:needs-triage"];
-            if (/^feat\//.test(branch)) labels.push("branch:feature");
+            if (/^(feat|fix)\//.test(branch)) labels.push("branch:feature");
+            if (/^chore\//.test(branch)) labels.push("branch:chore");
             if (/^hotfix\//.test(branch)) labels.push("branch:hotfix");
             if (/^agent\//.test(branch)) labels.push("branch:agent");
             if (/^admin\//.test(branch)) labels.push("branch:admin");
@@ -53,6 +56,7 @@ jobs:
 
             if (/\bPRG\d{3}\b/i.test(text)) labels.push("kind:prg");
             if (/\bAgent\s*ID\b/i.test(text) || /\bagent[_ -]?id\b/i.test(text)) labels.push("kind:agent-task");
+            if (/\bagent\b/i.test(text) && /\b(role|owner|branch|id)\b/i.test(text)) labels.push("role:agent");
             if (/\badmin\b/i.test(text)) labels.push("role:admin");
             if (/\bgroup\b|\bteam\b/i.test(text)) labels.push("role:group");
             if (/\buser\b/i.test(text)) labels.push("role:user");

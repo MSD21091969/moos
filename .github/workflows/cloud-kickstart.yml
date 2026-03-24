@@ -32,6 +32,7 @@ jobs:
               ["role:user", "bfd4f2", "User-owned or user-requested"],
               ["role:admin", "d4c5f9", "Admin-owned action"],
               ["role:group", "c2e0c6", "Group/team ownership"],
+              ["role:agent", "5319e7", "Agent-owned or agent-executed"],
               ["status:needs-triage", "fbca04", "Needs triage"],
               ["status:blocked", "b60205", "Blocked by dependency"],
               ["area:kernel", "0052cc", "Kernel/runtime scope"],
