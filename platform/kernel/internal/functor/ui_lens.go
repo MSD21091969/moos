@@ -201,7 +201,7 @@ func broadCategory(tid cat.TypeID) string {
 	case "user", "collider_admin", "superadmin", "agent_spec":
 		return "identity"
 	// structure
-	case "app_template", "node_container", "prg_task", "calendar_event", "keep_note", "channel_message":
+	case "app_template", "node_container", "prg_task", "calendar_event", "keep_note", "channel_message", "delegation_task":
 		return "structure"
 	// identity/session
 	case "agent_session":
