@@ -97,8 +97,9 @@ func TestUILens_TypeIDMapping(t *testing.T) {
 		{"agent_session", "identity"},
 		{"prg_task", "structure"},
 		{"calendar_event", "structure"},
-		{"keep_note", "memory"},
-		{"channel_message", "memory"},
+		{"keep_note", "structure"},
+		{"channel_message", "structure"},
+		{"ptp_family", "ontology"},
 		{"something_new", "unknown"},
 	}
 	for _, tt := range tests {

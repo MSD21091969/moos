@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -65,6 +66,9 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /state/lens", s.handleLensPost)
 	s.mux.HandleFunc("GET /state/saturation", s.handleSaturation)
 	s.mux.HandleFunc("GET /functor/benchmark/", s.handleBenchmarkFunctor)
+	s.mux.HandleFunc("GET /functor/port-inventory", s.handlePortInventoryFunctor)
+	s.mux.HandleFunc("GET /functor/binding-category", s.handleBindingCategoryFunctor)
+	s.mux.HandleFunc("GET /functor/port-functor", s.handlePortFunctor)
 	s.mux.HandleFunc("GET /explorer", s.handleExplorer)
 	s.mux.HandleFunc("GET /functor/ui", s.handleUIFunctor)
 	s.mux.HandleFunc("GET /functor/calendar", s.handleCalendarFunctor)
@@ -470,6 +474,296 @@ func (s *Server) handleBenchmarkFunctor(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	writeJSON(w, http.StatusOK, result)
+}
+
+type portInventoryPair struct {
+	SourceType cat.TypeID `json:"source_type"`
+	SourcePort cat.Port   `json:"source_port"`
+	TargetType cat.TypeID `json:"target_type"`
+	TargetPort cat.Port   `json:"target_port"`
+}
+
+type portInventoryResponse struct {
+	SourceType cat.TypeID          `json:"source_type,omitempty"`
+	PairCount  int                 `json:"pair_count"`
+	Pairs      []portInventoryPair `json:"pairs"`
+}
+
+type bindingFamily struct {
+	FamilyID        string       `json:"family_id"`
+	SourcePort      cat.Port     `json:"source_port"`
+	TargetPort      cat.Port     `json:"target_port"`
+	TargetTypeCount int          `json:"target_type_count"`
+	TargetTypes     []cat.TypeID `json:"target_types"`
+	PairCount       int          `json:"pair_count"`
+}
+
+type bindingCategoryResponse struct {
+	SourceType  cat.TypeID      `json:"source_type"`
+	SourcePort  cat.Port        `json:"source_port,omitempty"`
+	FamilyCount int             `json:"family_count"`
+	Families    []bindingFamily `json:"families"`
+}
+
+type portFunctorMapping struct {
+	FromFamily     string     `json:"from_family"`
+	ToFamily       string     `json:"to_family"`
+	ComposedFamily string     `json:"composed_family"`
+	SourceType     cat.TypeID `json:"source_type"`
+	SourcePort     cat.Port   `json:"source_port"`
+	ViaType        cat.TypeID `json:"via_type"`
+	ViaPort        cat.Port   `json:"via_port"`
+	TargetType     cat.TypeID `json:"target_type"`
+	TargetPort     cat.Port   `json:"target_port"`
+}
+
+type portFunctorResponse struct {
+	SourceType   cat.TypeID           `json:"source_type"`
+	SourcePort   cat.Port             `json:"source_port,omitempty"`
+	MappingCount int                  `json:"mapping_count"`
+	Mappings     []portFunctorMapping `json:"mappings"`
+}
+
+func (s *Server) handlePortInventoryFunctor(w http.ResponseWriter, r *http.Request) {
+	reg := s.runtime.Registry()
+	if reg == nil {
+		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
+		return
+	}
+
+	collect := func(srcType cat.TypeID) []portInventoryPair {
+		spec, ok := reg.Types[srcType]
+		if !ok {
+			return nil
+		}
+		var pairs []portInventoryPair
+		for srcPort, ps := range spec.Ports {
+			if ps.Direction != "out" {
+				continue
+			}
+			for _, tgt := range ps.Targets {
+				pairs = append(pairs, portInventoryPair{
+					SourceType: srcType,
+					SourcePort: srcPort,
+					TargetType: tgt.TypeID,
+					TargetPort: tgt.Port,
+				})
+			}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			ai := string(pairs[i].SourceType) + "/" + string(pairs[i].SourcePort) + "/" + string(pairs[i].TargetType) + "/" + string(pairs[i].TargetPort)
+			aj := string(pairs[j].SourceType) + "/" + string(pairs[j].SourcePort) + "/" + string(pairs[j].TargetType) + "/" + string(pairs[j].TargetPort)
+			return ai < aj
+		})
+		return pairs
+	}
+
+	if src := strings.TrimSpace(r.URL.Query().Get("src_type")); src != "" {
+		srcType := cat.TypeID(src)
+		if _, ok := reg.Types[srcType]; !ok {
+			writeError(w, http.StatusNotFound, fmt.Sprintf("unknown source type: %s", src))
+			return
+		}
+		pairs := collect(srcType)
+		writeJSON(w, http.StatusOK, portInventoryResponse{
+			SourceType: srcType,
+			PairCount:  len(pairs),
+			Pairs:      pairs,
+		})
+		return
+	}
+
+	var all []portInventoryPair
+	for srcType := range reg.Types {
+		all = append(all, collect(srcType)...)
+	}
+	sort.Slice(all, func(i, j int) bool {
+		ai := string(all[i].SourceType) + "/" + string(all[i].SourcePort) + "/" + string(all[i].TargetType) + "/" + string(all[i].TargetPort)
+		aj := string(all[j].SourceType) + "/" + string(all[j].SourcePort) + "/" + string(all[j].TargetType) + "/" + string(all[j].TargetPort)
+		return ai < aj
+	})
+
+	writeJSON(w, http.StatusOK, portInventoryResponse{
+		PairCount: len(all),
+		Pairs:     all,
+	})
+}
+
+func (s *Server) handleBindingCategoryFunctor(w http.ResponseWriter, r *http.Request) {
+	reg := s.runtime.Registry()
+	if reg == nil {
+		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
+		return
+	}
+
+	src := strings.TrimSpace(r.URL.Query().Get("src_type"))
+	if src == "" {
+		writeError(w, http.StatusBadRequest, "src_type is required")
+		return
+	}
+	srcType := cat.TypeID(src)
+	spec, ok := reg.Types[srcType]
+	if !ok {
+		writeError(w, http.StatusNotFound, fmt.Sprintf("unknown source type: %s", src))
+		return
+	}
+
+	filterPort := cat.Port(strings.TrimSpace(r.URL.Query().Get("source_port")))
+	groups := map[string]*bindingFamily{}
+	for srcPort, ps := range spec.Ports {
+		if ps.Direction != "out" {
+			continue
+		}
+		if filterPort != "" && srcPort != filterPort {
+			continue
+		}
+		for _, tgt := range ps.Targets {
+			key := string(srcPort) + "->" + string(tgt.Port)
+			fam, exists := groups[key]
+			if !exists {
+				fam = &bindingFamily{
+					FamilyID:   key,
+					SourcePort: srcPort,
+					TargetPort: tgt.Port,
+				}
+				groups[key] = fam
+			}
+			fam.PairCount++
+			seen := false
+			for _, tt := range fam.TargetTypes {
+				if tt == tgt.TypeID {
+					seen = true
+					break
+				}
+			}
+			if !seen {
+				fam.TargetTypes = append(fam.TargetTypes, tgt.TypeID)
+			}
+		}
+	}
+
+	families := make([]bindingFamily, 0, len(groups))
+	for _, fam := range groups {
+		sort.Slice(fam.TargetTypes, func(i, j int) bool {
+			return string(fam.TargetTypes[i]) < string(fam.TargetTypes[j])
+		})
+		fam.TargetTypeCount = len(fam.TargetTypes)
+		families = append(families, *fam)
+	}
+	sort.Slice(families, func(i, j int) bool { return families[i].FamilyID < families[j].FamilyID })
+
+	writeJSON(w, http.StatusOK, bindingCategoryResponse{
+		SourceType:  srcType,
+		SourcePort:  filterPort,
+		FamilyCount: len(families),
+		Families:    families,
+	})
+}
+
+func (s *Server) handlePortFunctor(w http.ResponseWriter, r *http.Request) {
+	reg := s.runtime.Registry()
+	if reg == nil {
+		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
+		return
+	}
+
+	srcType := cat.TypeID(strings.TrimSpace(r.URL.Query().Get("src_type")))
+	if srcType == "" {
+		writeError(w, http.StatusBadRequest, "src_type is required")
+		return
+	}
+	if _, ok := reg.Types[srcType]; !ok {
+		writeError(w, http.StatusNotFound, fmt.Sprintf("unknown src_type: %s", srcType))
+		return
+	}
+
+	filterPort := cat.Port(strings.TrimSpace(r.URL.Query().Get("source_port")))
+
+	collect := func(t cat.TypeID) []portInventoryPair {
+		spec, ok := reg.Types[t]
+		if !ok {
+			return nil
+		}
+		var pairs []portInventoryPair
+		for srcPort, ps := range spec.Ports {
+			if ps.Direction != "out" {
+				continue
+			}
+			for _, tgt := range ps.Targets {
+				pairs = append(pairs, portInventoryPair{
+					SourceType: t,
+					SourcePort: srcPort,
+					TargetType: tgt.TypeID,
+					TargetPort: tgt.Port,
+				})
+			}
+		}
+		return pairs
+	}
+
+	first := collect(srcType)
+	if filterPort != "" {
+		filtered := make([]portInventoryPair, 0, len(first))
+		for _, p := range first {
+			if p.SourcePort == filterPort {
+				filtered = append(filtered, p)
+			}
+		}
+		first = filtered
+	}
+
+	secondByType := map[cat.TypeID][]portInventoryPair{}
+	var mappings []portFunctorMapping
+	for _, p1 := range first {
+		second, ok := secondByType[p1.TargetType]
+		if !ok {
+			second = collect(p1.TargetType)
+			secondByType[p1.TargetType] = second
+		}
+		for _, p2 := range second {
+			if p1.TargetPort != p2.SourcePort {
+				continue
+			}
+			mappings = append(mappings, portFunctorMapping{
+				FromFamily:     string(p1.SourcePort) + "->" + string(p1.TargetPort),
+				ToFamily:       string(p2.SourcePort) + "->" + string(p2.TargetPort),
+				ComposedFamily: string(p1.SourcePort) + "->" + string(p2.TargetPort),
+				SourceType:     p1.SourceType,
+				SourcePort:     p1.SourcePort,
+				ViaType:        p1.TargetType,
+				ViaPort:        p1.TargetPort,
+				TargetType:     p2.TargetType,
+				TargetPort:     p2.TargetPort,
+			})
+		}
+	}
+
+	sort.Slice(mappings, func(i, j int) bool {
+		a, b := mappings[i], mappings[j]
+		if a.SourceType != b.SourceType {
+			return a.SourceType < b.SourceType
+		}
+		if a.SourcePort != b.SourcePort {
+			return a.SourcePort < b.SourcePort
+		}
+		if a.ViaType != b.ViaType {
+			return a.ViaType < b.ViaType
+		}
+		if a.ViaPort != b.ViaPort {
+			return a.ViaPort < b.ViaPort
+		}
+		if a.TargetType != b.TargetType {
+			return a.TargetType < b.TargetType
+		}
+		return a.TargetPort < b.TargetPort
+	})
+
+	writeJSON(w, http.StatusOK, portFunctorResponse{
+		SourceType:   srcType,
+		SourcePort:   filterPort,
+		MappingCount: len(mappings),
+		Mappings:     mappings,
+	})
 }
 
 func (s *Server) handleExplorer(w http.ResponseWriter, r *http.Request) {

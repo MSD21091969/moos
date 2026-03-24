@@ -127,3 +127,27 @@ func TestParseQueryParams(t *testing.T) {
 		t.Fatalf("unexpected parsed neighborhood/port")
 	}
 }
+
+func TestBroadCategoryMapping(t *testing.T) {
+	tests := []struct {
+		typeID cat.TypeID
+		want   string
+	}{
+		{"agent_session", "identity"},
+		{"prg_task", "structure"},
+		{"calendar_event", "structure"},
+		{"keep_note", "structure"},
+		{"channel_message", "structure"},
+		{"ontology_term", "ontology"},
+		{"ptp_family", "ontology"},
+		{"unknown_future_type", "unknown"},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.typeID), func(t *testing.T) {
+			if got := broadCategory(tt.typeID); got != tt.want {
+				t.Fatalf("broadCategory(%q) = %q, want %q", tt.typeID, got, tt.want)
+			}
+		})
+	}
+}

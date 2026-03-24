@@ -201,11 +201,8 @@ func broadCategory(tid cat.TypeID) string {
 	case "user", "collider_admin", "superadmin", "agent_spec":
 		return "identity"
 	// structure
-	case "app_template", "node_container", "prg_task", "calendar_event":
+	case "app_template", "node_container", "prg_task", "calendar_event", "keep_note", "channel_message":
 		return "structure"
-	// memory
-	case "keep_note", "channel_message":
-		return "memory"
 	// identity/session
 	case "agent_session":
 		return "identity"
@@ -237,7 +234,7 @@ func broadCategory(tid cat.TypeID) string {
 	case "industry_entity":
 		return "industry"
 	// ontology
-	case "ontology_term":
+	case "ontology_term", "ptp_family":
 		return "ontology"
 	default:
 		return "unknown"

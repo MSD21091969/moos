@@ -10,6 +10,7 @@ import (
 
 	"moos/platform/kernel/internal/cat"
 	"moos/platform/kernel/internal/hydration"
+	"moos/platform/kernel/internal/operad"
 	"moos/platform/kernel/internal/shell"
 	"moos/platform/kernel/internal/transport"
 )
@@ -159,6 +160,203 @@ func TestGetRegistry_Nil(t *testing.T) {
 	}
 }
 
+func newTestServerWithRegistry(t *testing.T) *transport.Server {
+	t.Helper()
+	store := shell.NewMemStore()
+	ontology := `{
+		"objects": [
+			{
+				"name": "AgentSession",
+				"type_id": "agent_session",
+				"allowed_strata": ["S2"],
+				"source_connections": ["OWNS", "LINK_NODES", "INBOUND"],
+				"target_connections": ["OWNS", "LINK_NODES", "INBOUND"]
+			},
+			{
+				"name": "PRGTask",
+				"type_id": "prg_task",
+				"allowed_strata": ["S1", "S2"],
+				"source_connections": ["LINK_NODES", "INBOUND"],
+				"target_connections": ["OWNS", "LINK_NODES", "INBOUND"]
+			}
+		],
+		"morphisms": [
+			{
+				"name": "KeepNote",
+				"type_id": "keep_note",
+				"allowed_strata": ["S0", "S1"],
+				"source_connections": ["LINK_NODES", "INBOUND"],
+				"target_connections": ["OWNS", "LINK_NODES", "INBOUND"]
+			},
+			{
+				"name": "LINK_NODES",
+				"decomposition": "LINK(source, 'out', target, 'in')",
+				"target": "structure.*"
+			},
+			{
+				"name": "INBOUND",
+				"decomposition": "LINK(source, 'in', target, 'in')",
+				"target": "structure.*"
+			},
+			{
+				"name": "OWNS",
+				"decomposition": "LINK(owner, 'owns', target, 'child')",
+				"target": "any"
+			}
+		]
+	}`
+	reg, err := operad.LoadRegistry([]byte(ontology))
+	if err != nil {
+		t.Fatalf("LoadRegistry: %v", err)
+	}
+	rt, err := shell.NewRuntime(store, reg)
+	if err != nil {
+		t.Fatalf("NewRuntime: %v", err)
+	}
+	return transport.NewServer(rt, "")
+}
+
+func TestPortInventoryFunctor_BySourceType(t *testing.T) {
+	srv := newTestServerWithRegistry(t)
+	w := doRequest(t, srv.Handler(), "GET", "/functor/port-inventory?src_type=agent_session", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp struct {
+		SourceType string `json:"source_type"`
+		PairCount  int    `json:"pair_count"`
+		Pairs      []struct {
+			SourceType string `json:"source_type"`
+			SourcePort string `json:"source_port"`
+			TargetType string `json:"target_type"`
+			TargetPort string `json:"target_port"`
+		} `json:"pairs"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if resp.SourceType != "agent_session" {
+		t.Fatalf("source_type = %q, want %q", resp.SourceType, "agent_session")
+	}
+	if resp.PairCount == 0 || len(resp.Pairs) == 0 {
+		t.Fatal("expected at least one port inventory pair")
+	}
+	matched := false
+	for _, p := range resp.Pairs {
+		if p.SourceType == "agent_session" && p.SourcePort == "out" && p.TargetType == "prg_task" && p.TargetPort == "in" {
+			matched = true
+			break
+		}
+	}
+	if !matched {
+		t.Fatalf("expected agent_session/out -> prg_task/in pair, got %+v", resp.Pairs)
+	}
+}
+
+func TestPortInventoryFunctor_UnknownSourceType(t *testing.T) {
+	srv := newTestServerWithRegistry(t)
+	w := doRequest(t, srv.Handler(), "GET", "/functor/port-inventory?src_type=does_not_exist", nil)
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestBindingCategoryFunctor_CollapsesOwnsFanOut(t *testing.T) {
+	srv := newTestServerWithRegistry(t)
+	w := doRequest(t, srv.Handler(), "GET", "/functor/binding-category?src_type=agent_session&source_port=owns", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp struct {
+		SourceType  string `json:"source_type"`
+		SourcePort  string `json:"source_port"`
+		FamilyCount int    `json:"family_count"`
+		Families    []struct {
+			FamilyID        string   `json:"family_id"`
+			SourcePort      string   `json:"source_port"`
+			TargetPort      string   `json:"target_port"`
+			TargetTypeCount int      `json:"target_type_count"`
+			TargetTypes     []string `json:"target_types"`
+			PairCount       int      `json:"pair_count"`
+		} `json:"families"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if resp.SourceType != "agent_session" || resp.SourcePort != "owns" {
+		t.Fatalf("unexpected source in response: %+v", resp)
+	}
+	if resp.FamilyCount != 1 || len(resp.Families) != 1 {
+		t.Fatalf("expected exactly one family for owns fan-out, got %+v", resp.Families)
+	}
+	f := resp.Families[0]
+	if f.FamilyID != "owns->child" || f.SourcePort != "owns" || f.TargetPort != "child" {
+		t.Fatalf("unexpected family identity: %+v", f)
+	}
+	if f.TargetTypeCount < 2 {
+		t.Fatalf("expected owns fan-out to multiple target types, got %+v", f)
+	}
+}
+
+func TestBindingCategoryFunctor_UnknownSourceType(t *testing.T) {
+	srv := newTestServerWithRegistry(t)
+	w := doRequest(t, srv.Handler(), "GET", "/functor/binding-category?src_type=does_not_exist", nil)
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestPortFunctor_CompositionPreserved(t *testing.T) {
+	srv := newTestServerWithRegistry(t)
+	w := doRequest(t, srv.Handler(), "GET", "/functor/port-functor?src_type=agent_session&source_port=out", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp struct {
+		SourceType   string `json:"source_type"`
+		SourcePort   string `json:"source_port"`
+		MappingCount int    `json:"mapping_count"`
+		Mappings     []struct {
+			FromFamily     string `json:"from_family"`
+			ToFamily       string `json:"to_family"`
+			ComposedFamily string `json:"composed_family"`
+			SourceType     string `json:"source_type"`
+			SourcePort     string `json:"source_port"`
+			ViaType        string `json:"via_type"`
+			ViaPort        string `json:"via_port"`
+			TargetType     string `json:"target_type"`
+			TargetPort     string `json:"target_port"`
+		} `json:"mappings"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if resp.SourceType != "agent_session" || resp.SourcePort != "out" {
+		t.Fatalf("unexpected source in response: %+v", resp)
+	}
+	if resp.MappingCount == 0 || len(resp.Mappings) == 0 {
+		t.Fatalf("expected at least one composed mapping, got %+v", resp)
+	}
+	found := false
+	for _, m := range resp.Mappings {
+		if m.SourceType == "agent_session" && m.SourcePort == "out" && m.ViaPort == "in" && m.ComposedFamily == "out->in" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected composition-preserving out->in mapping, got %+v", resp.Mappings)
+	}
+}
+
+func TestPortFunctor_UnknownSourceType(t *testing.T) {
+	srv := newTestServerWithRegistry(t)
+	w := doRequest(t, srv.Handler(), "GET", "/functor/port-functor?src_type=does_not_exist", nil)
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
 func TestCalendarFunctorJSON(t *testing.T) {
 	srv := newTestServer(t)
 
@@ -183,8 +381,8 @@ func TestCalendarFunctorJSON(t *testing.T) {
 	}
 
 	var resp struct {
-		GeneratedAt string            `json:"generated_at"`
-		Entries     []map[string]any  `json:"entries"`
+		GeneratedAt string           `json:"generated_at"`
+		Entries     []map[string]any `json:"entries"`
 	}
 	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
 		t.Fatalf("decode response: %v", err)

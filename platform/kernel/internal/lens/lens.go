@@ -290,9 +290,9 @@ func union(a, b map[cat.URN]bool) map[cat.URN]bool {
 // broadCategory maps TypeID to ontology broad_category labels.
 func broadCategory(tid cat.TypeID) string {
 	switch tid {
-	case "user", "collider_admin", "superadmin", "agent_spec":
+	case "user", "collider_admin", "superadmin", "agent_spec", "agent_session":
 		return "identity"
-	case "app_template", "node_container":
+	case "app_template", "node_container", "prg_task", "calendar_event", "keep_note", "channel_message":
 		return "structure"
 	case "agnostic_model", "system_tool", "compute_resource", "provider":
 		return "compute"
@@ -312,7 +312,7 @@ func broadCategory(tid cat.TypeID) string {
 		return "evaluation"
 	case "industry_entity":
 		return "industry"
-	case "ontology_term":
+	case "ontology_term", "ptp_family":
 		return "ontology"
 	default:
 		return "unknown"
