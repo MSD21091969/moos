@@ -1,0 +1,184 @@
+name: Project Sync
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  repository-projects: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add to mo:os project and map fields
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECTS_TOKEN != '' && secrets.PROJECTS_TOKEN || github.token }}
+          script: |
+            const PROJECT_ID = "PVT_kwHODN7FZ84BQbZK";
+            const payload = context.payload;
+            const isPR = context.eventName === "pull_request";
+            const content = isPR ? payload.pull_request : payload.issue;
+            const contentId = content.node_id;
+            const body = content.body || "";
+            const title = content.title || "";
+            const fullText = [title, body].join("\n");
+
+            const branch = isPR ? ((payload.pull_request.head && payload.pull_request.head.ref) || "") : "";
+
+            const normalize = (v) => {
+              if (!v) return "";
+              return String(v)
+                .replace(/<!--.*?-->/g, "")
+                .replace(/`/g, "")
+                .trim();
+            };
+
+            const fieldFromText = (name) => {
+              const safe = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const bullet = new RegExp(`(?:^|\\n)\\s*[-*]\\s*${safe}\\s*:\\s*([^\\n]+)`, "i");
+              const header = new RegExp(`(?:^|\\n)\\s*###\\s*${safe}\\s*\\n+([^\\n]+)`, "i");
+              const m1 = fullText.match(bullet);
+              if (m1 && m1[1]) return normalize(m1[1]);
+              const m2 = fullText.match(header);
+              if (m2 && m2[1]) return normalize(m2[1]);
+              return "";
+            };
+
+            const derivedBranchRole = (() => {
+              if (!branch) return "";
+              if (/^feat\//i.test(branch)) return "feature";
+              if (/^hotfix\//i.test(branch)) return "hotfix";
+              if (/^agent\//i.test(branch)) return "agent";
+              if (/^admin\//i.test(branch)) return "admin";
+              if (/^release\//i.test(branch)) return "release";
+              return "";
+            })();
+
+            const prg = fieldFromText("PRG") || ((fullText.match(/\bPRG\d{3}\b/i) || [""])[0]);
+            const phase = fieldFromText("Phase");
+            const agentId = fieldFromText("Agent ID");
+            const hgUrn = fieldFromText("HG URN") || fieldFromText("HG URN(s)");
+            const colliderCategory = (fieldFromText("Collider Category") || "").toLowerCase();
+
+            const ownerRaw = (fieldFromText("User/Admin/Group") || "").toLowerCase();
+            const ownerRole = (() => {
+              if (/\bagent\b/.test(ownerRaw)) return "agent";
+              if (/\badmin\b/.test(ownerRaw)) return "admin";
+              if (/\bgroup\b|\bteam\b/.test(ownerRaw)) return "group";
+              if (/\buser\b/.test(ownerRaw)) return "user";
+              return "";
+            })();
+
+            const query = `
+              query($id: ID!) {
+                node(id: $id) {
+                  ... on ProjectV2 {
+                    fields(first: 100) {
+                      nodes {
+                        __typename
+                        ... on ProjectV2FieldCommon { id name }
+                        ... on ProjectV2SingleSelectField { options { id name } }
+                      }
+                    }
+                    items(first: 100) {
+                      nodes {
+                        id
+                        content {
+                          __typename
+                          ... on Issue { id }
+                          ... on PullRequest { id }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const project = await github.graphql(query, { id: PROJECT_ID });
+            const node = project.node;
+            const fields = node.fields.nodes || [];
+            const items = node.items.nodes || [];
+
+            let itemId = "";
+            for (const item of items) {
+              if (item && item.content && item.content.id === contentId) {
+                itemId = item.id;
+                break;
+              }
+            }
+
+            if (!itemId) {
+              const addMutation = `
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
+                    item { id }
+                  }
+                }
+              `;
+              const addRes = await github.graphql(addMutation, { projectId: PROJECT_ID, contentId });
+              itemId = addRes.addProjectV2ItemById.item.id;
+            }
+
+            const fieldByName = (name) => fields.find(f => (f.name || "").toLowerCase() === name.toLowerCase());
+
+            const setText = async (fieldName, value) => {
+              const v = normalize(value);
+              if (!v) return;
+              const field = fieldByName(fieldName);
+              if (!field || !field.id) return;
+              const mutation = `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId,
+                    itemId: $itemId,
+                    fieldId: $fieldId,
+                    value: { text: $value }
+                  }) { projectV2Item { id } }
+                }
+              `;
+              await github.graphql(mutation, { projectId: PROJECT_ID, itemId, fieldId: field.id, value: v });
+            };
+
+            const setSingle = async (fieldName, optionName) => {
+              const desired = normalize(optionName).toLowerCase();
+              if (!desired) return;
+              const field = fieldByName(fieldName);
+              if (!field || !field.id || !Array.isArray(field.options)) return;
+              const option = field.options.find(o => (o.name || "").toLowerCase() === desired);
+              if (!option) return;
+              const mutation = `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId,
+                    itemId: $itemId,
+                    fieldId: $fieldId,
+                    value: { singleSelectOptionId: $optionId }
+                  }) { projectV2Item { id } }
+                }
+              `;
+              await github.graphql(mutation, {
+                projectId: PROJECT_ID,
+                itemId,
+                fieldId: field.id,
+                optionId: option.id
+              });
+            };
+
+            await setText("PRG", prg);
+            await setText("Phase", phase);
+            await setText("Agent ID", agentId);
+            await setText("HG URN", hgUrn);
+
+            await setSingle("Owner Role", ownerRole);
+            await setSingle("Collider Category", colliderCategory || "other");
+            await setSingle("Branch Role", derivedBranchRole);
+
+            core.info(`Project sync complete for item ${itemId}`);
