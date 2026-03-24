@@ -67,10 +67,12 @@ jobs:
             const prg = fieldFromText("PRG") || ((fullText.match(/\bPRG\d{3}\b/i) || [""])[0]);
             const phase = fieldFromText("Phase");
             const agentId = fieldFromText("Agent ID");
-            const hgUrn = fieldFromText("HG URN") || fieldFromText("HG URN(s)");
+            const linksField = fieldFromText("Links");
+            const urnFromLinks = (linksField.match(/urn:[^\s]+/i) || [""])[0];
+            const hgUrn = fieldFromText("HG URN") || fieldFromText("HG URN(s)") || urnFromLinks;
             const colliderCategory = (fieldFromText("Collider Category") || "").toLowerCase();
 
-            const ownerRaw = (fieldFromText("User/Admin/Group") || "").toLowerCase();
+            const ownerRaw = (fieldFromText("User/Admin/Group") || fieldFromText("Owner Role") || "").toLowerCase();
             const ownerRole = (() => {
               if (/\bagent\b/.test(ownerRaw)) return "agent";
               if (/\badmin\b/.test(ownerRaw)) return "admin";
