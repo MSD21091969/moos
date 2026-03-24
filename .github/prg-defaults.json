@@ -1,0 +1,26 @@
+{
+  "prg_prefix": "PRG",
+  "phase_format": "###.#",
+  "phases": {
+    "1": "intake",
+    "2": "design",
+    "3": "execution",
+    "4": "validation",
+    "5": "shipping",
+    "6": "archive"
+  },
+  "default_phase": "1",
+  "collider_categories": [
+    "delegation_task",
+    "channel_message",
+    "agent_session",
+    "code_change",
+    "review",
+    "other"
+  ],
+  "default_collider_category": "other",
+  "scope": {
+    "area_tags": ["kernel", "ontology", "ci", "docs", "platform"],
+    "owner_roles": ["user", "admin", "group", "agent"]
+  }
+}
