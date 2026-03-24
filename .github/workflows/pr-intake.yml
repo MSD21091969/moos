@@ -52,6 +52,7 @@ jobs:
             if (/^chore\//.test(branch)) labels.push("branch:chore");
             if (/^hotfix\//.test(branch)) labels.push("branch:hotfix");
             if (/^agent\//.test(branch)) labels.push("branch:agent");
+            if (/^copilot\//.test(branch)) labels.push("branch:agent");
             if (/^admin\//.test(branch)) labels.push("branch:admin");
             if (/^copilot\//.test(branch)) labels.push("branch:copilot");
             if (/^release\//.test(branch)) labels.push("branch:release");

@@ -25,6 +25,10 @@ jobs:
             echo "OK: release branch"
             exit 0
           fi
+          if [[ "${HEAD_REF}" =~ ^copilot\/[a-z0-9._-]+$ ]]; then
+            echo "OK: copilot agent branch"
+            exit 0
+          fi
           echo "Invalid branch name: ${HEAD_REF}"
           echo "Use one of:"
           echo "  feat/<scope>-<name>"

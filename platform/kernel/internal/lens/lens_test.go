@@ -138,6 +138,7 @@ func TestBroadCategoryMapping(t *testing.T) {
 		{"calendar_event", "structure"},
 		{"keep_note", "structure"},
 		{"channel_message", "structure"},
+		{"delegation_task", "structure"},
 		{"ontology_term", "ontology"},
 		{"ptp_family", "ontology"},
 		{"unknown_future_type", "unknown"},

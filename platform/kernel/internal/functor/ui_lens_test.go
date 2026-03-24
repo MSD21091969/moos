@@ -99,6 +99,7 @@ func TestUILens_TypeIDMapping(t *testing.T) {
 		{"calendar_event", "structure"},
 		{"keep_note", "structure"},
 		{"channel_message", "structure"},
+		{"delegation_task", "structure"},
 		{"ptp_family", "ontology"},
 		{"something_new", "unknown"},
 	}
