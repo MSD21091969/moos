@@ -1,0 +1,66 @@
+name: PR Intake
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label and classify PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const branch = (pr.head && pr.head.ref) || "";
+            const text = [pr.title || "", pr.body || ""].join("\n");
+
+            const ensure = [
+              ["branch:feature", "0e8a16", "Feature branch PR"],
+              ["branch:hotfix", "b60205", "Hotfix branch PR"],
+              ["branch:agent", "5319e7", "Agent branch PR"],
+              ["branch:admin", "6f42c1", "Admin branch PR"],
+              ["branch:release", "1d76db", "Release branch PR"],
+              ["status:needs-triage", "fbca04", "Needs triage"]
+            ];
+
+            for (const [name, color, description] of ensure) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                  color,
+                  description
+                });
+              } catch (e) {
+                if (e.status !== 422) throw e;
+              }
+            }
+
+            const labels = ["status:needs-triage"];
+            if (/^feat\//.test(branch)) labels.push("branch:feature");
+            if (/^hotfix\//.test(branch)) labels.push("branch:hotfix");
+            if (/^agent\//.test(branch)) labels.push("branch:agent");
+            if (/^admin\//.test(branch)) labels.push("branch:admin");
+            if (/^release\//.test(branch)) labels.push("branch:release");
+
+            if (/\bPRG\d{3}\b/i.test(text)) labels.push("kind:prg");
+            if (/\bAgent\s*ID\b/i.test(text) || /\bagent[_ -]?id\b/i.test(text)) labels.push("kind:agent-task");
+            if (/\badmin\b/i.test(text)) labels.push("role:admin");
+            if (/\bgroup\b|\bteam\b/i.test(text)) labels.push("role:group");
+            if (/\buser\b/i.test(text)) labels.push("role:user");
+
+            const unique = [...new Set(labels)];
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: unique
+            });

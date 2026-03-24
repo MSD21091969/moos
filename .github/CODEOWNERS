@@ -1,0 +1,9 @@
+# Default owner
+* @MSD21091969
+
+# Kernel and transport
+/platform/kernel/ @MSD21091969
+/platform/kernel/internal/transport/ @MSD21091969
+
+# Automation and CI
+/.github/ @MSD21091969
