@@ -1,0 +1,99 @@
+name: Cloud Kickstart
+
+on:
+  workflow_dispatch:
+    inputs:
+      create_seed_issue:
+        description: "Create a starter tracking issue"
+        required: true
+        type: boolean
+        default: true
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  bootstrap-labels:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure default labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = [
+              ["kind:prg", "0e8a16", "PRG-scoped work item"],
+              ["kind:agent-task", "5319e7", "Agent-executable task"],
+              ["kind:shipping", "1d76db", "Shipping/go-live item"],
+              ["role:user", "bfd4f2", "User-owned or user-requested"],
+              ["role:admin", "d4c5f9", "Admin-owned action"],
+              ["role:group", "c2e0c6", "Group/team ownership"],
+              ["status:needs-triage", "fbca04", "Needs triage"],
+              ["status:blocked", "b60205", "Blocked by dependency"],
+              ["area:kernel", "0052cc", "Kernel/runtime scope"],
+              ["area:ontology", "006b75", "Ontology/schema scope"]
+            ];
+            for (const [name, color, description] of labels) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                  color,
+                  description
+                });
+              } catch (error) {
+                if (error.status === 422) {
+                  core.info(`Label already exists: ${name}`);
+                } else {
+                  throw error;
+                }
+              }
+            }
+
+      - name: Create seed issue
+        if: inputs.create_seed_issue == true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Kickstart: PRG and agent mapping backlog",
+              labels: ["kind:shipping", "status:needs-triage"],
+              body: [
+                "Use this issue to bootstrap cloud tracking for this repository.",
+                "",
+                "Checklist:",
+                "- [ ] Define PRG scope and phase defaults",
+                "- [ ] Define agent/user/admin/group ownership model",
+                "- [ ] Add or verify branch role policy",
+                "- [ ] Link first execution PR"
+              ].join("\n")
+            });
+
+  triage-issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply triage labels from issue content
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || "";
+            const labels = ["status:needs-triage"];
+            if (/\bPRG\d{3}\b/i.test(issue.title) || /\bPRG\d{3}\b/i.test(body)) labels.push("kind:prg");
+            if (/\bAgent\s*ID\b/i.test(body) || /\bagent[_ -]?id\b/i.test(body)) labels.push("kind:agent-task");
+            if (/\b(admin|group|team)\b/i.test(body)) labels.push("role:group");
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels
+            });

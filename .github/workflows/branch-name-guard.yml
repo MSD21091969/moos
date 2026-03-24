@@ -1,0 +1,37 @@
+name: Branch Name Guard
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch naming policy
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          echo "Checking branch: ${HEAD_REF}"
+          if [[ "${HEAD_REF}" =~ ^(feat|fix|chore|agent|admin)\/[a-z0-9._-]+$ ]]; then
+            echo "OK: feature/fix/chore/agent/admin branch"
+            exit 0
+          fi
+          if [[ "${HEAD_REF}" =~ ^hotfix\/[a-z0-9._-]+$ ]]; then
+            echo "OK: hotfix branch"
+            exit 0
+          fi
+          if [[ "${HEAD_REF}" =~ ^release\/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "OK: release branch"
+            exit 0
+          fi
+          echo "Invalid branch name: ${HEAD_REF}"
+          echo "Use one of:"
+          echo "  feat/<scope>-<name>"
+          echo "  fix/<scope>-<name>"
+          echo "  chore/<scope>-<name>"
+          echo "  agent/<scope>-<name>"
+          echo "  admin/<scope>-<name>"
+          echo "  hotfix/<scope>-<name>"
+          echo "  release/<major>.<minor>.<patch>"
+          exit 1

@@ -1,0 +1,56 @@
+name: PRG / Agent Task
+about: Track PRG phase work with agent and ownership mapping
+title: "[PRG###] <short task title>"
+labels: ["status:needs-triage"]
+body:
+  - type: input
+    id: prg
+    attributes:
+      label: PRG
+      description: Program identifier, e.g., PRG039
+      placeholder: PRG039
+    validations:
+      required: true
+  - type: input
+    id: phase
+    attributes:
+      label: Phase
+      description: Phase identifier, e.g., 039.5
+      placeholder: 039.5
+    validations:
+      required: true
+  - type: input
+    id: agent_id
+    attributes:
+      label: Agent ID
+      description: Executing or owning agent identifier
+      placeholder: AGENT-KERNEL-01
+    validations:
+      required: true
+  - type: dropdown
+    id: owner_role
+    attributes:
+      label: Owner Role
+      options:
+        - user
+        - admin
+        - group
+        - agent
+    validations:
+      required: true
+  - type: input
+    id: collider_category
+    attributes:
+      label: Collider Category
+      description: Category object/type, e.g., delegation_task
+      placeholder: delegation_task
+    validations:
+      required: true
+  - type: textarea
+    id: links
+    attributes:
+      label: Links
+      description: HG URN, issue links, PR links, branch links
+      placeholder: |
+        urn:moos:prg:039-session-identity
+        https://github.com/org/repo/pull/123
