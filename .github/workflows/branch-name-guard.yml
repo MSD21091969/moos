@@ -1,7 +1,7 @@
 name: Branch Name Guard
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize, edited]
 
 jobs:
@@ -13,8 +13,8 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
         run: |
           echo "Checking branch: ${HEAD_REF}"
-          if [[ "${HEAD_REF}" =~ ^(feat|fix|chore|agent|admin)\/[a-z0-9._-]+$ ]]; then
-            echo "OK: feature/fix/chore/agent/admin branch"
+          if [[ "${HEAD_REF}" =~ ^(feat|fix|chore|agent|admin|copilot)\/[a-z0-9._-]+$ ]]; then
+            echo "OK: feature/fix/chore/agent/admin/copilot branch"
             exit 0
           fi
           if [[ "${HEAD_REF}" =~ ^hotfix\/[a-z0-9._-]+$ ]]; then
@@ -32,6 +32,7 @@ jobs:
           echo "  chore/<scope>-<name>"
           echo "  agent/<scope>-<name>"
           echo "  admin/<scope>-<name>"
+          echo "  copilot/<scope>-<name>"
           echo "  hotfix/<scope>-<name>"
           echo "  release/<major>.<minor>.<patch>"
           exit 1

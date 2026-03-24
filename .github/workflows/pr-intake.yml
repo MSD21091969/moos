@@ -1,7 +1,7 @@
 name: PR Intake
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited, synchronize, reopened]
 
 permissions:
@@ -27,6 +27,7 @@ jobs:
               ["branch:hotfix", "b60205", "Hotfix branch PR"],
               ["branch:agent", "5319e7", "Agent branch PR"],
               ["branch:admin", "6f42c1", "Admin branch PR"],
+              ["branch:copilot", "8250df", "Copilot branch PR"],
               ["branch:release", "1d76db", "Release branch PR"],
               ["role:agent", "5319e7", "Agent-owned or agent-executed"],
               ["status:needs-triage", "fbca04", "Needs triage"]
@@ -52,6 +53,7 @@ jobs:
             if (/^hotfix\//.test(branch)) labels.push("branch:hotfix");
             if (/^agent\//.test(branch)) labels.push("branch:agent");
             if (/^admin\//.test(branch)) labels.push("branch:admin");
+            if (/^copilot\//.test(branch)) labels.push("branch:copilot");
             if (/^release\//.test(branch)) labels.push("branch:release");
 
             if (/\bPRG\d{3}\b/i.test(text)) labels.push("kind:prg");

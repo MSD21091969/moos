@@ -3,7 +3,7 @@ name: Project Sync
 on:
   issues:
     types: [opened, edited, reopened]
-  pull_request:
+  pull_request_target:
     types: [opened, edited, reopened, synchronize]
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
           script: |
             const PROJECT_ID = "PVT_kwHODN7FZ84BQbZK";
             const payload = context.payload;
-            const isPR = context.eventName === "pull_request";
+            const isPR = !!payload.pull_request;
             const content = isPR ? payload.pull_request : payload.issue;
             const contentId = content.node_id;
             const body = content.body || "";
