@@ -128,8 +128,22 @@ jobs:
                   }
                 }
               `;
-              const addRes = await github.graphql(addMutation, { projectId: PROJECT_ID, contentId });
-              itemId = addRes.addProjectV2ItemById.item.id;
+              try {
+                const addRes = await github.graphql(addMutation, { projectId: PROJECT_ID, contentId });
+                itemId = addRes.addProjectV2ItemById.item.id;
+              } catch (e) {
+                const msg = String(e && e.message ? e.message : e);
+                if (!msg.includes("Content already exists in this project")) throw e;
+
+                const refreshed = await github.graphql(query, { id: PROJECT_ID });
+                const refreshedItems = refreshed.node.items.nodes || [];
+                for (const item of refreshedItems) {
+                  if (item && item.content && item.content.id === contentId) {
+                    itemId = item.id;
+                    break;
+                  }
+                }
+              }
             }
 
             const fieldByName = (name) => fields.find(f => (f.name || "").toLowerCase() === name.toLowerCase());
