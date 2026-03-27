@@ -418,6 +418,28 @@
     },
     {
       "id": "OBJ22",
+      "name": "DelegationTask",
+      "type_id": "delegation_task",
+      "broad_category": "structure",
+      "description": "Delegation task container — agent-executed work item scoped to a PRG phase. Carries collider category, owner role, and HG URN provenance.",
+      "mutable": true,
+      "allowed_strata": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "source_connections": [
+        "LINK_NODES",
+        "INBOUND"
+      ],
+      "target_connections": [
+        "OWNS",
+        "LINK_NODES",
+        "INBOUND"
+      ]
+    },
+    {
+      "id": "OBJ23",
       "name": "KernelInstance",
       "type_id": "kernel_instance",
       "broad_category": "infra",

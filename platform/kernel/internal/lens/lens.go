@@ -292,7 +292,7 @@ func broadCategory(tid cat.TypeID) string {
 	switch tid {
 	case "user", "collider_admin", "superadmin", "agent_spec", "agent_session":
 		return "identity"
-	case "app_template", "node_container", "prg_task", "calendar_event", "keep_note", "channel_message":
+	case "app_template", "node_container", "prg_task", "calendar_event", "keep_note", "channel_message", "delegation_task":
 		return "structure"
 	case "agnostic_model", "system_tool", "compute_resource", "provider":
 		return "compute"
