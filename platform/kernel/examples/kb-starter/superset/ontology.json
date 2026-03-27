@@ -194,10 +194,15 @@
         "S2",
         "S3"
       ],
-      "source_connections": [],
+      "source_connections": [
+        "OUTBOUND",
+        "BRIDGE"
+      ],
       "target_connections": [
         "OWNS",
-        "CAN_SCHEDULE"
+        "CAN_SCHEDULE",
+        "INBOUND",
+        "BRIDGE"
       ]
     },
     {
@@ -230,10 +235,15 @@
         "S2",
         "S3"
       ],
-      "source_connections": [],
+      "source_connections": [
+        "OUTBOUND",
+        "BRIDGE"
+      ],
       "target_connections": [
         "OWNS",
-        "CAN_PERSIST"
+        "CAN_PERSIST",
+        "INBOUND",
+        "BRIDGE"
       ]
     },
     {
@@ -249,11 +259,15 @@
         "S4"
       ],
       "source_connections": [
-        "CAN_HYDRATE"
+        "CAN_HYDRATE",
+        "OUTBOUND",
+        "BRIDGE"
       ],
       "target_connections": [
         "OWNS",
-        "CAN_PERSIST"
+        "CAN_PERSIST",
+        "INBOUND",
+        "BRIDGE"
       ]
     },
     {
@@ -284,10 +298,15 @@
         "S2",
         "S3"
       ],
-      "source_connections": [],
+      "source_connections": [
+        "OUTBOUND",
+        "BRIDGE"
+      ],
       "target_connections": [
         "OWNS",
-        "PRE_FLIGHT_CONFIG"
+        "PRE_FLIGHT_CONFIG",
+        "INBOUND",
+        "BRIDGE"
       ]
     },
     {
@@ -395,6 +414,29 @@
       ],
       "target_connections": [
         "OWNS"
+      ]
+    },
+    {
+      "id": "OBJ22",
+      "name": "KernelInstance",
+      "type_id": "kernel_instance",
+      "broad_category": "infra",
+      "description": "Kernel instance node — executable kernel functor endpoint bound to workstation, compute, and memory topology.",
+      "mutable": true,
+      "allowed_strata": [
+        "S2",
+        "S3"
+      ],
+      "source_connections": [
+        "OUTBOUND",
+        "CAN_ROUTE",
+        "CAN_SCHEDULE",
+        "BRIDGE"
+      ],
+      "target_connections": [
+        "OWNS",
+        "INBOUND",
+        "BRIDGE"
       ]
     }
   ],

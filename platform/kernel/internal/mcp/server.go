@@ -19,7 +19,8 @@ import (
 
 // Server is the MCP bridge — SSE transport wrapping the kernel runtime.
 type Server struct {
-	runtime *shell.Runtime
+	inspect shell.InspectSubstrate
+	run     shell.RunSubstrate
 	mux     *http.ServeMux
 	srv     *http.Server
 
@@ -35,9 +36,10 @@ type session struct {
 }
 
 // NewServer creates an MCP server backed by the given runtime.
-func NewServer(runtime *shell.Runtime) *Server {
+func NewServer(inspect shell.InspectSubstrate, run shell.RunSubstrate) *Server {
 	s := &Server{
-		runtime:  runtime,
+		inspect:  inspect,
+		run:      run,
 		mux:      http.NewServeMux(),
 		sessions: make(map[string]*session),
 	}
@@ -294,15 +296,15 @@ func (s *Server) handleToolsCall(req Request) Response {
 func (s *Server) callTool(params ToolCallParams) ToolCallResult {
 	switch params.Name {
 	case "graph_state":
-		return toolGraphState(s.runtime)
+		return toolGraphState(s.inspect)
 	case "node_lookup":
-		return toolNodeLookup(s.runtime, params.Arguments)
+		return toolNodeLookup(s.inspect, params.Arguments)
 	case "apply_morphism":
-		return toolApplyMorphism(s.runtime, params.Arguments)
+		return toolApplyMorphism(s.run, params.Arguments)
 	case "scoped_subgraph":
-		return toolScopedSubgraph(s.runtime, params.Arguments)
+		return toolScopedSubgraph(s.inspect, params.Arguments)
 	case "benchmark_project":
-		return toolBenchmarkProject(s.runtime)
+		return toolBenchmarkProject(s.inspect)
 	default:
 		return ToolCallResult{
 			IsError: true,
@@ -364,8 +366,8 @@ func toolDefinitions() []ToolDefinition {
 
 // --- Tool implementations ---
 
-func toolGraphState(rt *shell.Runtime) ToolCallResult {
-	state := rt.State()
+func toolGraphState(inspect shell.InspectSubstrate) ToolCallResult {
+	state := inspect.State()
 	data, err := json.Marshal(state)
 	if err != nil {
 		return errResult(fmt.Sprintf("marshal error: %v", err))
@@ -373,14 +375,14 @@ func toolGraphState(rt *shell.Runtime) ToolCallResult {
 	return ToolCallResult{Content: []ContentBlock{{Type: "text", Text: string(data)}}}
 }
 
-func toolNodeLookup(rt *shell.Runtime, args json.RawMessage) ToolCallResult {
+func toolNodeLookup(inspect shell.InspectSubstrate, args json.RawMessage) ToolCallResult {
 	var p struct {
 		URN string `json:"urn"`
 	}
 	if err := json.Unmarshal(args, &p); err != nil || p.URN == "" {
 		return errResult("urn is required")
 	}
-	node, ok := rt.Node(cat.URN(p.URN))
+	node, ok := inspect.Node(cat.URN(p.URN))
 	if !ok {
 		return errResult(fmt.Sprintf("node not found: %s", p.URN))
 	}
@@ -391,14 +393,14 @@ func toolNodeLookup(rt *shell.Runtime, args json.RawMessage) ToolCallResult {
 	return ToolCallResult{Content: []ContentBlock{{Type: "text", Text: string(data)}}}
 }
 
-func toolApplyMorphism(rt *shell.Runtime, args json.RawMessage) ToolCallResult {
+func toolApplyMorphism(run shell.RunSubstrate, args json.RawMessage) ToolCallResult {
 	var p struct {
 		Envelope cat.Envelope `json:"envelope"`
 	}
 	if err := json.Unmarshal(args, &p); err != nil {
 		return errResult(fmt.Sprintf("invalid envelope: %v", err))
 	}
-	result, err := rt.Apply(p.Envelope)
+	result, err := run.Apply(p.Envelope)
 	if err != nil {
 		return errResult(fmt.Sprintf("apply error: %v", err))
 	}
@@ -409,14 +411,14 @@ func toolApplyMorphism(rt *shell.Runtime, args json.RawMessage) ToolCallResult {
 	return ToolCallResult{Content: []ContentBlock{{Type: "text", Text: string(data)}}}
 }
 
-func toolScopedSubgraph(rt *shell.Runtime, args json.RawMessage) ToolCallResult {
+func toolScopedSubgraph(inspect shell.InspectSubstrate, args json.RawMessage) ToolCallResult {
 	var p struct {
 		Actor string `json:"actor"`
 	}
 	if err := json.Unmarshal(args, &p); err != nil || p.Actor == "" {
 		return errResult("actor is required")
 	}
-	state := rt.ScopedSubgraph(cat.URN(p.Actor))
+	state := inspect.ScopedSubgraph(cat.URN(p.Actor))
 	data, err := json.Marshal(state)
 	if err != nil {
 		return errResult(fmt.Sprintf("marshal error: %v", err))
@@ -424,9 +426,9 @@ func toolScopedSubgraph(rt *shell.Runtime, args json.RawMessage) ToolCallResult 
 	return ToolCallResult{Content: []ContentBlock{{Type: "text", Text: string(data)}}}
 }
 
-func toolBenchmarkProject(rt *shell.Runtime) ToolCallResult {
+func toolBenchmarkProject(inspect shell.InspectSubstrate) ToolCallResult {
 	bench := functor.Benchmark{}
-	result, err := bench.Project(rt.State())
+	result, err := bench.Project(inspect.State())
 	if err != nil {
 		return errResult(fmt.Sprintf("benchmark error: %v", err))
 	}

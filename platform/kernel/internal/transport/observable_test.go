@@ -128,3 +128,133 @@ func TestLogStreamSSE(t *testing.T) {
 		t.Fatal("SSE stream closed without 'event: morphism' line")
 	}
 }
+
+func TestLogStreamSSE_FirestarterTriggerByType(t *testing.T) {
+	srv := newTestServer(t)
+	ts := httptest.NewServer(srv.Handler())
+	defer ts.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, "GET", ts.URL+"/log/stream", nil)
+	if err != nil {
+		t.Fatalf("NewRequest: %v", err)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("GET /log/stream: %v", err)
+	}
+	defer resp.Body.Close()
+
+	go func() {
+		time.Sleep(50 * time.Millisecond)
+		doRequest(t, srv.Handler(), "POST", "/morphisms", cat.Envelope{
+			Type:  cat.ADD,
+			Actor: testActor,
+			Add:   &cat.AddPayload{URN: "urn:moos:sse:source", TypeID: "node_container"},
+		})
+		doRequest(t, srv.Handler(), "POST", "/morphisms", cat.Envelope{
+			Type:  cat.ADD,
+			Actor: testActor,
+			Add:   &cat.AddPayload{URN: "urn:moos:sse:target-firestarter", TypeID: "firestarter_node"},
+		})
+		doRequest(t, srv.Handler(), "POST", "/morphisms", cat.Envelope{
+			Type:  cat.LINK,
+			Actor: testActor,
+			Link: &cat.LinkPayload{
+				SourceURN:  "urn:moos:sse:source",
+				SourcePort: "out",
+				TargetURN:  "urn:moos:sse:target-firestarter",
+				TargetPort: "in",
+			},
+		})
+	}()
+
+	scanner := bufio.NewScanner(resp.Body)
+	seenEvent := false
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "event: firestarter-trigger" {
+			seenEvent = true
+			continue
+		}
+		if seenEvent && strings.HasPrefix(line, "data: ") {
+			var payload map[string]any
+			if err := json.Unmarshal([]byte(strings.TrimPrefix(line, "data: ")), &payload); err != nil {
+				t.Fatalf("decode firestarter-trigger data: %v", err)
+			}
+			if payload["source_urn"] != "urn:moos:sse:source" || payload["target_urn"] != "urn:moos:sse:target-firestarter" {
+				t.Fatalf("unexpected firestarter-trigger payload: %+v", payload)
+			}
+			return
+		}
+	}
+
+	if ctx.Err() != nil {
+		t.Fatal("timed out waiting for firestarter-trigger SSE event")
+	}
+	t.Fatal("SSE stream closed without firestarter-trigger event")
+}
+
+func TestLogStreamSSE_FirestarterTriggerAgentSession(t *testing.T) {
+	srv := newTestServer(t)
+	ts := httptest.NewServer(srv.Handler())
+	defer ts.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, "GET", ts.URL+"/log/stream", nil)
+	if err != nil {
+		t.Fatalf("NewRequest: %v", err)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("GET /log/stream: %v", err)
+	}
+	defer resp.Body.Close()
+
+	go func() {
+		time.Sleep(50 * time.Millisecond)
+		doRequest(t, srv.Handler(), "POST", "/morphisms", cat.Envelope{
+			Type:  cat.ADD,
+			Actor: testActor,
+			Add:   &cat.AddPayload{URN: "urn:moos:sse:source-2", TypeID: "node_container"},
+		})
+		doRequest(t, srv.Handler(), "POST", "/morphisms", cat.Envelope{
+			Type:  cat.ADD,
+			Actor: testActor,
+			Add: &cat.AddPayload{
+				URN:    "urn:moos:sse:target-session",
+				TypeID: "agent_session",
+				Payload: map[string]any{
+					"trigger_filter": "urn:moos:agent:vscode-ai",
+				},
+			},
+		})
+		doRequest(t, srv.Handler(), "POST", "/morphisms", cat.Envelope{
+			Type:  cat.LINK,
+			Actor: testActor,
+			Link: &cat.LinkPayload{
+				SourceURN:  "urn:moos:sse:source-2",
+				SourcePort: "out",
+				TargetURN:  "urn:moos:sse:target-session",
+				TargetPort: "in",
+			},
+		})
+	}()
+
+	scanner := bufio.NewScanner(resp.Body)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "event: firestarter-trigger" {
+			return
+		}
+	}
+
+	if ctx.Err() != nil {
+		t.Fatal("timed out waiting for firestarter-trigger SSE event for agent_session")
+	}
+	t.Fatal("SSE stream closed without firestarter-trigger event for agent_session")
+}

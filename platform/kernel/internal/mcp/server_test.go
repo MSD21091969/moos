@@ -25,7 +25,7 @@ func newTestMCP(t *testing.T) *mcp.Server {
 	if err != nil {
 		t.Fatalf("NewRuntime: %v", err)
 	}
-	return mcp.NewServer(rt)
+	return mcp.NewServer(rt, rt)
 }
 
 func newSeededMCP(t *testing.T) *mcp.Server {
@@ -45,7 +45,7 @@ func newSeededMCP(t *testing.T) *mcp.Server {
 	if _, err := rt.ApplyProgram(prog); err != nil {
 		t.Fatalf("seed program: %v", err)
 	}
-	return mcp.NewServer(rt)
+	return mcp.NewServer(rt, rt)
 }
 
 // jsonRPC builds a JSON-RPC 2.0 request body.

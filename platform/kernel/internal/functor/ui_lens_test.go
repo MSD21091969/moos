@@ -86,6 +86,7 @@ func TestUILens_TypeIDMapping(t *testing.T) {
 		{"runtime_surface", "surface"},
 		{"protocol_adapter", "protocol"},
 		{"infra_service", "infra"},
+		{"kernel_instance", "infra"},
 		{"memory_store", "memory"},
 		{"platform_config", "platform"},
 		{"workstation_config", "platform"},

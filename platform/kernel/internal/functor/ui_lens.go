@@ -218,6 +218,8 @@ func broadCategory(tid cat.TypeID) string {
 	// infra
 	case "infra_service":
 		return "infra"
+	case "kernel_instance":
+		return "infra"
 	// memory
 	case "memory_store":
 		return "memory"

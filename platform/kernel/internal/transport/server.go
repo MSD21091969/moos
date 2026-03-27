@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"moos/platform/kernel/internal/cat"
@@ -28,20 +29,26 @@ var explorerHTML []byte
 
 // Server is the HTTP transport layer.
 type Server struct {
-	runtime *shell.Runtime
+	inspect shell.InspectSubstrate
+	run     shell.RunSubstrate
 	kbRoot  string // path to knowledge-base root; empty when --kb not supplied
 	mux     *http.ServeMux
 	srv     *http.Server
+
+	bridgeMu      sync.Mutex
+	bridgeCursors map[cat.URN]time.Time
 }
 
 // NewServer creates a new HTTP server bound to the given runtime.
 // kbRoot is the path to the knowledge-base root directory; pass "" when
 // the --kb flag was not supplied (source-based materialize will return 501).
-func NewServer(runtime *shell.Runtime, kbRoot string) *Server {
+func NewServer(inspect shell.InspectSubstrate, run shell.RunSubstrate, kbRoot string) *Server {
 	s := &Server{
-		runtime: runtime,
-		kbRoot:  kbRoot,
-		mux:     http.NewServeMux(),
+		inspect:       inspect,
+		run:           run,
+		kbRoot:        kbRoot,
+		mux:           http.NewServeMux(),
+		bridgeCursors: make(map[cat.URN]time.Time),
 	}
 	s.registerRoutes()
 	return s
@@ -69,12 +76,16 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /functor/port-inventory", s.handlePortInventoryFunctor)
 	s.mux.HandleFunc("GET /functor/binding-category", s.handleBindingCategoryFunctor)
 	s.mux.HandleFunc("GET /functor/port-functor", s.handlePortFunctor)
+	s.mux.HandleFunc("GET /functor/pipeline-metrics", s.handlePipelineMetricsFunctor)
 	s.mux.HandleFunc("GET /explorer", s.handleExplorer)
 	s.mux.HandleFunc("GET /functor/ui", s.handleUIFunctor)
 	s.mux.HandleFunc("GET /functor/calendar", s.handleCalendarFunctor)
+	s.mux.HandleFunc("GET /bridge/", s.handleBridge)
+	s.mux.HandleFunc("POST /bridge/sync", s.handleBridgeSync)
+	s.mux.HandleFunc("POST /callback/calendar/sync", s.handleCalendarSync)
 
 	// Right-adjoint (Ingest)
-	s.mux.HandleFunc("POST /webhooks/gcal", HandleGCalWebhook(s.runtime))
+	s.mux.HandleFunc("POST /webhooks/gcal", HandleGCalWebhook(s.run))
 }
 
 // ListenAndServe starts the HTTP server on the given address.
@@ -108,18 +119,18 @@ func (s *Server) Handler() http.Handler {
 func (s *Server) handleHealthz(w http.ResponseWriter, r *http.Request) {
 	resp := map[string]any{
 		"status":    "ok",
-		"nodes":     len(s.runtime.Nodes()),
-		"wires":     len(s.runtime.Wires()),
-		"log_depth": s.runtime.LogLen(),
+		"nodes":     len(s.inspect.Nodes()),
+		"wires":     len(s.inspect.Wires()),
+		"log_depth": s.inspect.LogLen(),
 	}
-	if epoch := s.runtime.Epoch(); !epoch.IsZero() {
+	if epoch := s.inspect.Epoch(); !epoch.IsZero() {
 		resp["epoch"] = epoch.UTC().Format(time.RFC3339Nano)
 	}
 	writeJSON(w, http.StatusOK, resp)
 }
 
 func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
-	state := s.runtime.State()
+	state := s.inspect.State()
 	if r.URL.Query().Has("compact") {
 		writeJSONCompact(w, http.StatusOK, state)
 		return
@@ -128,7 +139,7 @@ func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleNodes(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.runtime.Nodes())
+	writeJSON(w, http.StatusOK, s.inspect.Nodes())
 }
 
 func (s *Server) handleNodeByURN(w http.ResponseWriter, r *http.Request) {
@@ -137,7 +148,7 @@ func (s *Server) handleNodeByURN(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "missing URN")
 		return
 	}
-	node, ok := s.runtime.Node(urn)
+	node, ok := s.inspect.Node(urn)
 	if !ok {
 		writeError(w, http.StatusNotFound, fmt.Sprintf("node %s not found", urn))
 		return
@@ -146,7 +157,7 @@ func (s *Server) handleNodeByURN(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleWires(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.runtime.Wires())
+	writeJSON(w, http.StatusOK, s.inspect.Wires())
 }
 
 func (s *Server) handleOutgoingWires(w http.ResponseWriter, r *http.Request) {
@@ -155,7 +166,7 @@ func (s *Server) handleOutgoingWires(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "missing URN")
 		return
 	}
-	writeJSON(w, http.StatusOK, s.runtime.OutgoingWires(urn))
+	writeJSON(w, http.StatusOK, s.inspect.OutgoingWires(urn))
 }
 
 func (s *Server) handleIncomingWires(w http.ResponseWriter, r *http.Request) {
@@ -164,7 +175,7 @@ func (s *Server) handleIncomingWires(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "missing URN")
 		return
 	}
-	writeJSON(w, http.StatusOK, s.runtime.IncomingWires(urn))
+	writeJSON(w, http.StatusOK, s.inspect.IncomingWires(urn))
 }
 
 func (s *Server) handleScope(w http.ResponseWriter, r *http.Request) {
@@ -173,22 +184,22 @@ func (s *Server) handleScope(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "missing actor URN")
 		return
 	}
-	writeJSON(w, http.StatusOK, s.runtime.ScopedSubgraph(urn))
+	writeJSON(w, http.StatusOK, s.inspect.ScopedSubgraph(urn))
 }
 
 func (s *Server) handleLens(w http.ResponseWriter, r *http.Request) {
-	state := s.runtime.State()
+	state := s.inspect.State()
 	if scope := strings.TrimSpace(r.URL.Query().Get("scope")); scope != "" {
-		state = s.runtime.ScopedSubgraph(cat.URN(scope))
+		state = s.inspect.ScopedSubgraph(cat.URN(scope))
 	}
 	spec := lens.ParseQueryParams(r.URL.Query())
 	writeJSON(w, http.StatusOK, lens.Apply(state, spec))
 }
 
 func (s *Server) handleLensPost(w http.ResponseWriter, r *http.Request) {
-	state := s.runtime.State()
+	state := s.inspect.State()
 	if scope := strings.TrimSpace(r.URL.Query().Get("scope")); scope != "" {
-		state = s.runtime.ScopedSubgraph(cat.URN(scope))
+		state = s.inspect.ScopedSubgraph(cat.URN(scope))
 	}
 
 	var spec lens.LensSpec
@@ -201,12 +212,12 @@ func (s *Server) handleLensPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleSaturation(w http.ResponseWriter, r *http.Request) {
-	reg := s.runtime.Registry()
+	reg := s.inspect.Registry()
 	if reg == nil {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
 		return
 	}
-	state := s.runtime.State()
+	state := s.inspect.State()
 
 	// Optional single-node lookup: ?urn=<urn>
 	if urnParam := strings.TrimSpace(r.URL.Query().Get("urn")); urnParam != "" {
@@ -229,7 +240,7 @@ func (s *Server) handlePostMorphism(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid JSON: %v", err))
 		return
 	}
-	result, err := s.runtime.Apply(env)
+	result, err := s.run.Apply(env)
 	if err != nil {
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
 		return
@@ -243,7 +254,7 @@ func (s *Server) handlePostProgram(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid JSON: %v", err))
 		return
 	}
-	result, err := s.runtime.ApplyProgram(prog)
+	result, err := s.run.ApplyProgram(prog)
 	if err != nil {
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
 		return
@@ -251,8 +262,339 @@ func (s *Server) handlePostProgram(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, result)
 }
 
+type bridgeSyncRequest struct {
+	SourceKernelURN cat.URN        `json:"source_kernel_urn,omitempty"`
+	TargetKernelURN cat.URN        `json:"target_kernel_urn,omitempty"`
+	Envelopes       []cat.Envelope `json:"envelopes,omitempty"`
+	Program         *cat.Program   `json:"program,omitempty"`
+}
+
+func (s *Server) bridgeCursor(urn cat.URN) time.Time {
+	s.bridgeMu.Lock()
+	defer s.bridgeMu.Unlock()
+	return s.bridgeCursors[urn]
+}
+
+func (s *Server) setBridgeCursor(urn cat.URN, ts time.Time) {
+	s.bridgeMu.Lock()
+	defer s.bridgeMu.Unlock()
+	if ts.IsZero() {
+		return
+	}
+	if prev, ok := s.bridgeCursors[urn]; ok && !ts.After(prev) {
+		return
+	}
+	s.bridgeCursors[urn] = ts
+}
+
+func (s *Server) handleBridgeDiff(w http.ResponseWriter, r *http.Request) {
+	kernelURN := cat.URN(strings.TrimPrefix(r.URL.Path, "/bridge/"))
+	if kernelURN == "" {
+		writeError(w, http.StatusBadRequest, "missing kernel URN")
+		return
+	}
+
+	node, ok := s.inspect.Node(kernelURN)
+	if !ok {
+		writeError(w, http.StatusNotFound, fmt.Sprintf("kernel node %s not found", kernelURN))
+		return
+	}
+	if !isBridgeKernelNode(node) {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("node %s is type %s, expected kernel_instance or infra_service", kernelURN, node.TypeID))
+		return
+	}
+
+	since := s.bridgeCursor(kernelURN)
+	if sinceParam := strings.TrimSpace(r.URL.Query().Get("since")); sinceParam != "" {
+		t, err := time.Parse(time.RFC3339, sinceParam)
+		if err != nil {
+			writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid since (RFC3339 required): %v", err))
+			return
+		}
+		since = t.UTC()
+	}
+
+	entries := s.inspect.Log()
+	diff := make([]cat.PersistedEnvelope, 0, len(entries))
+	until := since
+	for _, entry := range entries {
+		if !entry.IssuedAt.After(since) {
+			continue
+		}
+		diff = append(diff, entry)
+		if entry.IssuedAt.After(until) {
+			until = entry.IssuedAt
+		}
+	}
+
+	if len(diff) > 0 {
+		s.setBridgeCursor(kernelURN, until)
+	}
+
+	resp := map[string]any{
+		"kernel_urn": kernelURN,
+		"since":      since.UTC().Format(time.RFC3339Nano),
+		"until":      until.UTC().Format(time.RFC3339Nano),
+		"count":      len(diff),
+		"envelopes":  diff,
+	}
+	writeJSON(w, http.StatusOK, resp)
+}
+
+func (s *Server) handleBridge(w http.ResponseWriter, r *http.Request) {
+	if strings.HasSuffix(r.URL.Path, "/fiber") {
+		s.handleBridgeFiber(w, r)
+		return
+	}
+	s.handleBridgeDiff(w, r)
+}
+
+type fiberNode struct {
+	URN     cat.URN        `json:"urn"`
+	TypeID  cat.TypeID     `json:"type_id"`
+	Payload map[string]any `json:"payload,omitempty"`
+}
+
+type fiberWire struct {
+	SourceURN  cat.URN  `json:"source_urn"`
+	SourcePort cat.Port `json:"source_port"`
+	TargetURN  cat.URN  `json:"target_urn"`
+	TargetPort cat.Port `json:"target_port"`
+}
+
+type fiberInterfacePort struct {
+	URN       cat.URN  `json:"urn"`
+	Port      cat.Port `json:"port"`
+	Direction string   `json:"direction"`
+}
+
+func (s *Server) handleBridgeFiber(w http.ResponseWriter, r *http.Request) {
+	if !strings.HasSuffix(r.URL.Path, "/fiber") {
+		return
+	}
+
+	kernelURN := cat.URN(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/bridge/"), "/fiber"))
+	if kernelURN == "" {
+		writeError(w, http.StatusBadRequest, "missing kernel URN")
+		return
+	}
+
+	kernelNode, ok := s.inspect.Node(kernelURN)
+	if !ok {
+		writeError(w, http.StatusNotFound, fmt.Sprintf("kernel node %s not found", kernelURN))
+		return
+	}
+	if !isBridgeKernelNode(kernelNode) {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("node %s is type %s, expected kernel_instance or infra_service", kernelURN, kernelNode.TypeID))
+		return
+	}
+
+	root := cat.URN(strings.TrimSpace(r.URL.Query().Get("root")))
+	if root == "" {
+		writeError(w, http.StatusBadRequest, "missing root query parameter")
+		return
+	}
+	if _, ok := s.inspect.Node(root); !ok {
+		writeError(w, http.StatusNotFound, fmt.Sprintf("root node %s not found", root))
+		return
+	}
+
+	depth := 1
+	if depthStr := strings.TrimSpace(r.URL.Query().Get("depth")); depthStr != "" {
+		n, err := strconv.Atoi(depthStr)
+		if err != nil || n < 0 {
+			writeError(w, http.StatusBadRequest, "invalid depth (must be integer >= 0)")
+			return
+		}
+		depth = n
+	}
+
+	state := s.inspect.State()
+	visited := map[cat.URN]bool{root: true}
+	type queueEntry struct {
+		urn   cat.URN
+		level int
+	}
+	queue := []queueEntry{{urn: root, level: 0}}
+
+	for len(queue) > 0 {
+		cur := queue[0]
+		queue = queue[1:]
+		if cur.level >= depth {
+			continue
+		}
+		for _, wire := range state.Wires {
+			var next cat.URN
+			if wire.SourceURN == cur.urn {
+				next = wire.TargetURN
+			} else if wire.TargetURN == cur.urn {
+				next = wire.SourceURN
+			} else {
+				continue
+			}
+			if !visited[next] {
+				visited[next] = true
+				queue = append(queue, queueEntry{urn: next, level: cur.level + 1})
+			}
+		}
+	}
+
+	nodes := make([]fiberNode, 0, len(visited))
+	for urn := range visited {
+		n := state.Nodes[urn]
+		nodes = append(nodes, fiberNode{URN: n.URN, TypeID: n.TypeID, Payload: n.Payload})
+	}
+	sort.Slice(nodes, func(i, j int) bool { return nodes[i].URN < nodes[j].URN })
+
+	wires := make([]fiberWire, 0)
+	interfaceSeen := map[string]bool{}
+	interfaces := make([]fiberInterfacePort, 0)
+
+	for _, wire := range state.Wires {
+		sIn := visited[wire.SourceURN]
+		tIn := visited[wire.TargetURN]
+
+		if sIn && tIn {
+			wires = append(wires, fiberWire{
+				SourceURN:  wire.SourceURN,
+				SourcePort: wire.SourcePort,
+				TargetURN:  wire.TargetURN,
+				TargetPort: wire.TargetPort,
+			})
+			continue
+		}
+
+		if sIn && !tIn {
+			key := string(wire.SourceURN) + "|" + string(wire.SourcePort) + "|out"
+			if !interfaceSeen[key] {
+				interfaces = append(interfaces, fiberInterfacePort{URN: wire.SourceURN, Port: wire.SourcePort, Direction: "out"})
+				interfaceSeen[key] = true
+			}
+		}
+		if !sIn && tIn {
+			key := string(wire.TargetURN) + "|" + string(wire.TargetPort) + "|in"
+			if !interfaceSeen[key] {
+				interfaces = append(interfaces, fiberInterfacePort{URN: wire.TargetURN, Port: wire.TargetPort, Direction: "in"})
+				interfaceSeen[key] = true
+			}
+		}
+	}
+
+	sort.Slice(wires, func(i, j int) bool {
+		if wires[i].SourceURN != wires[j].SourceURN {
+			return wires[i].SourceURN < wires[j].SourceURN
+		}
+		if wires[i].SourcePort != wires[j].SourcePort {
+			return wires[i].SourcePort < wires[j].SourcePort
+		}
+		if wires[i].TargetURN != wires[j].TargetURN {
+			return wires[i].TargetURN < wires[j].TargetURN
+		}
+		return wires[i].TargetPort < wires[j].TargetPort
+	})
+
+	sort.Slice(interfaces, func(i, j int) bool {
+		if interfaces[i].URN != interfaces[j].URN {
+			return interfaces[i].URN < interfaces[j].URN
+		}
+		if interfaces[i].Port != interfaces[j].Port {
+			return interfaces[i].Port < interfaces[j].Port
+		}
+		return interfaces[i].Direction < interfaces[j].Direction
+	})
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"kernel_urn":      kernelURN,
+		"root":            root,
+		"depth":           depth,
+		"nodes":           nodes,
+		"wires":           wires,
+		"interface_ports": interfaces,
+		"completeness":    1.0,
+	})
+}
+
+func isBridgeKernelNode(n cat.Node) bool {
+	return n.TypeID == "kernel_instance" || n.TypeID == "infra_service"
+}
+
+func (s *Server) handleCalendarSync(w http.ResponseWriter, r *http.Request) {
+	var entry CalendarEntry
+	if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid JSON: %v", err))
+		return
+	}
+
+	envelopes := IngestCalendarEvent(entry)
+	if len(envelopes) == 0 {
+		writeError(w, http.StatusBadRequest, "no envelopes generated")
+		return
+	}
+
+	applied := 0
+	errs := make([]string, 0)
+	for _, env := range envelopes {
+		if _, err := s.run.Apply(env); err != nil {
+			errs = append(errs, err.Error())
+			continue
+		}
+		applied++
+	}
+
+	status := http.StatusAccepted
+	if applied == 0 {
+		status = http.StatusUnprocessableEntity
+	}
+
+	writeJSON(w, status, map[string]any{
+		"status":         "ok",
+		"applied":        applied,
+		"generated":      len(envelopes),
+		"errors":         errs,
+		"calendar_event": entry.ID,
+	})
+}
+
+func (s *Server) handleBridgeSync(w http.ResponseWriter, r *http.Request) {
+	var req bridgeSyncRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid JSON: %v", err))
+		return
+	}
+
+	var prog cat.Program
+	switch {
+	case req.Program != nil:
+		prog = *req.Program
+	case len(req.Envelopes) > 0:
+		prog = cat.Program{Envelopes: req.Envelopes}
+	default:
+		writeError(w, http.StatusBadRequest, "request must include either program or non-empty envelopes")
+		return
+	}
+
+	result, err := s.run.ApplyProgram(prog)
+	if err != nil {
+		writeError(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	if req.TargetKernelURN != "" && len(result.Persisted) > 0 {
+		last := result.Persisted[len(result.Persisted)-1].IssuedAt
+		s.setBridgeCursor(req.TargetKernelURN, last)
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"status":            "ok",
+		"applied":           len(result.Results),
+		"source_kernel_urn": req.SourceKernelURN,
+		"target_kernel_urn": req.TargetKernelURN,
+		"summary":           result.Summary,
+	})
+}
+
 func (s *Server) handleLog(w http.ResponseWriter, r *http.Request) {
-	entries := s.runtime.Log()
+	entries := s.inspect.Log()
 	q := r.URL.Query()
 
 	// ?after=<RFC3339>
@@ -322,8 +664,8 @@ func (s *Server) handleLogStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, ch := s.runtime.Subscribe()
-	defer s.runtime.Unsubscribe(id)
+	id, ch := s.inspect.Subscribe()
+	defer s.inspect.Unsubscribe(id)
 
 	// Send a comment as heartbeat to confirm stream opened.
 	fmt.Fprintf(w, ": connected\n\n")
@@ -340,6 +682,12 @@ func (s *Server) handleLogStream(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			fmt.Fprintf(w, "event: morphism\ndata: %s\n\n", data)
+			if trigger, ok := s.firestarterTriggerFrom(entry); ok {
+				triggerData, err := json.Marshal(trigger)
+				if err == nil {
+					fmt.Fprintf(w, "event: firestarter-trigger\ndata: %s\n\n", triggerData)
+				}
+			}
 			fl.Flush()
 		case <-r.Context().Done():
 			return
@@ -347,8 +695,48 @@ func (s *Server) handleLogStream(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) firestarterTriggerFrom(entry cat.PersistedEnvelope) (map[string]any, bool) {
+	if entry.Envelope.Type != cat.LINK || entry.Envelope.Link == nil {
+		return nil, false
+	}
+
+	link := entry.Envelope.Link
+	targetNode, ok := s.inspect.Node(link.TargetURN)
+	if !ok {
+		return nil, false
+	}
+
+	targetType := strings.ToLower(string(targetNode.TypeID))
+	isFirestarterType := strings.Contains(targetType, "firestarter")
+	hasTriggerFilter := false
+
+	if targetNode.TypeID == "agent_session" && targetNode.Payload != nil {
+		if raw, exists := targetNode.Payload["trigger_filter"]; exists {
+			switch v := raw.(type) {
+			case string:
+				hasTriggerFilter = strings.TrimSpace(v) != ""
+			default:
+				hasTriggerFilter = raw != nil
+			}
+		}
+	}
+
+	if !isFirestarterType && !hasTriggerFilter {
+		return nil, false
+	}
+
+	return map[string]any{
+		"source_urn":     link.SourceURN,
+		"target_urn":     link.TargetURN,
+		"source_port":    link.SourcePort,
+		"target_port":    link.TargetPort,
+		"target_type_id": targetNode.TypeID,
+		"issued_at":      entry.IssuedAt.UTC().Format(time.RFC3339Nano),
+	}, true
+}
+
 func (s *Server) handleRegistry(w http.ResponseWriter, r *http.Request) {
-	reg := s.runtime.Registry()
+	reg := s.inspect.Registry()
 	if reg == nil {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
 		return
@@ -381,7 +769,7 @@ func (s *Server) handleMaterialize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dryRun := r.URL.Query().Get("dry_run") == "true"
-	reg := s.runtime.Registry()
+	reg := s.inspect.Registry()
 
 	result, err := hydration.Materialize(req, reg, dryRun)
 	if err != nil {
@@ -397,7 +785,7 @@ func (s *Server) handleMaterialize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	progResult, err := s.runtime.ApplyProgram(result.Program)
+	progResult, err := s.run.ApplyProgram(result.Program)
 	if err != nil {
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
 		return
@@ -426,7 +814,7 @@ func (s *Server) handleMaterializeSource(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	reg := s.runtime.Registry()
+	reg := s.inspect.Registry()
 	result, err := hydration.Materialize(req, reg, dryRun)
 	if err != nil {
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
@@ -441,7 +829,7 @@ func (s *Server) handleMaterializeSource(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	progResult, err := s.runtime.ApplyProgram(result.Program)
+	progResult, err := s.run.ApplyProgram(result.Program)
 	if err != nil {
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
 		return
@@ -459,7 +847,7 @@ func (s *Server) handleBenchmarkFunctor(w http.ResponseWriter, r *http.Request) 
 	if suiteURN == "" {
 		// Return all suites.
 		b := functor.Benchmark{}
-		result, err := b.Project(s.runtime.State())
+		result, err := b.Project(s.inspect.State())
 		if err != nil {
 			writeError(w, http.StatusInternalServerError, err.Error())
 			return
@@ -468,7 +856,7 @@ func (s *Server) handleBenchmarkFunctor(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	b := functor.Benchmark{}
-	result, err := b.ProjectSuite(s.runtime.State(), suiteURN)
+	result, err := b.ProjectSuite(s.inspect.State(), suiteURN)
 	if err != nil {
 		writeError(w, http.StatusNotFound, err.Error())
 		return
@@ -524,8 +912,104 @@ type portFunctorResponse struct {
 	Mappings     []portFunctorMapping `json:"mappings"`
 }
 
+type pipelineKernelMetrics struct {
+	KernelURN    cat.URN    `json:"kernel_urn"`
+	TypeID       cat.TypeID `json:"type_id"`
+	Incoming     int        `json:"incoming"`
+	Outgoing     int        `json:"outgoing"`
+	Internal     int        `json:"internal"`
+	Boundary     int        `json:"boundary"`
+	Completeness float64    `json:"completeness"`
+	Curvature    float64    `json:"curvature"`
+}
+
+func (s *Server) handlePipelineMetricsFunctor(w http.ResponseWriter, r *http.Request) {
+	state := s.inspect.State()
+	filterKernel := cat.URN(strings.TrimSpace(r.URL.Query().Get("kernel_urn")))
+
+	kernels := make([]cat.Node, 0)
+	for _, n := range state.Nodes {
+		if !isBridgeKernelNode(n) {
+			continue
+		}
+		if filterKernel != "" && n.URN != filterKernel {
+			continue
+		}
+		kernels = append(kernels, n)
+	}
+
+	if filterKernel != "" && len(kernels) == 0 {
+		writeError(w, http.StatusNotFound, fmt.Sprintf("kernel node %s not found or not a kernel type", filterKernel))
+		return
+	}
+
+	sort.Slice(kernels, func(i, j int) bool { return kernels[i].URN < kernels[j].URN })
+
+	metrics := make([]pipelineKernelMetrics, 0, len(kernels))
+	var totalCurvature float64
+	var totalCompleteness float64
+	for _, k := range kernels {
+		m := pipelineKernelMetrics{KernelURN: k.URN, TypeID: k.TypeID}
+		for _, wire := range state.Wires {
+			touchesSource := wire.SourceURN == k.URN
+			touchesTarget := wire.TargetURN == k.URN
+			if !touchesSource && !touchesTarget {
+				continue
+			}
+
+			if touchesSource {
+				m.Outgoing++
+			}
+			if touchesTarget {
+				m.Incoming++
+			}
+
+			other := wire.TargetURN
+			if touchesTarget {
+				other = wire.SourceURN
+			}
+			otherNode, ok := state.Nodes[other]
+			if ok && isBridgeKernelNode(otherNode) {
+				m.Internal++
+			} else {
+				m.Boundary++
+			}
+		}
+
+		totalEdges := m.Incoming + m.Outgoing
+		if totalEdges > 0 {
+			m.Completeness = float64(m.Boundary) / float64(totalEdges)
+			if m.Completeness > 1 {
+				m.Completeness = 1
+			}
+			m.Curvature = float64(m.Internal-m.Boundary) / float64(totalEdges)
+		} else {
+			m.Completeness = 0
+			m.Curvature = 0
+		}
+
+		totalCurvature += m.Curvature
+		totalCompleteness += m.Completeness
+		metrics = append(metrics, m)
+	}
+
+	avgCurvature := 0.0
+	avgCompleteness := 0.0
+	if len(metrics) > 0 {
+		avgCurvature = totalCurvature / float64(len(metrics))
+		avgCompleteness = totalCompleteness / float64(len(metrics))
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"kernel_count":     len(metrics),
+		"avg_curvature":    avgCurvature,
+		"avg_completeness": avgCompleteness,
+		"by_kernel":        metrics,
+	})
+}
+
 func (s *Server) handlePortInventoryFunctor(w http.ResponseWriter, r *http.Request) {
-	reg := s.runtime.Registry()
+	reg := s.inspect.Registry()
 	if reg == nil {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
 		return
@@ -590,7 +1074,7 @@ func (s *Server) handlePortInventoryFunctor(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) handleBindingCategoryFunctor(w http.ResponseWriter, r *http.Request) {
-	reg := s.runtime.Registry()
+	reg := s.inspect.Registry()
 	if reg == nil {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
 		return
@@ -661,7 +1145,7 @@ func (s *Server) handleBindingCategoryFunctor(w http.ResponseWriter, r *http.Req
 }
 
 func (s *Server) handlePortFunctor(w http.ResponseWriter, r *http.Request) {
-	reg := s.runtime.Registry()
+	reg := s.inspect.Registry()
 	if reg == nil {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "no registry loaded"})
 		return
@@ -773,7 +1257,7 @@ func (s *Server) handleExplorer(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleUIFunctor(w http.ResponseWriter, r *http.Request) {
 	lens := functor.UILens{}
-	result, err := lens.Project(s.runtime.State())
+	result, err := lens.Project(s.inspect.State())
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -783,7 +1267,7 @@ func (s *Server) handleUIFunctor(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleCalendarFunctor(w http.ResponseWriter, r *http.Request) {
 	cal := functor.Calendar{}
-	result, err := cal.Project(s.runtime.State())
+	result, err := cal.Project(s.inspect.State())
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return

@@ -302,6 +302,8 @@ func broadCategory(tid cat.TypeID) string {
 		return "protocol"
 	case "infra_service":
 		return "infra"
+	case "kernel_instance":
+		return "infra"
 	case "memory_store":
 		return "memory"
 	case "platform_config", "workstation_config":

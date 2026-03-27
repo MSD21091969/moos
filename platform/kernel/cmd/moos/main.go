@@ -104,10 +104,10 @@ func main() {
 	}
 
 	// 6. Start HTTP server
-	srv := transport.NewServer(rt, *kbPath)
+	srv := transport.NewServer(rt, rt, *kbPath)
 
 	// 7. Start MCP bridge
-	mcpSrv := mcp.NewServer(rt)
+	mcpSrv := mcp.NewServer(rt, rt)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
