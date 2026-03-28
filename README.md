@@ -346,6 +346,25 @@ To load the demo graph:
 
 ---
 
+## VS Code (Standalone)
+
+This repository now includes a local VS Code configuration in `.vscode/` with:
+
+- Extension recommendations for Go, PowerShell, YAML, Markdown, and REST testing
+- Launch profiles for `kb-starter`, `ffs0` KB hydration, and `--mcp-stdio`
+- Tasks for build, full test, run, kernel health, MCP health, and MCP SSE smoke checks
+
+Quick sequence in VS Code:
+
+1. `Kernel: run (kb-starter + hydrate)`
+2. `Kernel: check health`
+3. `MCP: check health`
+4. `MCP: SSE endpoint smoke`
+
+If you are working alongside the private workspace clone, use `Kernel: run (ffs0 KB + hydrate)`.
+
+---
+
 ## Ontology Registry
 
 The structured ontology (see `examples/kb-starter/superset/ontology.json` for

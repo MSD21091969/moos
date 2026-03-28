@@ -182,6 +182,15 @@ Invoke-RestMethod -Method Post `
 See [examples/demo.ps1](examples/demo.ps1) for the full interactive walkthrough.
 See [examples/demo.sh](examples/demo.sh) for the bash equivalent.
 
+### MCP quick checks (no custom client required)
+
+```powershell
+Invoke-RestMethod http://localhost:8080/healthz
+curl.exe -sN --max-time 2 http://localhost:8080/sse
+```
+
+The SSE probe should emit an `event: endpoint` line with a `sessionId` URL.
+
 ---
 
 ## HTTP API Reference
