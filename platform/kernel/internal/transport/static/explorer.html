@@ -575,9 +575,15 @@
                 case 'collider_admin':
                 case 'superadmin':
                 case 'agent_spec':
+                case 'agent_session':
                     return 'identity';
                 case 'app_template':
                 case 'node_container':
+                case 'prg_task':
+                case 'calendar_event':
+                case 'keep_note':
+                case 'channel_message':
+                case 'delegation_task':
                     return 'structure';
                 case 'agnostic_model':
                 case 'system_tool':
@@ -590,6 +596,7 @@
                 case 'protocol_adapter':
                     return 'protocol';
                 case 'infra_service':
+                case 'kernel_instance':
                     return 'infra';
                 case 'memory_store':
                     return 'memory';
@@ -602,9 +609,21 @@
                 case 'benchmark_task':
                 case 'benchmark_score':
                     return 'evaluation';
+                case 'fs_directory':
+                case 'fs_file':
+                    return 'filesystem';
+                case 'os_process':
+                    return 'process';
+                case 'git_repo':
+                case 'git_branch':
+                case 'git_worktree':
+                    return 'vcs';
+                case 'governance_proposal':
+                    return 'governance';
                 case 'industry_entity':
                     return 'industry';
                 case 'ontology_term':
+                case 'ptp_family':
                     return 'ontology';
                 default:
                     return 'unknown';

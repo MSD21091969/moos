@@ -19,6 +19,7 @@ import (
 
 	"moos/platform/kernel/internal/cat"
 	"moos/platform/kernel/internal/functor"
+	"moos/platform/kernel/internal/hdc"
 	"moos/platform/kernel/internal/hydration"
 	"moos/platform/kernel/internal/lens"
 	"moos/platform/kernel/internal/shell"
@@ -31,6 +32,7 @@ var explorerHTML []byte
 type Server struct {
 	inspect shell.InspectSubstrate
 	run     shell.RunSubstrate
+	observe shell.ObservableSubstrate
 	kbRoot  string // path to knowledge-base root; empty when --kb not supplied
 	mux     *http.ServeMux
 	srv     *http.Server
@@ -42,10 +44,11 @@ type Server struct {
 // NewServer creates a new HTTP server bound to the given runtime.
 // kbRoot is the path to the knowledge-base root directory; pass "" when
 // the --kb flag was not supplied (source-based materialize will return 501).
-func NewServer(inspect shell.InspectSubstrate, run shell.RunSubstrate, kbRoot string) *Server {
+func NewServer(inspect shell.InspectSubstrate, run shell.RunSubstrate, observe shell.ObservableSubstrate, kbRoot string) *Server {
 	s := &Server{
 		inspect:       inspect,
 		run:           run,
+		observe:       observe,
 		kbRoot:        kbRoot,
 		mux:           http.NewServeMux(),
 		bridgeCursors: make(map[cat.URN]time.Time),
@@ -62,6 +65,8 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /state/wires", s.handleWires)
 	s.mux.HandleFunc("GET /state/wires/outgoing/", s.handleOutgoingWires)
 	s.mux.HandleFunc("GET /state/wires/incoming/", s.handleIncomingWires)
+	s.mux.HandleFunc("GET /state/hdc/batch", s.handleHDCBatch)
+	s.mux.HandleFunc("GET /state/hdc/", s.handleHDCByURN)
 	s.mux.HandleFunc("POST /morphisms", s.handlePostMorphism)
 	s.mux.HandleFunc("POST /programs", s.handlePostProgram)
 	s.mux.HandleFunc("GET /log", s.handleLog)
@@ -77,6 +82,13 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /functor/binding-category", s.handleBindingCategoryFunctor)
 	s.mux.HandleFunc("GET /functor/port-functor", s.handlePortFunctor)
 	s.mux.HandleFunc("GET /functor/pipeline-metrics", s.handlePipelineMetricsFunctor)
+	s.mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			http.Redirect(w, r, "/explorer", http.StatusFound)
+			return
+		}
+		http.NotFound(w, r)
+	})
 	s.mux.HandleFunc("GET /explorer", s.handleExplorer)
 	s.mux.HandleFunc("GET /functor/ui", s.handleUIFunctor)
 	s.mux.HandleFunc("GET /functor/calendar", s.handleCalendarFunctor)
@@ -176,6 +188,31 @@ func (s *Server) handleIncomingWires(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, s.inspect.IncomingWires(urn))
+}
+
+func (s *Server) handleHDCByURN(w http.ResponseWriter, r *http.Request) {
+	urn := cat.URN(strings.TrimPrefix(r.URL.Path, "/state/hdc/"))
+	if urn == "" {
+		writeError(w, http.StatusBadRequest, "missing URN")
+		return
+	}
+	vector, ok := hdc.NewEncoder(0).EncodeNode(s.inspect.State(), urn)
+	if !ok {
+		writeError(w, http.StatusNotFound, fmt.Sprintf("node %s not found", urn))
+		return
+	}
+	writeJSON(w, http.StatusOK, vector)
+}
+
+func (s *Server) handleHDCBatch(w http.ResponseWriter, r *http.Request) {
+	urnParams := r.URL.Query()["urn"]
+	urns := make([]cat.URN, 0, len(urnParams))
+	for _, urn := range urnParams {
+		if trimmed := strings.TrimSpace(urn); trimmed != "" {
+			urns = append(urns, cat.URN(trimmed))
+		}
+	}
+	writeJSON(w, http.StatusOK, hdc.NewEncoder(0).EncodeBatch(s.inspect.State(), urns))
 }
 
 func (s *Server) handleScope(w http.ResponseWriter, r *http.Request) {
@@ -664,8 +701,8 @@ func (s *Server) handleLogStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, ch := s.inspect.Subscribe()
-	defer s.inspect.Unsubscribe(id)
+	id, ch := s.observe.Subscribe()
+	defer s.observe.Unsubscribe(id)
 
 	// Send a comment as heartbeat to confirm stream opened.
 	fmt.Fprintf(w, ": connected\n\n")

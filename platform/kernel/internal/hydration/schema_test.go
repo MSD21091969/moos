@@ -33,6 +33,20 @@ var validTypeIDs = map[string]bool{
 	"benchmark_task":     true,
 	"benchmark_score":    true,
 	"agent_spec":         true,
+	"agent_session":      true,
+	"prg_task":           true,
+	"calendar_event":     true,
+	"keep_note":          true,
+	"channel_message":    true,
+	"ptp_family":         true,
+	"delegation_task":    true,
+	"fs_directory":       true,
+	"fs_file":            true,
+	"os_process":         true,
+	"git_repo":           true,
+	"git_branch":         true,
+	"git_worktree":       true,
+	"governance_proposal": true,
 	"industry_entity":    true,
 	"ontology_term":      true,
 }
@@ -62,6 +76,20 @@ var allowedStrata = map[string]map[string]bool{
 	"benchmark_task":     {"S2": true},
 	"benchmark_score":    {"S3": true},
 	"agent_spec":         {"S2": true, "S3": true},
+	"agent_session":      {"S2": true, "S3": true},
+	"prg_task":           {"S1": true, "S2": true},
+	"calendar_event":     {"S0": true, "S1": true, "S2": true},
+	"keep_note":          {"S0": true, "S1": true},
+	"channel_message":    {"S1": true, "S2": true},
+	"ptp_family":         {"S1": true},
+	"delegation_task":    {"S2": true},
+	"fs_directory":       {"S0": true, "S1": true, "S2": true},
+	"fs_file":            {"S0": true, "S1": true, "S2": true},
+	"os_process":         {"S0": true, "S2": true, "S3": true},
+	"git_repo":           {"S1": true, "S2": true, "S3": true},
+	"git_branch":         {"S1": true, "S2": true, "S3": true},
+	"git_worktree":       {"S0": true, "S1": true, "S2": true, "S3": true},
+	"governance_proposal": {"S0": true, "S1": true, "S2": true},
 	"industry_entity":    {"S0": true},
 	"ontology_term":      {"S1": true},
 }
@@ -73,6 +101,8 @@ var validStratumValues = map[string]bool{
 // kbInstanceDirCandidates includes both legacy in-repo and current externalized
 // KB layouts.
 var kbInstanceDirCandidates = []string{
+	"../../../../../ffs0-factory-super/.agent/kb/instances", // current: sibling workspace KB
+	"../../../../../../ffs0-factory-super/.agent/kb/instances",
 	"../../../../.agent/knowledge_base/instances",    // legacy: repo-local .agent
 	"../../../../../.agent/knowledge_base/instances", // current: sibling .agent
 }

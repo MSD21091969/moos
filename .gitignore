@@ -30,11 +30,13 @@ secrets/
 *.log
 *.err
 *.tmp
+*.out
 *.exe~
 *.pid
 .venv/
 venv/
 node_modules/
+platform/kernel/temp.xml
 
 # ── OS ──
 .DS_Store

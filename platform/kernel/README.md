@@ -206,6 +206,8 @@ All routes on **`:8000`**.
 | `GET`  | `/state/wires`                | All wires as array                               |
 | `GET`  | `/state/wires/outgoing/{urn}` | Wires where source = urn                         |
 | `GET`  | `/state/wires/incoming/{urn}` | Wires where target = urn                         |
+| `GET`  | `/state/hdc/{urn}`            | Deterministic HDC hypervector for a node         |
+| `GET`  | `/state/hdc/batch`            | HDC hypervectors for all S2 nodes or query URNs  |
 | `GET`  | `/state/scope/{actor}`        | Scoped subgraph for an actor URN                 |
 | `POST` | `/morphisms`                  | Apply a single envelope (ADD/LINK/MUTATE/UNLINK) |
 | `POST` | `/programs`                   | Apply an atomic batch of envelopes               |

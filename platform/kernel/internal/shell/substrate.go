@@ -20,6 +20,10 @@ type InspectSubstrate interface {
 	LogLen() int
 	Epoch() time.Time
 	Registry() *operad.Registry
+}
+
+// ObservableSubstrate provides non-mutating event subscription for stream paths.
+type ObservableSubstrate interface {
 	Subscribe() (string, <-chan cat.PersistedEnvelope)
 	Unsubscribe(id string)
 }
@@ -31,4 +35,5 @@ type RunSubstrate interface {
 }
 
 var _ InspectSubstrate = (*Runtime)(nil)
+var _ ObservableSubstrate = (*Runtime)(nil)
 var _ RunSubstrate = (*Runtime)(nil)

@@ -73,6 +73,16 @@ func LoadKBFile(kbRoot, dir, filename, rootURN string) (MaterializeRequest, erro
 		buildBenchmarks(&req, inst.Entries, rootURN) // Program 10
 	case "models":
 		buildModels(&req, inst.Entries) // provider_ref → model OWNS wires
+	case "kernels":
+		buildKernels(&req, inst.Entries, rootURN)
+	case "git_worktrees":
+		buildGitWorktrees(&req, inst.Entries, rootURN)
+	case "git_branches":
+		buildGitBranches(&req, inst.Entries, rootURN)
+	case "git_repositories":
+		buildGitRepositories(&req, inst.Entries, rootURN)
+	case "governance":
+		buildGovernanceProposals(&req, inst.Entries, rootURN)
 	default:
 		buildGeneric(&req, inst.Entries, rootURN) // Programs 11 + generic fallback
 	}
@@ -97,6 +107,42 @@ func canRouteWire(sourceURN, targetURN string) WireRequest {
 		SourcePort: "can_route",
 		TargetURN:  targetURN,
 		TargetPort: "transport",
+	}
+}
+
+func tracksBranchWire(sourceURN, targetURN string) WireRequest {
+	return WireRequest{
+		SourceURN:  sourceURN,
+		SourcePort: "tracks_branch",
+		TargetURN:  targetURN,
+		TargetPort: "branch_of",
+	}
+}
+
+func checkedOutAtWire(sourceURN, targetURN string) WireRequest {
+	return WireRequest{
+		SourceURN:  sourceURN,
+		SourcePort: "checked_out_at",
+		TargetURN:  targetURN,
+		TargetPort: "checkout_of",
+	}
+}
+
+func specializesKernelWire(sourceURN, targetURN string) WireRequest {
+	return WireRequest{
+		SourceURN:  sourceURN,
+		SourcePort: "specializes",
+		TargetURN:  targetURN,
+		TargetPort: "specialization_of",
+	}
+}
+
+func proposesPromotionWire(sourceURN, targetURN string) WireRequest {
+	return WireRequest{
+		SourceURN:  sourceURN,
+		SourcePort: "proposes_promotion",
+		TargetURN:  targetURN,
+		TargetPort: "proposed_change",
 	}
 }
 
@@ -278,6 +324,92 @@ func buildModels(req *MaterializeRequest, entries []map[string]any) {
 	}
 }
 
+func buildKernels(req *MaterializeRequest, entries []map[string]any, rootURN string) {
+	for _, e := range entries {
+		id := strField(e, "id")
+		typeID := strField(e, "type_id")
+		if id == "" || typeID == "" {
+			continue
+		}
+		req.Nodes = append(req.Nodes, NodeRequest{
+			URN:     id,
+			TypeID:  typeID,
+			Stratum: strField(e, "stratum"),
+			Payload: entryPayload(e),
+		})
+		if id != rootURN {
+			req.Wires = append(req.Wires, ownsWire(rootURN, id))
+		}
+		for _, parentKernel := range stringListField(e, "specializes_kernel") {
+			req.Wires = append(req.Wires, specializesKernelWire(parentKernel, id))
+		}
+	}
+}
+
+func buildGitWorktrees(req *MaterializeRequest, entries []map[string]any, rootURN string) {
+	buildGeneric(req, entries, rootURN)
+}
+
+func buildGitBranches(req *MaterializeRequest, entries []map[string]any, rootURN string) {
+	for _, e := range entries {
+		id := strField(e, "id")
+		typeID := strField(e, "type_id")
+		if id == "" || typeID == "" {
+			continue
+		}
+		req.Nodes = append(req.Nodes, NodeRequest{
+			URN:     id,
+			TypeID:  typeID,
+			Stratum: strField(e, "stratum"),
+			Payload: entryPayload(e),
+		})
+		req.Wires = append(req.Wires, ownsWire(rootURN, id))
+		for _, worktreeURN := range stringListField(e, "checked_out_at") {
+			req.Wires = append(req.Wires, checkedOutAtWire(id, worktreeURN))
+		}
+	}
+}
+
+func buildGitRepositories(req *MaterializeRequest, entries []map[string]any, rootURN string) {
+	for _, e := range entries {
+		id := strField(e, "id")
+		typeID := strField(e, "type_id")
+		if id == "" || typeID == "" {
+			continue
+		}
+		req.Nodes = append(req.Nodes, NodeRequest{
+			URN:     id,
+			TypeID:  typeID,
+			Stratum: strField(e, "stratum"),
+			Payload: entryPayload(e),
+		})
+		req.Wires = append(req.Wires, ownsWire(rootURN, id))
+		for _, branchURN := range stringListField(e, "tracks_branch") {
+			req.Wires = append(req.Wires, tracksBranchWire(id, branchURN))
+		}
+	}
+}
+
+func buildGovernanceProposals(req *MaterializeRequest, entries []map[string]any, rootURN string) {
+	for _, e := range entries {
+		id := strField(e, "id")
+		typeID := strField(e, "type_id")
+		if id == "" || typeID == "" {
+			continue
+		}
+		req.Nodes = append(req.Nodes, NodeRequest{
+			URN:     id,
+			TypeID:  typeID,
+			Stratum: strField(e, "stratum"),
+			Payload: entryPayload(e),
+		})
+		req.Wires = append(req.Wires, ownsWire(rootURN, id))
+		for _, targetURN := range stringListField(e, "proposes_promotion") {
+			req.Wires = append(req.Wires, proposesPromotionWire(id, targetURN))
+		}
+	}
+}
+
 // buildGeneric handles distribution.json, workstation.json, compute.json, and any
 // other domains without a specific Program number (Program 11 + fallback).
 // Each entry: ADD node + LINK owns(root→node).
@@ -304,6 +436,38 @@ func buildGeneric(req *MaterializeRequest, entries []map[string]any, rootURN str
 func strField(m map[string]any, key string) string {
 	v, _ := m[key].(string)
 	return v
+}
+
+func stringListField(m map[string]any, key string) []string {
+	value, ok := m[key]
+	if !ok {
+		return nil
+	}
+	switch typed := value.(type) {
+	case string:
+		if typed == "" {
+			return nil
+		}
+		return []string{typed}
+	case []string:
+		out := make([]string, 0, len(typed))
+		for _, item := range typed {
+			if item != "" {
+				out = append(out, item)
+			}
+		}
+		return out
+	case []any:
+		out := make([]string, 0, len(typed))
+		for _, raw := range typed {
+			if item, ok := raw.(string); ok && item != "" {
+				out = append(out, item)
+			}
+		}
+		return out
+	default:
+		return nil
+	}
 }
 
 // entryPayload returns a shallow copy of the entry map with structural fields removed.

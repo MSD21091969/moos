@@ -93,8 +93,6 @@ func main() {
 
 	// 4. Apply seed
 	seedKernel(rt, cfg)
-	seedAgentNodes(rt)
-	seedSourceNodes(rt, *kbPath, rootSeedURN(cfg))
 
 	// 5. Optionally hydrate Tier-2 instance files from the KB.
 	if *hydrateFlag && *kbPath != "" {
@@ -103,14 +101,21 @@ func main() {
 		}
 	}
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	if err := shell.StartFSWatcher(ctx, rt, ""); err != nil {
+		log.Printf("[boot] fs watcher warning: %v", err)
+	}
+	if err := shell.StartProcessWatcher(ctx, rt); err != nil {
+		log.Printf("[boot] process watcher warning: %v", err)
+	}
+
 	// 6. Start HTTP server
-	srv := transport.NewServer(rt, rt, *kbPath)
+	srv := transport.NewServer(rt, rt, rt, *kbPath)
 
 	// 7. Start MCP bridge
 	mcpSrv := mcp.NewServer(rt, rt)
-
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
 
 	go func() {
 		if err := srv.ListenAndServe(cfg.ListenAddr); err != nil && err != http.ErrServerClosed {
@@ -213,74 +218,3 @@ type sourceSeedEntry struct {
 	Label  string `json:"label"`
 	Domain string `json:"domain"`
 	URL    string `json:"url"`
-}
-
-func rootSeedURN(cfg *config.Config) string {
-	if cfg != nil && cfg.Seed != nil && strings.TrimSpace(cfg.Seed.URN) != "" {
-		return cfg.Seed.URN
-	}
-	return "urn:moos:kernel:wave-0"
-}
-
-func seedSourceNodes(rt *shell.Runtime, kbRoot, rootURN string) {
-	if strings.TrimSpace(kbRoot) == "" {
-		return
-	}
-	path := filepath.Join(kbRoot, "superset", "sources.json")
-	data, err := os.ReadFile(filepath.Clean(path))
-	if err != nil {
-		log.Printf("[seed] sources skipped: %v", err)
-		return
-	}
-
-	var doc sourceSeedFile
-	if err := json.Unmarshal(data, &doc); err != nil {
-		log.Printf("[seed] sources parse skipped: %v", err)
-		return
-	}
-
-	for _, src := range doc.Entries {
-		urn := strings.TrimSpace(src.ID)
-		if urn == "" {
-			continue
-		}
-		label := strings.TrimSpace(src.Label)
-		if label == "" {
-			label = urn
-		}
-
-		if err := rt.SeedIfAbsent(cat.Envelope{
-			Type:  cat.ADD,
-			Actor: cat.URN("urn:moos:identity:kernel"),
-			Add: &cat.AddPayload{
-				URN:     cat.URN(urn),
-				TypeID:  "node_container",
-				Stratum: cat.S2,
-				Payload: map[string]any{
-					"label":  label,
-					"domain": src.Domain,
-					"url":    src.URL,
-				},
-			},
-		}); err != nil {
-			log.Printf("[seed] source add %s: %v", urn, err)
-		}
-
-		if strings.TrimSpace(rootURN) != "" {
-			if err := rt.SeedIfAbsent(cat.Envelope{
-				Type:  cat.LINK,
-				Actor: cat.URN("urn:moos:identity:kernel"),
-				Link: &cat.LinkPayload{
-					SourceURN:  cat.URN(rootURN),
-					SourcePort: "owns",
-					TargetURN:  cat.URN(urn),
-					TargetPort: "child",
-				},
-			}); err != nil {
-				log.Printf("[seed] source link %s -> %s: %v", rootURN, urn, err)
-			}
-		}
-	}
-
-	log.Printf("[seed] source nodes seeded: %d", len(doc.Entries))
-}

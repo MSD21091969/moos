@@ -312,6 +312,14 @@ func broadCategory(tid cat.TypeID) string {
 		return "config"
 	case "benchmark_suite", "benchmark_task", "benchmark_score":
 		return "evaluation"
+	case "fs_directory", "fs_file":
+		return "filesystem"
+	case "os_process":
+		return "process"
+	case "git_repo", "git_branch", "git_worktree":
+		return "vcs"
+	case "governance_proposal":
+		return "governance"
 	case "industry_entity":
 		return "industry"
 	case "ontology_term", "ptp_family":

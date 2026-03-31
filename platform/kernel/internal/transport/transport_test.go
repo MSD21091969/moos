@@ -24,7 +24,7 @@ func newTestServer(t *testing.T) *transport.Server {
 	if err != nil {
 		t.Fatalf("NewRuntime: %v", err)
 	}
-	return transport.NewServer(rt, rt, "")
+	return transport.NewServer(rt, rt, rt, "")
 }
 
 func doRequest(t *testing.T, handler http.Handler, method, path string, body any) *httptest.ResponseRecorder {
@@ -131,6 +131,77 @@ func TestGetNodeByURN_NotFound(t *testing.T) {
 	w := doRequest(t, srv.Handler(), "GET", "/state/nodes/urn:missing", nil)
 	if w.Code != http.StatusNotFound {
 		t.Errorf("expected 404, got %d", w.Code)
+	}
+}
+
+func TestGetHDCByURN(t *testing.T) {
+	srv := newTestServer(t)
+	doRequest(t, srv.Handler(), "POST", "/morphisms", cat.Envelope{
+		Type:  cat.ADD,
+		Actor: testActor,
+		Add: &cat.AddPayload{
+			URN:     "urn:hdc:test",
+			TypeID:  "node_container",
+			Stratum: cat.S2,
+			Payload: map[string]any{"name": "hdc"},
+		},
+	})
+
+	w := doRequest(t, srv.Handler(), "GET", "/state/hdc/urn:hdc:test", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var resp struct {
+		URN        cat.URN `json:"urn"`
+		Dimensions int     `json:"dimensions"`
+		Vector     []int8  `json:"vector"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if resp.URN != "urn:hdc:test" {
+		t.Fatalf("urn = %s, want urn:hdc:test", resp.URN)
+	}
+	if resp.Dimensions != 1024 {
+		t.Fatalf("dimensions = %d, want 1024", resp.Dimensions)
+	}
+	if len(resp.Vector) != 1024 {
+		t.Fatalf("vector length = %d, want 1024", len(resp.Vector))
+	}
+}
+
+func TestGetHDCBatchDefaultsToS2Nodes(t *testing.T) {
+	srv := newTestServer(t)
+	for _, env := range []cat.Envelope{
+		{Type: cat.ADD, Actor: testActor, Add: &cat.AddPayload{URN: "urn:hdc:s2", TypeID: "node_container", Stratum: cat.S2}},
+		{Type: cat.ADD, Actor: testActor, Add: &cat.AddPayload{URN: "urn:hdc:s1", TypeID: "node_container", Stratum: cat.S1}},
+	} {
+		w := doRequest(t, srv.Handler(), "POST", "/morphisms", env)
+		if w.Code != http.StatusOK {
+			t.Fatalf("seed morphism failed: %d %s", w.Code, w.Body.String())
+		}
+	}
+
+	w := doRequest(t, srv.Handler(), "GET", "/state/hdc/batch", nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var resp struct {
+		Count   int `json:"count"`
+		Vectors []struct {
+			URN cat.URN `json:"urn"`
+		} `json:"vectors"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("decode batch response: %v", err)
+	}
+	if resp.Count != 1 {
+		t.Fatalf("count = %d, want 1", resp.Count)
+	}
+	if len(resp.Vectors) != 1 || resp.Vectors[0].URN != "urn:hdc:s2" {
+		t.Fatalf("unexpected batch vectors: %+v", resp.Vectors)
 	}
 }
 
@@ -487,7 +558,7 @@ func newTestServerWithRegistry(t *testing.T) *transport.Server {
 	if err != nil {
 		t.Fatalf("NewRuntime: %v", err)
 	}
-	return transport.NewServer(rt, rt, "")
+	return transport.NewServer(rt, rt, rt, "")
 }
 
 func TestPortInventoryFunctor_BySourceType(t *testing.T) {
